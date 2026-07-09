@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>LionFlow — งานของฉัน</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Sarabun',sans-serif;background:#eef0f3;color:#1d2b3a;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:480px;margin:0 auto;min-height:100vh;background:#eef0f3;}
+  .head{background:radial-gradient(900px 400px at 30% -20%,#21405f,#16263a 62%,#101a28);color:#fff;padding:20px 20px 26px;}
+  .card{background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px 16px;margin:14px;}
+  .row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #f2f4f7;font-size:14px;}
+  .row:last-child{border-bottom:none;}
+  .row .k{color:#98a2b3;flex:none;}
+  .row .v{color:#1d2b3a;font-weight:600;text-align:right;}
+  .btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;font-size:15.5px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:11px;}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .stepbtn{background:#2f6fb0;color:#fff;}
+  .stepdone{background:#ecfdf3;color:#067647;border:1px solid #bfe6cf;}
+  textarea{width:100%;padding:11px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:14px;font-family:inherit;color:#1d2b3a;resize:vertical;min-height:60px;box-sizing:border-box;}
+  .muted{font-size:12px;color:#98a2b3;}
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:#16263a;color:#fff;padding:11px 18px;border-radius:10px;font-size:13.5px;font-weight:600;opacity:0;transition:opacity .25s;z-index:50;box-shadow:0 8px 26px rgba(0,0,0,.3);}
+  .toast.show{opacity:1;}
+  .spin{width:18px;height:18px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;animation:sp .8s linear infinite;vertical-align:middle;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="head">
+    <div style="font-size:12.5px;color:#E8A33D;font-weight:700;letter-spacing:.08em;">LIONFLOW · งานของฉัน</div>
+    <div id="hTitle" style="font-size:20px;font-weight:800;margin-top:6px;">กำลังโหลด… <span class="spin"></span></div>
+    <div id="hSub" style="font-size:13px;color:#aab8c8;margin-top:4px;"></div>
+  </div>
+  <div id="body"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== config : ชี้ STAGING (ตอน cutover production สลับเป็นค่า prod) =====
+// prod: URL='https://ojttzvcqjqqqullopeqt.supabase.co'
+//       KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdHR6dmNxanFxcXVsbG9wZXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNzE1MDAsImV4cCI6MjA5Nzk0NzUwMH0.68VmEegEuj6IrG3XweK4AQEufhzvQiUz79ThL28LOzk'
+var SUPABASE_URL='https://vugqoevhxqssdqykwgpi.supabase.co';
+var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Z3FvZXZoeHFzc2RxeWt3Z3BpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMzE2MzYsImV4cCI6MjA5ODkwNzYzNn0.G_wDLk8lnbp4zWH83x28MFnbS5hYiExHB33ZNQSCkhg';
+var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+
+var TOKEN=new URLSearchParams(location.search).get('t')||'';
+var JOB=null, JOBID=null, DRIVER=null;
+
+var THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function thDate(iso){if(!iso)return '—';var p=String(iso).slice(0,10).split('-');if(p.length!==3)return iso;return (+p[2])+' '+THM[(+p[1])-1]+' '+((+p[0])+543);}
+function nowLocal(){var d=new Date();var p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
+function fmtT(iso){if(!iso)return '';var m=String(iso).match(/T(\d{2}:\d{2})/);return m?(' · '+m[1]+' น.'):'';}
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(function(){t.classList.remove('show');},2200);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+
+function rpc(fn,args){return fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:H,body:JSON.stringify(args)}).then(function(r){return r.json().then(function(d){return{ok:r.ok,status:r.status,data:d};});});}
+
+function getGeo(){return new Promise(function(res){if(!navigator.geolocation){res({});return;}navigator.geolocation.getCurrentPosition(function(p){res({lat:p.coords.latitude,lng:p.coords.longitude});},function(){res({});},{enableHighAccuracy:true,timeout:6000,maximumAge:30000});});}
+
+function load(){
+  if(!TOKEN){fail('ลิงก์ไม่ถูกต้อง (ไม่มี token)');return;}
+  rpc('driver_get_job',{_token:TOKEN}).then(function(r){
+    if(!r.ok){fail(r.status===404?'ไม่พบงาน':'ลิงก์หมดอายุหรือถูกยกเลิก');return;}
+    JOB=r.data.job||{}; JOBID=r.data.jobId; DRIVER=r.data.driver||null;
+    render();
+  }).catch(function(){fail('เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ต');});
+}
+function fail(msg){
+  document.getElementById('hTitle').textContent='เปิดงานไม่ได้';
+  document.getElementById('hSub').textContent='';
+  document.getElementById('body').innerHTML='<div class="card" style="text-align:center;padding:30px 18px;"><div style="font-size:40px;margin-bottom:10px;">🔒</div><div style="font-size:15px;font-weight:700;color:#b42318;">'+esc(msg)+'</div><div class="muted" style="margin-top:8px;line-height:1.6;">ลิงก์งานนี้ใช้ได้เฉพาะงานเดียวและมีวันหมดอายุ<br/>ติดต่อหัวหน้างานเพื่อขอลิงก์ใหม่</div></div>';
+}
+
+function step(field,label,extra){
+  var already=JOB[field];
+  if(already){toast('บันทึกไว้แล้ว'); return;}
+  var btn=document.getElementById('b_'+field);
+  if(btn){btn.disabled=true;btn.innerHTML='กำลังบันทึก… <span class="spin"></span>';}
+  getGeo().then(function(g){
+    var patch={}; patch[field]=nowLocal();
+    if(extra&&g.lat){patch[extra.lat]=g.lat;patch[extra.lng]=g.lng;}
+    rpc('driver_update_progress',{_token:TOKEN,_patch:patch}).then(function(r){
+      if(!r.ok){toast('บันทึกไม่สำเร็จ');if(btn){btn.disabled=false;btn.textContent=label;}return;}
+      Object.assign(JOB,patch); toast('✓ '+label+' แล้ว'); render();
+    }).catch(function(){toast('เชื่อมต่อไม่ได้');if(btn){btn.disabled=false;btn.textContent=label;}});
+  });
+}
+function saveNote(){
+  var v=document.getElementById('note').value;
+  rpc('driver_update_progress',{_token:TOKEN,_patch:{driverNote:v}}).then(function(r){toast(r.ok?'บันทึกหมายเหตุแล้ว':'บันทึกไม่สำเร็จ');if(r.ok)JOB.driverNote=v;});
+}
+
+function render(){
+  var j=JOB;
+  document.getElementById('hTitle').textContent='ใบงาน '+(j.jobNo||'—');
+  document.getElementById('hSub').textContent=(j.deliveryNo?('บิล '+j.deliveryNo+' · '):'')+thDate(j.date);
+  var info='<div class="card">'
+    +row('พนักงานขับรถ',(DRIVER&&DRIVER.name)||j.driverName||'—')
+    +row('ทะเบียนรถ',j.truckPlate||'—')
+    +row('ต้นทาง',j.origin||'—')
+    +row('ปลายทาง',j.destination||'—')
+    +row('ลูกค้า',j.customer||'—')
+    +(j.fuelAdvance?row('เบิกน้ำมันล่วงหน้า',j.fuelAdvance+(j.fuelAdvanceNote?(' · '+j.fuelAdvanceNote):'')):'')
+    +'</div>';
+  var steps='<div class="card"><div style="font-size:13px;font-weight:800;color:#16263a;margin-bottom:12px;">อัปเดตสถานะงาน</div>'
+    +sbtn('pickupTime','① รับงาน / ออกเดินทาง',{lat:'pickupLat',lng:'pickupLng'})
+    +sbtn('arrivalTime','② ถึงจุดส่ง',{lat:'arrivalLat',lng:'arrivalLng'})
+    +sbtn('completionTime','③ ส่งของเสร็จ',{lat:'completionLat',lng:'completionLng'})
+    +sbtn('documentTime','④ ส่งเอกสารคืน',null)
+    +'</div>';
+  var note='<div class="card"><div style="font-size:13px;font-weight:800;color:#16263a;margin-bottom:8px;">หมายเหตุถึงออฟฟิศ</div>'
+    +'<textarea id="note" placeholder="พิมพ์หมายเหตุ (ถ้ามี)…">'+esc(j.driverNote||'')+'</textarea>'
+    +'<button class="btn stepbtn" style="margin-top:10px;background:#475467;" onclick="saveNote()">บันทึกหมายเหตุ</button></div>';
+  document.getElementById('body').innerHTML=info+steps+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
+}
+function row(k,v){return '<div class="row"><span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span></div>';}
+function sbtn(field,label,extra){
+  var done=JOB[field];
+  if(done)return '<button class="btn stepdone" disabled>✓ '+esc(label.replace(/^[①②③④]\s*/,''))+esc(fmtT(done))+'</button>';
+  return '<button class="btn stepbtn" id="b_'+field+'" onclick="step(\''+field+'\',\''+esc(label)+'\','+(extra?'{lat:\''+extra.lat+'\',lng:\''+extra.lng+'\'}':'null')+')">'+esc(label)+'</button>';
+}
+load();
+</script>
+</body>
+</html>
