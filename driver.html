@@ -42,11 +42,17 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ===== config : ชี้ STAGING (ตอน cutover production สลับเป็นค่า prod) =====
-// prod: URL='https://ojttzvcqjqqqullopeqt.supabase.co'
-//       KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdHR6dmNxanFxcXVsbG9wZXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNzE1MDAsImV4cCI6MjA5Nzk0NzUwMH0.68VmEegEuj6IrG3XweK4AQEufhzvQiUz79ThL28LOzk'
-var SUPABASE_URL='https://vugqoevhxqssdqykwgpi.supabase.co';
-var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Z3FvZXZoeHFzc2RxeWt3Z3BpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMzE2MzYsImV4cCI6MjA5ODkwNzYzNn0.G_wDLk8lnbp4zWH83x28MFnbS5hYiExHB33ZNQSCkhg';
+// ===== config : ENV AUTO-SWITCH =====
+// default = PRODUCTION. staging เมื่อ hostname มี staging/localhost หรือใส่ ?env=staging
+// ⚠️ สลับทั้ง URL + KEY ไป Supabase project คนละตัว — staging ไม่แตะ prod DB
+var LF_ENVS={
+  prod:    {url:'https://ojttzvcqjqqqullopeqt.supabase.co', key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdHR6dmNxanFxcXVsbG9wZXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNzE1MDAsImV4cCI6MjA5Nzk0NzUwMH0.68VmEegEuj6IrG3XweK4AQEufhzvQiUz79ThL28LOzk'},
+  staging: {url:'https://vugqoevhxqssdqykwgpi.supabase.co', key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Z3FvZXZoeHFzc2RxeWt3Z3BpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMzE2MzYsImV4cCI6MjA5ODkwNzYzNn0.G_wDLk8lnbp4zWH83x28MFnbS5hYiExHB33ZNQSCkhg'}
+};
+var LF_ENV=(function(){try{var p=new URLSearchParams(location.search).get('env');if(p==='staging'||p==='prod')return p;if(/staging|localhost|127\.0\.0\.1/.test((location.hostname||'')+(location.pathname||'')))return 'staging';}catch(e){}return 'prod';})();
+var SUPABASE_URL=LF_ENVS[LF_ENV].url;
+var SUPABASE_KEY=LF_ENVS[LF_ENV].key;
+try{console.log('[LionFlow driver] env =',LF_ENV,'→',SUPABASE_URL);}catch(e){}
 var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
 
 var TOKEN=new URLSearchParams(location.search).get('t')||'';
@@ -63,10 +69,71 @@ function rpc(fn,args){return fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST
 
 function getGeo(){return new Promise(function(res){if(!navigator.geolocation){res({});return;}navigator.geolocation.getCurrentPosition(function(p){res({lat:p.coords.latitude,lng:p.coords.longitude});},function(){res({});},{enableHighAccuracy:true,timeout:6000,maximumAge:30000});});}
 
+// ===== แชร์ตำแหน่งระหว่างวิ่งงาน =====
+// เปิดอัตโนมัติหลังกด “รับงาน/ออกเดินทาง” หยุดเองเมื่อ “ส่งของเสร็จ”
+// ส่งพิกัดขึ้นคลาวด์ทุก 60 วินาที ผ่าน RPC ที่ผูกกับ token ใบงานนี้เท่านั้น
+var SHARE_MS=60000, shareWatch=null, shareTimer=null, lastFix=null, lastSent=0, sendCount=0, shareErr='', shareSupported=true;
+function shareKey(){return 'lf_share_'+String(JOBID||TOKEN).slice(0,24);}
+function shareOn(){try{var v=localStorage.getItem(shareKey());if(v!==null)return v==='1';}catch(e){}return true;}
+function setShare(on){try{localStorage.setItem(shareKey(),on?'1':'0');}catch(e){}if(on)startShare();else stopShare();renderShare();}
+function shareEligible(){return !!(shareSupported&&JOB&&JOB.pickupTime&&!JOB.completionTime);}
+function startShare(){
+  if(!shareEligible()||!shareOn()||!navigator.geolocation)return;
+  if(shareWatch===null){
+    shareWatch=navigator.geolocation.watchPosition(function(p){
+      shareErr='';
+      lastFix={lat:p.coords.latitude,lng:p.coords.longitude,
+        speed:(p.coords.speed!=null&&p.coords.speed>=0)?Math.round(p.coords.speed*3.6):null,
+        acc:p.coords.accuracy!=null?Math.round(p.coords.accuracy):null,
+        heading:(p.coords.heading!=null&&!isNaN(p.coords.heading))?Math.round(p.coords.heading):null};
+      if(Date.now()-lastSent>SHARE_MS-1500)pushFix();
+    },function(err){shareErr=(err&&err.code===1)?'ไม่ได้อนุญาตให้เข้าถึงตำแหน่ง':'หาตำแหน่งไม่ได้ (สัญญาณอ่อน)';renderShare();},
+    {enableHighAccuracy:true,timeout:20000,maximumAge:15000});
+  }
+  if(!shareTimer)shareTimer=setInterval(pushFix,SHARE_MS);
+}
+function stopShare(){if(shareWatch!==null){try{navigator.geolocation.clearWatch(shareWatch);}catch(e){}shareWatch=null;}if(shareTimer){clearInterval(shareTimer);shareTimer=null;}}
+function pushFix(){
+  if(!lastFix||!shareEligible()||!shareOn())return;
+  lastSent=Date.now();
+  rpc('driver_push_position',{_token:TOKEN,_lat:lastFix.lat,_lng:lastFix.lng,_speed:lastFix.speed||0,_acc:lastFix.acc,_heading:lastFix.heading})
+    .then(function(r){
+      // ระบบหลังบ้านยังไม่ได้เปิดฟีเจอร์นี้ — ซ่อนการ์ดไปเงียบๆ อย่าขึ้นแดงกวน พขร.
+      if(r.status===404||(r.data&&/function|does not exist|schema cache/i.test(String(r.data.message||'')))){shareSupported=false;stopShare();renderShare();return;}
+      if(r.ok){sendCount++;shareErr='';}else{shareErr='ส่งพิกัดไม่สำเร็จ';}renderShare();})
+    .catch(function(){shareErr='ออฟไลน์ — จะส่งใหม่อัตโนมัติ';renderShare();});
+}
+function renderShare(){
+  var el=document.getElementById('shareBox'); if(!el)return;
+  if(!shareSupported){el.style.display='none';return;}
+  el.style.display='';
+  var on=shareOn(), live=on&&shareEligible();
+  var when=lastSent?new Date(lastSent):null;
+  var p=function(n){return String(n).padStart(2,'0');};
+  var status = !JOB.pickupTime||JOB.completionTime ? 'จะเริ่มส่งอัตโนมัติเมื่อกด “รับงาน / ออกเดินทาง”'
+    : !on ? 'ปิดอยู่ — ออฟฟิศจะไม่เห็นตำแหน่งรถ'
+    : shareErr ? shareErr
+    : when ? ('ส่งแล้ว '+sendCount+' ครั้ง · ล่าสุด '+p(when.getHours())+':'+p(when.getMinutes())+' น.')
+    : 'กำลังหาตำแหน่ง…';
+  var color = (!on||shareErr)?'#b42318':(live&&when?'#067647':'#98a2b3');
+  el.innerHTML='<div style="display:flex;align-items:center;gap:12px;">'
+    +'<div style="flex:1;min-width:0;">'
+      +'<div style="font-size:13.5px;font-weight:800;color:#16263a;display:flex;align-items:center;gap:7px;">'
+        +(live&&when?'<span style="width:9px;height:9px;border-radius:50%;background:#1f8a5b;display:inline-block;box-shadow:0 0 0 3px rgba(31,138,91,.18);"></span>':'')
+        +'แชร์ตำแหน่งให้ออฟฟิศ</div>'
+      +'<div style="font-size:12px;color:'+color+';margin-top:4px;line-height:1.5;">'+esc(status)+'</div>'
+    +'</div>'
+    +'<button onclick="setShare('+(on?'false':'true')+')" style="flex:none;width:56px;height:31px;border-radius:16px;border:none;cursor:pointer;padding:0;background:'+(on?'#1f8a5b':'#cdd5df')+';position:relative;transition:background .2s;">'
+      +'<span style="position:absolute;top:3px;left:'+(on?'28px':'3px')+';width:25px;height:25px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.25);"></span></button>'
+  +'</div>'
+  +'<div style="font-size:11.5px;color:#98a2b3;margin-top:9px;line-height:1.6;">ส่งพิกัดทุก 1 นาที เฉพาะช่วงที่งานนี้ยังไม่ปิด · หยุดเองอัตโนมัติเมื่อกด “ส่งของเสร็จ” · เปิดหน้านี้ค้างไว้ระหว่างวิ่ง</div>';
+}
+
 function load(){
   if(!TOKEN){fail('ลิงก์ไม่ถูกต้อง (ไม่มี token)');return;}
   rpc('driver_get_job',{_token:TOKEN}).then(function(r){
-    if(!r.ok){fail(r.status===404?'ไม่พบงาน':'ลิงก์หมดอายุหรือถูกยกเลิก');return;}
+    if(!r.ok){var m=(r.data&&r.data.message)||'';
+      fail(/job not found/i.test(m)?'ไม่พบใบงานนี้ในระบบ (ใบงานอาจยังไม่ถูกบันทึกขึ้นคลาวด์ หรือถูกลบ)':(/invalid or expired/i.test(m)?'ลิงก์หมดอายุหรือถูกยกเลิก':(r.status===404?'ไม่พบงาน':('เปิดงานไม่ได้ · '+(m||r.status)))));return;}
     JOB=r.data.job||{}; JOBID=r.data.jobId; DRIVER=r.data.driver||null;
     render();
   }).catch(function(){fail('เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ต');});
@@ -88,6 +155,8 @@ function step(field,label,extra){
     rpc('driver_update_progress',{_token:TOKEN,_patch:patch}).then(function(r){
       if(!r.ok){toast('บันทึกไม่สำเร็จ');if(btn){btn.disabled=false;btn.textContent=label;}return;}
       Object.assign(JOB,patch); toast('✓ '+label+' แล้ว'); render();
+      if(field==='pickupTime')startShare();
+      if(field==='completionTime')stopShare();
     }).catch(function(){toast('เชื่อมต่อไม่ได้');if(btn){btn.disabled=false;btn.textContent=label;}});
   });
 }
@@ -114,10 +183,12 @@ function render(){
     +sbtn('completionTime','③ ส่งของเสร็จ',{lat:'completionLat',lng:'completionLng'})
     +sbtn('documentTime','④ ส่งเอกสารคืน',null)
     +'</div>';
+  var share='<div class="card" id="shareBox"></div>';
   var note='<div class="card"><div style="font-size:13px;font-weight:800;color:#16263a;margin-bottom:8px;">หมายเหตุถึงออฟฟิศ</div>'
     +'<textarea id="note" placeholder="พิมพ์หมายเหตุ (ถ้ามี)…">'+esc(j.driverNote||'')+'</textarea>'
     +'<button class="btn stepbtn" style="margin-top:10px;background:#475467;" onclick="saveNote()">บันทึกหมายเหตุ</button></div>';
-  document.getElementById('body').innerHTML=info+steps+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
+  document.getElementById('body').innerHTML=info+steps+share+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
+  renderShare(); startShare();
 }
 function row(k,v){return '<div class="row"><span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span></div>';}
 function sbtn(field,label,extra){
