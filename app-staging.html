@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-14b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-14c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-14b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-14c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2494,6 +2494,8 @@
         <label style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#475467;font-weight:600;cursor:pointer;margin-top:10px;"><input type="checkbox" checked="{{ ecIncPosted }}" onChange="{{ onEcIncPosted }}" style="width:15px;height:15px;cursor:pointer;" />รวมเที่ยวที่ส่งบัญชีแล้ว (ส่งซ้ำ) — ปกติไม่ต้องติ๊ก</label>
         <div style="display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap;">
           <button onClick="{{ onEcRevenue }}" style="padding:11px 20px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⤓ ecimport_ar.csv</button>
+          <button onClick="{{ onEcMarkAr }}" style="padding:11px 14px;background:#fff;color:#067647;border:1px solid #abefc6;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">✓ ทำเครื่องหมายว่าส่งแล้ว</button>
+          <button onClick="{{ onEcUnmarkAr }}" style="padding:11px 14px;background:#fff;color:#98a2b3;border:1px solid #e4e7ec;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมาย</button>
           <div style="font-size:12.5px;color:#667085;">{{ ecArPreview }}</div>
         </div>
       </div>
@@ -2521,6 +2523,8 @@
         <div style="display:flex;align-items:center;gap:14px;margin-top:14px;flex-wrap:wrap;">
           <button onClick="{{ onEcSubPay }}" style="padding:11px 20px;background:#16263a;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⤓ ecimport_ap.csv</button>
           <button onClick="{{ onEcSubDetail }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">⤓ ไฟล์ตรวจสอบ (อ่านง่าย)</button>
+          <button onClick="{{ onEcMarkAp }}" style="padding:11px 14px;background:#fff;color:#067647;border:1px solid #abefc6;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">✓ ทำเครื่องหมายว่าส่งแล้ว</button>
+          <button onClick="{{ onEcUnmarkAp }}" style="padding:11px 14px;background:#fff;color:#98a2b3;border:1px solid #e4e7ec;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมาย</button>
           <div style="font-size:12.5px;color:#667085;">{{ ecApPreview }}</div>
         </div>
         <sc-if value="{{ ecApMissing }}" hint-placeholder-val="{{ false }}">
@@ -10100,6 +10104,26 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     [...set].forEach(id=>this.persistJobs(jobs,id,[field]));
   }
   _ecNow(){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date()).replace(' ','T');}
+  // ปัก/ยกเลิกเครื่องหมายโดยไม่ต้องดาวน์โหลด — ใช้ตอนเคยส่งไฟล์ไปแล้วก่อนมีฟีเจอร์นี้ หรือปักผิด
+  ecMarkAr=(on)=>{
+    const S=this.state;const from=S.ecFrom||'',to=S.ecTo||'',code=String(S.ecCust||'').trim();
+    const all=this._ecJobsInRange(from,to,code).filter(j=>(parseFloat(j.revenue)||0));
+    const list=all.filter(j=>on?!String(j.acctPosted||'').trim():String(j.acctPosted||'').trim());
+    if(!list.length){window.alert(on?'ช่วงนี้ปักเครื่องหมาย AR ครบแล้วทุกเที่ยว':'ช่วงนี้ไม่มีเที่ยวที่ปักเครื่องหมาย AR ไว้');return;}
+    if(!window.confirm((on?'ทำเครื่องหมายว่า "ส่ง AR แล้ว" ':'ยกเลิกเครื่องหมาย AR ')+list.length+' เที่ยว?\n\nช่วง '+(from||'ทั้งหมด')+' ถึง '+(to||'ทั้งหมด')+(code?('\nลูกค้า '+code):'\nทุกลูกค้า')))return;
+    this._ecStamp(list.map(j=>j.id),'acctPosted',on?this._ecNow():'');
+    window.alert('✅ '+(on?'ปักเครื่องหมายแล้ว ':'ยกเลิกเครื่องหมายแล้ว ')+list.length+' เที่ยว');
+  };
+  ecMarkAp=(on)=>{
+    const S=this.state;const m=String(S.ecMonth||'').slice(0,7);
+    if(!/^\d{4}-\d{2}$/.test(m)){window.alert('กรุณาเลือกเดือน');return;}
+    const {jobs}=this._ecSubData(m);
+    const list=jobs.filter(j=>on?!String(j.acctApPosted||'').trim():String(j.acctApPosted||'').trim());
+    if(!list.length){window.alert(on?'เดือนนี้ปักเครื่องหมาย AP ครบแล้วทุกเที่ยว':'เดือนนี้ไม่มีเที่ยวที่ปักเครื่องหมาย AP ไว้');return;}
+    if(!window.confirm((on?'ทำเครื่องหมายว่า "ส่ง AP แล้ว" ':'ยกเลิกเครื่องหมาย AP ')+list.length+' เที่ยวรถร่วม?\n\nเดือน '+m))return;
+    this._ecStamp(list.map(j=>j.id),'acctApPosted',on?this._ecNow():'');
+    window.alert('✅ '+(on?'ปักเครื่องหมายแล้ว ':'ยกเลิกเครื่องหมายแล้ว ')+list.length+' เที่ยว');
+  };
   // AR: ลูกหนี้/รายได้ 22 คอลัมน์ · CD=I ตั้งลูกหนี้
   exportEcRevenue=()=>{
     const S=this.state;const from=S.ecFrom||'',to=S.ecTo||'',code=String(S.ecCust||'').trim();
@@ -12737,6 +12761,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           .map(c=>({value:String(c.code).trim(),label:String(c.code).trim()+' · '+(c.name||'')}));
         out.onEcRevenue=this.exportEcRevenue;
         out.ecIncPosted=!!S.ecIncPosted;out.onEcIncPosted=(e)=>this.setState({ecIncPosted:e.target.checked});
+        out.onEcMarkAr=()=>this.ecMarkAr(true);out.onEcUnmarkAr=()=>this.ecMarkAr(false);
+        out.onEcMarkAp=()=>this.ecMarkAp(true);out.onEcUnmarkAp=()=>this.ecMarkAp(false);
         out.ecAcctRule='รถบริษัท → '+(cfg.ar||'(ยังไม่กรอก)')+' · รถร่วม → '+(cfg.ar2||cfg.ar||'(ยังไม่กรอก)');
         {const all=this._ecJobsInRange(S.ecFrom||'',S.ecTo||'',String(S.ecCust||'').trim()).filter(j=>(parseFloat(j.revenue)||0));
          const posted=all.filter(j=>String(j.acctPosted||'').trim()).length;
