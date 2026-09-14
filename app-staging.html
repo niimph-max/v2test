@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-14d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-14e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-14d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-14e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -10488,7 +10488,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     list.forEach(j=>{this._blLines(j).forEach(l=>{rows.push({no:rows.length+1,bill:l.bill,
       detail:[l.origin,l.dest].filter(Boolean).join('-'),w:l.w,rev:l.rev,rate:l.rate,
       date:this._blShortDate(j.date),note:''});});});
-    {const _miss=list.filter(j=>!String(j.destDistrict||'').trim()&&!String(j.destProvince||'').trim());
+    {const _miss=list.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim()));
      if(_miss.length&&!window.confirm('⚠ มี '+_miss.length+' เที่ยว ที่ยังไม่กรอกอำเภอ/จังหวัดปลายทาง\nคอลัมน์รายละเอียดจะใช้ข้อความปลายทางเดิมแทน\n\nพิมพ์ต่อเลยไหม?'))return;}
     const sumW=rows.reduce((a,r)=>a+r.w,0),sumA=rows.reduce((a,r)=>a+r.rev,0);
     const words=this._bahtText(sumA);
@@ -12867,14 +12867,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           weight:l.w?_n3(l.w):'—',rate:l.rate?_b2(l.rate):'—',amt:_b2(l.rev),
           billed:!!bn,unbilled:!bn,billNoText:bn,
           arDone:_arOk,arNot:!_arOk,apDone:(_isSub&&_apOk),apNot:(_isSub&&!_apOk),
-          showDest:li===0,needDest:!_dd&&!_dp,
+          showDest:li===0,needDest:!_dd||!_dp,
           dd:(_dft[String(j.id)]&&_dft[String(j.id)].d!=null)?_dft[String(j.id)].d:_dd,
           dp:(_dft[String(j.id)]&&_dft[String(j.id)].p!=null)?_dft[String(j.id)].p:_dp,
           onDD:(e)=>this.blDestDraft(j.id,'d',e.target.value),
           onDP:(e)=>this.blDestDraft(j.id,'p',e.target.value),
           onDDBlur:()=>this.blDestCommit(j.id),onDPBlur:()=>this.blDestCommit(j.id)});});});
       out.blRows=_rows;
-      out.blMissDestCount=_all.filter(j=>!String(j.destDistrict||'').trim()&&!String(j.destProvince||'').trim()).length;
+      out.blMissDestCount=_all.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim())).length;
       out.blHasMissDest=out.blMissDestCount>0;
       out.blEmpty=!_all.length;
       const _allOn=_all.length>0&&_all.every(j=>_sel[String(j.id)]);
