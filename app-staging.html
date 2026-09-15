@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-14e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-14e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -10492,9 +10492,24 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
      if(_miss.length&&!window.confirm('⚠ มี '+_miss.length+' เที่ยว ที่ยังไม่กรอกอำเภอ/จังหวัดปลายทาง\nคอลัมน์รายละเอียดจะใช้ข้อความปลายทางเดิมแทน\n\nพิมพ์ต่อเลยไหม?'))return;}
     const sumW=rows.reduce((a,r)=>a+r.w,0),sumA=rows.reduce((a,r)=>a+r.rev,0);
     const words=this._bahtText(sumA);
-    const PER=18;const chunks=[];for(let i=0;i<rows.length;i+=PER)chunks.push(rows.slice(i,i+PER));
-    const tailOwnPage=chunks[chunks.length-1].length>15;
-    if(tailOwnPage)chunks.push([]);
+    // แบ่งหน้าตาม "ความสูงจริง" ไม่ใช่นับแถวตายตัว
+    // เดิมยัดหน้าละ 18 แถวเสมอ พอรายละเอียดยาว 3 บรรทัดมันล้นหน้า A4
+    // เบราว์เซอร์เลยตัดหน้าเองโดยไม่มีหัวกระดาษ (เจอจริง 15 ก.ย. 2026)
+    // คอลัมน์รายละเอียดกว้าง 46mm ฟอนต์ 12.5px ≈ 26 ตัวอักษรไทย/บรรทัด
+    const _lines=(s)=>Math.max(1,Math.ceil(String(s||'').length/26));
+    const _rowMm=(r)=>2.9+_lines(r.detail)*4.47;   // padding+เส้น + บรรทัดละ 4.47mm
+    // วัดจริงบนเบราว์เซอร์ 15 ก.ย. 2026: หัวกระดาษ+หัวข้อ+กล่องเรียกเก็บ+หัวตาราง+เลขหน้า+ขอบ = 84mm
+    // เหลือให้แถว 213mm — กันเหนียวไว้ 18mm เผื่อที่อยู่บริษัท/ลูกค้ายาวกว่าปกติ
+    const FIT=195;        // พื้นที่ใส่แถวต่อหน้า
+    const FIT_LAST=160;   // หน้าสุดท้ายต้องเหลือที่ให้แถวรวม (~12mm) + ช่องเซ็น (~30mm)
+    const chunks=[];{let cur=[],h=0;
+      rows.forEach(r=>{const rh=_rowMm(r);
+        if(cur.length&&h+rh>FIT){chunks.push(cur);cur=[];h=0;}
+        cur.push(r);h+=rh;});
+      if(cur.length)chunks.push(cur);}
+    if(!chunks.length)chunks.push([]);
+    const _lastH=chunks[chunks.length-1].reduce((a,r)=>a+_rowMm(r),0);
+    if(_lastH>FIT_LAST)chunks.push([]);   // แถวรวม+ช่องเซ็นยกไปหน้าใหม่
     const totalPages=chunks.length;
     const head=()=>'<div class="hd"><div class="hl"><div class="stt">STT</div><div class="co">'
       +'<div class="cn">'+esc(coName)+'</div>'
@@ -10517,7 +10532,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="bill"><div class="b1">เรียกเก็บ '+esc(custName||'—')+'</div>'+(custLine?('<div class="b2">'+esc(custLine)+'</div>'):'')+'</div>'
       +'<table class="it">'+cols+thead+'<tbody>'+bodyRows(ch)+(i===chunks.length-1?totalRow:'')+'</tbody></table>'
       +(i===chunks.length-1?signBlock:'')
-      +'<div class="pg">หน้าที่ '+(i+1)+' ของ '+totalPages+'</div></div>').join('');
+      +'<div class="pg">หน้าที่ '+(i+1)+'/'+totalPages+'</div></div>').join('');
     const cover='<div class="page">'+head()
       +'<div class="ttl">สรุปใบวางบิล</div>'
       +'<div class="per">งวดรับชำระเงิน ____ / ____ / ______</div>'
@@ -10544,6 +10559,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'table{width:100%;border-collapse:collapse;table-layout:fixed;}'
       +'th,td{border:1px solid #cbd5e1;padding:4.5px 5px;font-size:13px;vertical-align:top;word-wrap:break-word;line-height:1.35;}'
       +'thead th{background:#eef2f6;font-weight:700;font-size:12px;text-align:left;}'
+      +'thead{display:table-header-group;}tr{page-break-inside:avoid;}table{page-break-inside:auto;}'
       +'td.n,th.n{text-align:right;}td.n{white-space:nowrap;}td.c,th.c{text-align:center;}td.c{white-space:nowrap;}td.b{font-weight:700;}td.sm{font-size:12.5px;}td.dt{font-size:12.5px;}'
       +'tr.tot td{border-top:2px solid #111827;font-weight:800;font-size:14px;background:#f8fafc;}'
       +'td.wd{font-weight:700;font-size:13.5px;}'
