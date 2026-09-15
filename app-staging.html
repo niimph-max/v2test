@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15j · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15k · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15j</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15k</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2764,13 +2764,13 @@
           <div style="font-size:11.5px;color:#98a2b3;">{{ blRegCount }} ใบ · เรียงจากใหม่ไปเก่า</div>
         </div>
         <sc-for list="{{ blRegRows }}" as="r" hint-placeholder-count="0">
-          <div style="display:grid;grid-template-columns:minmax(120px,1fr) minmax(150px,1.4fr) 150px 92px 126px 96px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:840px;font-size:12.5px;color:#475467;">
+          <div style="display:grid;grid-template-columns:minmax(120px,1fr) minmax(150px,1.4fr) 150px 92px 126px 176px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:920px;font-size:12.5px;color:#475467;">
             <div style="padding:12px 17px;font-size:13.5px;font-weight:700;color:#16263a;">{{ r.inv }}</div>
             <div style="padding:12px 10px;">{{ r.cust }}</div>
             <div style="padding:12px 10px;font-size:12px;">{{ r.range }}</div>
             <div style="padding:12px 10px;text-align:right;">{{ r.lines }} บรรทัด</div>
             <div style="padding:12px 10px;text-align:right;font-weight:700;color:#16263a;">{{ r.total }}</div>
-            <div style="padding:12px 17px;text-align:right;"><button onClick="{{ r.onReprint }}" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์ซ้ำ</button></div>
+            <div style="padding:12px 17px;text-align:right;"><button onClick="{{ r.onReprint }}" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์ซ้ำ</button><button onClick="{{ r.onCancelInv }}" style="margin-left:6px;padding:6px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">ยกเลิกใบนี้</button></div>
           </div>
         </sc-for>
       </div>
@@ -10343,6 +10343,16 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     });
     return Object.keys(map).map(k=>map[k]).sort((a,b)=>String(b.at||b.to).localeCompare(String(a.at||a.to)));
   }
+  // ยกเลิกใบวางบิลทั้งใบ — ระบบรู้อยู่แล้วว่าใบนี้ประกอบด้วยบิลไหนบ้าง (จาก _blInvRegister)
+  // เดิมต้องไปติ๊กเองทีละบรรทัดที่หน้ารายการ ถ้าติ๊กไม่ครบจะกลายเป็นยกเลิกครึ่งๆ
+  blCancelInv=(inv)=>{
+    const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
+    const msg=['ยกเลิกใบวางบิล '+g.inv,(g.cust||''),g.lines+' บรรทัด · ฿'+_LFB2(g.total),'',
+      'บิลทั้งหมดในใบนี้จะกลับไปอยู่ในรายการรอวางบิล','แก้ไขแล้วออกใบใหม่ได้'].join('\n');
+    if(!window.confirm(msg))return;
+    this._blStampLines(g.items,'','');
+    window.alert('✅ ยกเลิกใบ '+g.inv+' แล้ว · '+g.lines+' บรรทัดกลับไปรอวางบิล');
+  };
   blReprint=(inv)=>{
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.printBillingDoc(g.items));
@@ -13036,7 +13046,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
        out.blRegCount=_reg.length;out.blHasReg=_reg.length>0;
        out.blRegRows=_reg.slice(0,40).map(g=>({inv:g.inv,cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
-         lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv)}));}
+         lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
       out.onBlPrint=()=>this.printBillingDoc();
       out.onBlMark=()=>this.blMark();
       out.onBlUnmark=()=>this.blUnmark();
