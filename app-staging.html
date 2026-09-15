@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15h · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15i · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15h</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15i</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -10574,8 +10574,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const n3=(n)=>(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
     const co=S.company||{};
     const coName=co.name||'บริษัทขนส่ง';
-    const coAddr=[co.address||co.addr||'',co.phone?('โทร. '+co.phone):'',co.fax?('โทรสาร '+co.fax):''].filter(Boolean).join('   ');
+    const coAddr=String(co.address||co.addr||'').trim();          // บรรทัด 1 = ที่อยู่ล้วน
     const coTax=co.taxId||co.taxid||'';
+    // บรรทัด 2 = โทร/โทรสาร/เลขผู้เสียภาษี รวมกัน — เดิมเอาเบอร์โทรต่อท้ายที่อยู่
+    // ที่อยู่ยาวๆ เลยตกบรรทัดจนหัวเอกสารสูงเกินจำเป็น
+    const coLine2=[co.phone?('โทร. '+co.phone):'',co.fax?('โทรสาร '+co.fax):'',
+      coTax?('เลขประจำตัวผู้เสียภาษี '+coTax):''].filter(Boolean).join('  ·  ');
     const cust=(S.customers||[]).find(c=>String(c.code||'').trim()===String(S.billCustCode||'').trim())||{};
     const custName=(cust.name||'')+(cust.branch?(' ('+cust.branch+')'):'');
     const custLine=[cust.address||'',cust.taxId?('เลขประจำตัวผู้เสียภาษีอากร '+cust.taxId):''].filter(Boolean).join('  ');
@@ -10621,7 +10625,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="co">'
       +'<div class="cn">'+esc(coName)+'</div>'
       +(coAddr?('<div class="ci">'+esc(coAddr)+'</div>'):'')
-      +(coTax?('<div class="ci">เลขประจำตัวผู้เสียภาษี '+esc(coTax)+'</div>'):'')
+      +(coLine2?('<div class="ci">'+esc(coLine2)+'</div>'):'')
       +'</div></div>'
       +'<div class="hr"><div class="kv"><span>วันที่ :</span><b>'+esc(this._blShortDate(docDate))+'</b></div>'
       +'<div class="kv"><span>เลขที่ :</span><b>'+esc(inv||'—')+'</b></div>'
@@ -10656,7 +10660,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.page{width:210mm;min-height:297mm;margin:0 auto;padding:10mm 8mm 9mm;display:flex;flex-direction:column;page-break-after:always;position:relative;}'
       +'.page:last-child{page-break-after:auto;}'
       +'.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10mm;border-bottom:1.5px solid #111827;padding-bottom:5px;}'
-      +'.hl{display:flex;gap:8px;align-items:flex-start;}.lg{height:18mm;max-width:46mm;object-fit:contain;display:block;}'
+      +'.hl{display:flex;gap:8px;align-items:flex-start;}.lg{height:14mm;max-width:42mm;object-fit:contain;display:block;}'
       +'.cn{font-size:19px;font-weight:800;}.ci{font-size:12.5px;color:#374151;line-height:1.5;}'
       +'.hr{text-align:right;font-size:13px;min-width:52mm;}.kv{display:flex;justify-content:space-between;gap:8px;padding:1.5px 0;}.kv span{color:#6b7280;}.kv b{font-weight:700;}'
       +'.ttl{text-align:center;font-size:21px;font-weight:800;margin:11px 0 8px;}'
