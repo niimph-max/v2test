@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2709,7 +2709,7 @@
           <div style="display:grid;grid-template-columns:44px 92px 130px 108px minmax(200px,1fr) 96px 86px 116px 104px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:1000px;font-size:13px;color:#1d2b3a;">
             <div style="padding:10px 8px;display:flex;justify-content:center;"><input type="checkbox" checked="{{ r.selected }}" onChange="{{ r.onToggle }}" style="width:15px;height:15px;cursor:pointer;"></div>
             <div style="padding:10px;font-size:12.5px;color:#475467;">{{ r.date }}</div>
-            <div style="padding:10px;font-weight:700;">{{ r.bill }}</div>
+            <div style="padding:10px;font-weight:700;"><span onClick="{{ r.onOpenJob }}" title="คลิกเพื่อเปิดดู/แก้ไขใบงาน" style="color:#2f6fb0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">{{ r.bill }}</span></div>
             <div style="padding:10px;font-size:12.5px;">{{ r.plate }}</div>
             <div style="padding:10px;font-size:12.5px;color:#475467;line-height:1.5;">
               {{ r.route }}
@@ -11424,7 +11424,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.effSettleBtnStyle='padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;'+(S.effView==='settle'?'background:#2f6fb0;color:#fff;':'background:#f4f6f8;color:#475467;');
     out.effMonthlyBtnStyle='padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;'+(S.effView==='monthly'?'background:#2f6fb0;color:#fff;':'background:#f4f6f8;color:#475467;');
     out.effTruckBtnStyle='padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:none;'+(S.effView==='truck'?'background:#2f6fb0;color:#fff;':'background:#f4f6f8;color:#475467;');
-    if(isEffSection){
+    // เปิดหน้าต่างรายละเอียดใบงานจากหน้าอื่นได้ด้วย (เช่นคลิกเลขที่ใบกำกับที่หน้าใบวางบิล)
+    // ธง isEff* คำนวณไว้ข้างบนแล้ว การเข้าบล็อกนี้จึงไม่ทำให้หน้า efficiency โผล่
+    if(isEffSection||S.settleModalOpen){
       // ---- OVERVIEW (ภาพรวมประสิทธิภาพ) ----
       {const _ovM=S.effMonth;const _ovFmt=n=>'฿'+_LFB2(n);
         const _coPlates=new Set(S.trucks.filter(t=>t.dept==='รถบริษัท').map(t=>t.plate));
@@ -12930,6 +12932,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         const _arOk=!!String(j.acctPosted||'').trim(),_isSub=this._ecIsSub(j),_apOk=!!String(j.acctApPosted||'').trim();
         lines.forEach((l,li)=>{const _bn=this._blLineInv(j,l);_rows.push({
           id:this._blKey(j,l),selected:!!_sel[this._blKey(j,l)],onToggle:()=>this.blToggle(this._blKey(j,l)),
+          onOpenJob:()=>this.openSettle(j.id),
           date:li===0?this._dpThaiDate(j.date):'',bill:l.bill||'—',plate:li===0?(j.truckPlate||'—'):'',
           route:[l.origin||'—',l.dest||'—'].join(' → '),
           split:lines.length>1,splitText:'🔗 บิลที่ '+(li+1)+'/'+lines.length+' ของเที่ยวเดียวกัน',
