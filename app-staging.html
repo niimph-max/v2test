@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6626,6 +6626,9 @@
             </div>
             <button onClick="{{ onSettleClose }}" style="background:none;border:none;font-size:22px;color:#98a2b3;cursor:pointer;line-height:1;padding:0;">×</button>
           </div>
+          <sc-if value="{{ sdMultiBill }}" hint-placeholder-val="{{ false }}">
+            <div style="background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:12.5px;color:#93370d;line-height:1.6;">🔗 {{ sdMultiBillText }}</div>
+          </sc-if>
           <div style="background:#f8fafc;border:1px solid #eef0f3;border-radius:10px;padding:11px 13px;margin-bottom:16px;font-size:12.5px;color:#475467;">⛽ ค่าน้ำมัน/NGV ที่จ่ายตอนรับงาน: <span style="font-weight:600;color:#16263a;">{{ sdFuelAdvanceText }}</span></div>
 
           <div style="border:1px solid #e4e7ec;border-radius:12px;padding:16px;margin-bottom:14px;">
@@ -11689,6 +11692,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const sd=S.settleDraft;out.settleModalOpen=!!S.settleModalOpen;
       if(sd){
         out.sd=sd;out.sdTitle=(sd.jobNo||'ใบงาน')+' · '+(sd.truckPlate||'');
+        // เที่ยวที่ผูกหลายบิล: เตือนว่าตัวเลขในหน้านี้เป็นยอดรวมทั้งเที่ยว ไม่ใช่ของบิลใดบิลหนึ่ง
+        {const _bls=this._blLines(sd);
+         out.sdMultiBill=_bls.length>1;
+         out.sdMultiBillText='เที่ยวนี้ผูก '+_bls.length+' บิล ('+_bls.map(l=>l.bill||'—').join(', ')+') — ตัวเลขทั้งหมดในหน้านี้เป็น'
+           +'ยอดรวมทั้งเที่ยว ไม่ใช่ของบิลใดบิลหนึ่ง · ส่วนแบ่งรายบิลดูได้ที่หน้าใบวางบิล';}
         out.sdDriver=_drvNm(sd.driverCode);out.sdRoute=this._routeFull(sd);out.sdCustomer=sd.customer||'—';
         out.sdWeightText=sd.weight?((parseFloat(sd.weight)||0)+' ตัน'):'— (ไม่มีน้ำหนัก)';out.sdDistanceText=sd.distance?((parseFloat(sd.distance)||0)+' กม.'):'—';out.sdRevenueText=sd.revenue?fmt(parseFloat(sd.revenue)||0):'฿0';
         {const _rb=parseFloat(sd.ratePerTon)||0,_rw=parseFloat(sd.rateAddWeight)||0,_ro=parseFloat(sd.rateAddOther)||0;const _eff=_rb+_rw+_ro;let _bd=String(_rb);if(_rw)_bd+=' + '+_rw+' (น้ำหนัก)';if(_ro)_bd+=' + '+_ro+' (อื่นๆ)';_bd+=' = '+(Math.round(_eff*100)/100)+' /ตัน';out.sdEffRateText=_bd;out.sdRateAddWeight=(sd.rateAddWeight!=null?String(sd.rateAddWeight):'');out.sdRateAddOther=(sd.rateAddOther!=null?String(sd.rateAddOther):'');}
