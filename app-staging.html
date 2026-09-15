@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -3079,6 +3079,18 @@
         <input value="{{ coPhoneVal }}" onInput="{{ onCoPhoneVal }}" placeholder="เช่น 038-000000" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;box-sizing:border-box;margin-bottom:12px;">
         <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">โทรสาร (ถ้ามี)</label>
         <input value="{{ coFaxVal }}" onInput="{{ onCoFaxVal }}" placeholder="เว้นว่างได้" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;box-sizing:border-box;margin-bottom:16px;">
+        <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">โลโก้บริษัท (มุมซ้ายบนของเอกสาร)</label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+          <sc-if value="{{ coHasLogo }}" hint-placeholder-val="{{ false }}">
+            {{ coLogoNode }}
+            <button onClick="{{ onCoLogoClear }}" style="padding:8px 14px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">ลบโลโก้</button>
+          </sc-if>
+          <sc-if value="{{ coNoLogo }}" hint-placeholder-val="{{ true }}">
+            <div style="height:56px;width:110px;display:flex;align-items:center;justify-content:center;border:1px dashed #d0d5dd;border-radius:8px;font-size:11.5px;color:#98a2b3;">ยังไม่มีโลโก้</div>
+          </sc-if>
+          <input type="file" accept="image/*" onChange="{{ onCoLogoPick }}" style="font-size:12.5px;color:#475467;font-family:inherit;" />
+        </div>
+        <div style="font-size:11.5px;color:#98a2b3;margin-bottom:16px;line-height:1.5;">ระบบย่อรูปให้อัตโนมัติ (กว้างไม่เกิน 320 จุด) ไฟล์ใหญ่แค่ไหนก็เลือกได้ · ไม่ใส่ = ใช้กล่องตัวอักษรแบบเดิม</div>
         <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">รหัสบริษัท (ด่านก่อนหน้าล็อกอิน)</label>
         <input value="{{ coCodeVal }}" onInput="{{ onCoCode }}" placeholder="เช่น mycompany2026" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;box-sizing:border-box;margin-bottom:6px;">
         <div style="font-size:12px;color:#98a2b3;margin-bottom:16px;line-height:1.5;">พนักงานกรอกรหัสนี้ครั้งแรกบนเครื่องใหม่ก่อนเห็นหน้าล็อกอิน — เว้นว่าง = ไม่มีด่านนี้ · เปลี่ยนรหัสแล้วเครื่องเดิมยังเข้าได้ตามปกติ</div>
@@ -9034,7 +9046,26 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   setCompanyName=(v)=>this.setState(s=>({company:{...s.company,name:v}}))
   // ข้อมูลหัวเอกสาร — โค้ดพิมพ์อ่านค่าพวกนี้อยู่แล้ว แต่เดิมไม่มีช่องให้กรอก หัวเอกสารจึงว่าง
   // บันทึกจริงตอนกดปุ่ม "บันทึกข้อมูลบริษัท" เหมือนชื่อบริษัท (saveCompany)
-  setCoField=(f,v)=>this.setState(s=>({company:{...s.company,[f]:v}}));;
+  setCoField=(f,v)=>this.setState(s=>({company:{...s.company,[f]:v}}));
+  // โลโก้: ย่อก่อนเก็บเสมอ — รูปจากมือถือหลายเมกะไบต์จะถูกอัปขึ้นคลาวด์ทุกครั้งที่บันทึกบริษัท
+  readCoLogo=(e)=>{
+    const f=e.target.files&&e.target.files[0];if(!f)return;
+    if(String(f.type||'').indexOf('image/')!==0){window.alert('กรุณาเลือกไฟล์รูปภาพ');return;}
+    const r=new FileReader();
+    r.onload=()=>{const img=new Image();
+      img.onload=()=>{
+        const MAX=320;const sc=Math.min(1,MAX/(img.width||1));
+        const w=Math.max(1,Math.round((img.width||1)*sc)),h=Math.max(1,Math.round((img.height||1)*sc));
+        const c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0,w,h);
+        let out;try{out=c.toDataURL('image/png');}catch(err){window.alert('ย่อรูปไม่สำเร็จ ลองไฟล์อื่น');return;}
+        if(out.length>160000){try{out=c.toDataURL('image/jpeg',0.85);}catch(err){}}
+        this.setCoField('logo',out);
+      };
+      img.onerror=()=>window.alert('เปิดไฟล์รูปนี้ไม่ได้ ลองไฟล์อื่น');
+      img.src=r.result;};
+    r.readAsDataURL(f);
+  };
   setRecipient=(i,f,v)=>this.setState(s=>{const r=((s.company&&s.company.recipients)||[]).slice();for(let k=0;k<=i;k++){if(!r[k])r[k]={name:'',email:''};}r[i]={...(r[i]||{}),[f]:v};return{company:{...s.company,recipients:r}};});
   saveCompany=()=>{this.persistCompany(this.state.company);this.setState({companySaved:true});clearTimeout(this._coT);this._coT=setTimeout(()=>this.setState({companySaved:false}),2000);};
   addOfficeDept=()=>{const n=window.prompt('ชื่อแผนกใหม่');if(n==null)return;const v=String(n).trim();if(!v)return;let list=this.state.officeDepts||OFFICE_DEPTS.slice();if(!list.includes(v)){list=[...list,v];this.persistOfficeDepts(list);}this.setState(s=>({officeDepts:list,officeDraft:s.officeDraft?{...s.officeDraft,dept:v}:s.officeDraft}));};
@@ -10584,7 +10615,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const _lastH=chunks[chunks.length-1].reduce((a,r)=>a+_rowMm(r),0);
     if(_lastH>FIT_LAST)chunks.push([]);   // แถวรวม+ช่องเซ็นยกไปหน้าใหม่
     const totalPages=chunks.length;
-    const head=()=>'<div class="hd"><div class="hl"><div class="stt">STT</div><div class="co">'
+    const coLogo=String(co.logo||'');
+    const head=()=>'<div class="hd"><div class="hl">'
+      +(coLogo?('<img class="lg" src="'+coLogo+'" alt="">'):'<div class="stt">STT</div>')
+      +'<div class="co">'
       +'<div class="cn">'+esc(coName)+'</div>'
       +(coAddr?('<div class="ci">'+esc(coAddr)+'</div>'):'')
       +(coTax?('<div class="ci">เลขประจำตัวผู้เสียภาษี '+esc(coTax)+'</div>'):'')
@@ -10622,7 +10656,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.page{width:210mm;min-height:297mm;margin:0 auto;padding:10mm 8mm 9mm;display:flex;flex-direction:column;page-break-after:always;position:relative;}'
       +'.page:last-child{page-break-after:auto;}'
       +'.hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10mm;border-bottom:1.5px solid #111827;padding-bottom:5px;}'
-      +'.hl{display:flex;gap:8px;align-items:flex-start;}.stt{font-size:18px;font-weight:800;letter-spacing:.06em;border:2px solid #111827;border-radius:4px;padding:2px 7px;line-height:1.1;}'
+      +'.hl{display:flex;gap:8px;align-items:flex-start;}.lg{height:18mm;max-width:46mm;object-fit:contain;display:block;}.stt{font-size:18px;font-weight:800;letter-spacing:.06em;border:2px solid #111827;border-radius:4px;padding:2px 7px;line-height:1.1;}'
       +'.cn{font-size:19px;font-weight:800;}.ci{font-size:12.5px;color:#374151;line-height:1.5;}'
       +'.hr{text-align:right;font-size:13px;min-width:52mm;}.kv{display:flex;justify-content:space-between;gap:8px;padding:1.5px 0;}.kv span{color:#6b7280;}.kv b{font-weight:700;}'
       +'.ttl{text-align:center;font-size:21px;font-weight:800;margin:11px 0 8px;}'
@@ -12316,6 +12350,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.coTaxVal=(S.company&&(S.company.taxId||S.company.taxid))||'';out.onCoTaxVal=(e)=>this.setCoField('taxId',e.target.value);
       out.coPhoneVal=(S.company&&S.company.phone)||'';out.onCoPhoneVal=(e)=>this.setCoField('phone',e.target.value);
       out.coFaxVal=(S.company&&S.company.fax)||'';out.onCoFaxVal=(e)=>this.setCoField('fax',e.target.value);
+      {const _lg=(S.company&&S.company.logo)||'';out.coHasLogo=!!_lg;out.coNoLogo=!_lg;
+       // ส่งเป็น node เหมือนรูปพนักงาน (draftPhotoNode) — ถ้าเขียน <img src="{{ }}"> ตรงๆ
+       // เบราว์เซอร์จะยิงโหลดชื่อตัวแปรเป็น URL ตั้งแต่ก่อนแทนค่า ได้ 404 ทุกครั้งที่เปิดหน้า
+       out.coLogoNode=_lg?React.createElement('img',{src:_lg,style:{height:'56px',maxWidth:'150px',objectFit:'contain',border:'1px solid #e4e7ec',borderRadius:'8px',padding:'5px',background:'#fff'}}):null;}
+      out.onCoLogoPick=this.readCoLogo;out.onCoLogoClear=()=>{if(window.confirm('ลบโลโก้ออกจากหัวเอกสาร?'))this.setCoField('logo','');};
       out.coCodeVal=(S.company&&S.company.code)||'';out.onCoCode=(e)=>this.setCompanyCode(e.target.value);out.coRecipients=(()=>{const _r=((S.company&&S.company.recipients)||[]).slice();while(_r.length<3)_r.push({name:'',email:''});return _r.slice(0,3).map((r,i)=>({idx:i,name:(r&&r.name)||'',email:(r&&r.email)||'',onName:(e)=>this.setRecipient(i,'name',e.target.value),onEmail:(e)=>this.setRecipient(i,'email',e.target.value)}));})();out.onSaveCompany=this.saveCompany;out.companySaved=!!S.companySaved;var _nf=(S.company&&S.company.notify)||{};out.notifLeave=_nf.leave!==false;out.notifHistory=_nf.history!==false;out.notifAccident=_nf.accident!==false;out.onToggleNotifLeave=(e)=>this.setNotifyPref('leave',e.target.checked);out.onToggleNotifHistory=(e)=>this.setNotifyPref('history',e.target.checked);out.onToggleNotifAccident=(e)=>this.setNotifyPref('accident',e.target.checked);out.onSendTest=this.sendTestEmail;out.testMsg=S.testMsg||'';}
     // ===== ตรวจสภาพก่อนออกงาน (INSPECTION) render =====
     out.isInspect=S.section==='inspect';
