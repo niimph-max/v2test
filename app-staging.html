@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -10541,6 +10541,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const prod=String(S.billProdCode==null?'':S.billProdCode).trim();
     const tt=String(S.billTruckType==null?'18W_LARGE':S.billTruckType).trim();
     const rows=[];
+    // เรียงตามเลขที่ใบกำกับ น้อย→มาก ตามที่ลูกค้า (TATA) ขอ — เอกสารชุดนี้ทำมาเพื่อลูกค้ารายนี้โดยเฉพาะ
+    // ใช้ numeric:true เพื่อให้เลขล้วนเรียงแบบตัวเลข (3000564025 < 3000566702) ไม่ใช่เรียงแบบตัวอักษร
+    // เลขที่มีตัวอักษรปน (เช่น NB-260901-01) ยังเรียงได้ถูกต้องตามธรรมชาติ
+    items=items.slice().sort((a,b)=>String((a.l&&a.l.bill)||'').localeCompare(String((b.l&&b.l.bill)||''),'en',{numeric:true,sensitivity:'base'}));
     items.forEach(it=>{const j=it.j;[it.l].forEach(l=>{rows.push({no:rows.length+1,bill:l.bill,
       detail:[l.origin,l.dest].filter(Boolean).join('-'),w:l.w,rev:l.rev,rate:l.rate,
       date:this._blShortDate(j.date),note:''});});});
