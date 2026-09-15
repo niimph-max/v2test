@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2628,7 +2628,7 @@
     <div style="padding:26px 30px 40px;max-width:1280px;">
       <div style="margin-bottom:20px;">
         <h1 style="margin:0;font-size:22px;font-weight:700;color:#16263a;">🧾 ใบวางบิล / ใบแจ้งหนี้</h1>
-        <div style="font-size:13px;color:#667085;margin-top:3px;line-height:1.6;">เลือกลูกค้า + ช่วงวันที่ → ติ๊กเที่ยวที่จะวางบิล → พิมพ์ (ได้ใบสรุปวางบิล + ใบแจ้งหนี้แบบตาราง) · เที่ยวที่วางบิลแล้วจะถูกซ่อนไว้ไม่ให้วางซ้ำ</div>
+        <div style="font-size:13px;color:#667085;margin-top:3px;line-height:1.6;">เลือกลูกค้า + ช่วงวันที่ → ติ๊กบิลที่จะวางบิล → พิมพ์ (ได้ใบสรุปวางบิล + ใบแจ้งหนี้แบบตาราง) · บิลที่วางแล้วจะถูกซ่อนไว้ไม่ให้วางซ้ำ · เที่ยวที่ผูก 2 บิล ติ๊กแยกกันได้ ออกคนละใบแจ้งหนี้ได้</div>
       </div>
 
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:16px 18px;margin-bottom:14px;">
@@ -6997,7 +6997,7 @@ function normTruck(t){
 function toBkkDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);if(isNaN(d))return s.slice(0,10);try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}catch(e){return s.slice(0,10);}}
 function _LFB2(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function normJob(j){const o=_normJob0(j);if(Array.isArray(o.miscItems)&&o.miscItems.length){const ms=o.miscItems.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);o.misc=ms?String(Math.round(ms*100)/100):'';}if(Array.isArray(o.fuelRefills)&&o.fuelRefills.length){const s=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.baht)||0),0);const l=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.liters)||0),0);if(s)o.fuelBaht=String(Math.round(s*100)/100);if(l)o.fuelLiters=String(Math.round(l*100)/100);}return o;}
-function _normJob0(j){return{rateBasis:(j.rateBasis==='trip'?'trip':(j.rateBasis==='ton'?'ton':'')),customerCode:String(j.customerCode||'').trim(),acctPosted:j.acctPosted||'',acctApPosted:j.acctApPosted||'',billInvNo:String(j.billInvNo||''),billRecNo:String(j.billRecNo||''),billedAt:j.billedAt||'',destDistrict:String(j.destDistrict||''),destProvince:String(j.destProvince||''),allowanceExtra:j.allowanceExtra==null?'':String(j.allowanceExtra),fuelRefills:(function(v){if(Array.isArray(v))return v.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));if(typeof v==='string'&&v.trim()){try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));}catch(e){}}return undefined;})(j.fuelRefills),id:j.id||0,jobNo:j.jobNo||'',date:toBkkDate(j.date),time:j.time||'',driverCode:String(j.driverCode||''),truckPlate:j.truckPlate||'',origin:j.origin||'',destination:j.destination||'',customer:j.customer||'',deliveryNo:j.deliveryNo||'',weight:j.weight||'',revenue:j.revenue||'',distance:j.distance||'',extraDistance:j.extraDistance||'',trackJob:!!j.trackJob,emptyDistance:j.emptyDistance||'',ratePerTon:j.ratePerTon||'',rateAddWeight:j.rateAddWeight||'',rateAddOther:j.rateAddOther||'',dispatchPoint:j.dispatchPoint||'',status:j.status||'รับงาน',fuelLiters:j.fuelLiters||'',fuelPricePerL:j.fuelPricePerL||'',fuelBaht:j.fuelBaht||'',toll:j.toll||'',allowance:j.allowance||'',tire:j.tire||'',tireDate:j.tireDate||'',tirePay:j.tirePay||'',repair:j.repair||'',repairDate:j.repairDate||'',repairPay:j.repairPay||'',police:j.police||'',misc:j.misc||'',miscItems:(Array.isArray(j.miscItems)?j.miscItems.map(m=>({label:String(m.label||''),amount:(m.amount==null?'':String(m.amount))})):[]),remark:j.remark||'',driverNote:j.driverNote||'',driverRequest:j.driverRequest||'',attachment:j.attachment||'',attachments:Array.isArray(j.attachments)?j.attachments:[],shipments:Array.isArray(j.shipments)?j.shipments:[],fuelAdvance:j.fuelAdvance||'',fuelAdvanceNote:j.fuelAdvanceNote||'',docsClosed:!!j.docsClosed,docsClosedTime:j.docsClosedTime||'',docsTarget:j.docsTarget||'',expenseDone:!!j.expenseDone,subPayMethod:j.subPayMethod||'pct',subPct:(j.subPct!=null?j.subPct:''),subFlat:j.subFlat||'',subWht:(j.subWht!=null?j.subWht:''),subDeductions:Array.isArray(j.subDeductions)?j.subDeductions:[],subPayDate:j.subPayDate||'',subPayStatus:j.subPayStatus||'รอจ่าย',subDone:!!j.subDone,createdAt:j.createdAt||'',dispatchTime:j.dispatchTime||'',pickupTime:j.pickupTime||'',pickupLat:j.pickupLat||'',pickupLng:j.pickupLng||'',arrivalTime:j.arrivalTime||'',arrivalLat:j.arrivalLat||'',arrivalLng:j.arrivalLng||'',completionTime:j.completionTime||'',completionLat:j.completionLat||'',completionLng:j.completionLng||'',documentTime:j.documentTime||'',dispatcher:j.dispatcher||'',dispatcherOther:j.dispatcherOther||'',_ft:(j._ft&&typeof j._ft==='object')?j._ft:{},_editedAt:j._editedAt};}
+function _normJob0(j){return{rateBasis:(j.rateBasis==='trip'?'trip':(j.rateBasis==='ton'?'ton':'')),customerCode:String(j.customerCode||'').trim(),acctPosted:j.acctPosted||'',acctApPosted:j.acctApPosted||'',billInvNo:String(j.billInvNo||''),billRecNo:String(j.billRecNo||''),billedAt:j.billedAt||'',billLines:(j.billLines&&typeof j.billLines==='object'&&!Array.isArray(j.billLines))?j.billLines:{},destDistrict:String(j.destDistrict||''),destProvince:String(j.destProvince||''),allowanceExtra:j.allowanceExtra==null?'':String(j.allowanceExtra),fuelRefills:(function(v){if(Array.isArray(v))return v.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));if(typeof v==='string'&&v.trim()){try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));}catch(e){}}return undefined;})(j.fuelRefills),id:j.id||0,jobNo:j.jobNo||'',date:toBkkDate(j.date),time:j.time||'',driverCode:String(j.driverCode||''),truckPlate:j.truckPlate||'',origin:j.origin||'',destination:j.destination||'',customer:j.customer||'',deliveryNo:j.deliveryNo||'',weight:j.weight||'',revenue:j.revenue||'',distance:j.distance||'',extraDistance:j.extraDistance||'',trackJob:!!j.trackJob,emptyDistance:j.emptyDistance||'',ratePerTon:j.ratePerTon||'',rateAddWeight:j.rateAddWeight||'',rateAddOther:j.rateAddOther||'',dispatchPoint:j.dispatchPoint||'',status:j.status||'รับงาน',fuelLiters:j.fuelLiters||'',fuelPricePerL:j.fuelPricePerL||'',fuelBaht:j.fuelBaht||'',toll:j.toll||'',allowance:j.allowance||'',tire:j.tire||'',tireDate:j.tireDate||'',tirePay:j.tirePay||'',repair:j.repair||'',repairDate:j.repairDate||'',repairPay:j.repairPay||'',police:j.police||'',misc:j.misc||'',miscItems:(Array.isArray(j.miscItems)?j.miscItems.map(m=>({label:String(m.label||''),amount:(m.amount==null?'':String(m.amount))})):[]),remark:j.remark||'',driverNote:j.driverNote||'',driverRequest:j.driverRequest||'',attachment:j.attachment||'',attachments:Array.isArray(j.attachments)?j.attachments:[],shipments:Array.isArray(j.shipments)?j.shipments:[],fuelAdvance:j.fuelAdvance||'',fuelAdvanceNote:j.fuelAdvanceNote||'',docsClosed:!!j.docsClosed,docsClosedTime:j.docsClosedTime||'',docsTarget:j.docsTarget||'',expenseDone:!!j.expenseDone,subPayMethod:j.subPayMethod||'pct',subPct:(j.subPct!=null?j.subPct:''),subFlat:j.subFlat||'',subWht:(j.subWht!=null?j.subWht:''),subDeductions:Array.isArray(j.subDeductions)?j.subDeductions:[],subPayDate:j.subPayDate||'',subPayStatus:j.subPayStatus||'รอจ่าย',subDone:!!j.subDone,createdAt:j.createdAt||'',dispatchTime:j.dispatchTime||'',pickupTime:j.pickupTime||'',pickupLat:j.pickupLat||'',pickupLng:j.pickupLng||'',arrivalTime:j.arrivalTime||'',arrivalLat:j.arrivalLat||'',arrivalLng:j.arrivalLng||'',completionTime:j.completionTime||'',completionLat:j.completionLat||'',completionLng:j.completionLng||'',documentTime:j.documentTime||'',dispatcher:j.dispatcher||'',dispatcherOther:j.dispatcherOther||'',_ft:(j._ft&&typeof j._ft==='object')?j._ft:{},_editedAt:j._editedAt};}
 const _TIRE_POS_NO={'หน้า ซ.':1,'หน้า ข.':2,'ขับ1 ซ.นอก':3,'ขับ1 ซ.ใน':4,'ขับ1 ข.ใน':5,'ขับ1 ข.นอก':6,'ขับ2 ซ.นอก':7,'ขับ2 ซ.ใน':8,'ขับ2 ข.ใน':9,'ขับ2 ข.นอก':10,'เพลา1 ซ.นอก':11,'เพลา1 ซ.ใน':12,'เพลา1 ข.ใน':13,'เพลา1 ข.นอก':14,'เพลา2 ซ.นอก':15,'เพลา2 ซ.ใน':16,'เพลา2 ข.ใน':17,'เพลา2 ข.นอก':18,'เพลา3 ซ.นอก':19,'เพลา3 ซ.ใน':20,'เพลา3 ข.ใน':21,'เพลา3 ข.นอก':22};
 function _tirePosRaw(p){return String(p||'').replace(/^\(\d+\)\s*/,'');}
 function _tirePosLabel(p){const r=_tirePosRaw(p);if(!r)return '';const n=_TIRE_POS_NO[r];return n?('('+n+') '+r):r;}
@@ -10274,25 +10274,31 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ทะเบียนใบวางบิล — ประกอบจากเลขที่ใบวางบิลที่ปักไว้ในใบงาน (ไม่เก็บซ้ำ)
   _blInvRegister(){
     const map={};
+    // ไล่ราย "บิล" ไม่ใช่รายเที่ยว — เที่ยวเดียวอาจกระจายอยู่คนละใบแจ้งหนี้ได้
     (this.state.jobs||[]).forEach(j=>{
       if(!j||j.deleted||j._deleted)return;
-      const inv=String(j.billInvNo||'').trim();if(!inv)return;
-      const g=map[inv]||(map[inv]={inv:inv,rec:'',jobs:[],total:0,wt:0,lines:0,cust:'',code:'',from:'',to:'',at:''});
-      g.jobs.push(j);
-      const ls=this._blLines(j);g.lines+=ls.length;
-      g.total+=ls.reduce((a,l)=>a+l.rev,0);g.wt+=ls.reduce((a,l)=>a+l.w,0);
-      const d=String(j.date||'').slice(0,10);
-      if(!g.from||d<g.from)g.from=d;if(!g.to||d>g.to)g.to=d;
-      if(!g.rec)g.rec=String(j.billRecNo||'').trim();
-      if(!g.code)g.code=String(j.customerCode||'').trim();
-      if(!g.cust)g.cust=String(j.customer||'').replace(/^\d{2}-\d{3}\s*/,'').trim();
-      if(String(j.billedAt||'')>String(g.at||''))g.at=String(j.billedAt||'');
+      this._blLines(j).forEach(l=>{
+        const inv=this._blLineInv(j,l);if(!inv)return;
+        const g=map[inv]||(map[inv]={inv:inv,rec:'',jobs:[],items:[],total:0,wt:0,lines:0,cust:'',code:'',from:'',to:'',at:''});
+        g.items.push({j:j,l:l});
+        if(g.jobs.indexOf(j)<0)g.jobs.push(j);
+        g.lines++;g.total+=(parseFloat(l.rev)||0);g.wt+=(parseFloat(l.w)||0);
+        const d=String(j.date||'').slice(0,10);
+        if(!g.from||d<g.from)g.from=d;if(!g.to||d>g.to)g.to=d;
+        if(!g.rec)g.rec=this._blLineRec(j,l);
+        if(!g.code)g.code=String(j.customerCode||'').trim();
+        if(!g.cust)g.cust=String(j.customer||'').replace(/^\d{2}-\d{3}\s*/,'').trim();
+        const _k=String(l.bill||'').trim();
+        const _e=(j.billLines&&typeof j.billLines==='object')?j.billLines[_k]:null;
+        const at=String((_e&&_e.at)||j.billedAt||'');
+        if(at>String(g.at||''))g.at=at;
+      });
     });
     return Object.keys(map).map(k=>map[k]).sort((a,b)=>String(b.at||b.to).localeCompare(String(a.at||a.to)));
   }
   blReprint=(inv)=>{
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
-    this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.printBillingDoc(g.jobs));
+    this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.printBillingDoc(g.items));
   };
   // ===== ปิดงวดบัญชี (period lock) — ล็อกเดือนที่ตรวจแล้ว + ขออนุมัติแก้ไขรายใบ =====
   _plGet(){const d=this.state.periodLock||{};return {months:Array.isArray(d.months)?d.months:[],reqs:Array.isArray(d.reqs)?d.reqs:[]};}
@@ -10400,12 +10406,35 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       if(f&&d<f)return false;if(t&&d>t)return false;
       if(!(parseFloat(j.revenue)||0))return false;
       if(code){const jc=String(j.customerCode||'').trim()||((String(j.customer||'').match(/^(\d{2}-\d{3})/)||[])[1]||'');if(jc!==code)return false;}
-      if(!S.billShowBilled&&String(j.billInvNo||'').trim())return false;
+      // ซ่อนเฉพาะเที่ยวที่ "วางบิลครบทุกบิลแล้ว" — เที่ยวที่วางไปบางบิลยังต้องเห็นอยู่
+      if(!S.billShowBilled&&this._blLines(j).every(l=>this._blLineInv(j,l)))return false;
       if(q){const blob=[j.deliveryNo,j.jobNo,j.truckPlate,j.origin,j.destination,j.customer].join(' ').toLowerCase();if(blob.indexOf(q)<0)return false;}
       return true;
     }).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.deliveryNo||'').localeCompare(String(b.deliveryNo||'')));
   }
   blToggle=(id)=>this.setState(s=>{const m={...(s.billSel||{})};const k=String(id);if(m[k])delete m[k];else m[k]=true;return{billSel:m};});
+  // ===== วางบิล "รายบิล" ไม่ใช่รายเที่ยว =====
+  // เที่ยวเดียวที่ผูก 2 บิล บางครั้งต้องออกใบวางบิลแยกกัน จึงต้องติ๊กและปักสถานะแยกได้
+  // เก็บสถานะรายบิลไว้ที่ j.billLines[เลขบิล] = {inv,rec,at} · ถ้าไม่มีก็ใช้ค่าระดับเที่ยวเดิม
+  // (ใช้เลขบิลเป็นกุญแจ ไม่ใช่ลำดับแถว เพราะลำดับเลื่อนได้ถ้ามีการแก้ใบส่งของ)
+  _blKey(j,l){return String(j&&j.id)+'|'+String((l&&l.bill)||'');}
+  _blLineInv(j,l){
+    const k=String((l&&l.bill)||'').trim();
+    const m=(j&&j.billLines&&typeof j.billLines==='object')?j.billLines:null;
+    if(k&&m&&m[k]&&m[k].inv!=null)return String(m[k].inv||'').trim();
+    return String((j&&j.billInvNo)||'').trim();
+  }
+  _blLineRec(j,l){
+    const k=String((l&&l.bill)||'').trim();
+    const m=(j&&j.billLines&&typeof j.billLines==='object')?j.billLines:null;
+    if(k&&m&&m[k]&&m[k].inv!=null)return String(m[k].rec||'').trim();
+    return String((j&&j.billRecNo)||'').trim();
+  }
+  _blSelectedLines(){
+    const sel=this.state.billSel||{};const out=[];
+    this._blJobs().forEach(j=>this._blLines(j).forEach(l=>{if(sel[this._blKey(j,l)])out.push({j:j,l:l});}));
+    return out;
+  }
   // ปลายทางที่พิมพ์ในใบวางบิล = อำเภอ + จังหวัด (ถ้ายังไม่กรอก ใช้ช่องปลายทางเดิม)
   // ★ v.2026-09-10: เส้นทางแสดงผล — ต่ออำเภอ/จังหวัดท้ายปลายทางเสมอ (ไม่ซ้ำถ้าชื่อปลายทางมีอยู่แล้ว)
   _routeFull(j){j=j||{};
@@ -10443,32 +10472,56 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const jobs=this.state.jobs.map(j=>String(j.id)===key?{...j,destDistrict:nd,destProvince:np}:j);
     this.setState({jobs});this.persistJobs(jobs,id,['destDistrict','destProvince']);
   };
-  _blSelected(){const sel=this.state.billSel||{};return this._blJobs().filter(j=>sel[String(j.id)]);}
-  _blStamp(list,inv,rec){
+  // ปักสถานะวางบิล "เฉพาะบิลที่เลือก" — บิลอื่นของเที่ยวเดียวกันไม่กระทบ
+  _blStampLines(items,inv,rec){
     const now=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date()).replace(' ','T');
-    const ids=list.map(j=>String(j.id));const set=new Set(ids);
-    const jobs=this.state.jobs.map(j=>set.has(String(j.id))?{...j,billInvNo:inv||'',billRecNo:rec||'',billedAt:inv?now:''}:j);
+    const byJob={};
+    items.forEach(it=>{const k=String(it.j.id);(byJob[k]=byJob[k]||[]).push(String(it.l.bill||'').trim());});
+    const jobs=this.state.jobs.map(j=>{
+      const picked=byJob[String(j.id)];if(!picked)return j;
+      const lines=this._blLines(j);
+      const m={...((j.billLines&&typeof j.billLines==='object')?j.billLines:{})};
+      // ตรึงค่าปัจจุบันของบิลอื่นไว้ก่อน กันค่าระดับเที่ยวไปกลบตอนเราเขียนรายบิล
+      lines.forEach(l=>{const k=String(l.bill||'').trim();if(!k)return;
+        if(m[k]==null||m[k].inv==null)m[k]={inv:String(j.billInvNo||'').trim(),rec:String(j.billRecNo||'').trim(),at:j.billedAt||''};});
+      picked.forEach(k=>{if(k)m[k]={inv:inv||'',rec:rec||'',at:inv?now:''};});
+      // ถ้าทุกบิลในเที่ยวลงเลขเดียวกันหมด เก็บค่าระดับเที่ยวไว้ด้วย ให้ส่วนอื่นของระบบอ่านได้เหมือนเดิม
+      const vals=lines.map(l=>String((m[String(l.bill||'').trim()]||{}).inv||''));
+      const allSame=vals.length>0&&vals.every(v=>v===vals[0]);
+      return {...j,billLines:m,
+        billInvNo:allSame?vals[0]:String(j.billInvNo||''),
+        billRecNo:allSame?(vals[0]?(rec||''):''):String(j.billRecNo||''),
+        billedAt:allSame?(vals[0]?now:''):String(j.billedAt||'')};
+    });
     this.setState({jobs,billSel:{}});
-    ids.forEach(id=>this.persistJobs(jobs,id,['billInvNo','billRecNo','billedAt']));
+    Object.keys(byJob).forEach(id=>this.persistJobs(jobs,id,['billLines','billInvNo','billRecNo','billedAt']));
   }
   blMark=()=>{
-    const list=this._blSelected();if(!list.length){window.alert('ยังไม่ได้เลือกเที่ยว');return;}
+    const items=this._blSelectedLines();if(!items.length){window.alert('ยังไม่ได้เลือกบิล');return;}
     const inv=String(this.state.billInvNo||'').trim();
     if(!inv){window.alert('กรุณากรอกเลขที่ใบแจ้งหนี้ก่อน');return;}
-    if(!window.confirm('ทำเครื่องหมายว่าวางบิลแล้ว '+list.length+' เที่ยว\nเลขที่ใบแจ้งหนี้ '+inv+'\n\nเที่ยวเหล่านี้จะถูกซ่อนจากรายการ กันวางบิลซ้ำ'))return;
-    this._blStamp(list,inv,String(this.state.billRecNo||'').trim());
-    window.alert('✅ ทำเครื่องหมายแล้ว '+list.length+' เที่ยว');
+    const nJob=new Set(items.map(it=>String(it.j.id))).size;
+    if(!window.confirm('ทำเครื่องหมายว่าวางบิลแล้ว '+items.length+' บิล ('+nJob+' เที่ยว)\nเลขที่ใบแจ้งหนี้ '+inv+'\n\nบิลเหล่านี้จะถูกซ่อนจากรายการ กันวางบิลซ้ำ'))return;
+    this._blStampLines(items,inv,String(this.state.billRecNo||'').trim());
+    window.alert('✅ ทำเครื่องหมายแล้ว '+items.length+' บิล');
   };
   blUnmark=()=>{
-    const list=this._blSelected().filter(j=>String(j.billInvNo||'').trim());
-    if(!list.length){window.alert('เลือกเที่ยวที่ "วางบิลแล้ว" ก่อน — ติ๊ก "แสดงเที่ยวที่วางบิลแล้วด้วย" เพื่อให้เห็นในรายการ');return;}
-    if(!window.confirm('ยกเลิกเครื่องหมายวางบิล '+list.length+' เที่ยว?'))return;
-    this._blStamp(list,'','');
-    window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+list.length+' เที่ยว');
+    const items=this._blSelectedLines().filter(it=>this._blLineInv(it.j,it.l));
+    if(!items.length){window.alert('เลือกบิลที่ "วางบิลแล้ว" ก่อน — ติ๊ก "แสดงเที่ยวที่วางบิลแล้วด้วย" เพื่อให้เห็นในรายการ');return;}
+    if(!window.confirm('ยกเลิกเครื่องหมายวางบิล '+items.length+' บิล?'))return;
+    this._blStampLines(items,'','');
+    window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+items.length+' บิล');
   };
+  // รับได้ 2 แบบ: รายการ "บิล" {j,l} (ติ๊กจากหน้าจอ) หรือรายการ "ใบงาน" (ตอนพิมพ์ซ้ำจากทะเบียน)
   printBillingDoc=(listArg)=>{
-    const S=this.state;const list=(Array.isArray(listArg)&&listArg.length)?listArg:this._blSelected();
-    if(!list.length){window.alert('ยังไม่ได้เลือกเที่ยวที่จะวางบิล');return;}
+    const S=this.state;
+    let items;
+    if(Array.isArray(listArg)&&listArg.length){
+      items=listArg[0]&&listArg[0].l?listArg:[];
+      if(!items.length)listArg.forEach(j=>this._blLines(j).forEach(l=>items.push({j:j,l:l})));
+    }else items=this._blSelectedLines();
+    if(!items.length){window.alert('ยังไม่ได้เลือกบิลที่จะวางบิล');return;}
+    const list=[];{const seen={};items.forEach(it=>{const k=String(it.j.id);if(!seen[k]){seen[k]=1;list.push(it.j);}});}
     const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
     const n2=(n)=>_LFB2(n);
     const n3=(n)=>(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
@@ -10485,7 +10538,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const prod=String(S.billProdCode==null?'':S.billProdCode).trim();
     const tt=String(S.billTruckType==null?'18W_LARGE':S.billTruckType).trim();
     const rows=[];
-    list.forEach(j=>{this._blLines(j).forEach(l=>{rows.push({no:rows.length+1,bill:l.bill,
+    items.forEach(it=>{const j=it.j;[it.l].forEach(l=>{rows.push({no:rows.length+1,bill:l.bill,
       detail:[l.origin,l.dest].filter(Boolean).join('-'),w:l.w,rev:l.rev,rate:l.rate,
       date:this._blShortDate(j.date),note:''});});});
     {const _miss=list.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim()));
@@ -10575,10 +10628,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body>'
       +cover+invPages+'</body></html>';
     this._printHtml(html);
-    if(inv&&!list.every(j=>String(j.billInvNo||'').trim()===inv)){
+    if(inv&&!items.every(it=>this._blLineInv(it.j,it.l)===inv)){
       setTimeout(()=>{
-        if(window.confirm('พิมพ์แล้ว — ทำเครื่องหมายว่า '+list.length+' เที่ยวนี้วางบิลแล้ว (เลข '+inv+') เพื่อกันวางบิลซ้ำ?'))
-          this._blStamp(list,inv,rec);
+        if(window.confirm('พิมพ์แล้ว — ทำเครื่องหมายว่า '+items.length+' บิลนี้วางบิลแล้ว (เลข '+inv+') เพื่อกันวางบิลซ้ำ?'))
+          this._blStampLines(items,inv,rec);
       },900);
     }
   };
@@ -12869,19 +12922,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.blCustHeadline=_bc?((_bc.name||'—')+(_bc.branch?(' ('+_bc.branch+')'):'')+(_bc.taxId?(' · เลขผู้เสียภาษี '+_bc.taxId):'')):'ยังไม่เลือกลูกค้า — เลือกก่อนพิมพ์ เพื่อให้หัวเอกสารมีชื่อ/ที่อยู่';
       const _all=this._blJobs();const _sel=S.billSel||{};
       out.blCount=_all.length;
-      out.blUnbilledCount=_all.filter(j=>!String(j.billInvNo||'').trim()).length;
+      {let _ub=0;_all.forEach(j=>this._blLines(j).forEach(l=>{if(!this._blLineInv(j,l))_ub++;}));out.blUnbilledCount=_ub;}
       const _rows=[];const _dft=S.billDestDraft||{};
-      _all.forEach(j=>{const bn=String(j.billInvNo||'').trim();const lines=this._blLines(j);
+      _all.forEach(j=>{const lines=this._blLines(j);
         const _dd=String(j.destDistrict||''),_dp=String(j.destProvince||'');
         // ป้ายสถานะส่งบัญชี · AP มีเฉพาะรถร่วม — รถบริษัทไม่มีขาจ่าย จึงไม่โชว์ป้าย AP เลย
         const _arOk=!!String(j.acctPosted||'').trim(),_isSub=this._ecIsSub(j),_apOk=!!String(j.acctApPosted||'').trim();
-        lines.forEach((l,li)=>{_rows.push({
-          id:String(j.id)+'#'+li,selected:!!_sel[String(j.id)],onToggle:()=>this.blToggle(j.id),
+        lines.forEach((l,li)=>{const _bn=this._blLineInv(j,l);_rows.push({
+          id:this._blKey(j,l),selected:!!_sel[this._blKey(j,l)],onToggle:()=>this.blToggle(this._blKey(j,l)),
           date:li===0?this._dpThaiDate(j.date):'',bill:l.bill||'—',plate:li===0?(j.truckPlate||'—'):'',
           route:[l.origin||'—',l.dest||'—'].join(' → '),
           split:lines.length>1,splitText:'🔗 บิลที่ '+(li+1)+'/'+lines.length+' ของเที่ยวเดียวกัน',
           weight:l.w?_n3(l.w):'—',rate:l.rate?_b2(l.rate):'—',amt:_b2(l.rev),
-          billed:!!bn,unbilled:!bn,billNoText:bn,
+          billed:!!_bn,unbilled:!_bn,billNoText:_bn,
           arDone:_arOk,arNot:!_arOk,apDone:(_isSub&&_apOk),apNot:(_isSub&&!_apOk),
           showDest:li===0,needDest:!_dd||!_dp,
           dd:(_dft[String(j.id)]&&_dft[String(j.id)].d!=null)?_dft[String(j.id)].d:_dd,
@@ -12893,13 +12946,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.blMissDestCount=_all.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim())).length;
       out.blHasMissDest=out.blMissDestCount>0;
       out.blEmpty=!_all.length;
-      const _allOn=_all.length>0&&_all.every(j=>_sel[String(j.id)]);
+      const _allKeys=[];_all.forEach(j=>this._blLines(j).forEach(l=>_allKeys.push(this._blKey(j,l))));
+      const _allOn=_allKeys.length>0&&_allKeys.every(k=>_sel[k]);
       out.blAllSel=_allOn;
-      out.onBlSelAll=()=>{const m={};if(!_allOn)_all.forEach(j=>{m[String(j.id)]=true;});this.setState({billSel:m});};
-      const _selJobs=_all.filter(j=>_sel[String(j.id)]);
-      out.blSelCount=_selJobs.length;
-      {let _sw=0,_sa=0,_ln=0;_selJobs.forEach(j=>this._blLines(j).forEach(l=>{_sw+=l.w;_sa+=l.rev;_ln++;}));
-       out.blSumWeight=_n3(_sw)+' ตัน';out.blSumAmt='฿'+_b2(_sa);out.blSelLineCount=_ln;}
+      out.onBlSelAll=()=>{const m={};if(!_allOn)_allKeys.forEach(k=>{m[k]=true;});this.setState({billSel:m});};
+      {let _sw=0,_sa=0,_ln=0;const _jset={};
+       _all.forEach(j=>this._blLines(j).forEach(l=>{if(!_sel[this._blKey(j,l)])return;_sw+=(parseFloat(l.w)||0);_sa+=(parseFloat(l.rev)||0);_ln++;_jset[String(j.id)]=1;}));
+       out.blSelCount=Object.keys(_jset).length;out.blSumWeight=_n3(_sw)+' ตัน';out.blSumAmt='฿'+_b2(_sa);out.blSelLineCount=_ln;}
       {const _reg=this._blInvRegister();
        out.blRegCount=_reg.length;out.blHasReg=_reg.length>0;
        out.blRegRows=_reg.slice(0,40).map(g=>({inv:g.inv,cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
