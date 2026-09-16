@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-15k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-16a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-15k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-16a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2879,6 +2879,11 @@
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">รหัสบัญชีรายได้ (EASY-ACC) <span style="color:#98a2b3;font-weight:400;">(ว่าง = ใช้ค่าที่หน้าส่งออก)</span></label>
             <input value="{{ ce.ecArAcct }}" onInput="{{ onCeecArAcct }}" placeholder="เช่น 401" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;font-family:inherit;" />
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">น้ำหนักขั้นต่ำต่อเที่ยว (ตัน) <span style="color:#98a2b3;font-weight:400;">(ว่าง = ไม่มีขั้นต่ำ)</span></label>
+            <input value="{{ ce.minWeight }}" onInput="{{ onCeminWeight }}" placeholder="เช่น 29" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;font-family:inherit;" />
+            <div style="font-size:11.5px;color:#98a2b3;margin-top:5px;line-height:1.5;">ตามข้อตกลงกับลูกค้า — เที่ยวที่บรรทุกไม่ถึงขั้นต่ำจะคิดเงินและแสดงน้ำหนักเท่าขั้นต่ำ · เที่ยวที่ผูกหลายบิลจะเฉลี่ยน้ำหนักลงทุกบิลเท่าๆ กัน</div>
           </div>
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">เลขผู้เสียภาษี</label>
@@ -7030,7 +7035,7 @@ const DISPATCHERS=['ปกรณ์ ลิ้นทอง','วารี ภั�
 const SUB_DED_DEFAULTS=['หักภาษี ณ ที่จ่าย','ค่าน้ำมัน','ค่าประกันสินค้า','ค่า GPS','ค่าโอน'];
 const ORDER_CHANNELS=['อีเมล','ไลน์','โทรศัพท์','อื่นๆ'];
 const ORDER_TRUCK_TYPES=['รถปิคอัพ','รถหกล้อ','รถสิบล้อ','รถพ่วง','รถหัวลาก/เทรลเลอร์','อื่นๆ'];
-function normCustomer(c){return {id:c.id||Date.now(),name:c.name||'',contact:c.contact||'',code:String(c.code||'').trim(),aliases:c.aliases||'',province:c.province||'',address:c.address||'',ecArAcct:String(c.ecArAcct||'').trim(),branch:c.branch||'',taxId:c.taxId||'',address:c.address||'',phone:c.phone||'',lastSale:c.lastSale||'',group:c.group||'',multiCode:!!c.multiCode,rateBasis:(c.rateBasis==='ton'?'ton':(c.rateBasis==='trip'?'trip':'')),active:c.active!==false};}
+function normCustomer(c){return {id:c.id||Date.now(),name:c.name||'',contact:c.contact||'',code:String(c.code||'').trim(),aliases:c.aliases||'',province:c.province||'',address:c.address||'',ecArAcct:String(c.ecArAcct||'').trim(),minWeight:String(c.minWeight==null?'':c.minWeight).trim(),branch:c.branch||'',taxId:c.taxId||'',address:c.address||'',phone:c.phone||'',lastSale:c.lastSale||'',group:c.group||'',multiCode:!!c.multiCode,rateBasis:(c.rateBasis==='ton'?'ton':(c.rateBasis==='trip'?'trip':'')),active:c.active!==false};}
 function normOrigin(o){return {id:o.id||Date.now(),name:o.name||''};}
 function normOrder(o){return {customerCode:String(o.customerCode||'').trim(),id:o.id||0,orderNo:o.orderNo||'',customer:o.customer||'',channel:o.channel||'อีเมล',receivedDate:o.receivedDate?toBkkDate(o.receivedDate):'',product:o.product||'',origin:o.origin||'',destination:o.destination||'',dropPoint:o.dropPoint||'',billNo:o.billNo||'',weight:o.weight||'',truckType:o.truckType||'',requiredDate:o.requiredDate?toBkkDate(o.requiredDate):'',remark:o.remark||'',custDeliveryNo:o.custDeliveryNo||'',shipmentEnd:o.shipmentEnd?toBkkDate(o.shipmentEnd):'',saleDistrict:o.saleDistrict||'',size:o.size||'',note2:o.note2||'',productGroup:o.productGroup||'',driverNote:o.driverNote||'',driverRequest:o.driverRequest||'',shipments:Array.isArray(o.shipments)?o.shipments:[],tripId:o.tripId||'',status:o.status||'รอจัดรถ',jobId:o.jobId||'',canceledAt:o.canceledAt||'',_ft:(o._ft&&typeof o._ft==='object')?o._ft:{},_editedAt:o._editedAt};}
 const TODAY=new Date();
@@ -10512,14 +10517,24 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   // เที่ยวที่ผูกหลายบิล → แยกเป็นบรรทัดละ 1 บิล (น้ำหนัก/เงิน ตามบิล)
   _blLines(j){
-    const w=parseFloat(j.weight)||0,rev=parseFloat(j.revenue)||0;
+    const wRaw=parseFloat(j.weight)||0,rev=parseFloat(j.revenue)||0;
+    const w=this._billWeight(j);            // ไม่ต่ำกว่าขั้นต่ำตามข้อตกลงลูกค้า
     const ships=(j.shipments||[]).filter(s=>s&&String(s.bill||'').trim());
-    if(ships.length<2)return [{bill:j.deliveryNo||j.jobNo||'',origin:j.origin||'',dest:this._blDest(j),w:w,rev:rev,rate:parseFloat(j.ratePerTon)||(w?rev/w:0)}];
-    const tw=ships.reduce((a,s)=>a+(parseFloat(s.weight)||0),0)||w;
+    if(ships.length<2){const r1=parseFloat(j.ratePerTon)||(wRaw?rev/wRaw:0);
+      return [{bill:j.deliveryNo||j.jobNo||'',origin:j.origin||'',dest:this._blDest(j),w:w,
+        rev:(w!==wRaw)?Math.round(w*r1*100)/100:rev,rate:r1}];}
+    const tw=ships.reduce((a,s)=>a+(parseFloat(s.weight)||0),0)||wRaw;
     const rate=parseFloat(j.ratePerTon)||(tw?rev/tw:0);
-    const lines=ships.map(s=>{const sw=parseFloat(s.weight)||0;
+    // ★ ลูกค้าที่ตั้งขั้นต่ำไว้ (เช่น ทาทา 29 ตัน) และน้ำหนักที่คิดเงิน != ผลรวมน้ำหนักรายบิล
+    //   → เฉลี่ยน้ำหนักลงทุกบิลเท่าๆ กันตามข้อตกลง ทุกบรรทัดจึงกดเครื่องคิดเลขตามได้
+    //   เดิมคิดตามน้ำหนักจริงแล้วโยนส่วนต่างขั้นต่ำไปกองที่บรรทัดหนักสุด ทำให้บรรทัดนั้นคิดตามไม่ได้
+    const _even=(this._custMinWeight(j)>0&&w>0&&Math.abs(w-tw)>0.0005);
+    const _avg=_even?(Math.round((w/ships.length)*1000)/1000):0;
+    const lines=ships.map(s=>{const sw=_even?_avg:(parseFloat(s.weight)||0);
       return {bill:String(s.bill||'').trim(),origin:s.origin||j.origin||'',dest:this._blDest(j,s),w:sw,rev:Math.round(sw*rate*100)/100,rate:rate};});
-    const diff=Math.round((rev-lines.reduce((a,l)=>a+l.rev,0))*100)/100;
+    // โหมดเฉลี่ยตามขั้นต่ำ: ปล่อยให้ทุกบรรทัด = น้ำหนัก x เรท ตรงๆ ไม่ปรับเศษกลับ
+    // (ยอดรวมใบจะเท่ากับ น้ำหนักขั้นต่ำ x เรท ซึ่งคือยอดที่ตกลงกับลูกค้าอยู่แล้ว)
+    const diff=_even?0:Math.round((rev-lines.reduce((a,l)=>a+l.rev,0))*100)/100;
     if(diff){let k=0;lines.forEach((l,i)=>{if(l.w>lines[k].w)k=i;});lines[k].rev=Math.round((lines[k].rev+diff)*100)/100;}
     return lines;
   }
@@ -10837,9 +10852,18 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   setSettle=(field,val)=>this.setState(s=>({settleDraft:{...s.settleDraft,[field]:val}}));
   custRateBasis(code){const c=(this.state.customers||[]).find(x=>String(x.code||'').trim()===String(code||'').trim());const b=String((c&&c.rateBasis)||'');return (b==='trip'||b==='ton')?b:'';}
   jobRateBasis(j){const b=String((j&&j.rateBasis)||'');if(b==='trip'||b==='ton')return b;return this.custRateBasis(j&&j.customerCode)||'ton';}
+  // ขั้นต่ำต่อเที่ยวตามข้อตกลงลูกค้า (ตั้งที่ตารางลูกค้า) — ไม่ hardcode ชื่อลูกค้าไว้ในโค้ด
+  _custMinWeight(j){
+    const code=String((j&&j.customerCode)||'').trim()||((String((j&&j.customer)||'').match(/^(d{2}-d{3})/)||[])[1]||'');
+    if(!code)return 0;
+    const c=(this.state.customers||[]).find(x=>String(x.code||'').trim()===code);
+    return c?(parseFloat(c.minWeight)||0):0;
+  }
+  // น้ำหนักที่ใช้คิดเงิน = น้ำหนักจริง แต่ไม่ต่ำกว่าขั้นต่ำ (น้ำหนักจริงยังเก็บไว้ไม่ถูกทับ)
+  _billWeight(j){const w=parseFloat(j&&j.weight)||0;const mn=this._custMinWeight(j);return (mn>0&&w>0&&w<mn)?mn:w;}
   calcRevenue(j){const eff=(parseFloat(j&&j.ratePerTon)||0)+(parseFloat(j&&j.rateAddWeight)||0)+(parseFloat(j&&j.rateAddOther)||0);if(eff<=0)return '';
     if(this.jobRateBasis(j)==='trip')return String(Math.round(eff*100)/100);
-    const w=parseFloat(j&&j.weight)||0;return String(Math.round(w*eff*100)/100);}
+    const w=this._billWeight(j);return String(Math.round(w*eff*100)/100);}
   setSettleRateField=(field,val)=>this.setState(s=>{const d={...s.settleDraft,[field]:val};d.revenue=this.calcRevenue(d);return{settleDraft:d};});
   addSubDeduction=()=>this.setState(s=>{const d=s.settleDraft||{};const list=(d.subDeductions||[]).slice();list.push({label:'',amount:''});return{settleDraft:{...d,subDeductions:list}};});
   setSubDeduction=(i,field,val)=>this.setState(s=>{const d=s.settleDraft||{};const list=(d.subDeductions||[]).slice();list[i]={...(list[i]||{label:'',amount:''}),[field]:val};return{settleDraft:{...d,subDeductions:list}};});
@@ -11767,7 +11791,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          out.sdMultiBillText='เที่ยวนี้ผูก '+_bls.length+' บิล ('+_bls.map(l=>l.bill||'—').join(', ')+') — ตัวเลขทั้งหมดในหน้านี้เป็น'
            +'ยอดรวมทั้งเที่ยว ไม่ใช่ของบิลใดบิลหนึ่ง · ส่วนแบ่งรายบิลดูได้ที่หน้าใบวางบิล';}
         out.sdDriver=_drvNm(sd.driverCode);out.sdRoute=this._routeFull(sd);out.sdCustomer=sd.customer||'—';
-        out.sdWeightText=sd.weight?((parseFloat(sd.weight)||0)+' ตัน'):'— (ไม่มีน้ำหนัก)';out.sdDistanceText=sd.distance?((parseFloat(sd.distance)||0)+' กม.'):'—';out.sdRevenueText=sd.revenue?fmt(parseFloat(sd.revenue)||0):'฿0';
+        out.sdWeightText=(function(){const _w=parseFloat(sd.weight)||0;if(!sd.weight)return '— (ไม่มีน้ำหนัก)';const _bw=this._billWeight(sd);return _bw!==_w?(_w+' ตัน → คิด '+_bw+' ตัน (ขั้นต่ำตามข้อตกลงลูกค้า)'):(_w+' ตัน');}).call(this);out.sdDistanceText=sd.distance?((parseFloat(sd.distance)||0)+' กม.'):'—';out.sdRevenueText=sd.revenue?fmt(parseFloat(sd.revenue)||0):'฿0';
         {const _rb=parseFloat(sd.ratePerTon)||0,_rw=parseFloat(sd.rateAddWeight)||0,_ro=parseFloat(sd.rateAddOther)||0;const _eff=_rb+_rw+_ro;let _bd=String(_rb);if(_rw)_bd+=' + '+_rw+' (น้ำหนัก)';if(_ro)_bd+=' + '+_ro+' (อื่นๆ)';_bd+=' = '+(Math.round(_eff*100)/100)+' /ตัน';out.sdEffRateText=_bd;out.sdRateAddWeight=(sd.rateAddWeight!=null?String(sd.rateAddWeight):'');out.sdRateAddOther=(sd.rateAddOther!=null?String(sd.rateAddOther):'');}
         out.sdRateLabel=(this.jobRateBasis(sd)==='trip')?'💰 เรทต่อเที่ยว':'💰 เรทฐาน/ตัน';
         out.onSettleRate=(e)=>this.setSettleRateField('ratePerTon',e.target.value);
@@ -13072,7 +13096,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const _ce=_cust.find(c=>String(c.id)===String(S.customerEditId));
     out.custEditOpen=!!_ce;out.ce=_ce||{};
     out.onCloseCustEdit=()=>this.setState({customerEditId:null});
-    ['code','name','province','address','ecArAcct','branch','taxId','phone','contact','group','lastSale','aliases'].forEach(f=>{out['onCe'+f]=(e)=>this.setCustomerField(S.customerEditId,f,e.target.value);});
+    ['code','name','province','address','ecArAcct','minWeight','branch','taxId','phone','contact','group','lastSale','aliases'].forEach(f=>{out['onCe'+f]=(e)=>this.setCustomerField(S.customerEditId,f,e.target.value);});
     out.onCeMulti=(e)=>this.setCustomerField(S.customerEditId,'multiCode',!!e.target.checked);
     out.onCeActive=(e)=>this.setCustomerField(S.customerEditId,'active',!!e.target.checked);
     out.ceMulti=!!(_ce&&_ce.multiCode);out.ceActive=!!(_ce&&_ce.active!==false);
