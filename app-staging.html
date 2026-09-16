@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-16a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-16b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-16a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-16b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -10167,7 +10167,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+list.length+' เที่ยว');
   };
   ecUnmarkAp=()=>{
-    const S=this.state;const m=String(S.ecMonth||'').slice(0,7);
+    const S=this.state;const m=this._ecMonthSel();
     if(!/^\d{4}-\d{2}$/.test(m)){window.alert('กรุณาเลือกเดือน');return;}
     const list=this._ecSubData(m).jobs.filter(j=>String(j.acctApPosted||'').trim());
     if(!list.length){window.alert('เดือนนี้ไม่มีเที่ยวที่ปักเครื่องหมาย AP ไว้');return;}
@@ -10257,9 +10257,17 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(diff){let k=0;out.forEach((l,i)=>{if(l.w>out[k].w)k=i;});out[k].amt=Math.round((out[k].amt+diff)*100)/100;}
     return out;
   }
+  // เดือนที่เลือกอยู่บนหน้าจอ — ถ้าผู้ใช้ยังไม่เคยแตะช่องเดือน state จะยังว่าง
+  // แต่หน้าจอเติมเดือนปัจจุบันให้ดูแล้ว ปุ่มต่างๆ ต้องอ่านค่าเดียวกัน
+  // ไม่งั้นกดแล้วฟ้อง "กรุณาเลือกเดือน" ทั้งที่หน้าจอโชว์เดือนอยู่ (เจอจริง 16 ก.ย. 2026)
+  _ecMonthSel(){
+    const m=String(this.state.ecMonth||'').slice(0,7);
+    if(/^[0-9]{4}-[0-9]{2}$/.test(m))return m;
+    return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit'}).format(new Date()).slice(0,7);
+  }
   // AP: เจ้าหนี้/ค่าใช้จ่าย 20 คอลัมน์ · CD=A ตั้งเจ้าหนี้ (1 แถว = 1 บิล · เที่ยวที่ผูก 2 บิล แตกเป็น 2 แถว)
   exportEcSubPay=()=>{
-    const S=this.state;const m=String(S.ecMonth||'').slice(0,7);
+    const S=this.state;const m=this._ecMonthSel();
     if(!/^\d{4}-\d{2}$/.test(m)){window.alert('กรุณาเลือกเดือน');return;}
     const cfg=this._ecCfg();
     if(!cfg.ap){window.alert('กรุณากรอก "รหัสบัญชีค่าขนส่งรถร่วม" ก่อน (EASY-ACC บังคับ)');return;}
@@ -10310,7 +10318,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   };
   // ไฟล์ตรวจสอบ (อ่านง่าย ไม่ใช่รูปแบบนำเข้า)
   exportEcSubDetail=()=>{
-    const S=this.state;const m=String(S.ecMonth||'').slice(0,7);
+    const S=this.state;const m=this._ecMonthSel();
     if(!/^\d{4}-\d{2}$/.test(m)){window.alert('กรุณาเลือกเดือน');return;}
     const {jobs,list}=this._ecSubData(m);
     if(!jobs.length){window.alert('เดือนนี้ไม่มีเที่ยวรถร่วมที่ปิดเอกสารแล้ว');return;}
@@ -12952,7 +12960,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          out.ecArPreview=n?(n+' บรรทัด · '+_LFB2(sum)+' บาท'+(posted&&!S.ecIncPosted?(' · ส่งแล้ว '+posted+' เที่ยว (ข้าม)'):''))
            :(all.length?('ส่งบัญชีไปแล้วทั้งหมด '+all.length+' เที่ยว'):'ไม่มีรายการในช่วงนี้');}
         const _nowM=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit'}).format(new Date()).slice(0,7);
-        out.ecMonth=S.ecMonth||_nowM;out.onEcMonth=(e)=>this.setState({ecMonth:e.target.value});
+        out.ecMonth=this._ecMonthSel();out.onEcMonth=(e)=>this.setState({ecMonth:e.target.value});
         out.ecApBase=S.ecApBase||'gross';out.onEcApBase=(e)=>this.setState({ecApBase:e.target.value});
         out.ecApPrefix=S.ecApPrefix==null?'':S.ecApPrefix;out.onEcApPrefix=(e)=>this.setState({ecApPrefix:e.target.value});
         out.onEcSubPay=this.exportEcSubPay;out.onEcSubDetail=this.exportEcSubDetail;
