@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-16b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-17a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-16b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-17a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6694,6 +6694,10 @@
                     <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/ตัน</label>
                     <input type="number" value="{{ sdRateAddOther }}" onInput="{{ onSettleAddOther }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
+                  <div style="flex:1;min-width:82px;">
+                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/เที่ยว</label>
+                    <input type="number" value="{{ sdRateAddTrip }}" onInput="{{ onSettleAddTrip }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
+                  </div>
                 </div>
                 <div style="font-size:12px;color:#475467;line-height:1.7;min-width:170px;">
                   น้ำหนัก <b style="color:#16263a;">{{ sdWeightText }}</b> · ระยะทาง <b style="color:#16263a;">{{ sdDistanceText }}</b><br>
@@ -6817,6 +6821,10 @@
                   <div style="flex:1;min-width:82px;">
                     <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/ตัน</label>
                     <input type="number" value="{{ sdRateAddOther }}" onInput="{{ onSettleAddOther }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
+                  </div>
+                  <div style="flex:1;min-width:82px;">
+                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/เที่ยว</label>
+                    <input type="number" value="{{ sdRateAddTrip }}" onInput="{{ onSettleAddTrip }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
                 </div>
                 <div style="font-size:12px;color:#475467;line-height:1.7;min-width:170px;">
@@ -7027,7 +7035,7 @@ function normTruck(t){
 function toBkkDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);if(isNaN(d))return s.slice(0,10);try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}catch(e){return s.slice(0,10);}}
 function _LFB2(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function normJob(j){const o=_normJob0(j);if(Array.isArray(o.miscItems)&&o.miscItems.length){const ms=o.miscItems.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);o.misc=ms?String(Math.round(ms*100)/100):'';}if(Array.isArray(o.fuelRefills)&&o.fuelRefills.length){const s=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.baht)||0),0);const l=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.liters)||0),0);if(s)o.fuelBaht=String(Math.round(s*100)/100);if(l)o.fuelLiters=String(Math.round(l*100)/100);}return o;}
-function _normJob0(j){return{rateBasis:(j.rateBasis==='trip'?'trip':(j.rateBasis==='ton'?'ton':'')),customerCode:String(j.customerCode||'').trim(),acctPosted:j.acctPosted||'',acctApPosted:j.acctApPosted||'',billInvNo:String(j.billInvNo||''),billRecNo:String(j.billRecNo||''),billedAt:j.billedAt||'',billLines:(j.billLines&&typeof j.billLines==='object'&&!Array.isArray(j.billLines))?j.billLines:{},destDistrict:String(j.destDistrict||''),destProvince:String(j.destProvince||''),allowanceExtra:j.allowanceExtra==null?'':String(j.allowanceExtra),fuelRefills:(function(v){if(Array.isArray(v))return v.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));if(typeof v==='string'&&v.trim()){try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));}catch(e){}}return undefined;})(j.fuelRefills),id:j.id||0,jobNo:j.jobNo||'',date:toBkkDate(j.date),time:j.time||'',driverCode:String(j.driverCode||''),truckPlate:j.truckPlate||'',origin:j.origin||'',destination:j.destination||'',customer:j.customer||'',deliveryNo:j.deliveryNo||'',weight:j.weight||'',revenue:j.revenue||'',distance:j.distance||'',extraDistance:j.extraDistance||'',trackJob:!!j.trackJob,emptyDistance:j.emptyDistance||'',ratePerTon:j.ratePerTon||'',rateAddWeight:j.rateAddWeight||'',rateAddOther:j.rateAddOther||'',dispatchPoint:j.dispatchPoint||'',status:j.status||'รับงาน',fuelLiters:j.fuelLiters||'',fuelPricePerL:j.fuelPricePerL||'',fuelBaht:j.fuelBaht||'',toll:j.toll||'',allowance:j.allowance||'',tire:j.tire||'',tireDate:j.tireDate||'',tirePay:j.tirePay||'',repair:j.repair||'',repairDate:j.repairDate||'',repairPay:j.repairPay||'',police:j.police||'',misc:j.misc||'',miscItems:(Array.isArray(j.miscItems)?j.miscItems.map(m=>({label:String(m.label||''),amount:(m.amount==null?'':String(m.amount))})):[]),remark:j.remark||'',driverNote:j.driverNote||'',driverRequest:j.driverRequest||'',attachment:j.attachment||'',attachments:Array.isArray(j.attachments)?j.attachments:[],shipments:Array.isArray(j.shipments)?j.shipments:[],fuelAdvance:j.fuelAdvance||'',fuelAdvanceNote:j.fuelAdvanceNote||'',docsClosed:!!j.docsClosed,docsClosedTime:j.docsClosedTime||'',docsTarget:j.docsTarget||'',expenseDone:!!j.expenseDone,subPayMethod:j.subPayMethod||'pct',subPct:(j.subPct!=null?j.subPct:''),subFlat:j.subFlat||'',subWht:(j.subWht!=null?j.subWht:''),subDeductions:Array.isArray(j.subDeductions)?j.subDeductions:[],subPayDate:j.subPayDate||'',subPayStatus:j.subPayStatus||'รอจ่าย',subDone:!!j.subDone,createdAt:j.createdAt||'',dispatchTime:j.dispatchTime||'',pickupTime:j.pickupTime||'',pickupLat:j.pickupLat||'',pickupLng:j.pickupLng||'',arrivalTime:j.arrivalTime||'',arrivalLat:j.arrivalLat||'',arrivalLng:j.arrivalLng||'',completionTime:j.completionTime||'',completionLat:j.completionLat||'',completionLng:j.completionLng||'',documentTime:j.documentTime||'',dispatcher:j.dispatcher||'',dispatcherOther:j.dispatcherOther||'',_ft:(j._ft&&typeof j._ft==='object')?j._ft:{},_editedAt:j._editedAt};}
+function _normJob0(j){return{rateBasis:(j.rateBasis==='trip'?'trip':(j.rateBasis==='ton'?'ton':'')),customerCode:String(j.customerCode||'').trim(),acctPosted:j.acctPosted||'',acctApPosted:j.acctApPosted||'',billInvNo:String(j.billInvNo||''),billRecNo:String(j.billRecNo||''),billedAt:j.billedAt||'',billLines:(j.billLines&&typeof j.billLines==='object'&&!Array.isArray(j.billLines))?j.billLines:{},destDistrict:String(j.destDistrict||''),destProvince:String(j.destProvince||''),allowanceExtra:j.allowanceExtra==null?'':String(j.allowanceExtra),fuelRefills:(function(v){if(Array.isArray(v))return v.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));if(typeof v==='string'&&v.trim()){try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));}catch(e){}}return undefined;})(j.fuelRefills),id:j.id||0,jobNo:j.jobNo||'',date:toBkkDate(j.date),time:j.time||'',driverCode:String(j.driverCode||''),truckPlate:j.truckPlate||'',origin:j.origin||'',destination:j.destination||'',customer:j.customer||'',deliveryNo:j.deliveryNo||'',weight:j.weight||'',revenue:j.revenue||'',distance:j.distance||'',extraDistance:j.extraDistance||'',trackJob:!!j.trackJob,emptyDistance:j.emptyDistance||'',ratePerTon:j.ratePerTon||'',rateAddWeight:j.rateAddWeight||'',rateAddOther:j.rateAddOther||'',rateAddTrip:j.rateAddTrip||'',dispatchPoint:j.dispatchPoint||'',status:j.status||'รับงาน',fuelLiters:j.fuelLiters||'',fuelPricePerL:j.fuelPricePerL||'',fuelBaht:j.fuelBaht||'',toll:j.toll||'',allowance:j.allowance||'',tire:j.tire||'',tireDate:j.tireDate||'',tirePay:j.tirePay||'',repair:j.repair||'',repairDate:j.repairDate||'',repairPay:j.repairPay||'',police:j.police||'',misc:j.misc||'',miscItems:(Array.isArray(j.miscItems)?j.miscItems.map(m=>({label:String(m.label||''),amount:(m.amount==null?'':String(m.amount))})):[]),remark:j.remark||'',driverNote:j.driverNote||'',driverRequest:j.driverRequest||'',attachment:j.attachment||'',attachments:Array.isArray(j.attachments)?j.attachments:[],shipments:Array.isArray(j.shipments)?j.shipments:[],fuelAdvance:j.fuelAdvance||'',fuelAdvanceNote:j.fuelAdvanceNote||'',docsClosed:!!j.docsClosed,docsClosedTime:j.docsClosedTime||'',docsTarget:j.docsTarget||'',expenseDone:!!j.expenseDone,subPayMethod:j.subPayMethod||'pct',subPct:(j.subPct!=null?j.subPct:''),subFlat:j.subFlat||'',subWht:(j.subWht!=null?j.subWht:''),subDeductions:Array.isArray(j.subDeductions)?j.subDeductions:[],subPayDate:j.subPayDate||'',subPayStatus:j.subPayStatus||'รอจ่าย',subDone:!!j.subDone,createdAt:j.createdAt||'',dispatchTime:j.dispatchTime||'',pickupTime:j.pickupTime||'',pickupLat:j.pickupLat||'',pickupLng:j.pickupLng||'',arrivalTime:j.arrivalTime||'',arrivalLat:j.arrivalLat||'',arrivalLng:j.arrivalLng||'',completionTime:j.completionTime||'',completionLat:j.completionLat||'',completionLng:j.completionLng||'',documentTime:j.documentTime||'',dispatcher:j.dispatcher||'',dispatcherOther:j.dispatcherOther||'',_ft:(j._ft&&typeof j._ft==='object')?j._ft:{},_editedAt:j._editedAt};}
 const _TIRE_POS_NO={'หน้า ซ.':1,'หน้า ข.':2,'ขับ1 ซ.นอก':3,'ขับ1 ซ.ใน':4,'ขับ1 ข.ใน':5,'ขับ1 ข.นอก':6,'ขับ2 ซ.นอก':7,'ขับ2 ซ.ใน':8,'ขับ2 ข.ใน':9,'ขับ2 ข.นอก':10,'เพลา1 ซ.นอก':11,'เพลา1 ซ.ใน':12,'เพลา1 ข.ใน':13,'เพลา1 ข.นอก':14,'เพลา2 ซ.นอก':15,'เพลา2 ซ.ใน':16,'เพลา2 ข.ใน':17,'เพลา2 ข.นอก':18,'เพลา3 ซ.นอก':19,'เพลา3 ซ.ใน':20,'เพลา3 ข.ใน':21,'เพลา3 ข.นอก':22};
 function _tirePosRaw(p){return String(p||'').replace(/^\(\d+\)\s*/,'');}
 function _tirePosLabel(p){const r=_tirePosRaw(p);if(!r)return '';const n=_TIRE_POS_NO[r];return n?('('+n+') '+r):r;}
@@ -9928,7 +9936,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const coAddr=(this.state.company&&(this.state.company.address||this.state.company.addr))||'';
     const drv=(this.state.drivers||[]).find(d=>String(d.code)===String(j.driverCode));
     const tk=(this.state.trucks||[]).find(t=>t.plate===j.truckPlate)||{};
-    const rate=num(j.ratePerTon),rw=num(j.rateAddWeight),ro=num(j.rateAddOther),eff=rate+rw+ro;
+    const rate=num(j.ratePerTon),rw=num(j.rateAddWeight),ro=num(j.rateAddOther),at=num(j.rateAddTrip),eff=rate+rw+ro;
     const wt=num(j.weight),rev=num(j.revenue);
     const exRows=[['ค่าน้ำมันเชื้อเพลิง',num(j.fuelBaht),(function(){const L=num(j.fuelLiters);if(!L)return '';const pr=num(j.fuelPricePerL)||(num(j.fuelBaht)?num(j.fuelBaht)/L:0);return _LFB2(L)+' ล.'+(pr?(' × '+_LFB2(pr)+' บ./ล.'):'');})()],
       ['เบี้ยเลี้ยงพนักงานขับรถ',num(j.allowance),''],
@@ -9986,7 +9994,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +info.map(x=>'<div class="r'+(x[0]==='เลขที่บิล / DO'?' big':'')+'"><span class="k">'+esc(x[0])+'</span><span class="v">'+esc(x[1])+'</span></div>').join('')
       +'</div>'
       +'<div class="sh">ค่าขนส่ง</div><table><thead><tr><th>รายการ</th><th class="n">เรท/ตัน</th><th class="n">น้ำหนัก</th><th class="n">จำนวนเงิน</th></tr></thead><tbody>'
-      +'<tr><td>ค่าขนส่ง'+(rw||ro?('<div class="sub">เรทฐาน '+_LFB2(rate)+(rw?(' + '+_LFB2(rw)+' น้ำหนัก'):'')+(ro?(' + '+_LFB2(ro)+' อื่นๆ'):'')+'</div>'):'')+'</td>'
+      +'<tr><td>ค่าขนส่ง'+(rw||ro||at?('<div class="sub">เรทฐาน '+_LFB2(rate)+(rw?(' + '+_LFB2(rw)+' น้ำหนัก'):'')+(ro?(' + '+_LFB2(ro)+' อื่นๆ'):'')+(at?(' · + '+_LFB2(at)+' /เที่ยว'):'')+'</div>'):'')+'</td>'
       +'<td class="n">'+(eff?_LFB2(eff):'—')+'</td><td class="n">'+(wt?(_LFB2(wt)+' ตัน'):'—')+'</td><td class="n">'+B(rev)+'</td></tr>'
       +'</tbody></table>'
       +'<div class="sh">ค่าใช้จ่ายในเที่ยว</div>'
@@ -10527,12 +10535,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   _blLines(j){
     const wRaw=parseFloat(j.weight)||0,rev=parseFloat(j.revenue)||0;
     const w=this._billWeight(j);            // ไม่ต่ำกว่าขั้นต่ำตามข้อตกลงลูกค้า
+    // ราคา/หน่วยที่พิมพ์ = เรทรวมต่อตัน (ฐาน + บวกน้ำหนัก + บวกอื่นๆ) ตรงกับที่หน้าต่างใบงานเรียก "เรทรวม"
+    // เดิมพิมพ์แค่เรทฐาน ถ้ามีช่องบวก ลูกค้าคูณ น้ำหนัก x ราคา แล้วไม่ตรงกับยอดในบรรทัด
+    const _isTon=this.jobRateBasis(j)!=='trip';
+    const _effTon=_isTon?((parseFloat(j.ratePerTon)||0)+(parseFloat(j.rateAddWeight)||0)+(parseFloat(j.rateAddOther)||0)):0;
+    // บวกอื่นๆ/เที่ยว = ก้อนเดียวต่อเที่ยว → ใส่ในบิลแรกของเที่ยว พร้อมหมายเหตุ ลูกค้าจะได้คิดตามได้
+    const _at=parseFloat(j.rateAddTrip)||0;
+    const _atNote=_at?('+'+_LFB2(_at)+'/เที่ยว'):'';
     const ships=(j.shipments||[]).filter(s=>s&&String(s.bill||'').trim());
-    if(ships.length<2){const r1=parseFloat(j.ratePerTon)||(wRaw?rev/wRaw:0);
+    if(ships.length<2){const r1=_effTon||parseFloat(j.ratePerTon)||(wRaw?(rev-_at)/wRaw:0);
       return [{bill:j.deliveryNo||j.jobNo||'',origin:j.origin||'',dest:this._blDest(j),w:w,
-        rev:(w!==wRaw)?Math.round(w*r1*100)/100:rev,rate:r1}];}
+        rev:(w!==wRaw)?Math.round((w*r1+_at)*100)/100:rev,rate:r1,note:_atNote}];}
     const tw=ships.reduce((a,s)=>a+(parseFloat(s.weight)||0),0)||wRaw;
-    const rate=parseFloat(j.ratePerTon)||(tw?rev/tw:0);
+    const rate=_effTon||parseFloat(j.ratePerTon)||(tw?(rev-_at)/tw:0);
     // ★ ลูกค้าที่ตั้งขั้นต่ำไว้ (เช่น ทาทา 29 ตัน) และน้ำหนักที่คิดเงิน != ผลรวมน้ำหนักรายบิล
     //   → เฉลี่ยน้ำหนักลงทุกบิลเท่าๆ กันตามข้อตกลง ทุกบรรทัดจึงกดเครื่องคิดเลขตามได้
     //   เดิมคิดตามน้ำหนักจริงแล้วโยนส่วนต่างขั้นต่ำไปกองที่บรรทัดหนักสุด ทำให้บรรทัดนั้นคิดตามไม่ได้
@@ -10542,6 +10557,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       return {bill:String(s.bill||'').trim(),origin:s.origin||j.origin||'',dest:this._blDest(j,s),w:sw,rev:Math.round(sw*rate*100)/100,rate:rate};});
     // โหมดเฉลี่ยตามขั้นต่ำ: ปล่อยให้ทุกบรรทัด = น้ำหนัก x เรท ตรงๆ ไม่ปรับเศษกลับ
     // (ยอดรวมใบจะเท่ากับ น้ำหนักขั้นต่ำ x เรท ซึ่งคือยอดที่ตกลงกับลูกค้าอยู่แล้ว)
+    if(_at&&lines.length){lines[0].rev=Math.round((lines[0].rev+_at)*100)/100;lines[0].note=_atNote;}
     const diff=_even?0:Math.round((rev-lines.reduce((a,l)=>a+l.rev,0))*100)/100;
     if(diff){let k=0;lines.forEach((l,i)=>{if(l.w>lines[k].w)k=i;});lines[k].rev=Math.round((lines[k].rev+diff)*100)/100;}
     return lines;
@@ -10632,7 +10648,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     items=items.slice().sort((a,b)=>String((a.l&&a.l.bill)||'').localeCompare(String((b.l&&b.l.bill)||''),'en',{numeric:true,sensitivity:'base'}));
     items.forEach(it=>{const j=it.j;[it.l].forEach(l=>{rows.push({no:rows.length+1,bill:l.bill,
       detail:[l.origin,l.dest].filter(Boolean).join('-'),w:l.w,rev:l.rev,rate:l.rate,
-      date:this._blShortDate(j.date),note:''});});});
+      date:this._blShortDate(j.date),note:l.note||''});});});
     {const _miss=list.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim()));
      if(_miss.length&&!window.confirm('⚠ มี '+_miss.length+' เที่ยว ที่ยังไม่กรอกอำเภอ/จังหวัดปลายทาง\nคอลัมน์รายละเอียดจะใช้ข้อความปลายทางเดิมแทน\n\nพิมพ์ต่อเลยไหม?'))return;}
     const sumW=rows.reduce((a,r)=>a+r.w,0),sumA=rows.reduce((a,r)=>a+r.rev,0);
@@ -10869,9 +10885,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   // น้ำหนักที่ใช้คิดเงิน = น้ำหนักจริง แต่ไม่ต่ำกว่าขั้นต่ำ (น้ำหนักจริงยังเก็บไว้ไม่ถูกทับ)
   _billWeight(j){const w=parseFloat(j&&j.weight)||0;const mn=this._custMinWeight(j);return (mn>0&&w>0&&w<mn)?mn:w;}
-  calcRevenue(j){const eff=(parseFloat(j&&j.ratePerTon)||0)+(parseFloat(j&&j.rateAddWeight)||0)+(parseFloat(j&&j.rateAddOther)||0);if(eff<=0)return '';
-    if(this.jobRateBasis(j)==='trip')return String(Math.round(eff*100)/100);
-    const w=this._billWeight(j);return String(Math.round(w*eff*100)/100);}
+  calcRevenue(j){const eff=(parseFloat(j&&j.ratePerTon)||0)+(parseFloat(j&&j.rateAddWeight)||0)+(parseFloat(j&&j.rateAddOther)||0);
+    const _at=parseFloat(j&&j.rateAddTrip)||0;   // บวกอื่นๆ/เที่ยว = ก้อนเดียวต่อเที่ยว ไม่คูณน้ำหนัก
+    if(eff<=0)return _at>0?String(Math.round(_at*100)/100):'';
+    if(this.jobRateBasis(j)==='trip')return String(Math.round((eff+_at)*100)/100);
+    const w=this._billWeight(j);return String(Math.round((w*eff+_at)*100)/100);}
   setSettleRateField=(field,val)=>this.setState(s=>{const d={...s.settleDraft,[field]:val};d.revenue=this.calcRevenue(d);return{settleDraft:d};});
   addSubDeduction=()=>this.setState(s=>{const d=s.settleDraft||{};const list=(d.subDeductions||[]).slice();list.push({label:'',amount:''});return{settleDraft:{...d,subDeductions:list}};});
   setSubDeduction=(i,field,val)=>this.setState(s=>{const d=s.settleDraft||{};const list=(d.subDeductions||[]).slice();list[i]={...(list[i]||{label:'',amount:''}),[field]:val};return{settleDraft:{...d,subDeductions:list}};});
@@ -11800,11 +11818,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
            +'ยอดรวมทั้งเที่ยว ไม่ใช่ของบิลใดบิลหนึ่ง · ส่วนแบ่งรายบิลดูได้ที่หน้าใบวางบิล';}
         out.sdDriver=_drvNm(sd.driverCode);out.sdRoute=this._routeFull(sd);out.sdCustomer=sd.customer||'—';
         out.sdWeightText=(function(){const _w=parseFloat(sd.weight)||0;if(!sd.weight)return '— (ไม่มีน้ำหนัก)';const _bw=this._billWeight(sd);return _bw!==_w?(_w+' ตัน → คิด '+_bw+' ตัน (ขั้นต่ำตามข้อตกลงลูกค้า)'):(_w+' ตัน');}).call(this);out.sdDistanceText=sd.distance?((parseFloat(sd.distance)||0)+' กม.'):'—';out.sdRevenueText=sd.revenue?fmt(parseFloat(sd.revenue)||0):'฿0';
-        {const _rb=parseFloat(sd.ratePerTon)||0,_rw=parseFloat(sd.rateAddWeight)||0,_ro=parseFloat(sd.rateAddOther)||0;const _eff=_rb+_rw+_ro;let _bd=String(_rb);if(_rw)_bd+=' + '+_rw+' (น้ำหนัก)';if(_ro)_bd+=' + '+_ro+' (อื่นๆ)';_bd+=' = '+(Math.round(_eff*100)/100)+' /ตัน';out.sdEffRateText=_bd;out.sdRateAddWeight=(sd.rateAddWeight!=null?String(sd.rateAddWeight):'');out.sdRateAddOther=(sd.rateAddOther!=null?String(sd.rateAddOther):'');}
+        {const _rb=parseFloat(sd.ratePerTon)||0,_rw=parseFloat(sd.rateAddWeight)||0,_ro=parseFloat(sd.rateAddOther)||0;const _eff=_rb+_rw+_ro;let _bd=String(_rb);if(_rw)_bd+=' + '+_rw+' (น้ำหนัก)';if(_ro)_bd+=' + '+_ro+' (อื่นๆ)';_bd+=' = '+(Math.round(_eff*100)/100)+' /ตัน';out.sdEffRateText=_bd;out.sdRateAddWeight=(sd.rateAddWeight!=null?String(sd.rateAddWeight):'');out.sdRateAddOther=(sd.rateAddOther!=null?String(sd.rateAddOther):'');out.sdRateAddTrip=(sd.rateAddTrip!=null?String(sd.rateAddTrip):'');{const _at=parseFloat(sd.rateAddTrip)||0;if(_at)out.sdEffRateText+=' · + '+(Math.round(_at*100)/100)+' /เที่ยว';}}
         out.sdRateLabel=(this.jobRateBasis(sd)==='trip')?'💰 เรทต่อเที่ยว':'💰 เรทฐาน/ตัน';
         out.onSettleRate=(e)=>this.setSettleRateField('ratePerTon',e.target.value);
         out.onSettleAddWeight=(e)=>this.setSettleRateField('rateAddWeight',e.target.value);
         out.onSettleAddOther=(e)=>this.setSettleRateField('rateAddOther',e.target.value);
+        out.onSettleAddTrip=(e)=>this.setSettleRateField('rateAddTrip',e.target.value);
         out.onSettleEmptyDist=(e)=>this.setSettle('emptyDistance',e.target.value);
         {const _cmE=this.costModeExpense();out.sdCostExpense=_cmE;out.sdCostLedger=!_cmE;
           out.sdRepairLabel=_cmE?'ค่าซ่อม (บาท)':'ค่าซ่อมฉุกเฉิน (บาท)';
@@ -13054,7 +13073,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           date:li===0?this._dpThaiDate(j.date):'',bill:l.bill||'—',plate:li===0?(j.truckPlate||'—'):'',
           route:[l.origin||'—',l.dest||'—'].join(' → '),
           split:lines.length>1,splitText:'🔗 บิลที่ '+(li+1)+'/'+lines.length+' ของเที่ยวเดียวกัน',
-          weight:l.w?_n3(l.w):'—',rate:l.rate?_b2(l.rate):'—',amt:_b2(l.rev),
+          weight:l.w?_n3(l.w):'—',rate:(l.rate?_b2(l.rate):'—')+(l.note?(' '+l.note):''),amt:_b2(l.rev),
           billed:!!_bn,unbilled:!_bn,billNoText:_bn,
           arDone:_arOk,arNot:!_arOk,apDone:(_isSub&&_apOk),apNot:(_isSub&&!_apOk),
           showDest:li===0,needDest:!_dd||!_dp,
