@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-17a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-17b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-17a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-17b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6604,7 +6604,7 @@
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04);">
         <div style="overflow-x:auto;">
           <div style="min-width:1200px;">
-            <div style="display:grid;grid-template-columns:120px 130px 130px 120px 1fr 100px 110px 150px 170px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
+            <div style="display:grid;grid-template-columns:120px 130px 130px 120px 1fr 150px 110px 150px 170px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
               <div style="padding:11px 14px;font-size:12px;font-weight:600;color:#667085;">วันที่</div>
               <div style="padding:11px 14px;font-size:12px;font-weight:600;color:#667085;">บิล · เลขใบงาน</div>
               <div style="padding:11px 14px;font-size:12px;font-weight:600;color:#667085;">ทะเบียน · พขร.</div>
@@ -6616,16 +6616,19 @@
               <div style="padding:11px 14px;font-size:12px;font-weight:600;color:#667085;text-align:right;">จัดการ</div>
             </div>
             <sc-for list="{{ settleRows }}" as="r" hint-placeholder-count="5">
-              <div style="display:grid;grid-template-columns:120px 130px 130px 120px 1fr 100px 110px 150px 170px;border-bottom:1px solid #f0f2f5;align-items:center;">
+              <div style="display:grid;grid-template-columns:120px 130px 130px 120px 1fr 150px 110px 150px 170px;border-bottom:1px solid #f0f2f5;align-items:center;">
                 <div style="padding:11px 14px;font-size:12.5px;color:#475467;">{{ r.date }}</div>
                 <div style="padding:11px 14px;"><div style="font-size:14px;font-weight:700;color:#16263a;">{{ r.bill }}</div><div style="font-size:11px;color:#98a2b3;margin-top:2px;">ใบงาน {{ r.jobNo }}</div></div>
                 <div style="padding:11px 14px;font-size:12.5px;color:#344054;line-height:1.4;">{{ r.plate }}<br><span style="color:#98a2b3;">{{ r.driver }}</span></div>
                 <div style="padding:11px 14px;font-size:12.5px;color:#475467;">{{ r.customer }}</div>
                 <div style="padding:11px 14px;font-size:12px;color:#667085;line-height:1.4;min-width:0;overflow:hidden;">{{ r.route }}<sc-if value="{{ r.distanceText }}" hint-placeholder-val="{{ false }}"><div style="font-size:10.5px;color:#2f6fb0;margin-top:2px;">📏 {{ r.distanceText }}</div></sc-if></div>
-                <div style="padding:7px 9px;min-width:118px;">
-                  <input type="number" key="{{ r.rateKey }}" defaultValue="{{ r.rateRaw }}" onBlur="{{ r.onRateCommit }}" placeholder="{{ r.ratePh }}" style="width:100%;padding:5px 8px;border:1px solid #2f6fb0;border-radius:7px;font-size:13px;font-weight:600;color:#16263a;text-align:right;box-sizing:border-box;background:#fff;margin-bottom:4px;">
-                  <input type="number" key="{{ r.rateAddWeightKey }}" defaultValue="{{ r.rateAddWeightRaw }}" onBlur="{{ r.onRateAddWeightCommit }}" placeholder="+ น้ำหนัก" style="width:100%;padding:5px 8px;border:1px solid #f0c088;border-radius:7px;font-size:12.5px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;margin-bottom:4px;">
-                  <input type="number" key="{{ r.rateAddOtherKey }}" defaultValue="{{ r.rateAddOtherRaw }}" onBlur="{{ r.onRateAddOtherCommit }}" placeholder="+ อื่นๆ" style="width:100%;padding:5px 8px;border:1px solid #f0c088;border-radius:7px;font-size:12.5px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
+                <div style="padding:7px 9px;">
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+                  <input type="number" key="{{ r.rateKey }}" defaultValue="{{ r.rateRaw }}" onBlur="{{ r.onRateCommit }}" placeholder="{{ r.ratePh }}" title="ราคาฐาน" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #2f6fb0;border-radius:7px;font-size:12.5px;font-weight:600;color:#16263a;text-align:right;box-sizing:border-box;background:#fff;">
+                  <input type="number" key="{{ r.rateAddWeightKey }}" defaultValue="{{ r.rateAddWeightRaw }}" onBlur="{{ r.onRateAddWeightCommit }}" placeholder="+นน./ตัน" title="+ น้ำหนัก (ต่อตัน)" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #f0c088;border-radius:7px;font-size:12px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
+                  <input type="number" key="{{ r.rateAddOtherKey }}" defaultValue="{{ r.rateAddOtherRaw }}" onBlur="{{ r.onRateAddOtherCommit }}" placeholder="+อื่น/ตัน" title="+ อื่นๆ (ต่อตัน)" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #f0c088;border-radius:7px;font-size:12px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
+                  <input type="number" key="{{ r.rateAddTripKey }}" defaultValue="{{ r.rateAddTripRaw }}" onBlur="{{ r.onRateAddTripCommit }}" placeholder="+/เที่ยว" title="+ บวกอื่นๆ ต่อเที่ยว (ก้อนเดียว ไม่คูณน้ำหนัก)" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #d9a6f0;border-radius:7px;font-size:12px;font-weight:600;color:#7a2e9a;text-align:right;box-sizing:border-box;background:#fff;">
+                  </div>
                   <div style="font-size:10px;color:#98a2b3;margin-top:4px;text-align:right;line-height:1.35;"><sc-if value="{{ r.effRateText }}" hint-placeholder-val="{{ false }}"><span style="color:#b54708;font-weight:700;">{{ r.effRateText }}</span><br></sc-if>{{ r.weightText }}<br>= <b style="color:#175cd3;">{{ r.revenueText }}</b></div>
                 </div>
                 <div style="padding:11px 14px;font-size:13px;color:#b54708;font-weight:600;text-align:right;">{{ r.expense }}</div>
@@ -11806,7 +11809,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       if(S.effSettleStatus!=='all')settleList=settleList.filter(j=>settleStat(j)===S.effSettleStatus);
       const _drvNm=(code)=>{const d=S.drivers.find(x=>String(x.code)===String(code));return d?d.name:(code||'—');};
       const _fmtThD=(iso)=>{if(!iso)return '—';const p=String(iso).slice(0,10).split('-');return (+p[2])+' '+THM[parseInt(p[1])-1]+' '+((+p[0])+543);};
-      out.settleRows=settleList.map(j=>{const st=settleStat(j);return{id:j.id,ratePh:(this.jobRateBasis(j)==='trip'?'ต่อเที่ยว':'ฐาน/ตัน'),rateKey:j.id+'|r|'+String(j.ratePerTon||''),rateAddWeightKey:j.id+'|w|'+String(j.rateAddWeight||''),rateAddOtherKey:j.id+'|o|'+String(j.rateAddOther||''),onPrint:()=>this.printTripDetail(j.id),onReopen:()=>this.reopenJobFromEff(j.id),date:_fmtThD(j.date),jobNo:j.jobNo||'—',bill:j.deliveryNo||'—',plate:j.truckPlate||'—',driver:_drvNm(j.driverCode),customer:j.customer||'—',route:this._routeFull(j),revenue:j.revenue?fmt(parseFloat(j.revenue)||0):'—',revenueRaw:(j.revenue===0||j.revenue)?String(j.revenue):'',onRevenueCommit:(e)=>this.setSettleRowRevenue(j.id,e.target.value),rateRaw:(j.ratePerTon===0||j.ratePerTon)?String(j.ratePerTon):'',onRateCommit:(e)=>this.setSettleRowRateField(j.id,'ratePerTon',e.target.value),rateAddWeightRaw:(j.rateAddWeight===0||j.rateAddWeight)?String(j.rateAddWeight):'',onRateAddWeightCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddWeight',e.target.value),rateAddOtherRaw:(j.rateAddOther===0||j.rateAddOther)?String(j.rateAddOther):'',onRateAddOtherCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddOther',e.target.value),effRateText:(function(){const b=parseFloat(j.ratePerTon)||0,aw=parseFloat(j.rateAddWeight)||0,ao=parseFloat(j.rateAddOther)||0;return (aw||ao)?('รวม '+(Math.round((b+aw+ao)*100)/100)+'/ตัน'):'';})(),weightText:j.weight?((parseFloat(j.weight)||0)+' ตัน'):'—',distanceText:j.distance?((parseFloat(j.distance)||0)+' กม.'):'',revenueText:j.revenue?fmt(parseFloat(j.revenue)||0):'—',expense:expSum(j)>0?fmt(expSum(j)):'—',statusLabel:_sMeta[st].label,statusStyle:_sMeta[st].style,onOpen:()=>this.openSettle(j.id)};});
+      out.settleRows=settleList.map(j=>{const st=settleStat(j);return{id:j.id,ratePh:(this.jobRateBasis(j)==='trip'?'ต่อเที่ยว':'ฐาน/ตัน'),rateKey:j.id+'|r|'+String(j.ratePerTon||''),rateAddWeightKey:j.id+'|w|'+String(j.rateAddWeight||''),rateAddOtherKey:j.id+'|o|'+String(j.rateAddOther||''),rateAddTripKey:j.id+'|t|'+String(j.rateAddTrip||''),rateAddTripRaw:(j.rateAddTrip===0||j.rateAddTrip)?String(j.rateAddTrip):'',onRateAddTripCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddTrip',e.target.value),onPrint:()=>this.printTripDetail(j.id),onReopen:()=>this.reopenJobFromEff(j.id),date:_fmtThD(j.date),jobNo:j.jobNo||'—',bill:j.deliveryNo||'—',plate:j.truckPlate||'—',driver:_drvNm(j.driverCode),customer:j.customer||'—',route:this._routeFull(j),revenue:j.revenue?fmt(parseFloat(j.revenue)||0):'—',revenueRaw:(j.revenue===0||j.revenue)?String(j.revenue):'',onRevenueCommit:(e)=>this.setSettleRowRevenue(j.id,e.target.value),rateRaw:(j.ratePerTon===0||j.ratePerTon)?String(j.ratePerTon):'',onRateCommit:(e)=>this.setSettleRowRateField(j.id,'ratePerTon',e.target.value),rateAddWeightRaw:(j.rateAddWeight===0||j.rateAddWeight)?String(j.rateAddWeight):'',onRateAddWeightCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddWeight',e.target.value),rateAddOtherRaw:(j.rateAddOther===0||j.rateAddOther)?String(j.rateAddOther):'',onRateAddOtherCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddOther',e.target.value),effRateText:(()=>{const b=parseFloat(j.ratePerTon)||0,aw=parseFloat(j.rateAddWeight)||0,ao=parseFloat(j.rateAddOther)||0,at=parseFloat(j.rateAddTrip)||0;const _u=this.jobRateBasis(j)==='trip'?'/เที่ยว':'/ตัน';return ((aw||ao)?('รวม '+(Math.round((b+aw+ao)*100)/100)+_u):'')+(at?(((aw||ao)?' ':'')+'+'+(Math.round(at*100)/100)+'/เที่ยว'):'');})(),weightText:j.weight?((parseFloat(j.weight)||0)+' ตัน'):'—',distanceText:j.distance?((parseFloat(j.distance)||0)+' กม.'):'',revenueText:j.revenue?fmt(parseFloat(j.revenue)||0):'—',expense:expSum(j)>0?fmt(expSum(j)):'—',statusLabel:_sMeta[st].label,statusStyle:_sMeta[st].style,onOpen:()=>this.openSettle(j.id)};});
       out.settleEmpty=settleList.length===0;out.settleRowCount=settleList.length;
       const sd=S.settleDraft;out.settleModalOpen=!!S.settleModalOpen;
       if(sd){
