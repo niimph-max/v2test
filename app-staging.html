@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2753,6 +2753,7 @@
         <div style="display:flex;gap:9px;margin-left:auto;flex-wrap:wrap;">
           <button onClick="{{ onBlUnmark }}" style="padding:10px 15px;background:transparent;color:#cdd7e1;border:1px solid #3d5570;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมายวางบิล</button>
           <button onClick="{{ onBlMark }}" style="padding:10px 15px;background:transparent;color:#fff;border:1px solid #6b8299;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">✓ ทำเครื่องหมายวางบิลแล้ว</button>
+          <button onClick="{{ onBlXlsx }}" style="padding:10px 16px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⬇ Excel</button>
           <button onClick="{{ onBlPrint }}" style="padding:10px 20px;background:#E8A33D;color:#16263a;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">🖨 พิมพ์ใบวางบิล</button>
         </div>
       </div>
@@ -2770,7 +2771,7 @@
             <div style="padding:12px 10px;font-size:12px;">{{ r.range }}</div>
             <div style="padding:12px 10px;text-align:right;">{{ r.lines }} บรรทัด</div>
             <div style="padding:12px 10px;text-align:right;font-weight:700;color:#16263a;">{{ r.total }}</div>
-            <div style="padding:12px 17px;text-align:right;"><button onClick="{{ r.onReprint }}" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์ซ้ำ</button><button onClick="{{ r.onCancelInv }}" style="margin-left:6px;padding:6px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">ยกเลิกใบนี้</button></div>
+            <div style="padding:12px 17px;text-align:right;"><button onClick="{{ r.onReprint }}" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์ซ้ำ</button><button onClick="{{ r.onXlsx }}" style="padding:6px 12px;margin-left:6px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">⬇ Excel</button><button onClick="{{ r.onCancelInv }}" style="margin-left:6px;padding:6px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">ยกเลิกใบนี้</button></div>
           </div>
         </sc-for>
       </div>
@@ -10469,6 +10470,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.printBillingDoc(g.items));
   };
+  blReprintXlsx=(inv)=>{
+    const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
+    this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.exportBillingXlsx(g.items));
+  };
   // ===== ข้อมูลรายเดือนที่เคยอยู่แค่ในเครื่อง → ขึ้น cloud (v.2026-09-18c) =====
   // หักรายการ/วันนัดจ่าย รถร่วม · เพิ่ม/หัก/สถานะ จ่ายเบี้ยเลี้ยง พขร. · แก้ค่าคงที่รายเดือน
   // เดิมเก็บใน localStorage อย่างเดียว → กรอกเครื่องหนึ่ง อีกเครื่องไม่เห็น / ล้างเบราว์เซอร์แล้วหาย
@@ -10778,14 +10783,115 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+items.length+' บิล');
   };
   // รับได้ 2 แบบ: รายการ "บิล" {j,l} (ติ๊กจากหน้าจอ) หรือรายการ "ใบงาน" (ตอนพิมพ์ซ้ำจากทะเบียน)
-  printBillingDoc=(listArg)=>{
+  // ===== เขียนไฟล์ Excel (.xlsx) เอง ไม่พึ่งไลบรารี =====
+  // xlsx = zip ของไฟล์ XML · ใช้ zip แบบไม่บีบอัด (store) + CRC32 · ข้อความเก็บแบบ inlineStr
+  // sheet = {cols:[กว้าง...], rows:[[cell|null...]...], merges:['A1:G1'], heights:{แถว:สูง}}
+  // cell = {v:ค่า, t:'n'|'s', s:เลขสไตล์} — สไตล์ดู _xlsxStyles()
+  _xlsxStyles(){
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+      +'<numFmts count="2"><numFmt numFmtId="164" formatCode="#,##0.000"/><numFmt numFmtId="165" formatCode="#,##0.00"/></numFmts>'
+      +'<fonts count="4"><font><sz val="11"/><name val="Tahoma"/></font><font><b/><sz val="11"/><name val="Tahoma"/></font><font><b/><sz val="14"/><name val="Tahoma"/></font><font><sz val="10"/><color rgb="FF374151"/><name val="Tahoma"/></font></fonts>'
+      +'<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFF1F5F9"/><bgColor indexed="64"/></patternFill></fill></fills>'
+      +'<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color rgb="FF9CA3AF"/></left><right style="thin"><color rgb="FF9CA3AF"/></right><top style="thin"><color rgb="FF9CA3AF"/></top><bottom style="thin"><color rgb="FF9CA3AF"/></bottom><diagonal/></border></borders>'
+      +'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="12">'
+      +'<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+      +'<xf numFmtId="0" fontId="1" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+      +'<xf numFmtId="0" fontId="2" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+      +'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="center" wrapText="1"/></xf>'
+      +'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment vertical="top" wrapText="1"/></xf>'
+      +'<xf numFmtId="164" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment vertical="top"/></xf>'
+      +'<xf numFmtId="165" fontId="0" fillId="0" borderId="1" xfId="0" applyNumberFormat="1" applyBorder="1" applyAlignment="1"><alignment vertical="top"/></xf>'
+      +'<xf numFmtId="165" fontId="1" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>'
+      +'<xf numFmtId="164" fontId="1" fillId="2" borderId="1" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1"/>'
+      +'<xf numFmtId="0" fontId="0" fillId="0" borderId="1" xfId="0" applyBorder="1" applyAlignment="1"><alignment horizontal="center" vertical="top"/></xf>'
+      +'<xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>'
+      +'<xf numFmtId="0" fontId="3" fillId="0" borderId="0" xfId="0" applyFont="1"/>'
+      +'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+    // สไตล์: 0 ปกติ · 1 ตัวหนา · 2 ชื่อบริษัท/หัวเรื่อง · 3 หัวตาราง · 4 ข้อความมีเส้น · 5 น้ำหนัก 3 ตำแหน่ง
+    //        6 เงิน · 7 รวมเงิน · 8 รวมน้ำหนัก · 9 กลางมีเส้น · 10 ข้อความแถวรวม · 11 ตัวเล็กสีเทา
+  }
+  _xlsxSheetXml(sh){
+    const x=(v)=>String(v==null?'':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])).split('').filter(ch=>{const k=ch.charCodeAt(0);return k>=32||k===9||k===10||k===13;}).join('');
+    const col=(i)=>{let n='';i++;while(i>0){const m=(i-1)%26;n=String.fromCharCode(65+m)+n;i=Math.floor((i-1)/26);}return n;};
+    const cols=(sh.cols||[]).map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>').join('');
+    const rows=(sh.rows||[]).map((r,ri)=>{const ht=(sh.heights||{})[ri+1];
+      return '<row r="'+(ri+1)+'"'+(ht?(' ht="'+ht+'" customHeight="1"'):'')+'>'+(r||[]).map((c,ci)=>{if(!c)return '';const ref=col(ci)+(ri+1);const st=c.s?(' s="'+c.s+'"'):'';
+        if(c.t==='n'&&c.v!==''&&c.v!=null&&isFinite(Number(c.v)))return '<c r="'+ref+'"'+st+'><v>'+Number(c.v)+'</v></c>';
+        if(c.v===''||c.v==null)return '<c r="'+ref+'"'+st+'/>';
+        return '<c r="'+ref+'"'+st+' t="inlineStr"><is><t xml:space="preserve">'+x(c.v)+'</t></is></c>';}).join('')+'</row>';}).join('');
+    const mg=(sh.merges||[]).length?('<mergeCells count="'+sh.merges.length+'">'+sh.merges.map(m=>'<mergeCell ref="'+m+'"/>').join('')+'</mergeCells>'):'';
+    return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+      +'<sheetPr><pageSetUpPr fitToPage="1"/></sheetPr><sheetViews><sheetView workbookViewId="0" showGridLines="0"/></sheetViews>'
+      +(cols?('<cols>'+cols+'</cols>'):'')+'<sheetData>'+rows+'</sheetData>'+mg
+      +'<pageMargins left="0.4" right="0.4" top="0.5" bottom="0.5" header="0.3" footer="0.3"/><pageSetup paperSize="9" orientation="portrait" fitToWidth="1" fitToHeight="0"/></worksheet>';
+  }
+  _zipStore(files){   // files=[{name,data:Uint8Array}] → Uint8Array (zip ไม่บีบอัด)
+    const T=this._crcT||(this._crcT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0;}return t;})());
+    const crc=(d)=>{let c=0xFFFFFFFF;for(let i=0;i<d.length;i++)c=T[(c^d[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0;};
+    const enc=new TextEncoder();const parts=[];const cent=[];let off=0;
+    const u16=(v)=>[v&255,(v>>>8)&255],u32=(v)=>[v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255];
+    files.forEach(f=>{const nm=enc.encode(f.name);const d=f.data;const c=crc(d);
+      const lh=new Uint8Array([...u32(0x04034b50),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(c),...u32(d.length),...u32(d.length),...u16(nm.length),...u16(0)]);
+      parts.push(lh,nm,d);
+      cent.push(new Uint8Array([...u32(0x02014b50),...u16(20),...u16(20),...u16(0x0800),...u16(0),...u16(0),...u16(0x21),...u32(c),...u32(d.length),...u32(d.length),...u16(nm.length),...u16(0),...u16(0),...u16(0),...u16(0),...u32(0),...u32(off)]),nm);
+      off+=lh.length+nm.length+d.length;});
+    const csz=cent.reduce((a,b)=>a+b.length,0);
+    const end=new Uint8Array([...u32(0x06054b50),...u16(0),...u16(0),...u16(files.length),...u16(files.length),...u32(csz),...u32(off),...u16(0)]);
+    const all=[...parts,...cent,end];const out=new Uint8Array(all.reduce((a,b)=>a+b.length,0));let p=0;all.forEach(b=>{out.set(b,p);p+=b.length;});return out;
+  }
+  _xlsxBytes(sheetName,sheet){
+    const enc=new TextEncoder();const x=(v)=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    const H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+    const nm=String(sheetName||'Sheet1').replace(/[\\\/\?\*\[\]:]/g,' ').slice(0,31)||'Sheet1';
+    const files=[
+      ['[Content_Types].xml',H+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>'],
+      ['_rels/.rels',H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+      ['xl/workbook.xml',H+'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="'+x(nm)+'" sheetId="1" r:id="rId1"/></sheets></workbook>'],
+      ['xl/_rels/workbook.xml.rels',H+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>'],
+      ['xl/styles.xml',this._xlsxStyles()],
+      ['xl/worksheets/sheet1.xml',this._xlsxSheetXml(sheet)]];
+    return this._zipStore(files.map(f=>({name:f[0],data:enc.encode(f[1])})));
+  }
+  _downloadBytes(filename,bytes,mime){
+    const blob=new Blob([bytes],{type:mime||'application/octet-stream'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(()=>URL.revokeObjectURL(url),1500);
+  }
+  // ใบวางบิลเป็น Excel — ข้อมูลชุดเดียวกับใบพิมพ์ (_blDocData) ไว้ส่งให้ลูกค้า
+  // ตัวเลขเก็บเป็นตัวเลขจริง (ไม่ใช่ข้อความ) ลูกค้าเอาไปรวม/กรองต่อได้
+  _blXlsxSheet(D){
+    const {coName,coAddr,coLine2,custName,custLine,inv,rec,docDate,prod,tt,rows,sumW,sumA,words}=D;
+    const S_=(v,st)=>({v:v,t:'s',s:st||0}),N_=(v,st)=>({v:v,t:'n',s:st});
+    const R=[];const M=[];
+    R.push([S_(coName,2),null,null,null,null,null,null,S_('วันที่ :',1),S_(this._blShortDate(docDate),1)]);M.push('A1:G1','I1:J1');
+    R.push([S_(coAddr,11),null,null,null,null,null,null,S_('เลขที่ :',1),S_(inv||'—',1)]);M.push('A2:G2','I2:J2');
+    R.push([S_(coLine2,11),null,null,null,null,null,null,S_('เลขที่ใบเสร็จ :',1),S_(rec||'—',1)]);M.push('A3:G3','I3:J3');
+    R.push([]);
+    R.push([S_('ใบแจ้งหนี้ / ใบวางบิล',2)]);M.push('A5:J5');
+    R.push([S_('เรียกเก็บ '+(custName||'—'),1)]);M.push('A6:J6');
+    R.push([S_(custLine,11)]);M.push('A7:J7');
+    R.push([]);
+    R.push(['ลำดับ','เลขที่ใบกำกับ','รหัสลูกค้า','รายละเอียด','ประเภทรถ','จำนวน','รวมเป็นเงิน','ราคา/หน่วย','วันที่','หมายเหตุ'].map(h=>S_(h,3)));
+    rows.forEach(r=>R.push([N_(r.no,9),S_(r.bill,4),S_(prod,4),S_(r.detail,4),S_(tt,4),
+      N_(Math.round((Number(r.w)||0)*1000)/1000,5),N_(Math.round((Number(r.rev)||0)*100)/100,6),
+      r.rate?N_(Math.round(r.rate*100)/100,6):S_('—',9),S_(r.date,9),S_(r.note,9)]));
+    const tr=R.length+1;
+    R.push([S_(words,10),S_('',10),S_('',10),S_('',10),S_('',10),N_(Math.round(sumW*1000)/1000,8),N_(Math.round(sumA*100)/100,7),S_('',10),S_('',10),S_('',10)]);M.push('A'+tr+':E'+tr);
+    return {cols:[7,15,11,36,12,11,14,12,11,16],rows:R,merges:M,heights:{5:24}};
+  }
+  exportBillingXlsx=(listArg)=>{
+    const D=this._blDocData(listArg);if(!D)return;
+    const safe=String(D.inv||'draft').replace(/[\\\/:*?"<>|]/g,'-');
+    this._downloadBytes('ใบวางบิล_'+safe+'.xlsx',this._xlsxBytes(D.inv||'ใบวางบิล',this._blXlsxSheet(D)),'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  };
+  // ข้อมูลใบวางบิล ใช้ร่วมกันระหว่าง "พิมพ์" กับ "Excel" — ตัวเลขสองทางจึงตรงกันเสมอ
+  _blDocData(listArg){
     const S=this.state;
     let items;
     if(Array.isArray(listArg)&&listArg.length){
       items=listArg[0]&&listArg[0].l?listArg:[];
       if(!items.length)listArg.forEach(j=>this._blLines(j).forEach(l=>items.push({j:j,l:l})));
     }else items=this._blSelectedLines();
-    if(!items.length){window.alert('ยังไม่ได้เลือกบิลที่จะวางบิล');return;}
+    if(!items.length){window.alert('ยังไม่ได้เลือกบิลที่จะวางบิล');return null;}
     const list=[];{const seen={};items.forEach(it=>{const k=String(it.j.id);if(!seen[k]){seen[k]=1;list.push(it.j);}});}
     const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
     const n2=(n)=>_LFB2(n);
@@ -10814,10 +10920,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     items.forEach(it=>{const j=it.j;[it.l].forEach(l=>{rows.push({no:rows.length+1,bill:l.bill,
       detail:[l.origin,l.dest].filter(Boolean).join('-'),w:l.w,rev:l.rev,rate:l.rate,
       date:this._blShortDate(j.date),note:l.note||''});});});
-    {const _miss=list.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim()));
-     if(_miss.length&&!window.confirm('⚠ มี '+_miss.length+' เที่ยว ที่ยังไม่กรอกอำเภอ/จังหวัดปลายทาง\nคอลัมน์รายละเอียดจะใช้ข้อความปลายทางเดิมแทน\n\nพิมพ์ต่อเลยไหม?'))return;}
     const sumW=rows.reduce((a,r)=>a+r.w,0),sumA=rows.reduce((a,r)=>a+r.rev,0);
     const words=this._bahtText(sumA);
+    return {S,items,list,esc,n2,n3,co,coName,coAddr,coTax,coLine2,cust,custName,custLine,inv,rec,docDate,prod,tt,rows,sumW,sumA,words};
+  }
+  printBillingDoc=(listArg)=>{
+    const D=this._blDocData(listArg);if(!D)return;
+    let {S,items,list,esc,n2,n3,co,coName,coAddr,coTax,coLine2,cust,custName,custLine,inv,rec,docDate,prod,tt,rows,sumW,sumA,words}=D;
+    {const _miss=list.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim()));
+     if(_miss.length&&!window.confirm('⚠ มี '+_miss.length+' เที่ยว ที่ยังไม่กรอกอำเภอ/จังหวัดปลายทาง\nคอลัมน์รายละเอียดจะใช้ข้อความปลายทางเดิมแทน\n\nพิมพ์ต่อเลยไหม?'))return;}
     // แบ่งหน้าตาม "ความสูงจริง" ไม่ใช่นับแถวตายตัว
     // เดิมยัดหน้าละ 18 แถวเสมอ พอรายละเอียดยาว 3 บรรทัดมันล้นหน้า A4
     // เบราว์เซอร์เลยตัดหน้าเองโดยไม่มีหัวกระดาษ (เจอจริง 15 ก.ย. 2026)
@@ -13280,8 +13391,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
        out.blRegCount=_reg.length;out.blHasReg=_reg.length>0;
        out.blRegRows=_reg.slice(0,40).map(g=>({inv:g.inv,cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
-         lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
-      out.onBlPrint=()=>this.printBillingDoc();
+         lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
+      out.onBlPrint=()=>this.printBillingDoc();out.onBlXlsx=()=>this.exportBillingXlsx();
       out.onBlMark=()=>this.blMark();
       out.onBlUnmark=()=>this.blUnmark();
     }
