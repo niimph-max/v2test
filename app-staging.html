@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -8808,9 +8808,13 @@ class Component extends DCLogic {
     const inR=(m)=>!!m&&(!from||m>=from)&&(!to||m<=to);
     const shops={};
     this._getWO().forEach(w=>{
+      // ราคาอะไหล่ในใบสั่งซ่อมเป็นราคาก่อน VAT · VAT กรอกเป็นยอดเดียวทั้งใบ (costVat)
+      // → เฉลี่ย VAT ลงแต่ละรายการตามสัดส่วนราคา ให้ยอดรายร้านเป็นยอดรวม VAT ตรงกับบิลร้าน
+      const _net=(w.parts||[]).reduce((a,x)=>a+(Number(x.amount)||0),0)+(Number(w.costLabor)||0)+(Number(w.costOther)||0);
+      const _vat=this._vatOf({vat:w.costVat},_net);const _k=(_net>0&&_vat>0)?(1+_vat/_net):1;
       (w.parts||[]).forEach(p=>{
         const name=String(p.shop||'').trim();if(!name)return;
-        const amt=Number(p.amount)||0;if(!amt)return;
+        const amt=Math.round((Number(p.amount)||0)*_k*100)/100;if(!amt)return;
         const date=String(p.date||w.date||'');const m=date.slice(0,7);if(!inR(m))return;
         const sh=shops[name]||(shops[name]={shop:name,total:0,count:0,months:{},plates:{}});
         const mo=sh.months[m]||(sh.months[m]={month:m,total:0,count:0,items:[]});
