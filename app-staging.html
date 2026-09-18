@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18h · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18i · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18h</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18i</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7081,6 +7081,8 @@ function normTruck(t){
   let maint=t.maintenance;
   if(typeof maint==='string'){try{maint=JSON.parse(maint);}catch(e){maint=[];}}
   if(!Array.isArray(maint))maint=[];
+  // วันที่ในประวัติซ่อมบางรายการเก็บเป็นปี พ.ศ. (เช่น 2569-08-08 จากใบสั่งซ่อมเก่า) → แปลงเป็น ค.ศ. ไม่งั้นโชว์ 2669 และลอยขึ้นบนสุด
+  maint=maint.map(m=>{if(!m||!m.date)return m;const mm=String(m.date).match(/^(\d{4})(-.*)?$/);if(!mm)return m;const y=+mm[1];return (y>=2400&&y<3000)?{...m,date:String(y-543)+(mm[2]||'')}:m;});
   // parse boolean fields ที่อาจมาเป็น string จาก Sheets
   const boolParse=(v)=>v===true||v==='true'||v==='TRUE';
   // normalize date fields: ตัด timestamp ออก เหลือแค่ YYYY-MM-DD
@@ -8774,7 +8776,7 @@ class Component extends DCLogic {
   delZone=(id)=>{if(!window.confirm('ลบเขตนี้?'))return;this.saveGpsCfg({zones:(this.gpsCfg().zones||[]).filter(z=>String(z.id)!==String(id))});};
   // ===== ซ่อมบำรุง (Work Order) เฟส 1 =====
   _woSeed(){try{const raw=localStorage.getItem('lf_wo_v1');if(raw)return JSON.parse(raw);}catch(e){}return [];}
-  _getWO(){const l=this.state.workOrders!==undefined?this.state.workOrders:this._woSeed();return (l||[]).map(w=>{const f=(v)=>this._fixYr(v);const o={...w,date:f(w.date),doneDate:f(w.doneDate)};if(Array.isArray(w.parts))o.parts=w.parts.map(p=>({...p,date:f(p.date)}));return o;});}
+  _getWO(){const l=this.state.workOrders!==undefined?this.state.workOrders:this._woSeed();return (l||[]).map(w=>{const f=(v)=>this._fixYr(v);const o={...w,date:f(w.date),doneDate:f(w.doneDate),dateClose:f(w.dateClose)};if(Array.isArray(w.parts))o.parts=w.parts.map(p=>({...p,date:f(p.date)}));return o;});}
   _saveWO(list,changedId){this.setState({workOrders:list});this.collPersist(list,'lf_wo_v1',changedId,'id','woPending','work_orders');}
   _woToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
   onGoWO=()=>{this.setState({section:'workorder',woView:'list',woStatusFilter:'all'});this.scrollMain();};
@@ -8910,7 +8912,10 @@ class Component extends DCLogic {
   addPart=()=>this.setState(s=>({woDraft:{...s.woDraft,parts:[...((s.woDraft&&s.woDraft.parts)||[]),{date:this._woToday(),billNo:'',shop:'',item:'',amount:''}]}}));
   removePart=(i)=>this.setState(s=>{const p=[...((s.woDraft&&s.woDraft.parts)||[])];p.splice(i,1);return{woDraft:{...s.woDraft,parts:p}};});
   setPart=(i,k,v)=>this.setState(s=>{const p=[...((s.woDraft&&s.woDraft.parts)||[])];p[i]={...p[i],[k]:(/date/i.test(k)?this._fixYr(v):v)};return{woDraft:{...s.woDraft,parts:p}};});
-  saveWO=()=>{const d=this.state.woDraft;if(!this._plGuard(d&&d.date,'wo',d&&d.id,'ใบสั่งซ่อม '+((d&&d.no)||'')))return;if(!d.plate){this.setState({woErr:'กรุณาเลือกรถ'});return;}if(!String(d.symptom||'').trim()){this.setState({woErr:'กรุณากรอกอาการ/รายการซ่อม'});return;}const _pa=(d.parts||[]).map(p=>({date:p.date||'',billNo:p.billNo||'',shop:p.shop||'',item:p.item||'',amount:Number(p.amount)||0}));const clean={...d,parts:_pa,odo:Number(d.odo)||0,costParts:_pa.reduce((s,p)=>s+p.amount,0),costLabor:Number(d.costLabor)||0,costOther:Number(d.costOther)||0,costVat:Number(d.costVat)||0};if(clean.status==='เสร็จแล้ว'&&!clean.dateClose)clean.dateClose=this._woToday();if(clean.status!=='เสร็จแล้ว')clean.dateClose='';const list=this._getWO().slice();const i=list.findIndex(x=>x.id===d.id);if(i>=0)list[i]=clean;else list.unshift(clean);this._saveWO(list,clean.id);this._woSyncToTruck(clean);if(clean.status==='เสร็จแล้ว'&&clean.pmKey)this._pmStamp(clean.plate,clean.pmKey);this.setState({woView:'list',woErr:''});};
+  saveWO=()=>{const d=this.state.woDraft;if(!this._plGuard(d&&d.date,'wo',d&&d.id,'ใบสั่งซ่อม '+((d&&d.no)||'')))return;if(!d.plate){this.setState({woErr:'กรุณาเลือกรถ'});return;}if(!String(d.symptom||'').trim()){this.setState({woErr:'กรุณากรอกอาการ/รายการซ่อม'});return;}
+    // กันปีผิด (เช่นพิมพ์ 2669 → ระบบแปลงเป็น 2126) — ปีต้องอยู่ในช่วง 2000 ถึงปีหน้า
+    {const _yMax=new Date().getFullYear()+1;const _bad=[['วันที่แจ้งซ่อม',d.date],['วันที่ซ่อมเสร็จ',d.dateClose]].concat((d.parts||[]).map((x,i)=>['วันที่บิลอะไหล่ แถว '+(i+1),x.date])).filter(([,v])=>{if(!v)return false;const y=parseInt(String(v).slice(0,4),10);return !(y>=2000&&y<=_yMax);});
+     if(_bad.length){this.setState({woErr:'ปีของ '+_bad.map(x=>x[0]).join(', ')+' ดูผิด ('+_bad.map(x=>String(x[1]).slice(0,4)).join(', ')+') — กรุณาเลือกวันที่ใหม่'});return;}}const _pa=(d.parts||[]).map(p=>({date:p.date||'',billNo:p.billNo||'',shop:p.shop||'',item:p.item||'',amount:Number(p.amount)||0}));const clean={...d,parts:_pa,odo:Number(d.odo)||0,costParts:_pa.reduce((s,p)=>s+p.amount,0),costLabor:Number(d.costLabor)||0,costOther:Number(d.costOther)||0,costVat:Number(d.costVat)||0};if(clean.status==='เสร็จแล้ว'&&!clean.dateClose)clean.dateClose=this._woToday();if(clean.status!=='เสร็จแล้ว')clean.dateClose='';const list=this._getWO().slice();const i=list.findIndex(x=>x.id===d.id);if(i>=0)list[i]=clean;else list.unshift(clean);this._saveWO(list,clean.id);this._woSyncToTruck(clean);if(clean.status==='เสร็จแล้ว'&&clean.pmKey)this._pmStamp(clean.plate,clean.pmKey);this.setState({woView:'list',woErr:''});};
   deleteWO=(id)=>{const w=this._getWO().find(x=>x.id===id);if(!this._plGuard(w&&w.date,'wo',id,'ลบใบสั่งซ่อม '+((w&&w.no)||id)))return;if(!window.confirm('ลบใบสั่งซ่อมนี้?'))return;const list=this.collDelete(id,this._getWO(),'lf_wo_v1','id','woPending','woTomb','work_orders');this.setState({workOrders:list});if(w)this._woSyncToTruck({...w,status:'ยกเลิก'});};
   advanceWO=(id)=>{const list=this._getWO().slice();const i=list.findIndex(x=>x.id===id);if(i<0)return;const cur=list[i].status;const next=cur==='เปิดงาน'?'กำลังซ่อม':cur==='กำลังซ่อม'?'เสร็จแล้ว':cur;list[i]={...list[i],status:next};if(next==='เสร็จแล้ว'&&!list[i].dateClose)list[i].dateClose=this._woToday();this._saveWO(list,list[i].id);this._woSyncToTruck(list[i]);if(list[i].status==='เสร็จแล้ว'&&list[i].pmKey)this._pmStamp(list[i].plate,list[i].pmKey);};
   _woSyncToTruck(wo){if(!wo||!wo.plate)return;const mid='WO'+wo.id;const total=(Number(wo.costParts)||0)+(Number(wo.costLabor)||0)+(Number(wo.costOther)||0)+(Number(wo.costVat)||0);const closed=wo.status==='เสร็จแล้ว';const detail=(wo.cat?('['+wo.cat+'] '):'')+(wo.symptom||'')+(wo.garage?(' · อู่:'+wo.garage):'')+(wo.partsBy?(' · '+wo.partsBy):'')+' ('+wo.no+')';const entry={id:mid,date:wo.dateClose||this._woToday(),type:'ซ่อมบำรุงทั่วไป',detail:detail,cost:total?String(total):'',by:wo.mechanic||'',fromWO:wo.no};const trucks=this.state.trucks.map(t=>{const had=(t.maintenance||[]).some(m=>m.id===mid);let list=(t.maintenance||[]).filter(m=>m.id!==mid);if(closed&&t.plate===wo.plate){list=[entry,...list];}else if(!had&&!(closed&&t.plate===wo.plate)){return t;}return {...t,maintenance:list};});this.persistTrucks(trucks,wo.plate);this.setState({trucks});}
