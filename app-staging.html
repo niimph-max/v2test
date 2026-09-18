@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6047,18 +6047,18 @@
       </div>
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;overflow:hidden;">
         <div style="overflow-x:auto;">
-          <div style="min-width:760px;">
-            <div style="display:grid;grid-template-columns:minmax(120px,1.4fr) 70px 100px 90px 80px 120px 120px;background:#f8fafc;border-bottom:2px solid #e4e7ec;font-size:13px;font-weight:600;">
+          <div style="min-width:820px;">
+            <div style="display:grid;grid-template-columns:minmax(120px,1.4fr) 70px 120px 140px 130px 120px 120px;background:#f8fafc;border-bottom:2px solid #e4e7ec;font-size:13px;font-weight:600;">
               <div style="padding:11px 16px;color:#475467;">เดือน</div>
               <div style="padding:11px 10px;text-align:right;color:#475467;">เที่ยว</div>
               <div style="padding:11px 10px;text-align:right;color:#175cd3;">ค่าขนส่ง</div>
-              <div style="padding:11px 10px;text-align:right;color:#475467;">น้ำมัน</div>
-              <div style="padding:11px 10px;text-align:right;color:#667085;">%น้ำมัน</div>
+              <div style="padding:11px 10px;text-align:right;color:#475467;white-space:nowrap;">{{ effMonthC1Label }}</div>
+              <div style="padding:11px 10px;text-align:right;color:#667085;white-space:nowrap;">{{ effMonthC2Label }}</div>
               <div style="padding:11px 10px;text-align:right;color:#b54708;">รวมค่าใช้จ่าย</div>
               <div style="padding:11px 16px;text-align:right;color:#067647;">คงเหลือสุทธิ</div>
             </div>
             <sc-for list="{{ effTruckMonthRows }}" as="mr" hint-placeholder-count="6">
-              <div onClick="{{ mr.onClickRow }}" style="display:grid;grid-template-columns:minmax(120px,1.4fr) 70px 100px 90px 80px 120px 120px;border-bottom:1px solid #f0f2f5;font-size:13px;align-items:center;cursor:pointer;" style-hover="background:#f8fafc;">
+              <div onClick="{{ mr.onClickRow }}" style="display:grid;grid-template-columns:minmax(120px,1.4fr) 70px 120px 140px 130px 120px 120px;border-bottom:1px solid #f0f2f5;font-size:13px;align-items:center;cursor:pointer;" style-hover="background:#f8fafc;">
                 <div style="padding:10px 16px;font-weight:600;color:#16263a;">{{ mr.month }}</div>
                 <div style="padding:10px 10px;text-align:right;color:#667085;">{{ mr.trips }}</div>
                 <div style="padding:10px 10px;text-align:right;color:#175cd3;font-weight:600;">{{ mr.revenue }}</div>
@@ -7420,7 +7420,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -7580,6 +7580,7 @@ class Component extends DCLogic {
       }
       const cloudUsers=meta.__appusers__&&Array.isArray(meta.__appusers__.list)?meta.__appusers__.list:null;
       try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
+      try{this._kvApplyAll(meta);this._kvStartPoll();}catch(e){}
       if(cloudUsers){
         // คลาวด์เป็นแหล่งจริงของบัญชีผู้ใช้ (admin จัดการ) — sync ลงเครื่องนี้
         try{localStorage.setItem('fleet_users_v1',JSON.stringify(cloudUsers));}catch(e){}
@@ -9659,14 +9660,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   removeJobAttachmentById=(id)=>this.setState(s=>({jobDraft:{...s.jobDraft,attachments:(((s.jobDraft&&s.jobDraft.attachments))||[]).filter(x=>x.id!==id)}}));
   openLightbox=(url,name,type)=>{const img=/^image\//.test(type||'')||/\.(png|jpe?g|gif|webp|bmp|svg)(\?|$)/i.test(name||url||'')||/^data:image\//.test(url||'');this.setState({lightboxUrl:url,lightboxName:name||'',lightboxIsImage:img});};
   closeLightbox=()=>this.setState({lightboxUrl:''});
-  setFixedOverride=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.fixedOverrides||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('fixedOverrides_v1',JSON.stringify(cur));}catch(e){}this.setState({fixedOverrides:cur});};
-  clearFixedOverride=(plate,month)=>{const k=plate+'|'+month;const cur={...(this.state.fixedOverrides||{})};delete cur[k];try{localStorage.setItem('fixedOverrides_v1',JSON.stringify(cur));}catch(e){}this.setState({fixedOverrides:cur});};
+  setFixedOverride=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.fixedOverrides||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('fixedOverrides_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('fixedOverrides',k,cur);this.setState({fixedOverrides:cur});};
+  clearFixedOverride=(plate,month)=>{const k=plate+'|'+month;const cur={...(this.state.fixedOverrides||{})};delete cur[k];try{localStorage.setItem('fixedOverrides_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('fixedOverrides',k,cur);this.setState({fixedOverrides:cur});};
   _subDedList(plate,month){const k=plate+'|'+month;const saved=(this.state.subMonthDeducts||{})[k];if(Array.isArray(saved))return saved;return SUB_DED_DEFAULTS.map(l=>({label:l,amount:''}));}
-  _saveSubDeds(k,list){const cur={...(this.state.subMonthDeducts||{})};cur[k]=list;try{localStorage.setItem('subMonthDeducts_v1',JSON.stringify(cur));}catch(e){}this.setState({subMonthDeducts:cur});}
+  _saveSubDeds(k,list){const cur={...(this.state.subMonthDeducts||{})};cur[k]=list;try{localStorage.setItem('subMonthDeducts_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('subMonthDeducts',k,cur);this.setState({subMonthDeducts:cur});}
   setSubMonthDeduct=(plate,month,i,field,val)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));if(!list[i])list[i]={label:'',amount:''};list[i][field]=val;this._saveSubDeds(k,list);};
   addSubMonthDeduct=(plate,month)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));list.push({label:'',amount:''});this._saveSubDeds(k,list);};
   removeSubMonthDeduct=(plate,month,i)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));list.splice(i,1);this._saveSubDeds(k,list);};
-  setSubMonthMeta=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.subMonthMeta||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('subMonthMeta_v1',JSON.stringify(cur));}catch(e){}this.setState({subMonthMeta:cur});};
+  setSubMonthMeta=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.subMonthMeta||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('subMonthMeta_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('subMonthMeta',k,cur);this.setState({subMonthMeta:cur});};
   _bahtText(n){const _a=Math.abs(Number(n)||0);const _b=Math.floor(_a+1e-9);const _st=Math.round((_a-_b)*100);if(_st>0){const _bt=this._bahtTextInt(_b).replace(/บาทถ้วน$/,'บาท');const _sg=this._bahtTextInt(_st).replace(/บาทถ้วน$/,'สตางค์');return _bt+_sg;}return this._bahtTextInt(_b);}
   _bahtTextInt(n){n=Math.round(Math.abs(n));if(n===0)return 'ศูนย์บาทถ้วน';const t=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];const p=['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];const conv=(num)=>{let s='';const str=String(num);const len=str.length;for(let i=0;i<len;i++){const d=parseInt(str[i]);const pos=len-i-1;if(d===0)continue;if(pos===1&&d===1)s+='สิบ';else if(pos===1&&d===2)s+='ยี่สิบ';else if(pos===0&&d===1&&len>1)s+='เอ็ด';else s+=t[d]+p[pos];}return s;};let baht=Math.floor(n);let out='';if(baht>=1000000){out+=conv(Math.floor(baht/1000000))+'ล้าน';baht=baht%1000000;}out+=conv(baht);return (out||'ศูนย์')+'บาทถ้วน';}
   // ===== จ่ายเบี้ยเลี้ยง/ค่าใช้จ่าย พขร. ทุก 15 วัน =====
@@ -9680,16 +9681,16 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const F=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];const p=String(month||'').split('-');
     return 'งวด '+(String(half)==='1'?'1–15':'16–สิ้นเดือน')+' '+(F[parseInt(p[1])]||'')+' '+(parseInt(p[0])+543);}
   _driverPayDedList(code,month,half){const k=code+'|'+month+'|'+half;const saved=(this.state.driverPayDeducts||{})[k];if(Array.isArray(saved))return saved;return [];}
-  _saveDriverPayDeds(k,list){if(!this._plGuard(String(k||'').split('|')[1],'driverpay',k,'หักเงิน จ่ายเบี้ยเลี้ยง '+k))return;const cur={...(this.state.driverPayDeducts||{})};cur[k]=list;try{localStorage.setItem('driverPayDeducts_v1',JSON.stringify(cur));}catch(e){}this.setState({driverPayDeducts:cur});}
+  _saveDriverPayDeds(k,list){if(!this._plGuard(String(k||'').split('|')[1],'driverpay',k,'หักเงิน จ่ายเบี้ยเลี้ยง '+k))return;const cur={...(this.state.driverPayDeducts||{})};cur[k]=list;try{localStorage.setItem('driverPayDeducts_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('driverPayDeducts',k,cur);this.setState({driverPayDeducts:cur});}
   addDriverPayDeduct=(code,month,half)=>{const k=code+'|'+month+'|'+half;const list=this._driverPayDedList(code,month,half).map(x=>({...x}));list.push({label:'',amount:''});this._saveDriverPayDeds(k,list);};
   setDriverPayDeduct=(code,month,half,i,field,val)=>{const k=code+'|'+month+'|'+half;const list=this._driverPayDedList(code,month,half).map(x=>({...x}));if(!list[i])list[i]={label:'',amount:''};list[i][field]=val;this._saveDriverPayDeds(k,list);};
   removeDriverPayDeduct=(code,month,half,i)=>{const k=code+'|'+month+'|'+half;const list=this._driverPayDedList(code,month,half).map(x=>({...x}));list.splice(i,1);this._saveDriverPayDeds(k,list);};
   _driverPayAddList(code,month,half){const k=code+'|'+month+'|'+half;const saved=(this.state.driverPayAdds||{})[k];if(Array.isArray(saved))return saved;return [];}
-  _saveDriverPayAdds(k,list){if(!this._plGuard(String(k||'').split('|')[1],'driverpay',k,'เพิ่มเงิน จ่ายเบี้ยเลี้ยง '+k))return;const cur={...(this.state.driverPayAdds||{})};cur[k]=list;try{localStorage.setItem('driverPayAdds_v1',JSON.stringify(cur));}catch(e){}this.setState({driverPayAdds:cur});}
+  _saveDriverPayAdds(k,list){if(!this._plGuard(String(k||'').split('|')[1],'driverpay',k,'เพิ่มเงิน จ่ายเบี้ยเลี้ยง '+k))return;const cur={...(this.state.driverPayAdds||{})};cur[k]=list;try{localStorage.setItem('driverPayAdds_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('driverPayAdds',k,cur);this.setState({driverPayAdds:cur});}
   addDriverPayAdd=(code,month,half)=>{const k=code+'|'+month+'|'+half;const list=this._driverPayAddList(code,month,half).map(x=>({...x}));list.push({label:'',amount:''});this._saveDriverPayAdds(k,list);};
   setDriverPayAdd=(code,month,half,i,field,val)=>{const k=code+'|'+month+'|'+half;const list=this._driverPayAddList(code,month,half).map(x=>({...x}));if(!list[i])list[i]={label:'',amount:''};list[i][field]=val;this._saveDriverPayAdds(k,list);};
   removeDriverPayAdd=(code,month,half,i)=>{const k=code+'|'+month+'|'+half;const list=this._driverPayAddList(code,month,half).map(x=>({...x}));list.splice(i,1);this._saveDriverPayAdds(k,list);};
-  setDriverPayMeta=(k,field,val)=>{if(!this._plGuard(String(k||'').split('|')[1],'driverpay',k,'ข้อมูลการจ่ายเบี้ยเลี้ยง '+k))return;const cur={...(this.state.driverPayMeta||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('driverPayMeta_v1',JSON.stringify(cur));}catch(e){}this.setState({driverPayMeta:cur});};
+  setDriverPayMeta=(k,field,val)=>{if(!this._plGuard(String(k||'').split('|')[1],'driverpay',k,'ข้อมูลการจ่ายเบี้ยเลี้ยง '+k))return;const cur={...(this.state.driverPayMeta||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('driverPayMeta_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('driverPayMeta',k,cur);this.setState({driverPayMeta:cur});};
   _dpCardData(code,month,half){
     const fmt=(n)=>'฿'+_LFB2(n);
     const THM=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
@@ -10425,6 +10426,80 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.printBillingDoc(g.items));
   };
+  // ===== ข้อมูลรายเดือนที่เคยอยู่แค่ในเครื่อง → ขึ้น cloud (v.2026-09-18c) =====
+  // หักรายการ/วันนัดจ่าย รถร่วม · เพิ่ม/หัก/สถานะ จ่ายเบี้ยเลี้ยง พขร. · แก้ค่าคงที่รายเดือน
+  // เดิมเก็บใน localStorage อย่างเดียว → กรอกเครื่องหนึ่ง อีกเครื่องไม่เห็น / ล้างเบราว์เซอร์แล้วหาย
+  // เก็บเป็นแถวพิเศษในตาราง events (วิธีเดียวกับ __periodlock__) id = __kv_<ชื่อ>__
+  // รวมราย key: ใครแก้ทีหลัง (at ใหม่กว่า) ชนะ · ลบ key = เก็บ v:null ไว้ เครื่องอื่นจะลบตาม
+  _kvKeys(){return {subMonthDeducts:'subMonthDeducts_v1',subMonthMeta:'subMonthMeta_v1',driverPayAdds:'driverPayAdds_v1',driverPayDeducts:'driverPayDeducts_v1',driverPayMeta:'driverPayMeta_v1',fixedOverrides:'fixedOverrides_v1'};}
+  _kvAtGet(){try{const o=JSON.parse(localStorage.getItem('kvAt_v1')||'{}');return (o&&typeof o==='object')?o:{};}catch(e){return {};}}
+  _kvAtSet(o){try{localStorage.setItem('kvAt_v1',JSON.stringify(o));}catch(e){}}
+  _kvTouch(sk,k,cur){
+    const at=this._kvAtGet();at[sk]={...(at[sk]||{}),[k]:new Date().toISOString()};this._kvAtSet(at);
+    this._kvT=this._kvT||{};clearTimeout(this._kvT[sk]);this._kvT[sk]=setTimeout(()=>this._kvPush(sk),800);
+  }
+  // รวม local กับ cloud → {items, needPush}
+  _kvMerge(sk,cloudItems){
+    const local=(this.state[sk]&&typeof this.state[sk]==='object')?this.state[sk]:{};
+    const atAll=this._kvAtGet();const at=atAll[sk]||{};const ci=(cloudItems&&typeof cloudItems==='object')?cloudItems:{};
+    const items={};let needPush=false;
+    const keys=new Set([...Object.keys(local),...Object.keys(at),...Object.keys(ci)]);
+    keys.forEach(k=>{
+      const c=ci[k];const la=at[k]||'';
+      const l=(k in local)?{v:local[k],at:la}:(la?{v:null,at:la}:null);
+      if(!c){if(l){items[k]=l;needPush=true;}return;}
+      if(l&&la&&la>String(c.at||'')){items[k]=l;needPush=true;return;}
+      // ย้ายขึ้นครั้งแรกจากหลายเครื่อง (ไม่มีตราเวลาทั้งคู่) และค่าไม่เหมือนกัน → รวมกัน ไม่ทิ้งของเครื่องใด
+      if(l&&!la&&!c.at&&l.v!=null&&JSON.stringify(l.v)!==JSON.stringify(c.v)){
+        const filled=x=>Array.isArray(x)?x.filter(d=>d&&(parseFloat(d.amount)||0)).length:0;
+        let v;if(Array.isArray(l.v)||Array.isArray(c.v))v=filled(l.v)>filled(c.v)?l.v:c.v;
+        else if(l.v&&typeof l.v==='object'&&c.v&&typeof c.v==='object')v={...c.v,...l.v};else v=c.v;
+        items[k]={v:v,at:''};if(JSON.stringify(v)!==JSON.stringify(c.v))needPush=true;return;}
+      items[k]=c;
+    });
+    return {items:items,needPush:needPush};
+  }
+  _kvApplyItems(sk,items){
+    const obj={};const atAll=this._kvAtGet();const at={};
+    Object.keys(items).forEach(k=>{const it=items[k];if(!it)return;if(it.v!==null&&it.v!==undefined)obj[k]=it.v;if(it.at)at[k]=it.at;});
+    atAll[sk]=at;this._kvAtSet(atAll);
+    const key=this._kvKeys()[sk];try{localStorage.setItem(key,JSON.stringify(obj));}catch(e){}
+    if(JSON.stringify(obj)!==JSON.stringify(this.state[sk]||{}))this.setState({[sk]:obj});
+  }
+  _kvApply(sk,cloudData){
+    const m=this._kvMerge(sk,cloudData&&cloudData.items);
+    this._kvApplyItems(sk,m.items);
+    if(m.needPush){this._kvT=this._kvT||{};clearTimeout(this._kvT[sk]);this._kvT[sk]=setTimeout(()=>this._kvPush(sk),1500);}
+  }
+  _kvApplyAll(meta){Object.keys(this._kvKeys()).forEach(sk=>{try{this._kvApply(sk,meta&&meta['__kv_'+sk+'__']);}catch(e){}});}
+  async _kvPush(sk){
+    if(!COMPANY_ID)return;
+    try{
+      let cloud={};
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__kv_'+sk+'__&select=data',{headers:SB_HEADERS});
+      if(!r||!r.ok)throw new Error('kv get '+(r?r.status:'?'));
+      const j=await r.json();if(j&&j[0]&&j[0].data&&typeof j[0].data==='object')cloud=j[0].data;
+      const m=this._kvMerge(sk,cloud.items);
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__kv_'+sk+'__',data:{items:m.items}}]);
+      this._kvApplyItems(sk,m.items);
+    }catch(e){
+      // ไม่สำเร็จ (เน็ตหลุด/คลาวด์พัก) — ค่าในเครื่องยังอยู่ พร้อมตราเวลา รอบดึงถัดไปจะดันขึ้นให้เอง
+      try{console.warn('[LionFlow] kv push failed',sk,e&&e.message);}catch(_){}
+    }
+  }
+  // ดึงรอบๆ ทุก 60 วิ ให้เครื่องอื่นเห็นของที่เพิ่งแก้ โดยไม่ต้องรีเฟรช
+  _kvStartPoll(){
+    if(this._kvPollT)return;
+    this._kvPollT=setInterval(async()=>{
+      try{
+        if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',');
+        const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
+        if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
+        this._kvApplyAll(meta);
+      }catch(e){}
+    },60000);
+  }
   // ===== ปิดงวดบัญชี (period lock) — ล็อกเดือนที่ตรวจแล้ว + ขออนุมัติแก้ไขรายใบ =====
   _plGet(){const d=this.state.periodLock||{};return {months:Array.isArray(d.months)?d.months:[],reqs:Array.isArray(d.reqs)?d.reqs:[]};}
   _plWho(){const a=this.state.auth||{};return a.name||a.u||a.username||'—';}
@@ -10960,7 +11035,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   _tripRepCols(){return [{label:'วันที่',get:r=>r.date},{label:'บิล',get:r=>r.bill},{label:'เส้นทาง',get:r=>r.route},{label:'น้ำหนัก',get:r=>r.weightText,num:true},{label:'ราคา/ตัน',get:r=>r.ratePerTonText,num:true},{label:'ค่าขนส่ง',get:r=>r.revenue,num:true},{label:'น้ำมัน',get:r=>r.fuel,num:true},{label:'เบี้ยเลี้ยง',get:r=>r.allow,num:true},{label:'ผ่านทาง',get:r=>r.toll,num:true},{label:'ยาง',get:r=>r.tire,num:true},{label:'ซ่อม',get:r=>r.repair,num:true},{label:'เบ็ดเตล็ด',get:r=>r.misc,num:true},{label:'รวมค่าใช้จ่าย',get:r=>r.totalExp,num:true},{label:'คงเหลือ',get:r=>r.net,num:true}];}
   _subTripRepCols(){return [{label:'วันที่',get:r=>r.date},{label:'บิล',get:r=>r.bill},{label:'เส้นทาง',get:r=>r.route},{label:'ระยะทาง',get:r=>r.distText,num:true},{label:'น้ำหนัก',get:r=>r.weightText,num:true},{label:'ค่าขนส่งจ่ายรถร่วม',get:r=>r.subPay,num:true}];}
   _truckRepCols(){return [{label:'ทะเบียน',get:r=>r.plate},{label:'พ่วง',get:r=>r.trailer},{label:'คนขับ',get:r=>r.driver},{label:'เที่ยว',get:r=>r.trips,num:true},{label:'ค่าขนส่ง',get:r=>r.revenue,num:true},{label:'น้ำมัน',get:r=>r.fuel,num:true},{label:'เบี้ยเลี้ยง',get:r=>r.allowance,num:true},{label:'ผ่านทาง',get:r=>r.toll,num:true},{label:'ยาง',get:r=>r.tire,num:true},{label:'ซ่อม',get:r=>r.repair,num:true},{label:'ซ่อมฉุกเฉิน',get:r=>r.repairEmerg,num:true},{label:'ตำรวจ',get:r=>r.police,num:true},{label:'เบ็ดเตล็ด',get:r=>r.misc,num:true},{label:'ทะเบียน/ประกัน',get:r=>r.regIns,num:true},{label:'เงินเดือน',get:r=>r.salary,num:true},{label:'ประกันสังคม',get:r=>r.social,num:true},{label:'ผ่อน/เสื่อม',get:r=>r.installment,num:true},{label:'รวมค่าใช้จ่าย',get:r=>r.totalExp,num:true},{label:'คงเหลือ',get:r=>r.net,num:true}];}
-  _monthRepCols(){return [{label:'เดือน',get:r=>r.month},{label:'เที่ยว',get:r=>r.trips,num:true},{label:'ค่าขนส่ง',get:r=>r.revenue,num:true},{label:'น้ำมัน',get:r=>r.fuel,num:true},{label:'รวมค่าใช้จ่าย',get:r=>r.totalExp,num:true},{label:'คงเหลือ',get:r=>r.net,num:true}];}
+  _monthRepCols(){return [{label:'เดือน',get:r=>r.month},{label:'เที่ยว',get:r=>r.trips,num:true},{label:'ค่าขนส่ง',get:r=>r.revenue,num:true},{label:this._capMonthIsSub?'ค่าขนส่งรถร่วม':'น้ำมัน',get:r=>r.fuel,num:true},{label:this._capMonthIsSub?'%ค่าขนส่งรถร่วม':'%น้ำมัน',get:r=>r.pctFuel,num:true},{label:'รวมค่าใช้จ่าย',get:r=>r.totalExp,num:true},{label:'คงเหลือ',get:r=>r.net,num:true}];}
   setFuelPrintRange=(plate,month,field,val)=>{const k=plate+'|'+month;this.setState(s=>({fuelPrintRange:{...(s.fuelPrintRange||{}),[k]:{...((s.fuelPrintRange||{})[k]||{}),[field]:val}}}));};
   printFuelMonth=(monthKey)=>{
     const mo=(this._capTripMonthsData||[]).find(x=>x.key===monthKey);
@@ -11685,14 +11760,17 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.effTruckOptions=_tripPool.map(t=>({value:t.plate,label:t.plate+(/ร่วม/.test(t.dept||'')?' · 🤝':'')}));
       const selTruckObj=S.trucks.find(t=>t.plate===selPlate);
       const selJobs=S.jobs.filter(j=>j.truckPlate===selPlate&&j.date&&!j.deleted&&!j._deleted);
+      const _mIsSub=!!(selTruckObj&&/ร่วม/.test(String(selTruckObj.dept||'')));this._capMonthIsSub=_mIsSub;
+      out.effMonthC1Label=_mIsSub?'ค่าขนส่งรถร่วม':'น้ำมัน';out.effMonthC2Label=_mIsSub?'%ค่าขนส่งรถร่วม':'%น้ำมัน';
       const mMap={};selJobs.forEach(j=>{const m=j.date.slice(0,7);if(!mMap[m])mMap[m]=[];mMap[m].push(j);});
       out.effTruckMonthRows=this._capMonthRows=Object.keys(mMap).sort().reverse().map(m=>{
         const jobs=mMap[m];const rev=sumF(jobs,'revenue'),fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance');
         const tire=this._tireCostTruck(selTruckObj,m),repair=sumF(jobs,'repair')+this._woCostTruck(selTruckObj,m),toll=sumF(jobs,'toll'),misc=sumF(jobs,'misc');
         const _df=_drvFixed(jobs);const sal=_df.sal,inst=parseFloat(selTruckObj?.installment)||0,soc=_df.soc;
-        const totalExp=fuel+allow+tire+repair+toll+misc+sumF(jobs,'police')+this._regInsCostTruck(selTruckObj,m)+sal+inst+soc;const net=rev-totalExp;
+        const _subP=_mIsSub?jobs.reduce((a,j)=>a+_subPay(j),0):0;   // รถร่วม: ค่าขนส่งจ่ายรถร่วม (ก่อนหักรายการ) รวมเป็นค่าใช้จ่ายด้วย
+        const totalExp=_subP+fuel+allow+tire+repair+toll+misc+sumF(jobs,'police')+this._regInsCostTruck(selTruckObj,m)+sal+inst+soc;const net=rev-totalExp;
         const [yr,mo]=m.split('-');const thM=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-        return{month:thM[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,revenue:fmt(rev),fuel:fmt(fuel),pctFuel:pct(fuel,rev),totalExp:fmt(totalExp),net:fmt(net),netStyle:'font-weight:700;color:'+(net>=0?'#067647':'#b42318')+';',onClickRow:()=>this.setState({effView:'truck',effMonth:m,effTruckFilter:selPlate,effHiPlate:selPlate})};
+        return{month:thM[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,revenue:fmt(rev),fuel:fmt(_mIsSub?_subP:fuel),pctFuel:pct(_mIsSub?_subP:fuel,rev),totalExp:fmt(totalExp),net:fmt(net),netStyle:'font-weight:700;color:'+(net>=0?'#067647':'#b42318')+';',onClickRow:()=>this.setState({effView:'truck',effMonth:m,effTruckFilter:selPlate,effHiPlate:selPlate})};
       });
       out.effTruckTitle=selPlate||'—';this._capMonthPlate=selPlate||'';
       // ---- TRIP REPORT (รายงานรายเที่ยว: รายรถ → รายเดือน → รายเที่ยว) ----
