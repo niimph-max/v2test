@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4380,6 +4380,12 @@
     <!-- ===== TRUCK LIST ===== -->
     <sc-if value="{{ isTruckList }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:1180px;">
+      <sc-if value="{{ orphanPlateHas }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fffaeb;border:1px solid #fedf89;border-radius:12px;padding:12px 16px;margin-bottom:18px;">
+          <div style="flex:1;min-width:240px;font-size:13.5px;color:#93370d;line-height:1.5;">⚠ มีใบงาน <b>{{ orphanPlateJobs }}</b> ใบ ที่ชื่อทะเบียนไม่ตรงกับรถในทะเบียน ({{ orphanPlateText }}) — ใบงานเหล่านี้จะไม่ขึ้นในรายงานประสิทธิภาพ</div>
+          <button onClick="{{ onFixOrphanPlates }}" style="padding:8px 16px;background:#b54708;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;">แก้ชื่อในใบงานให้ตรง</button>
+        </div>
+      </sc-if>
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
         <div>
           <h1 style="margin:0;font-size:22px;font-weight:700;color:#16263a;">{{ truckListTitle }}</h1>
@@ -9374,10 +9380,47 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   setT(field,val){this.setState(s=>({truckDraft:{...s.truckDraft,[field]:val}}));}
   readTruckFileToDraft(field,e){const f=e.target.files&&e.target.files[0];if(!f)return;this.setState(s=>({truckDraft:{...s.truckDraft,[field]:true}}));}
   readTruckPhotoDraft(e){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>this.setState(s=>({truckDraft:{...s.truckDraft,photo:r.result}}));r.readAsDataURL(f);}
-  saveTruckForm=()=>{const t=this.state.truckDraft;if(!t.plate||!t.plate.trim()){this.setState({truckFormError:'กรุณากรอกทะเบียนรถ'});return;}const nt={...t,plate:t.plate.trim(),contractDate:this._cleanDate(t.contractDate),regExpiry:this._cleanDate(t.regExpiry),insuranceExpiry:this._cleanDate(t.insuranceExpiry),ownerIdExpiry:this._cleanDate(t.ownerIdExpiry),cargoInsExpiry:this._cleanDate(t.cargoInsExpiry)};const origPlate=this.state.editingTruckId||this.state.truckSelectedId;const renamed=!this.state.truckIsNew&&origPlate&&origPlate!==nt.plate;let trucks;if(this.state.truckIsNew){trucks=[nt,...this.state.trucks.filter(x=>x.plate!==nt.plate)];}else if(renamed){trucks=[nt,...this.state.trucks.filter(x=>x.plate!==origPlate&&x.plate!==nt.plate)];}else{trucks=this.state.trucks.map(x=>x.plate===origPlate?nt:x);}
+  saveTruckForm=()=>{const t=this.state.truckDraft;if(!t.plate||!t.plate.trim()){this.setState({truckFormError:'กรุณากรอกทะเบียนรถ'});return;}const nt={...t,plate:t.plate.trim(),contractDate:this._cleanDate(t.contractDate),regExpiry:this._cleanDate(t.regExpiry),insuranceExpiry:this._cleanDate(t.insuranceExpiry),ownerIdExpiry:this._cleanDate(t.ownerIdExpiry),cargoInsExpiry:this._cleanDate(t.cargoInsExpiry)};const origPlate=this.state.editingTruckId||this.state.truckSelectedId;const renamed=!this.state.truckIsNew&&origPlate&&origPlate!==nt.plate;
+      // แก้ชื่อทะเบียน → ใบงานเก่ายังเก็บชื่อเดิม ถ้าไม่เปลี่ยนตาม ใบงานจะหลุดจากรายงานทุกหน้าของรถคันนี้ (เจอจริง 18 ก.ย. 2026)
+      const _rnJobs=renamed?this.state.jobs.filter(j=>j.truckPlate===origPlate&&!j.deleted&&!j._deleted):[];
+      if(_rnJobs.length&&!window.confirm('เปลี่ยนชื่อทะเบียนรถ\n"'+origPlate+'"\n→ "'+nt.plate+'"\n\nมีใบงานเก่า '+_rnJobs.length+' ใบที่ใช้ชื่อเดิม ระบบจะเปลี่ยนชื่อในใบงานเหล่านี้ให้ตามด้วย\n(ไม่งั้นใบงานจะไม่ขึ้นในรายงานของรถคันนี้)\n\nตกลง = บันทึก และเปลี่ยนชื่อในใบงานตาม\nยกเลิก = กลับไปแก้ ยังไม่บันทึก'))return;
+      let trucks;if(this.state.truckIsNew){trucks=[nt,...this.state.trucks.filter(x=>x.plate!==nt.plate)];}else if(renamed){trucks=[nt,...this.state.trucks.filter(x=>x.plate!==origPlate&&x.plate!==nt.plate)];}else{trucks=this.state.trucks.map(x=>x.plate===origPlate?nt:x);}
       // แก้ชื่อทะเบียน (เช่น เพิ่ม/ลบเว้นวรรค) = เปลี่ยนกุญแจ → ต้องปักธงลบ "ทะเบียนเดิม" ขึ้น cloud ด้วย ไม่งั้น sync จะดึงกลับมาเป็นคู่
       if(renamed){const now=Date.now();try{const tomb=JSON.parse(localStorage.getItem('truckTombstones')||'{}');tomb[origPlate]=now;localStorage.setItem('truckTombstones',JSON.stringify(tomb));}catch(e){}try{const dp=new Set(JSON.parse(localStorage.getItem('deletedTruckPlates')||'[]'));dp.add(origPlate);localStorage.setItem('deletedTruckPlates',JSON.stringify([...dp]));}catch(e){}try{const pp=new Set(JSON.parse(localStorage.getItem('truckPendingPlates')||'[]'));pp.delete(origPlate);localStorage.setItem('truckPendingPlates',JSON.stringify([...pp]));}catch(e){}this.pushToSheets(undefined,[{plate:origPlate,_deleted:true,_editedAt:now}],undefined);}
-      try{const tomb=JSON.parse(localStorage.getItem('truckTombstones')||'{}');if(tomb[nt.plate]!=null){delete tomb[nt.plate];localStorage.setItem('truckTombstones',JSON.stringify(tomb));}const dp=new Set(JSON.parse(localStorage.getItem('deletedTruckPlates')||'[]'));if(dp.has(nt.plate)){dp.delete(nt.plate);localStorage.setItem('deletedTruckPlates',JSON.stringify([...dp]));}}catch(e){}this.persistTrucks(trucks,nt.plate);this.setState({trucks,truckSelectedId:nt.plate,truckView:'profile',truckFormError:'',editingTruckId:null});};
+      try{const tomb=JSON.parse(localStorage.getItem('truckTombstones')||'{}');if(tomb[nt.plate]!=null){delete tomb[nt.plate];localStorage.setItem('truckTombstones',JSON.stringify(tomb));}const dp=new Set(JSON.parse(localStorage.getItem('deletedTruckPlates')||'[]'));if(dp.has(nt.plate)){dp.delete(nt.plate);localStorage.setItem('deletedTruckPlates',JSON.stringify([...dp]));}}catch(e){}this.persistTrucks(trucks,nt.plate);this.setState({trucks,truckSelectedId:nt.plate,truckView:'profile',truckFormError:'',editingTruckId:null});if(renamed)this._renamePlateRefs(origPlate,nt.plate);};
+  // ย้ายทุกอย่างที่อ้างทะเบียนเดิม → ทะเบียนใหม่: ใบงาน (truckPlate) และข้อมูลรายเดือนคีย์ "ทะเบียน|เดือน"
+  _renamePlateRefs(oldP,newP){if(!oldP||!newP||oldP===newP)return;this._renamePlateMap({[oldP]:newP});}
+  _renamePlateMap(map){
+    const olds=Object.keys(map||{}).filter(o=>map[o]&&map[o]!==o);if(!olds.length)return;
+    // ข้ามใบที่ลบแล้ว — บันทึกใบที่ลบไปแล้วซ้ำ อาจทำให้ใบนั้นฟื้นกลับมา (กฎ resurrect ของ sync)
+    const ids=new Set(this.state.jobs.filter(j=>olds.indexOf(j.truckPlate)>=0&&!j.deleted&&!j._deleted).map(j=>String(j.id)));
+    if(ids.size){const jobs=this.state.jobs.map(j=>ids.has(String(j.id))?{...j,truckPlate:map[j.truckPlate]}:j);this.setState({jobs});ids.forEach(id=>this.persistJobs(jobs,id,['truckPlate']));}
+    const kv=this._kvKeys();
+    ['subMonthDeducts','subMonthMeta','fixedOverrides'].forEach(sk=>{
+      const cur={...(this.state[sk]||{})};const moves=[];
+      Object.keys(cur).forEach(k=>{const o=olds.find(x=>k.indexOf(x+'|')===0);if(o)moves.push([k,map[o]+k.slice(o.length)]);});
+      if(!moves.length)return;
+      moves.forEach(([k,nk])=>{if(!(nk in cur))cur[nk]=cur[k];delete cur[k];});
+      try{localStorage.setItem(kv[sk],JSON.stringify(cur));}catch(e){}this.setState({[sk]:cur});
+      moves.forEach(([k,nk])=>{this._kvTouch(sk,k,cur);this._kvTouch(sk,nk,cur);});
+    });
+  }
+  // ใบงานที่ชื่อทะเบียนไม่ตรงกับรถคันไหนเลย (เช่นแก้ชื่อรถไปก่อนมีระบบเปลี่ยนตาม)
+  // จับคู่ด้วยเลขทะเบียนตัวแรก (ก่อนเว้นวรรค) — จับได้ต่อเมื่อมีรถตรงเลขนั้นคันเดียว ไม่เดา
+  _orphanPlatePairs(){
+    const S=this.state;const plates=new Set(S.trucks.map(t=>t.plate));const head=p=>String(p||'').trim().split(/\s+/)[0];
+    const byHead={};S.trucks.forEach(t=>{const h=head(t.plate);if(!h)return;(byHead[h]=byHead[h]||[]).push(t.plate);});
+    const cnt={};S.jobs.forEach(j=>{if(j.deleted||j._deleted)return;const p=j.truckPlate;if(!p||plates.has(p))return;cnt[p]=(cnt[p]||0)+1;});
+    return Object.keys(cnt).map(o=>{const c=byHead[head(o)]||[];return c.length===1?{from:o,to:c[0],n:cnt[o]}:null;}).filter(Boolean);
+  }
+  fixOrphanPlates=()=>{
+    const pairs=this._orphanPlatePairs();if(!pairs.length){window.alert('ไม่พบใบงานที่ชื่อทะเบียนไม่ตรง');return;}
+    const NL=String.fromCharCode(10);
+    const msg='จะเปลี่ยนชื่อทะเบียนในใบงานให้ตรงกับทะเบียนรถ:'+NL+NL+pairs.map(x=>'• '+x.from+NL+'   → '+x.to+'  ('+x.n+' ใบ)').join(NL)+NL+NL+'ยืนยัน?';
+    if(!window.confirm(msg))return;
+    const map={};pairs.forEach(x=>{map[x.from]=x.to;});this._renamePlateMap(map);
+    window.alert('✅ แก้แล้ว '+pairs.reduce((a,x)=>a+x.n,0)+' ใบ');
+  };
   dedupeTrucks=()=>{
     const norm=p=>String(p||'').replace(/\s+/g,'').trim();
     const groups={};this.state.trucks.forEach(t=>{const k=norm(t.plate);(groups[k]=groups[k]||[]).push(t);});
@@ -11196,6 +11239,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       isProfile:S.section==='drivers'&&S.view==='profile',
       isForm:S.section==='drivers'&&S.view==='form',
       isTruckList:S.section==='trucks'&&S.truckView==='list',
+      ...((S.section==='trucks'&&S.truckView==='list')?(()=>{const _op=this._orphanPlatePairs();return {orphanPlateHas:_op.length>0,orphanPlateJobs:_op.reduce((a,x)=>a+x.n,0),orphanPlateText:_op.map(x=>x.to.split(/\s+/)[0]).join(', '),onFixOrphanPlates:this.fixOrphanPlates};})():{orphanPlateHas:false}),
       isTruckProfile:S.section==='trucks'&&S.truckView==='profile',
       isTruckForm:S.section==='trucks'&&S.truckView==='form',
       isJobList:S.section==='jobs'&&S.jobView==='list',
