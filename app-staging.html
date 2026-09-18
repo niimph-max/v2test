@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18j · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18k · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18j</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18k</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11872,11 +11872,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const fmt=n=>'฿'+_LFB2(n);
       const pct=(a,b)=>b>0?(a/b*100).toFixed(1)+'%':'0.0%';
       const _drvFixed=(jobs)=>{const dc=((jobs||[]).find(j=>j.driverCode)||{}).driverCode;const d=S.drivers.find(x=>String(x.code)===String(dc));return {sal:parseFloat(d&&d.salary)||0,soc:parseFloat(d&&d.socialSecurity)||0};};
+      // เงินเดือน/ประกันสังคม/ค่าผ่อน: ถ้ากรอกแก้ไว้ท้ายรายงานรายเที่ยว (fixedOverrides ทะเบียน|เดือน) ใช้ค่านั้นก่อน
+      // เดิมใช้แค่ในหน้ารายเที่ยว → ตารางรายรถ/ประวัติรายเดือนยังโชว์ค่าตั้งต้น ไม่ตรงกัน (เจอจริง 18 ก.ย. 2026)
+      const _fixedFor=(plate,m,jobs,instDef)=>{const df=_drvFixed(jobs);const o=(S.fixedOverrides||{})[plate+'|'+m]||{};const h=k=>o[k]!==undefined&&o[k]!=='';
+        return {sal:h('salary')?(parseFloat(o.salary)||0):df.sal,soc:h('social')?(parseFloat(o.social)||0):df.soc,inst:h('installment')?(parseFloat(o.installment)||0):instDef};};
       const truckRows=companyTrucks.map(t=>{
         const jobs=S.jobs.filter(j=>j.truckPlate===t.plate&&j.date&&j.date.startsWith(sm));
         const rev=sumF(jobs,'revenue'),fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance');
         const toll=sumF(jobs,'toll'),tire=this._tireCostTruck(t,sm),repairWO=this._woCostTruck(t,sm),repairEmerg=sumF(jobs,'repair'),police=sumF(jobs,'police'),misc=sumF(jobs,'misc'),regIns=this._regInsCostTruck(t,sm);
-        const _df=_drvFixed(jobs);const sal=_df.sal,inst=parseFloat(t.installment)||0,soc=_df.soc;
+        const _df=_fixedFor(t.plate,sm,jobs,parseFloat(t.installment)||0);const sal=_df.sal,inst=_df.inst,soc=_df.soc;
         const totalExp=fuel+allow+toll+tire+repairWO+repairEmerg+police+misc+regIns+sal+inst+soc;
         const net=rev-totalExp;
         const drCode=jobs.find(j=>j.driverCode)?.driverCode||'';
@@ -11885,7 +11889,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       });
       out.effTruckRows=this._capTruckRows=truckRows;out.effRowCount=truckRows.length;
       const tRev=companyTrucks.reduce((s,t)=>{const jobs=S.jobs.filter(j=>j.truckPlate===t.plate&&j.date&&j.date.startsWith(sm));return s+sumF(jobs,'revenue');},0);
-      const tExp=companyTrucks.reduce((s,t)=>{const jobs=S.jobs.filter(j=>j.truckPlate===t.plate&&j.date&&j.date.startsWith(sm));const fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance'),tire=this._tireCostTruck(t,sm),repair=sumF(jobs,'repair')+this._woCostTruck(t,sm),toll=sumF(jobs,'toll'),misc=sumF(jobs,'misc'),_df=_drvFixed(jobs),sal=_df.sal,inst=parseFloat(t.installment)||0,soc=_df.soc;return s+fuel+allow+tire+repair+toll+misc+sal+inst+soc;},0);
+      const tExp=companyTrucks.reduce((s,t)=>{const jobs=S.jobs.filter(j=>j.truckPlate===t.plate&&j.date&&j.date.startsWith(sm));const fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance'),tire=this._tireCostTruck(t,sm),repair=sumF(jobs,'repair')+this._woCostTruck(t,sm),toll=sumF(jobs,'toll'),misc=sumF(jobs,'misc'),_df=_fixedFor(t.plate,sm,jobs,parseFloat(t.installment)||0),sal=_df.sal,inst=_df.inst,soc=_df.soc;return s+fuel+allow+tire+repair+toll+misc+sal+inst+soc;},0);
       out.effTotalRev=fmt(tRev);out.effTotalExp=fmt(tExp);out.effTotalNet=fmt(tRev-tExp);out.effTotalNetStyle='font-weight:700;color:'+(tRev-tExp>=0?'#067647':'#b42318')+';';
       // ===== รถร่วม: รายรับ-รายจ่าย รวมจากใบงานอัตโนมัติ (เฉพาะที่วิ่งงานในเดือนนั้น) =====
       const _subPay=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;return method==='flat'?flat:(rev*(1-pct/100));};
@@ -11930,7 +11934,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.effTruckMonthRows=this._capMonthRows=Object.keys(mMap).sort().reverse().map(m=>{
         const jobs=mMap[m];const rev=sumF(jobs,'revenue'),fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance');
         const tire=this._tireCostTruck(selTruckObj,m),repair=sumF(jobs,'repair')+this._woCostTruck(selTruckObj,m),toll=sumF(jobs,'toll'),misc=sumF(jobs,'misc');
-        const _df=_drvFixed(jobs);const sal=_df.sal,inst=parseFloat(selTruckObj?.installment)||0,soc=_df.soc;
+        const _df=_fixedFor(selPlate,m,jobs,parseFloat(selTruckObj?.installment)||0);const sal=_df.sal,inst=_df.inst,soc=_df.soc;
         const _subP=_mIsSub?jobs.reduce((a,j)=>a+_subPay(j),0):0;   // รถร่วม: ค่าขนส่งจ่ายรถร่วม (ก่อนหักรายการ) รวมเป็นค่าใช้จ่ายด้วย
         const totalExp=_subP+fuel+allow+tire+repair+toll+misc+sumF(jobs,'police')+this._regInsCostTruck(selTruckObj,m)+sal+inst+soc;const net=rev-totalExp;
         const [yr,mo]=m.split('-');const thM=['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
