@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-21b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-21c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-21b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-21c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12061,7 +12061,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         let _gSub=0,_gDed=0,_gNet=0;
         out.dpDrivers=_codes.map(code=>{
           const jobs=_dpMap[code].slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
-          let sub=0;const rows=jobs.map(j=>{const a=(parseFloat(j.allowance)||0)+(parseFloat(j.allowanceExtra)||0),t=parseFloat(j.toll)||0,r=parseFloat(j.repair)||0,m=parseFloat(j.misc)||0;const tot=a+t+r+m;sub+=tot;return{date:_dpSd(j.date),bill:j.deliveryNo||j.jobNo||'—',route:(j.origin||'—')+' → '+this._destArea(j),plate:j.truckPlate||'—',allowance:_dpOd(a),allowExtraText:((parseFloat(j.allowanceExtra)||0)?(_LFB2(parseFloat(j.allowance)||0)+'+'+_LFB2(parseFloat(j.allowanceExtra)||0)):''),toll:_dpOd(t),repair:_dpOd(r),misc:_dpOd(m),total:fmt(tot),onOpen:()=>this.openSettle(j.id)};});
+          let sub=0;const rows=jobs.map(j=>{const a=(parseFloat(j.allowance)||0)+(parseFloat(j.allowanceExtra)||0),t=parseFloat(j.toll)||0,r=parseFloat(j.repair)||0,m=parseFloat(j.misc)||0;const tot=a+t+r+m;sub+=tot;return{date:_dpSd(j.date),bill:j.deliveryNo||j.jobNo||'—',route:this._routeFull(j),plate:j.truckPlate||'—',allowance:_dpOd(a),allowExtraText:((parseFloat(j.allowanceExtra)||0)?(_LFB2(parseFloat(j.allowance)||0)+'+'+_LFB2(parseFloat(j.allowanceExtra)||0)):''),toll:_dpOd(t),repair:_dpOd(r),misc:_dpOd(m),total:fmt(tot),onOpen:()=>this.openSettle(j.id)};});
           const _dl=this._driverPayDedList(code,_dpMonth,_dpHalf);const _ds=_dl.reduce((x,d)=>x+(parseFloat(d.amount)||0),0);
           const dedRows=_dl.map((d,i)=>({label:d.label||'',amount:(d.amount===0||d.amount)?String(d.amount):'',onLabel:(e)=>this.setDriverPayDeduct(code,_dpMonth,_dpHalf,i,'label',e.target.value),onAmount:(e)=>this.setDriverPayDeduct(code,_dpMonth,_dpHalf,i,'amount',e.target.value),onRemove:()=>this.removeDriverPayDeduct(code,_dpMonth,_dpHalf,i)}));
           const _al=this._driverPayAddList(code,_dpMonth,_dpHalf);const _as=_al.reduce((x,d)=>x+(parseFloat(d.amount)||0),0);
