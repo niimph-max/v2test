@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-18k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-21a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-18k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-21a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9927,7 +9927,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     let grandNet=0;
     const secs=codes.map(code=>{
       const jobs=this.state.jobs.filter(j=>j.date&&j.date>=lo&&j.date<=hi&&coPlates.has(j.truckPlate)&&String(j.driverCode)===String(code)).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
-      let sub=0;const trs=jobs.map((j,i)=>{const it=item(j);const _axP=(parseFloat(j.allowanceExtra)||0);it.aNote=_axP?('<div style="font-size:9px;color:#7a4a12;">'+_LFB2(parseFloat(j.allowance)||0)+'+'+_LFB2(_axP)+'</div>'):'';sub+=it.total;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(shortD(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'<div style="font-size:9.5px;color:#475467;">'+esc((j.origin||'—')+' → '+(j.destination||'—'))+'</div></td><td>'+esc(j.truckPlate||'—')+'</td><td class="n">'+(it.a?fmt(it.a):'—')+it.aNote+'</td><td class="n">'+(it.t?fmt(it.t):'—')+'</td><td class="n">'+(it.r?fmt(it.r):'—')+'</td><td class="n">'+(it.m?fmt(it.m):'—')+'</td><td class="n b">'+fmt(it.total)+'</td></tr>';}).join('');
+      let sub=0;const trs=jobs.map((j,i)=>{const it=item(j);const _axP=(parseFloat(j.allowanceExtra)||0);it.aNote=_axP?('<div style="font-size:9px;color:#7a4a12;">'+_LFB2(parseFloat(j.allowance)||0)+'+'+_LFB2(_axP)+'</div>'):'';sub+=it.total;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(shortD(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'<div style="font-size:9.5px;color:#475467;">'+esc((j.origin||'—')+' → '+this._destArea(j))+'</div></td><td>'+esc(j.truckPlate||'—')+'</td><td class="n">'+(it.a?fmt(it.a):'—')+it.aNote+'</td><td class="n">'+(it.t?fmt(it.t):'—')+'</td><td class="n">'+(it.r?fmt(it.r):'—')+'</td><td class="n">'+(it.m?fmt(it.m):'—')+'</td><td class="n b">'+fmt(it.total)+'</td></tr>';}).join('');
       const adds=this._driverPayAddList(code,month,half).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
       let addSum=0;const addHtml=adds.map(d=>{const a=parseFloat(d.amount)||0;addSum+=a;return '<tr class="add"><td class="c"></td><td colspan="7" style="text-align:right;">จ่ายเพิ่ม — '+esc(d.label||'รายการ')+'</td><td class="n">+'+fmt(a)+'</td></tr>';}).join('');
       const deds=this._driverPayDedList(code,month,half).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
@@ -10698,6 +10698,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   // ปลายทางที่พิมพ์ในใบวางบิล = อำเภอ + จังหวัด (ถ้ายังไม่กรอก ใช้ช่องปลายทางเดิม)
   // ★ v.2026-09-10: เส้นทางแสดงผล — ต่ออำเภอ/จังหวัดท้ายปลายทางเสมอ (ไม่ซ้ำถ้าชื่อปลายทางมีอยู่แล้ว)
+  // ปลายทางแบบสั้น = อำเภอ จังหวัด (ใบสรุปจ่ายเบี้ยเลี้ยง) · ใบเก่าที่ยังไม่กรอก ใช้ข้อความปลายทางเดิม
+  _destArea(j){j=j||{};const a=[String(j.destDistrict||'').trim(),String(j.destProvince||'').trim()].filter(Boolean).join(' ');return a||String(j.destination||'').trim()||'—';}
   _routeFull(j){j=j||{};
     const d=String(j.destDistrict||'').trim(),p=String(j.destProvince||'').trim();
     const area=[d,p].filter(Boolean).join(' ');
