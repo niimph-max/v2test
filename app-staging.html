@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-21c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-24a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-21c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-24a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7429,7 +7429,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -7590,6 +7590,7 @@ class Component extends DCLogic {
       const cloudUsers=meta.__appusers__&&Array.isArray(meta.__appusers__.list)?meta.__appusers__.list:null;
       try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
       try{this._kvApplyAll(meta);this._kvStartPoll();}catch(e){}
+      try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
       if(cloudUsers){
         // คลาวด์เป็นแหล่งจริงของบัญชีผู้ใช้ (admin จัดการ) — sync ลงเครื่องนี้
         try{localStorage.setItem('fleet_users_v1',JSON.stringify(cloudUsers));}catch(e){}
@@ -7738,10 +7739,11 @@ class Component extends DCLogic {
             this.setState({jobs:allLocal});
             this.pushToSheets(undefined,undefined,allLocal);
           } else {
-          const localMap={};localJobsRaw.forEach(j=>{localMap[String(j.id)]=normJob(j);});
+          const _purged=this._purgedGet();   // ลบถาวรแล้ว — ไม่รับกลับเข้าเครื่องและไม่ดันขึ้น cloud อีก
+          const localMap={};localJobsRaw.forEach(j=>{if(_purged[String(j.id)]==null)localMap[String(j.id)]=normJob(j);});
           const driverFields=['pickupTime','pickupLat','pickupLng','arrivalTime','arrivalLat','arrivalLng','completionTime','completionLat','completionLng','documentTime'];
           const stripDrv=(o)=>{const c={...o};driverFields.forEach(f=>delete c[f]);return c;};
-          const merged=data.jobs.map(normJob).map(sj=>{
+          const merged=data.jobs.map(normJob).filter(sj=>_purged[String(sj.id)]==null).map(sj=>{
             const sk=String(sj.id);
             const loc=localMap[sk];
             if(!loc)return sj;
@@ -8608,7 +8610,7 @@ class Component extends DCLogic {
   onGoSettings=()=>{this.setState({section:'settings'});this.scrollMain();this.loadProfileUsers();this.loadJobTrash();};
   loadJobTrash=async()=>{this.setState({jobTrashLoading:true});try{const r=await fetch(SB_REST+'/jobs?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&deleted=is.true&select=id,data,progress',{headers:SB_HEADERS});const rows=await r.json();const list=Array.isArray(rows)?rows.map(x=>({...(x.data||{}),...(x.progress||{}),id:x.id})):[];list.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||'')));this.setState({trashJobs:list,jobTrashLoading:false});}catch(e){this.setState({jobTrashLoading:false});}};
   restoreJobFromTrash=async(id)=>{if(!window.confirm('กู้คืนใบงานนี้กลับเข้าหน้าจ่ายงาน?'))return;try{await sbUndeleteJobs([String(id)]);}catch(e){}this.setState(s=>({trashJobs:(s.trashJobs||[]).filter(j=>String(j.id)!==String(id))}));this._lastPushAt=0;setTimeout(()=>this.syncFromSheets(),400);window.alert('กู้คืนแล้ว — ใบงานจะกลับมาที่หน้าจ่ายงาน');};
-  purgeJobFromTrash=async(id)=>{const j=(this.state.trashJobs||[]).find(x=>String(x.id)===String(id))||{};const label=(j.jobNo||(j.deliveryNo?('บิล '+j.deliveryNo):('id '+id)));if(!window.confirm('ลบใบงาน "'+label+'" ออกถาวร?\n\nข้อมูลใบงานนี้จะถูกลบออกจากระบบทั้งหมด — กู้คืนไม่ได้'))return;if(!window.confirm('ยืนยันอีกครั้ง — ลบ "'+label+'" ถาวรจริงๆ ใช่ไหม?'))return;try{await sbDeleteRows('jobs','id',[String(id)]);}catch(e){}try{const raw=JSON.parse(localStorage.getItem('jobReg_v1')||'[]');localStorage.setItem('jobReg_v1',JSON.stringify(raw.filter(x=>String(x.id)!==String(id))));}catch(e){}try{const p=new Set(JSON.parse(localStorage.getItem('jobPendingIds')||'[]'));p.delete(String(id));localStorage.setItem('jobPendingIds',JSON.stringify([...p]));}catch(e){}if(this._recentJobs)delete this._recentJobs[String(id)];this.setState(s=>({trashJobs:(s.trashJobs||[]).filter(x=>String(x.id)!==String(id)),jobs:(s.jobs||[]).filter(x=>String(x.id)!==String(id))}));window.alert('ลบถาวรแล้ว');};
+  purgeJobFromTrash=async(id)=>{const j=(this.state.trashJobs||[]).find(x=>String(x.id)===String(id))||{};const label=(j.jobNo||(j.deliveryNo?('บิล '+j.deliveryNo):('id '+id)));if(!window.confirm('ลบใบงาน "'+label+'" ออกถาวร?\n\nข้อมูลใบงานนี้จะถูกลบออกจากระบบทั้งหมด — กู้คืนไม่ได้'))return;if(!window.confirm('ยืนยันอีกครั้ง — ลบ "'+label+'" ถาวรจริงๆ ใช่ไหม?'))return;try{await sbDeleteRows('jobs','id',[String(id)]);}catch(e){}try{await this._purgedPush(id);}catch(e){}try{const raw=JSON.parse(localStorage.getItem('jobReg_v1')||'[]');localStorage.setItem('jobReg_v1',JSON.stringify(raw.filter(x=>String(x.id)!==String(id))));}catch(e){}try{const p=new Set(JSON.parse(localStorage.getItem('jobPendingIds')||'[]'));p.delete(String(id));localStorage.setItem('jobPendingIds',JSON.stringify([...p]));}catch(e){}if(this._recentJobs)delete this._recentJobs[String(id)];this.setState(s=>({trashJobs:(s.trashJobs||[]).filter(x=>String(x.id)!==String(id)),jobs:(s.jobs||[]).filter(x=>String(x.id)!==String(id))}));window.alert('ลบถาวรแล้ว');};
   loadProfileUsers=async()=>{try{const r=await fetch(SB_REST+'/profiles?select=id,username,display_name,is_admin,sections&company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&order=username',{headers:SB_HEADERS});const arr=await r.json();if(Array.isArray(arr))this.setState({profileUsers:arr});}catch(e){}};
   sbChangePassword=async(newPw)=>{const tok=(SB_SESSION&&SB_SESSION.access_token)||SUPABASE_KEY;const res=await fetch(SUPABASE_URL+'/auth/v1/user',{method:'PUT',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:JSON.stringify({password:String(newPw)})});const d=await res.json().catch(()=>({}));if(!res.ok)throw new Error(d.msg||d.error_description||d.message||('http '+res.status));return d;};
   openPwChange=()=>this.setState({pwModal:{n1:'',n2:'',err:'',ok:false,busy:false}});
@@ -10483,6 +10485,45 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.exportBillingXlsx(g.items));
   };
+  // ===== ใบงานที่ "ลบถาวร" — เก็บรายชื่อไว้บน cloud (v.2026-09-24a) =====
+  // เดิมลบถาวร = ลบแถวออกจาก cloud อย่างเดียว เครื่องอื่นที่ยังมีใบงานนั้นค้างในเครื่อง
+  // จะดันกลับขึ้น cloud ตอนเปิดแอป งานที่ลบแล้วจึงโผล่กลับมาอีก (เจอจริง 24 ก.ย. 2569)
+  // แก้: จดรหัสใบงานที่ลบถาวรไว้ในตาราง events แถว __purged_jobs__ (วิธีเดียวกับ __periodlock__)
+  // ทุกเครื่องอ่านรายชื่อนี้ตอนเปิดแอปและทุก 60 วิ แล้วลบใบงานนั้นทิ้งจากเครื่องตัวเอง + เลิกดันขึ้น cloud
+  _purgedGet(){try{const o=JSON.parse(localStorage.getItem('purgedJobs_v1')||'{}');return (o&&typeof o==='object')?o:{};}catch(e){return {};}}
+  _purgedSave(map){try{localStorage.setItem('purgedJobs_v1',JSON.stringify(map));}catch(e){}this.setState({purgedJobs:map});}
+  _purgedIs(id){return this._purgedGet()[String(id)]!=null;}
+  // เอารายชื่อจาก cloud มารวมกับของในเครื่อง แล้วล้างใบงานที่อยู่ในรายชื่อออกจากเครื่องนี้
+  _purgedApply(cloudMap){
+    const cur=this._purgedGet();const inc=(cloudMap&&typeof cloudMap==='object')?cloudMap:{};
+    let add=0;Object.keys(inc).forEach(k=>{if(cur[k]==null){cur[k]=inc[k]||Date.now();add++;}});
+    if(add)this._purgedSave(cur);
+    const ids=new Set(Object.keys(cur));
+    if(!ids.size)return;
+    const curJobs=this.state.jobs||[];
+    const back=curJobs.filter(j=>ids.has(String(j.id))).map(j=>String(j.id));
+    if(back.length){
+      const jobs=curJobs.filter(j=>!ids.has(String(j.id)));
+      this.setState({jobs});try{localStorage.setItem('jobReg_v1',JSON.stringify(jobs));}catch(e){}
+      // ใบงานนี้เคยถูกดันกลับขึ้น cloud จากเครื่องใดเครื่องหนึ่ง → ลบแถวบน cloud ทิ้งอีกครั้ง
+      try{sbDeleteRows('jobs','id',back).catch(()=>{});}catch(e){}
+    }
+    try{const p=new Set(JSON.parse(localStorage.getItem('jobPendingIds')||'[]'));let ch=false;ids.forEach(id=>{if(p.delete(id))ch=true;});if(ch)localStorage.setItem('jobPendingIds',JSON.stringify([...p]));}catch(e){}
+    if(this._recentJobs)ids.forEach(id=>{delete this._recentJobs[id];});
+  }
+  // จดขึ้น cloud (อ่านของเดิมมารวมก่อน กันเครื่องอื่นที่เพิ่งจดหาย)
+  async _purgedPush(id){
+    const cur=this._purgedGet();cur[String(id)]=Date.now();this._purgedSave(cur);
+    if(!COMPANY_ID)return;
+    try{
+      let cloud={};
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__purged_jobs__&select=data',{headers:SB_HEADERS});
+      if(r&&r.ok){const j=await r.json();if(j&&j[0]&&j[0].data&&typeof j[0].data==='object'&&j[0].data.ids)cloud=j[0].data.ids;}
+      const merged={...cloud,...cur};
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__purged_jobs__',data:{ids:merged}}]);
+      this._purgedSave(merged);
+    }catch(e){try{console.warn('[LionFlow] purge list push failed',e&&e.message);}catch(_){}}
+  }
   // ===== ข้อมูลรายเดือนที่เคยอยู่แค่ในเครื่อง → ขึ้น cloud (v.2026-09-18c) =====
   // หักรายการ/วันนัดจ่าย รถร่วม · เพิ่ม/หัก/สถานะ จ่ายเบี้ยเลี้ยง พขร. · แก้ค่าคงที่รายเดือน
   // เดิมเก็บใน localStorage อย่างเดียว → กรอกเครื่องหนึ่ง อีกเครื่องไม่เห็น / ล้างเบราว์เซอร์แล้วหาย
@@ -10550,10 +10591,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._kvPollT=setInterval(async()=>{
       try{
         if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
-        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',');
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22';
         const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
         if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
         this._kvApplyAll(meta);
+        try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
       }catch(e){}
     },60000);
   }
