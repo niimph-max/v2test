@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-25a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-25b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-25a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-25b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -8381,7 +8381,7 @@ class Component extends DCLogic {
   delPIItem=(i)=>this.setState(s=>{const d=s.partInDraft||{};const items=(d.items||[]).filter((_,x)=>x!==i);return{partInDraft:{...d,items:items.length?items:[{name:'',cat:this._partCats()[0],unit:'ชิ้น',qty:'',price:''}]}};});
   savePartIn=()=>{
     const d=this.state.partInDraft||{};
-    if(!this._plGuard(d.date,'parts',d.id,'บิลรับอะไหล่เข้า '+(d.billNo||'')))return;
+    if(!this._plGuard(d.date,'parts',d.id,'บิลรับอะไหล่เข้า '+(d.billNo||''),!(this._getPM()||[]).some(x=>String(x.id)===String(d.id))))return;
     const items=(d.items||[]).filter(it=>String(it.name||'').trim()&&(Number(it.qty)||0)>0)
       .map(it=>({partId:this._partKey(it.name),name:String(it.name).trim(),cat:it.cat||'',unit:String(it.unit||'').trim()||'ชิ้น',qty:Math.abs(Number(it.qty)||0),price:Number(it.price)||0}));
     if(!items.length){this.setState({partErr:'กรอกชื่อของและจำนวนอย่างน้อย 1 รายการ'});return;}
@@ -8401,7 +8401,7 @@ class Component extends DCLogic {
   setPO=(f,v)=>this.setState(s=>({partOutDraft:{...(s.partOutDraft||{}),[f]:v}}));
   savePartOut=()=>{
     const d=this.state.partOutDraft||{};const q=Math.abs(Number(d.qty)||0);
-    if(!this._plGuard(d.date,'parts',d.id,'เบิกอะไหล่ออก'))return;
+    if(!this._plGuard(d.date,'parts',d.id,'เบิกอะไหล่ออก',!(this._getPM()||[]).some(x=>String(x.id)===String(d.id))))return;
     if(!q){this.setState({partErr:'กรอกจำนวนที่เบิก'});return;}
     if(!String(d.taker||'').trim()){this.setState({partErr:'ต้องใส่ชื่อผู้เบิก — เพื่อให้ตามได้ว่าของไปอยู่ที่ใคร'});return;}
     if(q>(Number(d.bal)||0)&&!window.confirm('จำนวนที่เบิกมากกว่ายอดคงเหลือในระบบ ('+(Number(d.bal)||0)+') — ยืนยันบันทึกไหม?'))return;
@@ -8413,7 +8413,7 @@ class Component extends DCLogic {
   setPCount=(id,v)=>this.setState(s=>({partCounts:{...(s.partCounts||{}),[id]:v}}));
   savePartCount=()=>{
     const idx=this._partIndex();const c=this.state.partCounts||{};
-    if(!this._plGuard(this._partToday(),'parts',null,'นับสต็อกอะไหล่'))return;
+    if(!this._plGuard(this._partToday(),'parts',null,'นับสต็อกอะไหล่',true))return;
     const items=Object.keys(c).map(id=>{const raw=String(c[id]);if(raw.trim()==='')return null;const o=idx[id];if(!o)return null;
       const counted=Number(raw)||0;const diff=counted-(Number(o.qty)||0);if(!diff)return null;
       return{partId:id,name:o.name,unit:o.unit,qty:diff,counted:counted};}).filter(Boolean);
@@ -8435,7 +8435,7 @@ class Component extends DCLogic {
   setTPItem=(i,f,v)=>this.setState(s=>{const it=[...((s.tirePatchDraft&&s.tirePatchDraft.items)||[])];it[i]={...(it[i]||{desc:'',cost:''}),[f]:v};return{tirePatchDraft:{...s.tirePatchDraft,items:it}};});
   cancelTirePatch=()=>this.setState({tirePatchDraft:null,tirePatchError:''});
   editTirePatch=(id)=>{const p=(this.state.tirePatches||[]).find(x=>String(x.id)===String(id));if(!p)return;const sel=(this.state.trucks||[]).find(t=>t.plate===p.plate);this.setState({tirePatchDraft:{...p,dept:p.dept||(sel?(sel.dept||''):''),items:(Array.isArray(p.items)&&p.items.length)?p.items.map(x=>({desc:x.desc||'',cost:(x.cost===0||x.cost)?String(x.cost):''})):[{desc:'',cost:((p.cost||p.cost===0)?String(p.cost):'')}],_editing:true},tirePatchError:''});this.scrollMain();};
-  saveTirePatch=()=>{const d=this.state.tirePatchDraft;if(!d)return;if(!this._plGuard(d.date,'tire',d.id,'ค่าปะยาง '+(d.plate||'')))return;if(!String(d.plate||'').trim()){this.setState({tirePatchError:'กรุณาเลือกทะเบียนรถ'});return;}const _items=(Array.isArray(d.items)?d.items:[]).map(x=>({desc:String(x.desc||'').trim(),cost:Number(x.cost)||0})).filter(x=>x.desc||x.cost>0);const _total=_items.reduce((a,x)=>a+(Number(x.cost)||0),0);if(!(_total>0)){this.setState({tirePatchError:'กรุณากรอกรายการและจำนวนเงินอย่างน้อย 1 รายการ'});return;}const _vat=this._vatOf(d,_total);const rec={...d,items:_items,costNet:_total,vat:_vat,cost:Math.round((_total+_vat)*100)/100};delete rec._editing;const rest=(this.state.tirePatches||[]).filter(x=>String(x.id)!==String(rec.id));const list=[rec,...rest];this.persistTirePatches(list,rec.id);try{sbInsertEvent({id:'tirepatch_'+rec.id,type:'tirepatch',data:rec});}catch(e){}this.setState({tirePatches:list,tirePatchDraft:null,tirePatchError:''});};
+  saveTirePatch=()=>{const d=this.state.tirePatchDraft;if(!d)return;if(!this._plGuard(d.date,'tire',d.id,'ค่าปะยาง '+(d.plate||''),!(this.state.tirePatches||[]).some(x=>String(x.id)===String(d.id))))return;if(!String(d.plate||'').trim()){this.setState({tirePatchError:'กรุณาเลือกทะเบียนรถ'});return;}const _items=(Array.isArray(d.items)?d.items:[]).map(x=>({desc:String(x.desc||'').trim(),cost:Number(x.cost)||0})).filter(x=>x.desc||x.cost>0);const _total=_items.reduce((a,x)=>a+(Number(x.cost)||0),0);if(!(_total>0)){this.setState({tirePatchError:'กรุณากรอกรายการและจำนวนเงินอย่างน้อย 1 รายการ'});return;}const _vat=this._vatOf(d,_total);const rec={...d,items:_items,costNet:_total,vat:_vat,cost:Math.round((_total+_vat)*100)/100};delete rec._editing;const rest=(this.state.tirePatches||[]).filter(x=>String(x.id)!==String(rec.id));const list=[rec,...rest];this.persistTirePatches(list,rec.id);try{sbInsertEvent({id:'tirepatch_'+rec.id,type:'tirepatch',data:rec});}catch(e){}this.setState({tirePatches:list,tirePatchDraft:null,tirePatchError:''});};
   toggleTireReimbursed=(id)=>{const list=(this.state.tirePatches||[]).map(x=>String(x.id)===String(id)?{...x,reimbursed:!x.reimbursed}:x);this.persistTirePatches(list,id);this.setState({tirePatches:list});};
   deleteTirePatch=(id)=>{{const _t=(this.state.tirePatches||[]).find(x=>String(x.id)===String(id))||{};if(!this._plGuard(_t.date,'tire',id,'ลบค่าปะยาง '+(_t.plate||id)))return;}if(!window.confirm('ลบรายการค่าปะยางนี้?'))return;const list=this.collDelete(id,this.state.tirePatches||[],'tirePatch_v1','id','tirePatchPending','tirePatchTomb','tire_patches');this.setState({tirePatches:list});};
   // ---- ยางเข้า-ออก (tire in/out) ----
@@ -8473,7 +8473,7 @@ class Component extends DCLogic {
   }
   cancelTireMove=()=>this.setState({tireMoveDraft:null,tireMoveError:''});
   editTireMove=(id)=>{const m=(this.state.tireMoves||[]).find(x=>String(x.id)===String(id));if(!m)return;const sel=(this.state.trucks||[]).find(t=>t.plate===m.plate);this.setState({tireTab:'move',tireMoveDraft:{...m,cost:((m.costNet===0||m.costNet)?m.costNet:m.cost),dept:m.dept||(sel?(sel.dept||''):''),_editing:true},tireMoveError:''});this.scrollMain();};
-  saveTireMove=()=>{const d=this.state.tireMoveDraft;if(!d)return;if(!this._plGuard(d.date,'tire',d.id,'ยางเข้า-ออก '+(d.plate||'')))return;if(!String(d.plate||'').trim()){this.setState({tireMoveError:'กรุณาเลือกทะเบียนรถ'});return;}const _net=Number(d.cost)||0;const _vat=this._vatOf(d,_net);const rec={...d,costNet:_net,vat:_vat,cost:Math.round((_net+_vat)*100)/100};delete rec._editing;const rest=(this.state.tireMoves||[]).filter(x=>String(x.id)!==String(rec.id));const list=[rec,...rest];this.persistTireMoves(list,rec.id);this.setState({tireMoves:list,tireMoveDraft:null,tireMoveError:''});};
+  saveTireMove=()=>{const d=this.state.tireMoveDraft;if(!d)return;if(!this._plGuard(d.date,'tire',d.id,'ยางเข้า-ออก '+(d.plate||''),!(this.state.tireMoves||[]).some(x=>String(x.id)===String(d.id))))return;if(!String(d.plate||'').trim()){this.setState({tireMoveError:'กรุณาเลือกทะเบียนรถ'});return;}const _net=Number(d.cost)||0;const _vat=this._vatOf(d,_net);const rec={...d,costNet:_net,vat:_vat,cost:Math.round((_net+_vat)*100)/100};delete rec._editing;const rest=(this.state.tireMoves||[]).filter(x=>String(x.id)!==String(rec.id));const list=[rec,...rest];this.persistTireMoves(list,rec.id);this.setState({tireMoves:list,tireMoveDraft:null,tireMoveError:''});};
   deleteTireMove=(id)=>{{const _t=(this.state.tireMoves||[]).find(x=>String(x.id)===String(id))||{};if(!this._plGuard(_t.date,'tire',id,'ลบยางเข้า-ออก '+(_t.plate||id)))return;}if(!window.confirm('ลบรายการยางเข้า-ออกนี้?'))return;const list=this.collDelete(id,this.state.tireMoves||[],'tireMove_v1','id','tireMovePending','tireMoveTomb','tire_moves');this.setState({tireMoves:list});};
   openTireMoveAt=(plate,pos)=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const sel=(this.state.trucks||[]).find(t=>t.plate===plate);this.setState({tireTab:'move',tireMoveDraft:{id:Date.now(),date:today,dept:sel?(sel.dept||''):'',plate:plate||'',action:'in',tireNo:'',brand:'',shop:'',billNo:'',pos:pos||'',cost:'',note:'',by:(this.state.auth&&this.state.auth.name)||''},tireMoveError:''});this.scrollMain();};
   _tireRepAgg(from,to,plateSet){
@@ -8914,7 +8914,7 @@ class Component extends DCLogic {
   addPart=()=>this.setState(s=>({woDraft:{...s.woDraft,parts:[...((s.woDraft&&s.woDraft.parts)||[]),{date:this._woToday(),billNo:'',shop:'',item:'',amount:''}]}}));
   removePart=(i)=>this.setState(s=>{const p=[...((s.woDraft&&s.woDraft.parts)||[])];p.splice(i,1);return{woDraft:{...s.woDraft,parts:p}};});
   setPart=(i,k,v)=>this.setState(s=>{const p=[...((s.woDraft&&s.woDraft.parts)||[])];p[i]={...p[i],[k]:(/date/i.test(k)?this._fixYr(v):v)};return{woDraft:{...s.woDraft,parts:p}};});
-  saveWO=()=>{const d=this.state.woDraft;if(!this._plGuard(d&&d.date,'wo',d&&d.id,'ใบสั่งซ่อม '+((d&&d.no)||'')))return;if(!d.plate){this.setState({woErr:'กรุณาเลือกรถ'});return;}if(!String(d.symptom||'').trim()){this.setState({woErr:'กรุณากรอกอาการ/รายการซ่อม'});return;}
+  saveWO=()=>{const d=this.state.woDraft;if(!this._plGuard(d&&d.date,'wo',d&&d.id,'ใบสั่งซ่อม '+((d&&d.no)||''),!this._getWO().some(w=>String(w.id)===String(d&&d.id))))return;if(!d.plate){this.setState({woErr:'กรุณาเลือกรถ'});return;}if(!String(d.symptom||'').trim()){this.setState({woErr:'กรุณากรอกอาการ/รายการซ่อม'});return;}
     // กันปีผิด (เช่นพิมพ์ 2669 → ระบบแปลงเป็น 2126) — ปีต้องอยู่ในช่วง 2000 ถึงปีหน้า
     {const _yMax=new Date().getFullYear()+1;const _bad=[['วันที่แจ้งซ่อม',d.date],['วันที่ซ่อมเสร็จ',d.dateClose]].concat((d.parts||[]).map((x,i)=>['วันที่บิลอะไหล่ แถว '+(i+1),x.date])).filter(([,v])=>{if(!v)return false;const y=parseInt(String(v).slice(0,4),10);return !(y>=2000&&y<=_yMax);});
      if(_bad.length){this.setState({woErr:'ปีของ '+_bad.map(x=>x[0]).join(', ')+' ดูผิด ('+_bad.map(x=>String(x[1]).slice(0,4)).join(', ')+') — กรุณาเลือกวันที่ใหม่'});return;}}const _pa=(d.parts||[]).map(p=>({date:p.date||'',billNo:p.billNo||'',shop:p.shop||'',item:p.item||'',amount:Number(p.amount)||0}));const clean={...d,parts:_pa,odo:Number(d.odo)||0,costParts:_pa.reduce((s,p)=>s+p.amount,0),costLabor:Number(d.costLabor)||0,costOther:Number(d.costOther)||0,costVat:Number(d.costVat)||0};if(clean.status==='เสร็จแล้ว'&&!clean.dateClose)clean.dateClose=this._woToday();if(clean.status!=='เสร็จแล้ว')clean.dateClose='';const list=this._getWO().slice();const i=list.findIndex(x=>x.id===d.id);if(i>=0)list[i]=clean;else list.unshift(clean);this._saveWO(list,clean.id);this._woSyncToTruck(clean);if(clean.status==='เสร็จแล้ว'&&clean.pmKey)this._pmStamp(clean.plate,clean.pmKey);this.setState({woView:'list',woErr:''});};
@@ -9520,7 +9520,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   openOrderEdit=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;this._orderOrig={...o};this.editingOrderId=id;this.setState({orderDraft:{...o},orderIsNew:false,orderView:'form',orderFormError:'',orderAddingCustomer:false,section:'orders'});this.scrollMain();};
   cancelOrderForm=()=>this.setState({orderView:'list',orderFormError:''});
   setO(field,val){this.setState(s=>({orderDraft:{...s.orderDraft,[field]:val}}));}
-  saveOrder=()=>{const o=this.state.orderDraft;if(o&&!this._plGuard(o.receivedDate,'order',this.editingOrderId,'งานรับเข้า '+(o.billNo||o.orderNo||'')))return;if(!o||!String(o.customer||'').trim()){this.setState({orderFormError:'กรุณาเลือกลูกค้า / ผู้ว่าจ้าง'});return;}let _bill=String(o.billNo||'').trim();if(!_bill){const _bd=String(o.receivedDate||'').replace(/-/g,'').slice(2,8)||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'2-digit',month:'2-digit',day:'2-digit'}).format(new Date()).replace(/-/g,'');const _pfx='NB-'+_bd+'-';let _mx=0;this.state.orders.forEach(x=>{const m=String(x.billNo||'').match(new RegExp('^'+_pfx+'(\\d+)$'));if(m)_mx=Math.max(_mx,parseInt(m[1],10));});_bill=_pfx+String(_mx+1).padStart(2,'0');}
+  saveOrder=()=>{const o=this.state.orderDraft;if(o&&!this._plGuard(o.receivedDate,'order',this.editingOrderId,'งานรับเข้า '+(o.billNo||o.orderNo||''),this.editingOrderId==null))return;if(!o||!String(o.customer||'').trim()){this.setState({orderFormError:'กรุณาเลือกลูกค้า / ผู้ว่าจ้าง'});return;}let _bill=String(o.billNo||'').trim();if(!_bill){const _bd=String(o.receivedDate||'').replace(/-/g,'').slice(2,8)||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'2-digit',month:'2-digit',day:'2-digit'}).format(new Date()).replace(/-/g,'');const _pfx='NB-'+_bd+'-';let _mx=0;this.state.orders.forEach(x=>{const m=String(x.billNo||'').match(new RegExp('^'+_pfx+'(\\d+)$'));if(m)_mx=Math.max(_mx,parseInt(m[1],10));});_bill=_pfx+String(_mx+1).padStart(2,'0');}
     // กันคีย์เลขที่บิลซ้ำ (เตือน + ให้ยืนยัน) — เลขที่บิลคือกุญแจเชื่อมไปการจ่ายงาน
     {const _me=String(this.editingOrderId||'');
      const _dup=(this.state.orders||[]).filter(x=>String(x.id)!==_me&&x.status!=='ยกเลิก'&&String(x.billNo||'').trim().toLowerCase()===_bill.toLowerCase());
@@ -10638,18 +10638,22 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   _plApproved(kind,docId){const id=String(docId||'');if(!id)return false;
     return this._plGet().reqs.some(q=>q&&q.status==='approved'&&String(q.docId)===id&&(!kind||String(q.kind)===String(kind)));}
   // ประตูกลาง — คืน true = ทำต่อได้
-  _plGuard(v,kind,docId,label){
+  // isNew = รายการที่ยังไม่เคยบันทึก (เลข id ยังเป็นของชั่วคราวในฟอร์ม พอรีเฟรชก็เปลี่ยน)
+  // → ผูกคำขอ/การอนุมัติไว้กับ 'NEW:ชนิดงาน:เดือน' แทน อนุมัติครั้งเดียวเปิดใบใหม่ในเดือนนั้นได้จนกว่าจะกดปิดสิทธิ์
+  _plGuard(v,kind,docId,label,isNew){
     const m=String(v||'').slice(0,7);
     if(!m||!this._plLocked(m))return true;
-    if(this._plApproved(kind,docId))return true;
+    const _key=isNew?('NEW:'+String(kind||'')+':'+m):docId;
+    if(this._plApproved(kind,_key))return true;
     const ml=this._thMonthLabel(m);
     if(this._plCan())return window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคุณมีสิทธิ์ปิด/เปิดงวด — ยืนยันแก้ไขทั้งที่ปิดงวดแล้ว?');
-    if(!docId){window.alert('🔒 งวด '+ml+' ปิดบัญชีแล้ว — สร้างรายการใหม่ในเดือนนี้ไม่ได้\n\nถ้าจำเป็นต้องบันทึกย้อนหลัง ให้แจ้งผู้มีสิทธิ์เปิดงวด');return false;}
-    {const _q=this._plGet().reqs.find(q=>q&&String(q.docId)===String(docId)&&(!kind||String(q.kind)===String(kind))&&(q.status==='pending'||q.status==='rejected'||q.status==='closed'));
+    if(!_key){window.alert('🔒 งวด '+ml+' ปิดบัญชีแล้ว — สร้างรายการใหม่ในเดือนนี้ไม่ได้\n\nถ้าจำเป็นต้องบันทึกย้อนหลัง ให้แจ้งผู้มีสิทธิ์เปิดงวด');return false;}
+    const _lb=(isNew?('เปิดใหม่ย้อนหลัง — '):'')+String(label||'');
+    {const _q=this._plGet().reqs.find(q=>q&&String(q.docId)===String(_key)&&(!kind||String(q.kind)===String(kind))&&(q.status==='pending'||q.status==='rejected'||q.status==='closed'));
      if(_q&&_q.status==='pending'){window.alert('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคำขอแก้ไขรายการนี้ส่งไปแล้ว กำลังรออนุมัติ\nเมื่อผู้มีสิทธิ์กดอนุมัติ ระบบจะปลดให้เองภายใน 1 นาที (หรือกด F5)');return false;}
-     if(_q&&_q.status==='closed'){if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nสิทธิ์แก้ไขรายการนี้ถูกปิดไปแล้ว (แก้เสร็จแล้ว)\n\nขออนุมัติใหม่อีกครั้งไหม?'))this._plRequest(m,kind,docId,label);return false;}
-     if(_q&&_q.status==='rejected'){if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคำขอก่อนหน้านี้ไม่ได้รับอนุมัติ\n\nส่งคำขอใหม่ไหม?'))this._plRequest(m,kind,docId,label);return false;}}
-    if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว — แก้ไขไม่ได้\n\nส่งคำขออนุมัติแก้ไขรายการนี้ไหม?'))this._plRequest(m,kind,docId,label);
+     if(_q&&_q.status==='closed'){if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nสิทธิ์แก้ไขรายการนี้ถูกปิดไปแล้ว (แก้เสร็จแล้ว)\n\nขออนุมัติใหม่อีกครั้งไหม?'))this._plRequest(m,kind,_key,_lb);return false;}
+     if(_q&&_q.status==='rejected'){if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคำขอก่อนหน้านี้ไม่ได้รับอนุมัติ\n\nส่งคำขอใหม่ไหม?'))this._plRequest(m,kind,_key,_lb);return false;}}
+    if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว — แก้ไขไม่ได้\n\nส่งคำขออนุมัติแก้ไขรายการนี้ไหม?'))this._plRequest(m,kind,_key,_lb);
     return false;
   }
   _plRequest(month,kind,docId,label){
@@ -11174,7 +11178,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   addJobDispatcherInline=()=>{const j=this.state.jobDraft||{};const name=String(j.newDispatcher||'').trim();if(!name)return;let list=this.state.dispatchers||[];if(!list.includes(name)){list=[...list,name].sort((a,b)=>String(a).localeCompare(String(b),'th'));try{localStorage.setItem('dispatcherReg_v1',JSON.stringify(list));}catch(e){}}this.setState(s=>({dispatchers:list,jobDraft:{...s.jobDraft,dispatcher:name,newDispatcher:''},jobAddingDispatcher:false}));};
   deleteDispatcherName=(name)=>{name=String(name||'').trim();if(!name)return;if(!window.confirm('ลบ "'+name+'" ออกจากรายชื่อผู้จ่ายงาน?'))return;const list=(this.state.dispatchers||[]).filter(n=>n!==name);try{localStorage.setItem('dispatcherReg_v1',JSON.stringify(list));}catch(e){}this.setState(s=>({dispatchers:list,jobDraft:(s.jobDraft&&s.jobDraft.dispatcher===name)?{...s.jobDraft,dispatcher:''}:s.jobDraft}));};
   _issueDriverLink(job,driverName,kind){const base=(this.state.qrBaseUrl&&this.state.qrBaseUrl.trim())?this.state.qrBaseUrl.trim().replace(/\/+$/,'')+'/':'https://lionflowapp.com/';sbCreateJobToken(job.id,14).then(token=>{const url=base+(LF_ENV==='staging'?'driver-staging.html':'driver.html')+'?t='+encodeURIComponent(token)+(LF_ENV==='staging'?'&env=staging':'');const img='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);if(kind==='saved')this.setState({savedJobQrImgUrl:img,savedJobQrText:url,savedJobDriver:driverName});else this.setState({jobQrImgUrl:img,jobQrText:url});}).catch(err=>{const m='⚠ สร้างลิงก์ไม่สำเร็จ: '+((err&&err.message)||'');if(kind==='saved')this.setState({savedJobQrText:m});else this.setState({jobQrText:m});});}
-  saveJob=()=>{{const _pg=this.state.jobDraft||{};if(!this._plGuard(_pg.date,'job',this.editingJobId,'ใบงาน '+(_pg.deliveryNo||_pg.jobNo||'')+' '+(_pg.date||'')))return;}const _jd0=this.state.jobDraft;if(_jd0&&!String(_jd0.customerCode||'').trim()&&String(_jd0.customer||'').trim()){const _lbl=String(_jd0.customer).trim();const _hit=(this.state.customers||[]).find(c=>{const cd=String(c.code||'').trim();return cd&&(_lbl===(cd+' '+(c.name||''))||_lbl.indexOf(cd)===0);});if(_hit)_jd0.customerCode=String(_hit.code).trim();}const j=this.state.jobDraft;if(!j||!j.date){this.setState({jobFormError:'กรุณาเลือกวันที่'});return;}
+  saveJob=()=>{{const _pg=this.state.jobDraft||{};if(!this._plGuard(_pg.date,'job',this.editingJobId,'ใบงาน '+(_pg.deliveryNo||_pg.jobNo||'')+' '+(_pg.date||''),this.editingJobId==null))return;}const _jd0=this.state.jobDraft;if(_jd0&&!String(_jd0.customerCode||'').trim()&&String(_jd0.customer||'').trim()){const _lbl=String(_jd0.customer).trim();const _hit=(this.state.customers||[]).find(c=>{const cd=String(c.code||'').trim();return cd&&(_lbl===(cd+' '+(c.name||''))||_lbl.indexOf(cd)===0);});if(_hit)_jd0.customerCode=String(_hit.code).trim();}const j=this.state.jobDraft;if(!j||!j.date){this.setState({jobFormError:'กรุณาเลือกวันที่'});return;}
     let _askedDup=false;
     {const _bn=String(j.deliveryNo||'').trim();
       // ★ v.2026-09-03j: กันสร้างใบซ้ำ — วันที่+ทะเบียน+เลขบิลเดียวกัน (เทียบแบบขึ้นต้นเหมือนกัน) → ชี้ให้เปิดใบเดิม
