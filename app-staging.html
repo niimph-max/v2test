@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-24a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-25a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -465,7 +465,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-24a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-25a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -10591,11 +10591,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._kvPollT=setInterval(async()=>{
       try{
         if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
-        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22';
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22';
         const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
         if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
         this._kvApplyAll(meta);
         try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
+        try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
       }catch(e){}
     },60000);
   }
@@ -10644,6 +10645,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const ml=this._thMonthLabel(m);
     if(this._plCan())return window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคุณมีสิทธิ์ปิด/เปิดงวด — ยืนยันแก้ไขทั้งที่ปิดงวดแล้ว?');
     if(!docId){window.alert('🔒 งวด '+ml+' ปิดบัญชีแล้ว — สร้างรายการใหม่ในเดือนนี้ไม่ได้\n\nถ้าจำเป็นต้องบันทึกย้อนหลัง ให้แจ้งผู้มีสิทธิ์เปิดงวด');return false;}
+    {const _q=this._plGet().reqs.find(q=>q&&String(q.docId)===String(docId)&&(!kind||String(q.kind)===String(kind))&&(q.status==='pending'||q.status==='rejected'||q.status==='closed'));
+     if(_q&&_q.status==='pending'){window.alert('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคำขอแก้ไขรายการนี้ส่งไปแล้ว กำลังรออนุมัติ\nเมื่อผู้มีสิทธิ์กดอนุมัติ ระบบจะปลดให้เองภายใน 1 นาที (หรือกด F5)');return false;}
+     if(_q&&_q.status==='closed'){if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nสิทธิ์แก้ไขรายการนี้ถูกปิดไปแล้ว (แก้เสร็จแล้ว)\n\nขออนุมัติใหม่อีกครั้งไหม?'))this._plRequest(m,kind,docId,label);return false;}
+     if(_q&&_q.status==='rejected'){if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว\n\nคำขอก่อนหน้านี้ไม่ได้รับอนุมัติ\n\nส่งคำขอใหม่ไหม?'))this._plRequest(m,kind,docId,label);return false;}}
     if(window.confirm('🔒 งวด '+ml+' ปิดบัญชีแล้ว — แก้ไขไม่ได้\n\nส่งคำขออนุมัติแก้ไขรายการนี้ไหม?'))this._plRequest(m,kind,docId,label);
     return false;
   }
