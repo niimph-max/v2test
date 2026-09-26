@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -470,7 +470,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -489,6 +489,20 @@
 
   <main style="flex:1;min-width:0;height:100vh;overflow:auto;position:relative;">
     <button onClick="{{ onToggleSidebar }}" style="{{ toggleBtnStyle }}">{{ toggleIcon }}</button>
+    <!-- ★ v.2026-09-26c: แถบเตือนพื้นที่ในเครื่องเต็ม / รูปใหญ่เกิน -->
+    <sc-if value="{{ lsBannerShow }}" hint-placeholder-val="{{ false }}">
+      <div style="margin:12px 14px 0 60px;background:#fffaeb;border:1px solid #fedf89;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:220px;font-size:13.5px;color:#93370d;line-height:1.6;">
+          <div style="font-weight:700;">{{ lsBannerText }}</div>
+          <sc-if value="{{ lsAskAdmin }}" hint-placeholder-val="{{ false }}"><div>แจ้งผู้ดูแลระบบให้กด "ย่อรูปที่ใหญ่เกิน"</div></sc-if>
+          <div style="color:#067647;font-weight:600;">{{ lsBannerMsg }}</div>
+        </div>
+        <sc-if value="{{ lsCanShrink }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onShrinkPhotos }}" style="flex:none;padding:9px 14px;background:#b54708;color:#fff;border:none;border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;">ย่อรูปที่ใหญ่เกิน</button>
+        </sc-if>
+        <button onClick="{{ onHideLsBanner }}" style="flex:none;background:none;border:none;color:#93370d;font-size:18px;cursor:pointer;padding:0 4px;">✕</button>
+      </div>
+    </sc-if>
 
     <!-- ===== ตรวจสภาพก่อนออกงาน ===== -->
     <sc-if value="{{ isInspect }}" hint-placeholder-val="{{ false }}">
@@ -7277,6 +7291,9 @@ function normOrigin(o){return {id:o.id||Date.now(),name:o.name||''};}
 function normOrder(o){return {customerCode:String(o.customerCode||'').trim(),id:o.id||0,orderNo:o.orderNo||'',customer:o.customer||'',channel:o.channel||'อีเมล',receivedDate:o.receivedDate?toBkkDate(o.receivedDate):'',product:o.product||'',origin:o.origin||'',destination:o.destination||'',dropPoint:o.dropPoint||'',billNo:o.billNo||'',weight:o.weight||'',truckType:o.truckType||'',requiredDate:o.requiredDate?toBkkDate(o.requiredDate):'',remark:o.remark||'',custDeliveryNo:o.custDeliveryNo||'',shipmentEnd:o.shipmentEnd?toBkkDate(o.shipmentEnd):'',saleDistrict:o.saleDistrict||'',size:o.size||'',note2:o.note2||'',productGroup:o.productGroup||'',driverNote:o.driverNote||'',driverRequest:o.driverRequest||'',shipments:Array.isArray(o.shipments)?o.shipments:[],tripId:o.tripId||'',status:o.status||'รอจัดรถ',jobId:o.jobId||'',canceledAt:o.canceledAt||'',_ft:(o._ft&&typeof o._ft==='object')?o._ft:{},_editedAt:o._editedAt};}
 const TODAY=new Date();
 const THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+// ★ v.2026-09-26c: ดัก localStorage เต็ม (~5 ล้านตัวอักษร/โดเมน) — ทุกจุดเขียนแบบ try/catch เงียบ
+//   เต็มแล้วสำเนาในเครื่อง + คิว pending บันทึกไม่ได้โดยไม่มีใครรู้ (26 ก.ย. 2569 เจอ prod ใช้ 5,242,169 จากรูปพนักงานเต็มขนาด)
+(function(){try{const _o=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){try{return _o.call(this,k,v);}catch(e){if(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014)){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
 // ===== Supabase backend (FleetTruck) =====
 // ===== v2 (multi-tenant + Supabase Auth) — ENV AUTO-SWITCH =====
 // default = PRODUCTION (lionflowapp.com). ใช้ staging เมื่อ hostname มี staging/localhost หรือใส่ ?env=staging
@@ -7650,6 +7667,8 @@ class Component extends DCLogic {
     if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fss=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']));const _fs=_fss[0]||'dashboard';this.setState({auth:_a,section:_fs,...this._qdLanding(_fss,_a.role)});}}catch(e){}}
     // ★ v.2026-09-26b: จอมือถือ → เริ่มแบบพับแถบเมนู (252px กินจอเกือบครึ่ง)
     try{if(this._qdSmall()&&this.state.sidebarOpen)this.setState({sidebarOpen:false});}catch(e){}
+    // ★ v.2026-09-26c: พื้นที่ในเครื่องเต็ม → ขึ้นแถบเตือน (เดิมเงียบ)
+    this._quotaHandler=()=>{if(!this.state.lsFull)this.setState({lsFull:true});};window.addEventListener('lf-quota',this._quotaHandler);if(window.__lfQuotaFull)this._quotaHandler();
     setTimeout(()=>{try{this.purgeTrash();}catch(e){}},5000);
     this._wheelGuard=(e)=>{const a=document.activeElement;if(a&&a.tagName==='INPUT'&&a.type==='number'&&(e.target===a||a.contains(e.target))){e.preventDefault();a.blur();}};
     window.addEventListener('wheel',this._wheelGuard,{passive:false});
@@ -9271,7 +9290,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   openNew=()=>{this.setState({editingCode:null,draft:{code:'',name:'',idCard:'',birthDate:'',address:'',type:'หกล้อ',fleet:'',startDate:'',licenseExpiry:'',idExpiry:'',idNoExpiry:false,hasLicenseFile:false,hasIdFile:false,photo:null},isNew:true,view:'form',formError:''});this.scrollMain();};
   cancelForm=()=>this.setState({view:this.state.isNew?'list':'profile',formError:''});
   setD(field,val){this.setState(s=>({draft:{...s.draft,[field]:val}}));}
-  readFileToDraft(field,e){const f=e.target.files&&e.target.files[0];if(!f)return;if(field==='photo'){const r=new FileReader();r.onload=()=>this.setState(s=>({draft:{...s.draft,photo:r.result}}));r.readAsDataURL(f);}else{this.setState(s=>({draft:{...s.draft,[field]:true}}));}}
+  readFileToDraft(field,e){const f=e.target.files&&e.target.files[0];if(!f)return;if(field==='photo'){this._readPhoto(e,p=>this.setState(s=>({draft:{...s.draft,photo:p}})));}else{this.setState(s=>({draft:{...s.draft,[field]:true}}));}}
   _cleanDate(v){if(!v)return '';const p=String(v).slice(0,10).split('-');if(p.length!==3||+p[0]<=0||+p[1]<=0||+p[2]<=0)return '';return v;}
   saveForm=()=>{const d=this.state.draft;if(!d||!d.name||!String(d.name||'').trim()){this.setState({formError:'กรุณากรอกชื่อพนักงานขับรถ'});return;}let code=String(d.code||'').trim();if(!/^\d{6}$/.test(code)){this.setState({formError:'รหัสพนักงานต้องเป็นตัวเลข 6 หลัก'});return;}const origCode=String(this.state.selectedCode||'');if(this.state.drivers.some(x=>String(x.code)===code&&String(x.code)!==origCode)){this.setState({formError:'รหัสพนักงาน '+code+' มีอยู่แล้ว กรุณาใช้รหัสอื่น'});return;}const nd={...d,code,name:String(d.name||''),birthDate:this._cleanDate(d.birthDate),startDate:this._cleanDate(d.startDate),licenseExpiry:this._cleanDate(d.licenseExpiry),idExpiry:this._cleanDate(d.idExpiry)};const renamedD=!this.state.isNew&&origCode&&origCode!==code;let drivers;if(this.state.isNew){drivers=[nd,...this.state.drivers.filter(x=>String(x.code)!==code)];}else if(renamedD){drivers=[nd,...this.state.drivers.filter(x=>String(x.code)!==origCode&&String(x.code)!==code)];}else{drivers=this.state.drivers.map(x=>String(x.code)===origCode?nd:x);}
       // แก้ "รหัสพนักงาน" = เปลี่ยนกุญแจ → ปักธงลบรหัสเดิมขึ้น cloud กันเด้งกลับเป็นแถวซ้ำ
@@ -9303,6 +9322,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ข้อมูลหัวเอกสาร — โค้ดพิมพ์อ่านค่าพวกนี้อยู่แล้ว แต่เดิมไม่มีช่องให้กรอก หัวเอกสารจึงว่าง
   // บันทึกจริงตอนกดปุ่ม "บันทึกข้อมูลบริษัท" เหมือนชื่อบริษัท (saveCompany)
   setCoField=(f,v)=>this.setState(s=>({company:{...s.company,[f]:v}}));
+  // ★ v.2026-09-26c: รูปพนักงาน/รถ/ออฟฟิศ ย่อก่อนเก็บ (เดิมเก็บไฟล์มือถือเต็มขนาด รูปเดียวเกือบล้านตัวอักษร → localStorage เต็ม)
+  _shrinkPhoto(dataUrl,max){return new Promise(res=>{try{const src=String(dataUrl||'');if(src.indexOf('data:image/')!==0||src.length<60000)return res(dataUrl);const img=new Image();img.onload=()=>{try{const M=max||480;const sc=Math.min(1,M/Math.max(img.width||1,img.height||1));const w=Math.max(1,Math.round((img.width||1)*sc)),h=Math.max(1,Math.round((img.height||1)*sc));const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);let out=c.toDataURL('image/jpeg',0.8);if(!out||out.length>=src.length)out=dataUrl;res(out);}catch(e){res(dataUrl);}};img.onerror=()=>res(dataUrl);img.src=src;}catch(e){res(dataUrl);}});}
+  _readPhoto(e,cb){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>this._shrinkPhoto(r.result).then(cb);r.readAsDataURL(f);}
+  _bigPhotoList(){const LIM=60000,S=this.state,big=(p)=>String(p||'').length>LIM;return {d:(S.drivers||[]).filter(x=>big(x.photo)),t:(S.trucks||[]).filter(x=>big(x.photo)),o:(S.office||[]).filter(x=>big(x.photo))};}
+  shrinkBigPhotos=async()=>{if(this._shrinking)return;const L=this._bigPhotoList();const n0=L.d.length+L.t.length+L.o.length;if(!n0){this.setState({shrinkMsg:'✓ ไม่มีรูปที่ใหญ่เกินแล้ว'});return;}
+    if(!window.confirm('ย่อรูปที่ใหญ่เกิน '+n0+' รูป (พนักงาน '+L.d.length+' · รถ '+L.t.length+' · ออฟฟิศ '+L.o.length+')\nเป็นกว้างไม่เกิน 480 จุด แล้วบันทึกขึ้นคลาวด์\n\nข้อมูลอื่นไม่ถูกแตะ · รูปยังดูชัดในหน้าแอป'))return;
+    this._shrinking=true;this.setState({shrinkMsg:'⏳ กำลังย่อรูป…'});let n=0,saved=0;
+    try{
+      for(const d of L.d){const p=await this._shrinkPhoto(d.photo,480);if(p&&p.length<String(d.photo).length){const drivers=this.state.drivers.map(x=>String(x.code)===String(d.code)?{...x,photo:p}:x);this.setState({drivers});this.persist(drivers,d.code);saved+=String(d.photo).length-p.length;n++;}}
+      for(const t of L.t){const p=await this._shrinkPhoto(t.photo,480);if(p&&p.length<String(t.photo).length){const trucks=this.state.trucks.map(x=>x.plate===t.plate?{...x,photo:p}:x);this.setState({trucks});this.persistTrucks(trucks,t.plate);saved+=String(t.photo).length-p.length;n++;}}
+      for(const o of L.o){const p=await this._shrinkPhoto(o.photo,480);if(p&&p.length<String(o.photo).length){const office=this.state.office.map(x=>x.code===o.code?{...x,photo:p}:x);this.setState({office});this.persistOffice(office,o.code);saved+=String(o.photo).length-p.length;n++;}}
+    }finally{this._shrinking=false;}
+    window.__lfQuotaFull=0;this.setState({lsFull:false,shrinkMsg:'✅ ย่อแล้ว '+n+' รูป · คืนพื้นที่ประมาณ '+Math.round(saved/1000).toLocaleString()+' พันตัวอักษร'});};
   // โลโก้: ย่อก่อนเก็บเสมอ — รูปจากมือถือหลายเมกะไบต์จะถูกอัปขึ้นคลาวด์ทุกครั้งที่บันทึกบริษัท
   readCoLogo=(e)=>{
     const f=e.target.files&&e.target.files[0];if(!f)return;
@@ -9338,7 +9370,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   openOfficeEdit=()=>{const o=this.state.office.find(x=>x.code===this.state.officeSelectedCode);if(!o)return;this.setState({officeDraft:{...o},officeIsNew:false,officeView:'form',officeFormError:''});};
   cancelOfficeForm=()=>this.setState({officeView:this.state.officeIsNew?'list':'profile',officeFormError:''});
   setOf=(field,val)=>this.setState(s=>({officeDraft:{...s.officeDraft,[field]:val}}));
-  readOfficePhoto=(e)=>{const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>this.setState(s=>({officeDraft:{...s.officeDraft,photo:r.result}}));r.readAsDataURL(f);};
+  readOfficePhoto=(e)=>{this._readPhoto(e,p=>this.setState(s=>({officeDraft:{...s.officeDraft,photo:p}})));};
   saveOffice=()=>{const d=this.state.officeDraft;if(!d||!String(d.name||'').trim()){this.setState({officeFormError:'กรุณากรอกชื่อ-สกุล'});return;}const code=String(d.code||'').trim();if(!code){this.setState({officeFormError:'กรุณากรอกรหัสพนักงาน'});return;}const orig=String(this.state.officeSelectedCode||'');if(this.state.office.some(x=>String(x.code)===code&&String(x.code)!==orig)){this.setState({officeFormError:'รหัส '+code+' มีอยู่แล้ว กรุณาใช้รหัสอื่น'});return;}const nd=normOffice({...d,code,birthDate:this._cleanDate(d.birthDate),startDate:this._cleanDate(d.startDate)});const renamedO=!this.state.officeIsNew&&orig&&orig!==code;let office;if(this.state.officeIsNew){office=[nd,...this.state.office.filter(x=>String(x.code)!==code)];}else if(renamedO){office=[nd,...this.state.office.filter(x=>String(x.code)!==orig&&String(x.code)!==code)];}else{office=this.state.office.map(x=>String(x.code)===orig?nd:x);}if(renamedO){const now=Date.now();try{const tomb=JSON.parse(localStorage.getItem('officeTomb')||'{}');tomb[orig]=now;localStorage.setItem('officeTomb',JSON.stringify(tomb));}catch(e){}try{const pc=new Set(JSON.parse(localStorage.getItem('officePending')||'[]'));pc.delete(orig);localStorage.setItem('officePending',JSON.stringify([...pc]));}catch(e){}this.pushColl('office_staff',[{code:orig,id:orig,_deleted:true,_editedAt:now}]);}this.persistOffice(office,code);this.setState({office,officeSelectedCode:code,officeView:'profile',officeFormError:'',officeIsNew:false,officeTab:'info'});};
   deleteOffice=()=>{if(!window.confirm('ยืนยันการลบข้อมูลพนักงานออฟฟิศรายนี้?'))return;const code=this.state.officeSelectedCode;const list=this.collDelete(code,this.state.office,'officeReg_v1','code','officePending','officeTomb','office_staff');this.setState({office:list,officeView:'list'});};
   openOfficeHistForm=()=>this.setState({officeHistFormOpen:true,officeHistError:'',officeHistDraft:{code:'',date:new Date().toISOString().slice(0,10),type:'บันทึกทั่วไป',detail:'',by:(this.state.auth&&this.state.auth.name)||''}});
@@ -9568,7 +9600,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   cancelTruckForm=()=>this.setState({truckView:this.state.editingTruckId?'profile':'list',truckFormError:''});
   setT(field,val){this.setState(s=>({truckDraft:{...s.truckDraft,[field]:val}}));}
   readTruckFileToDraft(field,e){const f=e.target.files&&e.target.files[0];if(!f)return;this.setState(s=>({truckDraft:{...s.truckDraft,[field]:true}}));}
-  readTruckPhotoDraft(e){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>this.setState(s=>({truckDraft:{...s.truckDraft,photo:r.result}}));r.readAsDataURL(f);}
+  readTruckPhotoDraft(e){this._readPhoto(e,p=>this.setState(s=>({truckDraft:{...s.truckDraft,photo:p}})));}
   saveTruckForm=()=>{const t=this.state.truckDraft;if(!t.plate||!t.plate.trim()){this.setState({truckFormError:'กรุณากรอกทะเบียนรถ'});return;}const nt={...t,plate:t.plate.trim(),contractDate:this._cleanDate(t.contractDate),regExpiry:this._cleanDate(t.regExpiry),insuranceExpiry:this._cleanDate(t.insuranceExpiry),ownerIdExpiry:this._cleanDate(t.ownerIdExpiry),cargoInsExpiry:this._cleanDate(t.cargoInsExpiry)};const origPlate=this.state.editingTruckId||this.state.truckSelectedId;const renamed=!this.state.truckIsNew&&origPlate&&origPlate!==nt.plate;
       // แก้ชื่อทะเบียน → ใบงานเก่ายังเก็บชื่อเดิม ถ้าไม่เปลี่ยนตาม ใบงานจะหลุดจากรายงานทุกหน้าของรถคันนี้ (เจอจริง 18 ก.ย. 2026)
       const _rnJobs=renamed?this.state.jobs.filter(j=>j.truckPlate===origPlate&&!j.deleted&&!j._deleted):[];
@@ -9648,6 +9680,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   cancelJobForm=()=>this.setState({jobView:'list',jobFormError:''});
   // ★ v.2026-09-26b: ⚡ จ่ายงานเร็ว (มือถือ) — jobView 'qlist' | 'qform' ใต้ section jobs
   //   ใช้ openJobNew / dispatchOrder / saveJob เดิมทั้งหมด (เลขใบงาน · ล็อกงวด · อัปเดตสถานะออร์เดอร์ · QR) แค่เปลี่ยนหน้าจอ
+  // ★ v.2026-09-26c: แถบเตือนพื้นที่ในเครื่องเต็ม / รูปใหญ่เกิน (ปุ่มย่อรูปเห็นเฉพาะแอดมิน)
+  _lsBannerVals(S){const _adm=!!(S.auth&&S.auth.role==='admin');const L=_adm?this._bigPhotoList():{d:[],t:[],o:[]};const nBig=L.d.length+L.t.length+L.o.length;const show=!S.lsBannerHidden&&(!!S.lsFull||nBig>0||!!S.shrinkMsg);return {lsBannerShow:show,lsBannerText:S.lsFull?'⚠️ พื้นที่เก็บข้อมูลในเครื่องนี้เต็ม — แอปบันทึกสำเนาในเครื่องไม่ได้ ถ้าเน็ตหลุดระหว่างบันทึก ข้อมูลอาจหาย':(nBig?('มีรูปขนาดใหญ่เกิน '+nBig+' รูป กินพื้นที่ในเครื่องจนแอปเปิดช้า'):''),lsBannerMsg:S.shrinkMsg||'',lsCanShrink:_adm&&nBig>0,lsAskAdmin:!_adm&&!!S.lsFull,onShrinkPhotos:this.shrinkBigPhotos,onHideLsBanner:()=>this.setState({lsBannerHidden:true})};}
   _qdSmall(){try{return window.innerWidth<900;}catch(e){return false;}}
   _qdFleetNow(){const S=this.state;if(S.qdFleet!==undefined)return S.qdFleet;let v=null;try{v=localStorage.getItem('qdFleet_v1');}catch(e){}if(v!==null)return v;return this._fleetList().includes('ระยอง')?'ระยอง':'';}
   openQuickDispatch=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({section:'jobs',jobView:'qlist',jobFormError:'',...(this._qdSmall()?{sidebarOpen:false}:{})});this.scrollMain();};
@@ -11613,6 +11647,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       navDpItems:dpSideItems,navTruckDepts:truckDepts,navFleets:fleets,
       navQuickStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+((S.section==='jobs'&&(S.jobView==='qlist'||S.jobView==='qform'))?'background:rgba(31,138,91,.28);color:#fff;':'background:transparent;color:#cdd7e1;'),
       onGoQuickDispatch:()=>this.openQuickDispatch(),
+      ...this._lsBannerVals(S),
       navJobsStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(isJobs?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;'),
       navJobsBadge:'font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(isJobs?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;'),
       navTrucksStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(isTrucks?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;'),
@@ -11732,7 +11767,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.truckHasPhoto=!!tsel.photo;out.truckNoPhoto=!tsel.photo;
       out.truckPhotoNode=tsel.photo?React.createElement('img',{src:tsel.photo,style:{width:'100%',height:'100%',objectFit:'cover'}}):null;
       out.truckPhotoLabel=tsel.photo?'เปลี่ยนรูป':'+ เพิ่มรูป';
-      out.onTruckProfilePhoto=(e)=>{const f=e.target.files&&e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{const trucks=this.state.trucks.map(t=>t.plate===this.state.truckSelectedId?{...t,photo:rd.result}:t);this.persistTrucks(trucks,this.state.truckSelectedId);this.setState({trucks});};rd.readAsDataURL(f);};
+      out.onTruckProfilePhoto=(e)=>{this._readPhoto(e,p=>{const trucks=this.state.trucks.map(t=>t.plate===this.state.truckSelectedId?{...t,photo:p}:t);this.persistTrucks(trucks,this.state.truckSelectedId);this.setState({trucks});});};
       out.truckDocs=[mkDoc('บัตรประชาชนเจ้าของรถ','วันหมดอายุ',tsel.ownerIdExpiry,tsel.hasOwnerIdFile,true),mkDoc('สมุดทะเบียนรถ','วันหมดอายุ',tsel.regExpiry,tsel.hasRegFile,true),mkDoc('พ.ร.บ.','วันหมดอายุ',tsel.actExpiry,false,true,[tsel.actCompany,tsel.actPremium?('฿'+_LFB2(tsel.actPremium)):''].filter(Boolean).join(' · ')),mkDoc('ประกันภัยรถยนต์','วันหมดอายุ',tsel.insuranceExpiry,tsel.hasInsuranceFile,true,[tsel.insCompany,tsel.insPremium?('฿'+_LFB2(tsel.insPremium)):''].filter(Boolean).join(' · ')),mkDoc('ประกันสินค้า','วันหมดอายุ',tsel.cargoInsExpiry,tsel.hasCargoInsFile,true,[tsel.cargoInsCompany,tsel.cargoInsPremium?('฿'+_LFB2(tsel.cargoInsPremium)):''].filter(Boolean).join(' · ')),mkDoc('สัญญาขนส่ง','วันที่ทำสัญญา',tsel.contractDate,tsel.hasContractFile,false)].filter(d=>!(this.isTrailer(tsel)&&(d.label==='ประกันภัยรถยนต์'||d.label==='ประกันสินค้า')));
       out.onTruckEdit=this.openTruckEdit;out.onTruckDelete=this.deleteTruck;out.onTruckRetire=this.retireTruck;out.onTruckUnretire=this.unretireTruck;
       {const _qb=(S.qrBaseUrl&&S.qrBaseUrl.trim())?S.qrBaseUrl.trim().replace(/\/+$/,'')+'/':'https://lionflowapp.com/';const _iurl=_qb+'inspect.html?t='+encodeURIComponent(tsel.plate);out.truckInspectQrUrl=_iurl;out.truckInspectQrImg='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data='+encodeURIComponent(_iurl);out.truckInspectQrNode=React.createElement('img',{src:out.truckInspectQrImg,alt:'QR',style:{width:'120px',height:'120px',flex:'none',border:'1px solid #eef1f4',borderRadius:'10px'}});
