@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6804,8 +6804,6 @@
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;">
           <input type="month" value="{{ effMonth }}" onInput="{{ onEffMonth }}" style="padding:8px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;">
-          <button onClick="{{ onPrintReport }}" style="padding:7px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #cfe0f2;background:#fff;color:#2f6fb0;white-space:nowrap;">🖨️ พิมพ์ / PDF</button>
-          <button onClick="{{ onExportReport }}" style="padding:7px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #b7e2c8;background:#fff;color:#067647;white-space:nowrap;">⬇ Excel</button>
         </div>
       </div>
       <div style="display:flex;gap:11px;margin-bottom:18px;flex-wrap:wrap;">
