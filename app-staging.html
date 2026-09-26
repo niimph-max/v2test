@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -282,23 +282,6 @@
       </button>
 
       </sc-if>
-      <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
-      <div style="font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;padding:16px 8px 7px;">ระบบรายงานและวิเคราะห์</div>
-      <button onClick="{{ onGoEff }}" style="{{ navEffStyle }}">
-        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📊</span>ประสิทธิภาพรถบริษัท</span>
-      </button>
-      <sc-if value="{{ isEff }}" hint-placeholder-val="{{ false }}">
-        <div style="padding-left:8px;margin-top:2px;">
-          <sc-for list="{{ navEffItems }}" as="s" hint-placeholder-count="4">
-            <button onClick="{{ s.onClick }}" style="{{ s.btnStyle }}">
-              <span style="display:flex;align-items:center;gap:9px;"><span style="{{ s.dotStyle }}"></span>{{ s.label }}</span>
-              <span style="{{ s.badgeStyle }}">{{ s.count }}</span>
-            </button>
-          </sc-for>
-        </div>
-      </sc-if>
-      </sc-if>
-
       <!-- ★ v.2026-09-27c: รายได้ & ค่าใช้จ่าย แยกเป็นหมวดของตัวเอง + เมนูย่อยตามฟลีต (ฟลีต = ฟลีตของ พขร. ในหน้าพนักงาน) -->
       <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
       <div style="font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;padding:16px 8px 7px;">ระบบบันทึกรายได้และค่าใช้จ่าย</div>
@@ -308,6 +291,23 @@
       <sc-if value="{{ isSettleNav }}" hint-placeholder-val="{{ false }}">
         <div style="padding-left:8px;margin-top:2px;">
           <sc-for list="{{ navSettleItems }}" as="s" hint-placeholder-count="4">
+            <button onClick="{{ s.onClick }}" style="{{ s.btnStyle }}">
+              <span style="display:flex;align-items:center;gap:9px;"><span style="{{ s.dotStyle }}"></span>{{ s.label }}</span>
+              <span style="{{ s.badgeStyle }}">{{ s.count }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      </sc-if>
+
+      <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;padding:16px 8px 7px;">ระบบรายงานและวิเคราะห์</div>
+      <button onClick="{{ onGoEff }}" style="{{ navEffStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📊</span>ประสิทธิภาพรถบริษัท</span>
+      </button>
+      <sc-if value="{{ isEff }}" hint-placeholder-val="{{ false }}">
+        <div style="padding-left:8px;margin-top:2px;">
+          <sc-for list="{{ navEffItems }}" as="s" hint-placeholder-count="4">
             <button onClick="{{ s.onClick }}" style="{{ s.btnStyle }}">
               <span style="display:flex;align-items:center;gap:9px;"><span style="{{ s.dotStyle }}"></span>{{ s.label }}</span>
               <span style="{{ s.badgeStyle }}">{{ s.count }}</span>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
