@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -470,7 +470,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -1614,7 +1614,7 @@
 
     <!-- ===== DASHBOARD ===== -->
     <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ true }}">
-    <div style="padding:26px 30px 60px;max-width:1180px;">
+    <div style="{{ dashWrapStyle }}">
       <div style="position:relative;overflow:hidden;background:linear-gradient(120deg,#E8A33D 0%,#E29A2E 55%,#D68A22 100%);border-radius:18px;padding:26px 28px;margin-bottom:24px;box-shadow:0 8px 24px rgba(184,120,20,.26);">
         <div style="position:absolute;right:-26px;top:-34px;width:170px;height:170px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.30),transparent 70%);"></div>
         <div style="position:absolute;right:74px;bottom:-50px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(22,38,58,.16),transparent 70%);"></div>
@@ -1624,14 +1624,14 @@
           <div style="font-size:13.5px;color:#5a4413;margin-top:6px;font-weight:600;">{{ userRoleLabel }} · วันที่ {{ todayTH }}</div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;align-items:start;">
         <sc-if value="{{ canTrucks }}" hint-placeholder-val="{{ false }}">
         <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:20px;">
           <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:14px;">🚛 เอกสารรถใกล้/หมดอายุ</div>
           <sc-if value="{{ truckAlertEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding:20px;text-align:center;color:#b0b8c2;font-size:13px;">ไม่มีเอกสารที่ต้องดำเนินการ ✓</div></sc-if>
           <sc-for list="{{ truckAlertRows }}" as="r" hint-placeholder-count="0">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f4f6f8;">
-              <div style="min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px 10px;padding:9px 0;border-bottom:1px solid #f4f6f8;flex-wrap:wrap;">
+              <div style="min-width:0;flex:1 1 170px;">
                 <div style="font-size:13px;font-weight:600;color:#1d2b3a;">{{ r.plate }} · {{ r.label }}</div>
                 <div style="font-size:11.5px;color:#98a2b3;">{{ r.dateText }}</div>
               </div>
@@ -1649,8 +1649,8 @@
           <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:14px;">👤 เอกสารพนักงานใกล้/หมดอายุ</div>
           <sc-if value="{{ driverAlertEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding:20px;text-align:center;color:#b0b8c2;font-size:13px;">ไม่มีเอกสารที่ต้องดำเนินการ ✓</div></sc-if>
           <sc-for list="{{ driverAlertRows }}" as="r" hint-placeholder-count="0">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f4f6f8;">
-              <div style="min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px 10px;padding:9px 0;border-bottom:1px solid #f4f6f8;flex-wrap:wrap;">
+              <div style="min-width:0;flex:1 1 170px;">
                 <div style="font-size:13px;font-weight:600;color:#1d2b3a;">{{ r.name }} · {{ r.label }}</div>
                 <div style="font-size:11.5px;color:#98a2b3;">{{ r.dateText }}</div>
               </div>
@@ -1745,8 +1745,8 @@
           <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:14px;">🔧 ซ่อมบำรุงถึงรอบ</div>
           <sc-if value="{{ pmAlertEmpty }}" hint-placeholder-val="{{ true }}"><div style="padding:20px;text-align:center;color:#b0b8c2;font-size:13px;">ไม่มีรายการถึงรอบซ่อมบำรุง ✓</div></sc-if>
           <sc-for list="{{ pmAlertRows }}" as="r" hint-placeholder-count="0">
-            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid #f4f6f8;">
-              <div style="min-width:0;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:6px 10px;padding:9px 0;border-bottom:1px solid #f4f6f8;flex-wrap:wrap;">
+              <div style="min-width:0;flex:1 1 170px;">
                 <div style="font-size:13px;font-weight:600;color:#1d2b3a;">{{ r.plate }} · {{ r.label }}</div>
                 <div style="font-size:11.5px;color:#98a2b3;">{{ r.dueText }}</div>
               </div>
@@ -1757,7 +1757,7 @@
         </div>
         </sc-if>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-top:26px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px;margin-top:22px;">
         <sc-for list="{{ kpiCards }}" as="c" hint-placeholder-count="4">
           <button onClick="{{ c.onClick }}" style="{{ c.cardStyle }}">
             <div style="margin-bottom:14px;"><span style="{{ c.accentBar }}">{{ c.icon }}</span></div>
@@ -1768,7 +1768,7 @@
         </sc-for>
       </div>
       <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:18px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;margin-top:18px;">
         <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 22px;">
           <div style="font-size:12.5px;color:#667085;font-weight:600;">รวมเที่ยววิ่ง</div>
           <div style="font-size:30px;font-weight:800;color:#2f6fb0;margin-top:8px;">{{ dashKpiTrips }}</div>
@@ -11667,6 +11667,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       navDpItems:dpSideItems,navTruckDepts:truckDepts,navFleets:fleets,
       navQuickStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+((S.section==='jobs'&&(S.jobView==='qlist'||S.jobView==='qform'))?'background:rgba(31,138,91,.28);color:#fff;':'background:transparent;color:#cdd7e1;'),
       onGoQuickDispatch:()=>this.openQuickDispatch(),
+      dashWrapStyle:this._qdSmall()?'padding:60px 12px 40px;':'padding:26px 30px 60px;max-width:1180px;',
       ...this._lsBannerVals(S),
       navJobsStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(isJobs?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;'),
       navJobsBadge:'font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(isJobs?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;'),
