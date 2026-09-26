@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26h · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -470,7 +470,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26h</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7664,11 +7664,13 @@ class Component extends DCLogic {
     if(SB_SESSION){ this._initSession(); }
     else{ /* v2: ไม่มี session ที่ใช้ได้ → ล้าง auth เก่า บังคับ login ใหม่ */ try{localStorage.removeItem('fleet_auth_v1');}catch(e){} if(this.state.auth){this.setState({auth:null});} this.loadCloudMeta(); }
     try{if(this.state.auth)localStorage.setItem('lf_returning_v1','1');}catch(e){}
+    // 26h: เครื่องที่ login ค้างไว้ auth มาจาก state เริ่มต้น (section:'dashboard') → เดิมข้ามการเช็ค ?go=quick
+    if(this.state.auth){try{const _a=this.state.auth;const _s=(_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||[]);const _l=this._qdLanding(_s,_a.role);if(_l.section)this.setState(_l);}catch(e){}}
     if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fss=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']));const _fs=_fss[0]||'dashboard';this.setState({auth:_a,section:_fs,...this._qdLanding(_fss,_a.role)});}}catch(e){}}
     // ★ v.2026-09-26b: จอมือถือ → เริ่มแบบพับแถบเมนู (252px กินจอเกือบครึ่ง)
     try{if(this._qdSmall()&&this.state.sidebarOpen)this.setState({sidebarOpen:false});}catch(e){}
     // ★ v.2026-09-26c: พื้นที่ในเครื่องเต็ม → ขึ้นแถบเตือน (เดิมเงียบ)
-    this._quotaHandler=()=>{if(!this.state.lsFull)this.setState({lsFull:true});};window.addEventListener('lf-quota',this._quotaHandler);if(window.__lfQuotaFull)this._quotaHandler();
+    this._quotaHandler=()=>{if(!this.state.lsFull)this.setState({lsFull:true,lsUsage:this._lsUsage()});};window.addEventListener('lf-quota',this._quotaHandler);if(window.__lfQuotaFull)this._quotaHandler();
     setTimeout(()=>{try{this.purgeTrash();}catch(e){}},5000);
     this._wheelGuard=(e)=>{const a=document.activeElement;if(a&&a.tagName==='INPUT'&&a.type==='number'&&(e.target===a||a.contains(e.target))){e.preventDefault();a.blur();}};
     window.addEventListener('wheel',this._wheelGuard,{passive:false});
@@ -9684,9 +9686,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ★ v.2026-09-26b: ⚡ จ่ายงานเร็ว (มือถือ) — jobView 'qlist' | 'qform' ใต้ section jobs
   //   ใช้ openJobNew / dispatchOrder / saveJob เดิมทั้งหมด (เลขใบงาน · ล็อกงวด · อัปเดตสถานะออร์เดอร์ · QR) แค่เปลี่ยนหน้าจอ
   // ★ v.2026-09-26c: แถบเตือนพื้นที่ในเครื่องเต็ม / รูปใหญ่เกิน (ปุ่มย่อรูปเห็นเฉพาะแอดมิน)
-  _lsBannerVals(S){const _adm=!!(S.auth&&S.auth.role==='admin');const L=_adm?this._bigPhotoList():{d:[],t:[],o:[]};const nBig=L.d.length+L.t.length+L.o.length;const show=!S.lsBannerHidden&&(!!S.lsFull||nBig>0||!!S.shrinkMsg);return {lsBannerShow:show,lsBannerText:S.lsFull?'⚠️ พื้นที่เก็บข้อมูลในเครื่องนี้เต็ม — แอปบันทึกสำเนาในเครื่องไม่ได้ ถ้าเน็ตหลุดระหว่างบันทึก ข้อมูลอาจหาย':(nBig?('มีรูปขนาดใหญ่เกิน '+nBig+' รูป กินพื้นที่ในเครื่องจนแอปเปิดช้า'):''),lsBannerMsg:S.shrinkMsg||'',lsCanShrink:_adm&&nBig>0,lsAskAdmin:!_adm&&!!S.lsFull,onShrinkPhotos:this.shrinkBigPhotos,onHideLsBanner:()=>this.setState({lsBannerHidden:true})};}
+  _lsBannerVals(S){const _adm=!!(S.auth&&S.auth.role==='admin');const L=_adm?this._bigPhotoList():{d:[],t:[],o:[]};const nBig=L.d.length+L.t.length+L.o.length;const show=!S.lsBannerHidden&&(!!S.lsFull||nBig>0||!!S.shrinkMsg);return {lsBannerShow:show,lsBannerText:S.lsFull?'⚠️ พื้นที่เก็บข้อมูลในเครื่องนี้เต็ม — แอปบันทึกสำเนาในเครื่องไม่ได้ ถ้าเน็ตหลุดระหว่างบันทึก ข้อมูลอาจหาย':(nBig?('มีรูปขนาดใหญ่เกิน '+nBig+' รูป กินพื้นที่ในเครื่องจนแอปเปิดช้า'):''),lsBannerMsg:(S.shrinkMsg||'')+(S.lsFull&&S.lsUsage?((S.shrinkMsg?' · ':'')+S.lsUsage):''),lsCanShrink:_adm&&nBig>0,lsAskAdmin:!_adm&&!!S.lsFull,onShrinkPhotos:this.shrinkBigPhotos,onHideLsBanner:()=>this.setState({lsBannerHidden:true})};}
   // plate → {ฟลีต:จำนวนเที่ยว} จากใบงาน 60 วันล่าสุด (แคชตาม jobs array เดิม ไม่วนทุก render)
   _qdRecentFleets(jobs,dFleet){const c=this._qdRecentCache;if(c&&c.jobs===jobs)return c.map;const map={};let cut='';try{cut=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date(Date.now()-60*86400000));}catch(e){}(jobs||[]).forEach(j=>{if(j.deleted||j._deleted||!j.truckPlate||!j.driverCode)return;if(cut&&String(j.date||'')<cut)return;const fl=dFleet[String(j.driverCode)];if(!fl)return;const m=map[j.truckPlate]||(map[j.truckPlate]={});m[fl]=(m[fl]||0)+1;});this._qdRecentCache={jobs,map};return map;}
+  // 26h: สรุปการใช้ localStorage ของโดเมนนี้ (รวมเว็บอื่นบน github.io เดียวกัน) — โชว์ในแถบเตือน
+  _lsUsage(){try{let t=0;const r=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);const n=(localStorage.getItem(k)||'').length+String(k).length;t+=n;r.push([k,n]);}r.sort((a,b)=>b[1]-a[1]);return 'ใช้ไป '+t.toLocaleString()+' ตัวอักษร · ใหญ่สุด: '+r.slice(0,3).map(x=>x[0]+' '+Math.round(x[1]/1000).toLocaleString()+'k').join(', ');}catch(e){return '';}}
   _qdSmall(){try{return window.innerWidth<900;}catch(e){return false;}}
   _qdFleetNow(){const S=this.state;if(S.qdFleet!==undefined)return S.qdFleet;let v=null;try{v=localStorage.getItem('qdFleet_v1');}catch(e){}if(v!==null)return v;return this._fleetList().includes('ระยอง')?'ระยอง':'';}
   openQuickDispatch=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({section:'jobs',jobView:'qlist',jobFormError:'',...(this._qdSmall()?{sidebarOpen:false}:{})});this.scrollMain();};
