@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -470,7 +470,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9325,7 +9325,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ★ v.2026-09-26c: รูปพนักงาน/รถ/ออฟฟิศ ย่อก่อนเก็บ (เดิมเก็บไฟล์มือถือเต็มขนาด รูปเดียวเกือบล้านตัวอักษร → localStorage เต็ม)
   _shrinkPhoto(dataUrl,max){return new Promise(res=>{try{const src=String(dataUrl||'');if(src.indexOf('data:image/')!==0||src.length<60000)return res(dataUrl);const img=new Image();img.onload=()=>{try{const M=max||480;const sc=Math.min(1,M/Math.max(img.width||1,img.height||1));const w=Math.max(1,Math.round((img.width||1)*sc)),h=Math.max(1,Math.round((img.height||1)*sc));const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);let out=c.toDataURL('image/jpeg',0.8);if(!out||out.length>=src.length)out=dataUrl;res(out);}catch(e){res(dataUrl);}};img.onerror=()=>res(dataUrl);img.src=src;}catch(e){res(dataUrl);}});}
   _readPhoto(e,cb){const f=e.target.files&&e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>this._shrinkPhoto(r.result).then(cb);r.readAsDataURL(f);}
-  _bigPhotoList(){const LIM=60000,S=this.state,big=(p)=>String(p||'').length>LIM;return {d:(S.drivers||[]).filter(x=>big(x.photo)),t:(S.trucks||[]).filter(x=>big(x.photo)),o:(S.office||[]).filter(x=>big(x.photo))};}
+  _bigPhotoList(){const LIM=120000,S=this.state,bad=this._shrinkFailed||{},big=(p)=>String(p||'').length>LIM&&!bad[String(p).length];return {d:(S.drivers||[]).filter(x=>big(x.photo)),t:(S.trucks||[]).filter(x=>big(x.photo)),o:(S.office||[]).filter(x=>big(x.photo))};}  // 26d: เกณฑ์ 120k (รูปย่อแล้วรายละเอียดเยอะได้ ~67k) · รูปที่ย่อไม่ได้ไม่นับซ้ำ
   shrinkBigPhotos=async()=>{if(this._shrinking)return;const L=this._bigPhotoList();const n0=L.d.length+L.t.length+L.o.length;if(!n0){this.setState({shrinkMsg:'✓ ไม่มีรูปที่ใหญ่เกินแล้ว'});return;}
     if(!window.confirm('ย่อรูปที่ใหญ่เกิน '+n0+' รูป (พนักงาน '+L.d.length+' · รถ '+L.t.length+' · ออฟฟิศ '+L.o.length+')\nเป็นกว้างไม่เกิน 480 จุด แล้วบันทึกขึ้นคลาวด์\n\nข้อมูลอื่นไม่ถูกแตะ · รูปยังดูชัดในหน้าแอป'))return;
     this._shrinking=true;this.setState({shrinkMsg:'⏳ กำลังย่อรูป…'});let n=0,saved=0;
@@ -9334,7 +9334,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       for(const t of L.t){const p=await this._shrinkPhoto(t.photo,480);if(p&&p.length<String(t.photo).length){const trucks=this.state.trucks.map(x=>x.plate===t.plate?{...x,photo:p}:x);this.setState({trucks});this.persistTrucks(trucks,t.plate);saved+=String(t.photo).length-p.length;n++;}}
       for(const o of L.o){const p=await this._shrinkPhoto(o.photo,480);if(p&&p.length<String(o.photo).length){const office=this.state.office.map(x=>x.code===o.code?{...x,photo:p}:x);this.setState({office});this.persistOffice(office,o.code);saved+=String(o.photo).length-p.length;n++;}}
     }finally{this._shrinking=false;}
-    window.__lfQuotaFull=0;this.setState({lsFull:false,shrinkMsg:'✅ ย่อแล้ว '+n+' รูป · คืนพื้นที่ประมาณ '+Math.round(saved/1000).toLocaleString()+' พันตัวอักษร'});};
+    // รูปที่ย่อไม่ลง (เช่น HEIC ที่เบราว์เซอร์เปิดไม่ได้) → จำไว้ไม่นับซ้ำในรอบนี้ + บอกชื่อให้อัปโหลดใหม่
+    const _left=this._bigPhotoList();const _fail=[..._left.d.map(x=>x.name||x.code),..._left.t.map(x=>x.plate),..._left.o.map(x=>x.name||x.code)];this._shrinkFailed=this._shrinkFailed||{};[..._left.d,..._left.t,..._left.o].forEach(x=>{this._shrinkFailed[String(x.photo).length]=1;});
+    window.__lfQuotaFull=0;this.setState({lsFull:false,shrinkMsg:'✅ ย่อแล้ว '+n+' รูป · คืนพื้นที่ประมาณ '+Math.round(saved/1000).toLocaleString()+' พันตัวอักษร'+(_fail.length?(' · ย่อไม่ได้ '+_fail.length+' รูป ('+_fail.join(', ')+') — อัปโหลดรูปใหม่เป็น JPG'):'')});};
   // โลโก้: ย่อก่อนเก็บเสมอ — รูปจากมือถือหลายเมกะไบต์จะถูกอัปขึ้นคลาวด์ทุกครั้งที่บันทึกบริษัท
   readCoLogo=(e)=>{
     const f=e.target.files&&e.target.files[0];if(!f)return;
