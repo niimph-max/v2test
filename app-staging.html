@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -261,6 +261,11 @@
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📋</span>การจ่ายงาน</span>
         <span style="{{ navJobsBadge }}">{{ jobTotalCount }}</span>
       </button>
+      <sc-if value="{{ canJobs }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ onGoQuickDispatch }}" style="{{ navQuickStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">⚡</span>จ่ายงานเร็ว (มือถือ)</span>
+      </button>
+      </sc-if>
       <sc-if value="{{ isJobs }}" hint-placeholder-val="{{ true }}">
         <div style="padding-left:8px;margin-top:2px;">
           <sc-for list="{{ navDpItems }}" as="s" hint-placeholder-count="4">
@@ -465,7 +470,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5549,6 +5554,174 @@
     </div>
     </sc-if>
 
+    <!-- ===== ⚡ จ่ายงานเร็ว (มือถือ) — รายการงานรอจัดรถ ===== -->
+    <!-- ★ v.2026-09-26b: หัวหน้างานหน้าโรงงานจ่ายงานจากมือถือ · ใช้ jobDraft/handler/saveJob ชุดเดียวกับฟอร์มเต็ม -->
+    <sc-if value="{{ isQdList }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px 14px 90px;max-width:620px;margin:0 auto;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:10px;padding-left:46px;min-height:40px;margin-bottom:14px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:21px;font-weight:800;color:#16263a;">⚡ จ่ายงานเร็ว</div>
+          <div style="font-size:13px;color:#667085;">{{ qdTodayText }}</div>
+        </div>
+        <button onClick="{{ onGoJobs }}" style="flex:none;padding:9px 12px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;">ดูใบงาน</button>
+      </div>
+      <div style="font-size:12.5px;font-weight:700;color:#667085;margin:0 2px 7px;">ฟลีต</div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:14px;">
+        <sc-for list="{{ qdFleetChips }}" as="f" hint-placeholder-count="3">
+          <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
+        </sc-for>
+      </div>
+      <button onClick="{{ onQdNew }}" style="width:100%;padding:18px;background:#1f8a5b;color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;margin-bottom:20px;box-shadow:0 6px 16px rgba(31,138,91,.25);font-family:inherit;">＋ จ่ายงานใหม่</button>
+      <div style="font-size:14px;font-weight:700;color:#344054;margin:0 2px 9px;">📥 งานรอจัดรถ ({{ qdOrderCount }})</div>
+      <sc-if value="{{ qdNoOrders }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#f8fafc;border:1px dashed #d0d5dd;border-radius:14px;padding:22px 16px;text-align:center;font-size:14px;color:#667085;line-height:1.6;">ไม่มีงานรอจัดรถ<br>กด "จ่ายงานใหม่" ได้เลย</div>
+      </sc-if>
+      <sc-for list="{{ qdOrders }}" as="o" hint-placeholder-count="3">
+        <button onClick="{{ o.onClick }}" style="width:100%;text-align:left;background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:14px 16px;margin-bottom:10px;display:block;cursor:pointer;font-family:inherit;box-shadow:0 1px 2px rgba(16,24,40,.04);">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;">
+            <div style="font-size:15.5px;font-weight:700;color:#16263a;min-width:0;line-height:1.4;">{{ o.title }}</div>
+            <span style="flex:none;font-size:13px;font-weight:700;color:#fff;background:#2f6fb0;border-radius:99px;padding:6px 13px;white-space:nowrap;">จ่ายงาน →</span>
+          </div>
+          <div style="font-size:14px;color:#344054;margin-top:5px;line-height:1.5;">{{ o.route }}</div>
+          <div style="font-size:12.5px;color:#667085;margin-top:4px;line-height:1.5;">{{ o.meta }}</div>
+        </button>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- ===== ⚡ จ่ายงานเร็ว (มือถือ) — ฟอร์มสั้น คอลัมน์เดียว ===== -->
+    <sc-if value="{{ isQdForm }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px 14px 30px;max-width:620px;margin:0 auto;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:10px;padding-left:46px;min-height:40px;margin-bottom:14px;">
+        <button onClick="{{ onQdBack }}" style="flex:none;background:none;border:none;color:#475467;font-size:24px;cursor:pointer;padding:0 4px;line-height:1;">←</button>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:19px;font-weight:800;color:#16263a;">จ่ายงาน</div>
+          <div style="font-size:12.5px;color:#667085;">{{ jd.jobNo }}{{ qdFromOrderText }}</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:10px;">🚛 ทะเบียนรถ <span style="color:#d92d20;">*</span></div>
+        <sc-if value="{{ qdTruckPicked }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;background:#eaf1fb;border:1.5px solid #2f6fb0;border-radius:12px;padding:12px 14px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:21px;font-weight:800;color:#16263a;">{{ jd.truckPlate }}</div>
+              <div style="font-size:13px;color:#2f6fb0;font-weight:600;">{{ jdTruckTypeLabel }}</div>
+            </div>
+            <button onClick="{{ onQdChangeTruck }}" style="flex:none;padding:9px 14px;background:#fff;color:#2f6fb0;border:1px solid #b2ccea;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;">เปลี่ยน</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ qdTruckNotPicked }}" hint-placeholder-val="{{ true }}">
+          <input value="{{ qdTruckQ }}" onInput="{{ onQdTruckQ }}" placeholder="🔍 พิมพ์ทะเบียน / ชื่อ พขร." style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+          <div style="font-size:12px;color:#98a2b3;margin:7px 2px 0;">{{ qdTruckHint }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:340px;overflow:auto;margin-top:10px;">
+            <sc-for list="{{ qdTrucks }}" as="t" hint-placeholder-count="6">
+              <button onClick="{{ t.onClick }}" style="text-align:left;background:#f8fafc;border:1px solid #d0d5dd;border-radius:10px;padding:10px 12px;cursor:pointer;font-family:inherit;min-width:0;">
+                <div style="font-size:15.5px;font-weight:800;color:#16263a;">{{ t.plate }}</div>
+                <div style="font-size:11.5px;color:#667085;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.sub }}</div>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="font-size:14px;font-weight:700;color:#16263a;margin:16px 0 8px;">👤 พนักงานขับรถ <span style="font-size:12px;font-weight:500;color:#98a2b3;">(ไม่บังคับ)</span></div>
+        <select value="{{ jd.driverCode }}" onChange="{{ onJobDriver }}" style="width:100%;padding:12px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;background:#fff;font-family:inherit;">
+          <option value="">— ไม่ระบุ —</option>
+          <sc-for list="{{ qdDriverOptions }}" as="opt" hint-placeholder-count="5">
+            <option value="{{ opt.value }}">{{ opt.label }}</option>
+          </sc-for>
+        </select>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:10px;">📦 รายละเอียดงาน</div>
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">ลูกค้า / บริษัท</label>
+        <sc-if value="{{ custFreeMode }}" hint-placeholder-val="{{ false }}">
+          <datalist id="qd-cust-list"><sc-for list="{{ custNameOpts }}" as="c" hint-placeholder-count="0"><option value="{{ c.value }}"></option></sc-for></datalist>
+          <input type="text" list="qd-cust-list" value="{{ jobCustFreeVal }}" onInput="{{ onJobCustomerFree }}" placeholder="ชื่อลูกค้า / บริษัท" style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+        </sc-if>
+        <sc-if value="{{ custPickMode }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ onOpenCustPickJob }}" style="{{ jobCustBtnStyle }}">
+            <span style="display:flex;align-items:center;gap:9px;min-width:0;">
+              <span style="{{ jobCustCodeStyle }}">{{ jobCustCode }}</span>
+              <span style="font-size:15px;font-weight:600;color:#1d2b3a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ jobCustName }}</span>
+            </span>
+            <span style="font-size:13px;font-weight:700;color:#2f6fb0;flex:none;">{{ jobCustAction }}</span>
+          </button>
+        </sc-if>
+        <sc-if value="{{ jobCustWarn }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:7px;background:#fffaeb;border:1px solid #fedf89;border-radius:9px;padding:9px 11px;font-size:12.5px;color:#93370d;line-height:1.6;">⚠️ {{ jobCustWarnText }}</div>
+        </sc-if>
+
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin:14px 0 5px;">เลขบิล / Shipment No.</label>
+        <input value="{{ jd.deliveryNo }}" onInput="{{ onJobDeliveryNo }}" placeholder="เช่น DN-2026-001" style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+        <sc-if value="{{ jobBillDupText }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:6px;padding:8px 10px;background:#fef3f2;border:1px solid #fda29b;border-radius:8px;font-size:12.5px;color:#b42318;line-height:1.6;">
+            <div style="font-weight:700;">⚠ {{ jobBillDupText }}</div>
+            <sc-for list="{{ jobBillDupRows }}" as="d" hint-placeholder-count="1">
+              <div style="color:#912018;">• {{ d.text }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin:14px 0 5px;">ต้นทาง</label>
+        <select value="{{ jdOriginPreset }}" onChange="{{ onJobOriginPreset }}" style="width:100%;padding:12px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;background:#fff;font-family:inherit;">
+          <option value="">— เลือกต้นทาง —</option>
+          <sc-for list="{{ jobOriginOptions }}" as="o" hint-placeholder-count="5">
+            <option value="{{ o }}">{{ o }}</option>
+          </sc-for>
+          <option value="__add__">+ เพิ่มต้นทางใหม่…</option>
+          <option value="อื่น...">อื่น... ระบุ (ครั้งเดียว)</option>
+        </select>
+        <sc-if value="{{ jobAddingOrigin }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:6px;margin-top:6px;">
+            <input value="{{ jd.newOrigin }}" onInput="{{ onJobNewOrigin }}" placeholder="ชื่อต้นทาง/โรงงานใหม่" style="flex:1;min-width:0;padding:11px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;font-family:inherit;">
+            <button onClick="{{ onSaveJobOrigin }}" style="padding:10px 16px;background:#2f6fb0;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;white-space:nowrap;font-family:inherit;">เพิ่ม</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ isOriginOther }}" hint-placeholder-val="{{ false }}">
+          <input value="{{ jd.origin }}" onInput="{{ onJobOrigin }}" placeholder="ระบุต้นทาง" style="width:100%;padding:11px 14px;border:1px solid #2f6fb0;border-radius:10px;font-size:16px;color:#1d2b3a;margin-top:6px;box-sizing:border-box;font-family:inherit;">
+        </sc-if>
+
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin:14px 0 5px;">ปลายทาง</label>
+        <sc-if value="{{ jobGirDest }}" hint-placeholder-val="{{ false }}">
+          <select value="{{ jd.destProvince }}" onChange="{{ onJobGirProv }}" style="width:100%;padding:12px 12px;border:1px solid #e5b78a;border-radius:10px;font-size:16px;color:#1d2b3a;background:#fffdf7;font-family:inherit;margin-bottom:8px;">
+            <option value="">{{ jobGirProvHint }}</option>
+            <sc-for list="{{ jobGirProvs }}" as="p" hint-placeholder-count="3"><option value="{{ p }}">{{ p }}</option></sc-for>
+          </select>
+          <select value="{{ jd.destDistrict }}" onChange="{{ onJobGirDist }}" style="{{ qdGirDistStyle }}">
+            <option value="">{{ jobGirDistHint }}</option>
+            <sc-for list="{{ jobGirDists }}" as="d" hint-placeholder-count="3"><option value="{{ d }}">{{ d }}</option></sc-for>
+          </select>
+        </sc-if>
+        <input value="{{ jd.destination }}" onInput="{{ onJobDest }}" placeholder="ชื่อที่ลง / ที่อยู่ปลายทาง" style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+        <sc-if value="{{ jobFreeDest }}" hint-placeholder-val="{{ true }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;">
+            <input value="{{ jd.destDistrict }}" onInput="{{ onJobDestDistrict }}" placeholder="อำเภอ / เขต" style="width:100%;min-width:0;padding:11px 12px;border:1px solid #e5b78a;border-radius:10px;font-size:16px;color:#1d2b3a;background:#fffdf7;box-sizing:border-box;font-family:inherit;">
+            <input value="{{ jd.destProvince }}" onInput="{{ onJobDestProvince }}" placeholder="จังหวัด" style="width:100%;min-width:0;padding:11px 12px;border:1px solid #e5b78a;border-radius:10px;font-size:16px;color:#1d2b3a;background:#fffdf7;box-sizing:border-box;font-family:inherit;">
+          </div>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;">
+          <div style="min-width:0;">
+            <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">น้ำหนัก (ตัน)</label>
+            <input type="number" inputmode="decimal" value="{{ jd.weight }}" onInput="{{ onJobWeight }}" placeholder="0" style="width:100%;padding:12px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+          </div>
+          <div style="min-width:0;">
+            <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">วันที่</label>
+            <input type="date" value="{{ jd.date }}" onInput="{{ onJobDate }}" style="width:100%;padding:11px 10px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;background:#fff;">
+          </div>
+        </div>
+      </div>
+
+      <sc-if value="{{ jobFormError }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 14px;background:#fef3f2;border:1px solid #f5c9c2;border-radius:10px;color:#b42318;font-size:14px;margin-bottom:12px;">{{ jobFormErrorText }}</div>
+      </sc-if>
+      <div style="position:sticky;bottom:0;background:linear-gradient(to top,#f4f6f8 70%,rgba(244,246,248,0));padding:10px 0 12px;">
+        <button onClick="{{ onQdSave }}" style="width:100%;padding:17px;background:#1f8a5b;color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;box-shadow:0 6px 16px rgba(31,138,91,.28);font-family:inherit;">✅ จ่ายงาน + แสดง QR</button>
+      </div>
+    </div>
+    </sc-if>
+
     <!-- ===== ORDER LIST (รับงาน) ===== -->
     <sc-if value="{{ isOrderList }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:1300px;">
@@ -7474,7 +7647,9 @@ class Component extends DCLogic {
     if(SB_SESSION){ this._initSession(); }
     else{ /* v2: ไม่มี session ที่ใช้ได้ → ล้าง auth เก่า บังคับ login ใหม่ */ try{localStorage.removeItem('fleet_auth_v1');}catch(e){} if(this.state.auth){this.setState({auth:null});} this.loadCloudMeta(); }
     try{if(this.state.auth)localStorage.setItem('lf_returning_v1','1');}catch(e){}
-    if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fs=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']))[0]||'dashboard';this.setState({auth:_a,section:_fs});}}catch(e){}}
+    if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fss=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']));const _fs=_fss[0]||'dashboard';this.setState({auth:_a,section:_fs,...this._qdLanding(_fss,_a.role)});}}catch(e){}}
+    // ★ v.2026-09-26b: จอมือถือ → เริ่มแบบพับแถบเมนู (252px กินจอเกือบครึ่ง)
+    try{if(this._qdSmall()&&this.state.sidebarOpen)this.setState({sidebarOpen:false});}catch(e){}
     setTimeout(()=>{try{this.purgeTrash();}catch(e){}},5000);
     this._wheelGuard=(e)=>{const a=document.activeElement;if(a&&a.tagName==='INPUT'&&a.type==='number'&&(e.target===a||a.contains(e.target))){e.preventDefault();a.blur();}};
     window.addEventListener('wheel',this._wheelGuard,{passive:false});
@@ -8556,7 +8731,9 @@ class Component extends DCLogic {
   // โหมดลงต้นทุนซ่อม/ยาง: แบบ ก (ค่าเริ่มต้น) = คีย์ที่ใบสั่งซ่อม+ทะเบียนยาง · แบบ ข = คีย์ที่หน้าบันทึกค่าใช้จ่ายตามแถว/วันที่
   costModeExpense(){return !!(LF_MODULES&&LF_MODULES.costFromExpense===true);}
   _regInsCostTruck(t,ym){if(!t)return 0;let s=this._regInsCostFor(t.plate,ym);if(t.trailerPlate)s+=this._regInsCostFor(t.trailerPlate,ym);return s;}
-  _applyLogin=(u)=>{const auth={u:u.u,role:u.role||'custom',name:u.name,sections:u.sections||null};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}const _secs=(auth.sections&&auth.sections.length)?auth.sections:(ROLE_SECTIONS[auth.role]||['dashboard']);this.setState({auth,loginError:'',loginPin:'',section:_secs[0]||'dashboard'});};
+  _applyLogin=(u)=>{const auth={u:u.u,role:u.role||'custom',name:u.name,sections:u.sections||null};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}const _secs=(auth.sections&&auth.sections.length)?auth.sections:(ROLE_SECTIONS[auth.role]||['dashboard']);this.setState({auth,loginError:'',loginPin:'',section:_secs[0]||'dashboard',...this._qdLanding(_secs,auth.role)});};
+  // ★ v.2026-09-26b: หัวหน้างานเปิดจากมือถือ → เข้าหน้าจ่ายงานเร็วเลย (แอดมินยังเข้าหน้าปกติ)
+  _qdLanding(secs,role){try{if(role!=='admin'&&this._qdSmall()&&((secs||[]).includes('jobs')||(secs||[]).includes('dispatch')))return {section:'jobs',jobView:'qlist',sidebarOpen:false};}catch(e){}return {};}
   _initSession=async()=>{
     // v2.1: เดิมพลาดครั้งเดียว (เน็ตสะดุด/cloud ช้า) = เตะออกทันที → ตอนนี้ retry 3 ครั้ง แล้วเตะออกเฉพาะ "เซสชันตายจริง"
     let _p=null,_err=null;
@@ -9469,6 +9646,16 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   openJobNew=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());this.editingJobId=null;const S=this.state;const _ymd=today.replace(/-/g,'').slice(2);const _prefix='JB-'+_ymd+'-';const _seq=S.jobs.filter(x=>String(x.jobNo||'').startsWith(_prefix)).reduce((mx,x)=>{const n=parseInt(String(x.jobNo).slice(_prefix.length),10);return isNaN(n)?mx:Math.max(mx,n);},0)+1;this.setState({jobDraft:{id:null,jobNo:_prefix+String(_seq).padStart(3,'0'),date:today,time:'',driverCode:'',truckPlate:'',origin:'',destination:'',customer:'',weight:'',revenue:'',dispatchPoint:S.jobDpFilter==='all'?'':S.jobDpFilter,status:'รับงาน',fuelLiters:'',fuelBaht:'',toll:'',allowance:'',tire:'',repair:'',police:'',misc:'',remark:'',driverFleet:'',truckDept:'',_originPreset:''},jobIsNew:true,jobView:'form',jobFormError:'',section:'jobs'});this.scrollMain();};
   openJobEdit=(id)=>{const j=this.state.jobs.find(x=>x.id===id);if(!j)return;this.editingJobId=id;this._jobOrig={...j};this.setState({jobDraft:{...j},jobIsNew:false,jobView:'form',jobFormError:'',section:'jobs',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false});this.scrollMain();};
   cancelJobForm=()=>this.setState({jobView:'list',jobFormError:''});
+  // ★ v.2026-09-26b: ⚡ จ่ายงานเร็ว (มือถือ) — jobView 'qlist' | 'qform' ใต้ section jobs
+  //   ใช้ openJobNew / dispatchOrder / saveJob เดิมทั้งหมด (เลขใบงาน · ล็อกงวด · อัปเดตสถานะออร์เดอร์ · QR) แค่เปลี่ยนหน้าจอ
+  _qdSmall(){try{return window.innerWidth<900;}catch(e){return false;}}
+  _qdFleetNow(){const S=this.state;if(S.qdFleet!==undefined)return S.qdFleet;let v=null;try{v=localStorage.getItem('qdFleet_v1');}catch(e){}if(v!==null)return v;return this._fleetList().includes('ระยอง')?'ระยอง':'';}
+  openQuickDispatch=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({section:'jobs',jobView:'qlist',jobFormError:'',...(this._qdSmall()?{sidebarOpen:false}:{})});this.scrollMain();};
+  qdSetFleet=(f)=>{try{localStorage.setItem('qdFleet_v1',f);}catch(e){}this.setState({qdFleet:f});};
+  qdNew=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;const f=this._qdFleetNow();this.openJobNew();this.setState(s=>({jobView:'qform',qdTruckQ:'',jobDraft:{...(s.jobDraft||{}),trackJob:true,driverFleet:f}}));};
+  qdDispatchOrder=(id)=>{const f=this._qdFleetNow();this.dispatchOrder(id);this.setState(s=>({jobView:'qform',qdTruckQ:'',jobDraft:{...(s.jobDraft||{}),trackJob:true,driverFleet:(s.jobDraft&&s.jobDraft.driverFleet)||f}}));};
+  qdBack=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({jobView:'qlist',jobFormError:''});this.scrollMain();};
+  qdSave=()=>{const j=this.state.jobDraft||{};if(!String(j.truckPlate||'').trim()){this.setState({jobFormError:'กรุณาเลือกทะเบียนรถ'});return;}this.saveJob();setTimeout(()=>{if(this.state.jobView==='list'&&!this.state.jobFormError){this.setState({jobView:'qlist',qdTruckQ:''});this.scrollMain();}},0);};
   onGoOrders=()=>this.setState({section:'orders',orderView:'list'});
   _parseDMY(s){s=String(s||'').trim();const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m){let y=+m[3];if(y>2400)y-=543;return y+'-'+String(+m[2]).padStart(2,'0')+'-'+String(+m[1]).padStart(2,'0');}return '';}
   openImport=()=>this.setState({importOpen:true,importText:'',importPreview:null,importError:''});
@@ -11424,6 +11611,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       sideItemsTitle:isTrucks?'แยกตามแผนก':isJobs?'จุดจ่ายงาน':'แยกตามฟลีต',
       isTrucks,isJobs,isDrivers:S.section==='drivers',
       navDpItems:dpSideItems,navTruckDepts:truckDepts,navFleets:fleets,
+      navQuickStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+((S.section==='jobs'&&(S.jobView==='qlist'||S.jobView==='qform'))?'background:rgba(31,138,91,.28);color:#fff;':'background:transparent;color:#cdd7e1;'),
+      onGoQuickDispatch:()=>this.openQuickDispatch(),
       navJobsStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(isJobs?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;'),
       navJobsBadge:'font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(isJobs?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;'),
       navTrucksStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(isTrucks?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;'),
@@ -12430,6 +12619,37 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           }
         },0);
       };
+      // ★ v.2026-09-26b: ⚡ จ่ายงานเร็ว (มือถือ) — ค่าสำหรับหน้า qlist / qform (ใช้ jd + handler ด้านบนร่วมกัน)
+      {
+        out.isQdList=S.jobView==='qlist';out.isQdForm=S.jobView==='qform';
+        const _qf=this._qdFleetNow();
+        const _chip=(on)=>'flex:none;padding:9px 16px;border-radius:99px;font-size:14.5px;font-weight:700;white-space:nowrap;font-family:inherit;cursor:pointer;'+(on?'background:#16263a;color:#fff;border:1px solid #16263a;':'background:#fff;color:#344054;border:1px solid #d0d5dd;');
+        out.qdFleetChips=[''].concat(this._fleetList()).map(f=>({label:f||'ทุกฟลีต',style:_chip(f===_qf),onClick:()=>this.qdSetFleet(f)}));
+        {const _d=new Date();out.qdTodayText='วันนี้ '+new Intl.DateTimeFormat('th-TH',{timeZone:'Asia/Bangkok',weekday:'long',day:'numeric',month:'short'}).format(_d)+(_qf?(' · ฟลีต'+_qf):'');}
+        const _dName={},_dFleet={};(S.drivers||[]).forEach(d=>{_dName[String(d.code)]=d.name||'';_dFleet[String(d.code)]=d.fleet||'';});
+        // งานรอจัดรถ — เก่าสุด/ต้องการก่อนขึ้นก่อน
+        const _pend=(S.orders||[]).filter(o=>o.status==='รอจัดรถ'&&!o.deleted&&!o._deleted).sort((a,b)=>String(a.requiredDate||'9').localeCompare(String(b.requiredDate||'9'))||((Number(a.id)||0)-(Number(b.id)||0)));
+        const _thd=(v)=>{const m=String(v||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?(+m[3])+' '+THM[(+m[2])-1]:'';};
+        out.qdOrders=_pend.slice(0,80).map(o=>({title:o.customer||'— ไม่ระบุลูกค้า —',route:(o.origin||'—')+' → '+(o.destination||'—'),meta:[o.billNo?('บิล '+o.billNo):'',o.weight?(o.weight+' ตัน'):'',o.truckType||'',o.requiredDate?('ต้องการ '+_thd(o.requiredDate)):''].filter(Boolean).join(' · '),onClick:()=>this.qdDispatchOrder(o.id)}));
+        out.qdOrderCount=_pend.length;out.qdNoOrders=!_pend.length;
+        out.onQdNew=this.qdNew;out.onQdBack=this.qdBack;out.onQdSave=this.qdSave;
+        out.qdFromOrderText=this.dispatchingOrderId?' · จากงานรอจัดรถ':'';
+        // รถ: ฟลีตที่เลือก (แผนกรถ = ฟลีต หรือ พขร.ประจำรถอยู่ฟลีตนั้น) · ค้นหาแล้วค้นทุกคัน
+        const _qq=String(S.qdTruckQ||'').toLowerCase().replace(/\s+/g,'');
+        const _allT=(S.trucks||[]).filter(t=>!_isTrailerJ(t)&&!t.retired);
+        const _inF=(t)=>!_qf||t.dept===_qf||_dFleet[String(t.assignedDriver||'')]===_qf;
+        let _tl=_qq?_allT.filter(t=>(String(t.plate)+String(t.truckType||'')+(_dName[String(t.assignedDriver||'')]||'')).toLowerCase().replace(/\s+/g,'').indexOf(_qq)>=0):_allT.filter(_inF);
+        const _fleetEmpty=!_qq&&!!_qf&&!_tl.length;if(_fleetEmpty)_tl=_allT;
+        out.qdTrucks=_tl.slice().sort((a,b)=>String(a.plate).localeCompare(String(b.plate),'th',{numeric:true})).slice(0,120).map(t=>({plate:t.plate,sub:[t.truckType,_dName[String(t.assignedDriver||'')]].filter(Boolean).join(' · ')||' ',onClick:()=>out.onJobTruck({target:{value:t.plate}})}));
+        out.qdTruckHint=_qq?('ค้นทุกฟลีต · พบ '+_tl.length+' คัน'):(_fleetEmpty?('ไม่พบรถของฟลีต'+_qf+' — แสดงทุกคัน'):((_qf?('รถฟลีต'+_qf):'รถทุกคัน')+' · '+_tl.length+' คัน · แตะเพื่อเลือก'));
+        out.qdTruckQ=S.qdTruckQ||'';out.onQdTruckQ=(e)=>this.setState({qdTruckQ:e.target.value});
+        out.qdTruckPicked=!!jd.truckPlate;out.qdTruckNotPicked=!jd.truckPlate;
+        out.onQdChangeTruck=()=>this.setState(s=>({qdTruckQ:'',jobDraft:{...(s.jobDraft||{}),truckPlate:''}}));
+        // พขร.: ฟลีตที่เลือกก่อน + คนที่ถูกเลือกอยู่ (กันหายจากรายการ)
+        const _dl=(S.drivers||[]).filter(d=>!d.resigned&&(!_qf||d.fleet===_qf||String(d.code)===String(jd.driverCode||'')));
+        out.qdDriverOptions=(_dl.length?_dl:(S.drivers||[]).filter(d=>!d.resigned)).map(d=>({value:d.code,label:d.name}));
+        out.qdGirDistStyle='width:100%;padding:12px 12px;border:1px solid #e5b78a;border-radius:10px;font-size:16px;color:#1d2b3a;font-family:inherit;margin-bottom:8px;background:'+(jd.destProvince?'#fffdf7':'#f4f6f8');
+      }
       out.onJobOrigin=(e)=>this.setJ('origin',e.target.value);out.onJobDest=(e)=>this.setJ('destination',e.target.value);
       out.onJobDestDistrict=(e)=>this.setJ('destDistrict',e.target.value);out.onJobDestProvince=(e)=>this.setJ('destProvince',e.target.value);
       // ★ v.2026-09-10: ลูกค้า GIR (30-005) → ปลายทางเลือกจากตารางสัญญา จังหวัด → อำเภอ (เรทผูกกับคู่นี้)
