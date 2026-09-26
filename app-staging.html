@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9342,7 +9342,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   persistCompany(c){const co={...(c||{}),_cid:COMPANY_ID};try{localStorage.setItem('companyProfile_v1',JSON.stringify(co));}catch(e){}sbSaveCompany(co);}
   _recipientEmails(){return (((this.state.company||{}).recipients)||[]).map(r=>String((r&&r.email)||'').trim()).filter(e=>/.+@.+\..+/.test(e));}
   _notifyOn(kind){const n=((this.state.company||{}).notify)||{};return n[kind]!==false;}
-  sendNotif(kind,subject,lines,heading){try{if(!this._notifyOn(kind))return;const co=((this.state.company||{}).name)||'';const body=(lines||[]).filter(Boolean);try{fetch(SUPABASE_URL+'/functions/v1/line-notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:(heading||subject)+'\n\n'+body.join('\n')+'\n\n— '+co+' · LionFlow'})}).catch(()=>{});}catch(e){}const to=this._recipientEmails();if(!to.length)return;const html='<div style="font-family:Tahoma,Arial,sans-serif;color:#16263a;max-width:520px"><h2 style="color:#16263a;margin:0 0 8px">'+(heading||subject)+'</h2><div style="background:#f4f6f8;border-radius:10px;padding:16px;font-size:15px;line-height:1.9">'+body.join('<br>')+'</div><p style="color:#98a2b3;font-size:12px;margin-top:14px">'+co+' · ขับเคลื่อนโดย LionFlow</p></div>';fetch(SUPABASE_URL+'/functions/v1/notify-event',{method:'POST',headers:SB_HEADERS,body:JSON.stringify({to,subject,html,text:body.join('\n'),kind,company:co})}).catch(()=>{});}catch(e){}}
+  sendNotif(kind,subject,lines,heading){try{if(!this._notifyOn(kind))return;const co=((this.state.company||{}).name)||'';const body=(lines||[]).filter(Boolean);try{fetch(SUPABASE_URL+'/functions/v1/line-notify',{method:'POST',headers:SB_HEADERS,body:JSON.stringify({text:(heading||subject)+'\n\n'+body.join('\n')+'\n\n— '+co+' · LionFlow'})}).catch(()=>{});}catch(e){}const to=this._recipientEmails();if(!to.length)return;const html='<div style="font-family:Tahoma,Arial,sans-serif;color:#16263a;max-width:520px"><h2 style="color:#16263a;margin:0 0 8px">'+(heading||subject)+'</h2><div style="background:#f4f6f8;border-radius:10px;padding:16px;font-size:15px;line-height:1.9">'+body.join('<br>')+'</div><p style="color:#98a2b3;font-size:12px;margin-top:14px">'+co+' · ขับเคลื่อนโดย LionFlow</p></div>';fetch(SUPABASE_URL+'/functions/v1/notify-event',{method:'POST',headers:SB_HEADERS,body:JSON.stringify({to,subject,html,text:body.join('\n'),kind,company:co})}).catch(()=>{});}catch(e){}}
   notifyLeave(info){const span=info.to&&info.to!==info.from?(this.thaiDate(info.from)+' ถึง '+this.thaiDate(info.to)):this.thaiDate(info.from);this.sendNotif('leave','แจ้งการลา: '+info.name+' ('+info.type+')',['พนักงาน: '+info.name,'ประเภท: '+info.type,'ช่วงวันลา: '+span,'จำนวน: '+info.days+' วัน',info.reason?('เหตุผล: '+info.reason):'',info.by?('บันทึกโดย: '+info.by):''],'📋 แจ้งเตือนการลา');}
   notifyHistory(info){this.sendNotif('history','แจ้งบันทึกประวัติ: '+info.name+' ('+(info.type||'')+')',['พนักงาน: '+info.name,'ประเภท: '+(info.type||''),'วันที่: '+this.thaiDate(info.date),info.detail?('รายละเอียด: '+info.detail):'',info.by?('บันทึกโดย: '+info.by):''],'📝 แจ้งเตือนบันทึกประวัติ');}
   notifyAccident(info){this.sendNotif('accident','⚠️ แจ้งอุบัติเหตุ: '+info.name,['พนักงาน: '+info.name,info.plate?('ทะเบียนรถ: '+info.plate):'',info.date?('วันที่: '+this.thaiDate(info.date)):'',info.place?('สถานที่: '+info.place):'',info.detail?('รายละเอียด: '+info.detail):''],'⚠️ แจ้งเตือนอุบัติเหตุ');}
