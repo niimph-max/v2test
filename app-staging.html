@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -290,6 +290,24 @@
       <sc-if value="{{ isEff }}" hint-placeholder-val="{{ false }}">
         <div style="padding-left:8px;margin-top:2px;">
           <sc-for list="{{ navEffItems }}" as="s" hint-placeholder-count="4">
+            <button onClick="{{ s.onClick }}" style="{{ s.btnStyle }}">
+              <span style="display:flex;align-items:center;gap:9px;"><span style="{{ s.dotStyle }}"></span>{{ s.label }}</span>
+              <span style="{{ s.badgeStyle }}">{{ s.count }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+      </sc-if>
+
+      <!-- ★ v.2026-09-27c: รายได้ & ค่าใช้จ่าย แยกเป็นหมวดของตัวเอง + เมนูย่อยตามฟลีต (ฟลีต = ฟลีตของ พขร. ในหน้าพนักงาน) -->
+      <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
+      <div style="font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;padding:16px 8px 7px;">ระบบบันทึกรายได้และค่าใช้จ่าย</div>
+      <button onClick="{{ onGoSettle }}" style="{{ navSettleStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🧾</span>รายได้ &amp; ค่าใช้จ่าย</span>
+      </button>
+      <sc-if value="{{ isSettleNav }}" hint-placeholder-val="{{ false }}">
+        <div style="padding-left:8px;margin-top:2px;">
+          <sc-for list="{{ navSettleItems }}" as="s" hint-placeholder-count="4">
             <button onClick="{{ s.onClick }}" style="{{ s.btnStyle }}">
               <span style="display:flex;align-items:center;gap:9px;"><span style="{{ s.dotStyle }}"></span>{{ s.label }}</span>
               <span style="{{ s.badgeStyle }}">{{ s.count }}</span>
@@ -470,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6781,7 +6799,7 @@
     <div style="padding:26px 30px 60px;">
       <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
         <div>
-          <h1 style="margin:0;font-size:22px;font-weight:700;color:#16263a;">🧾 รายได้ &amp; บันทึกค่าใช้จ่าย</h1>
+          <h1 style="margin:0;font-size:22px;font-weight:700;color:#16263a;">🧾 รายได้ &amp; บันทึกค่าใช้จ่าย{{ settleFleetTitle }}</h1>
           <div style="font-size:13px;color:#667085;margin-top:3px;">รถบริษัท + รถร่วมที่ พขร. ส่งเอกสารแล้ว · รับเอกสาร → ส่งบัญชี/ลูกค้า → ลงค่าใช้จ่าย</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;">
@@ -12114,9 +12132,18 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
               weightText:r.weight?r.weight.toLocaleString()+' ตัน':'—',rateText:r.rate?_fB(r.rate):'—',rev:_fB(r.rev),onOpen:()=>this.openSettle(r.id),
               rowStyle:'display:grid;grid-template-columns:96px 118px 108px minmax(190px,1fr) 82px 92px 112px;font-size:12.5px;align-items:center;'+(i>0?'border-top:1px solid #f4f6f8;':'')}))}))};});
     }
-    const _effSubDefs=[{key:'overview',label:'ภาพรวม',color:'#5b9bd5'},{key:'settle',label:'รายได้ & ค่าใช้จ่าย',color:'#c98bd0'},{key:'driverpay',label:'จ่ายเบี้ยเลี้ยง พขร. (15 วัน)',color:'#e0a87f'},{key:'tripreport',label:'รายงานรายเที่ยว',color:'#e0a87f'},{key:'truck',label:'รายรถ',color:'#5fc08a'},{key:'monthly',label:'รายเดือน',color:'#5b9bd5'}];
+    const _effSubDefs=[{key:'overview',label:'ภาพรวม',color:'#5b9bd5'},{key:'driverpay',label:'จ่ายเบี้ยเลี้ยง พขร. (15 วัน)',color:'#e0a87f'},{key:'tripreport',label:'รายงานรายเที่ยว',color:'#e0a87f'},{key:'truck',label:'รายรถ',color:'#5fc08a'},{key:'monthly',label:'รายเดือน',color:'#5b9bd5'}];
     out.navEffItems=_effSubDefs.map(d=>{const active=isEffSection&&S.effView===d.key;return{label:d.label,onClick:()=>this.setState({section:'efficiency',effView:d.key}),btnStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:7px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:12.5px;font-weight:600;text-align:left;cursor:pointer;'+(active?'background:rgba(47,111,176,.3);color:#fff;':'background:transparent;color:#9fb2c4;'),dotStyle:'width:6px;height:6px;border-radius:50%;flex:none;background:'+d.color+';',badgeStyle:'display:none;',count:''};});
-    out.isEff=isEffSection;
+    out.isEff=isEffSection&&S.effView!=='settle';
+    // ★ v.2026-09-27c: เมนู รายได้ & ค่าใช้จ่าย แยกหมวด + ตามฟลีต
+    {const _onSettle=isEffSection&&S.effView==='settle';const _fl=S.effSettleFleet||'all';
+     out.isSettleNav=_onSettle;
+     out.onGoSettle=()=>this.setState({section:'efficiency',effView:'settle'});
+     out.navSettleStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(_onSettle?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
+     const _cnt=this._settleFleetCounts||{};
+     const _items=[{key:'all',label:'ทุกฟลีต'}].concat(this._fleetList().map(x=>({key:x,label:'ฟลีต'+x}))).concat((_cnt.__none__?[{key:'__none__',label:'ไม่ระบุฟลีต'}]:[]));
+     const _cols=['#5b9bd5','#c98bd0','#e0a87f','#5fc08a','#f0c94a','#9aa7b4'];
+     out.navSettleItems=_items.map((d,i)=>{const active=_onSettle&&_fl===d.key;const n=d.key==='all'?_cnt.__all__:_cnt[d.key];return{label:d.label,onClick:()=>this.setState({section:'efficiency',effView:'settle',effSettleFleet:d.key,effSettleTruck:'all'}),btnStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:7px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:12.5px;font-weight:600;text-align:left;cursor:pointer;'+(active?'background:rgba(47,111,176,.3);color:#fff;':'background:transparent;color:#9fb2c4;'),dotStyle:'width:6px;height:6px;border-radius:50%;flex:none;background:'+_cols[i%_cols.length]+';',badgeStyle:n?'font-size:11px;font-weight:700;padding:1px 8px;border-radius:11px;background:rgba(255,255,255,.08);color:#9fb2c4;':'display:none;',count:n?String(n):''};});}
     out.effMonth=S.effMonth;
     out.onEffMonth=(e)=>this.setState({effMonth:e.target.value,effHiPlate:''});
     out.onEffViewMonthly=()=>this.setState({effView:'monthly'});
@@ -12376,7 +12403,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const _trailerPlates=new Set(S.trucks.filter(t=>_isTrailer(t)).map(t=>t.plate));
       const _settlePlates=new Set(S.trucks.filter(t=>!t.retired&&(t.dept==='รถบริษัท'||/ร่วม/.test(t.dept||''))).map(t=>t.plate));
       // v.2026-08-31a: ใบงานที่ไม่ได้เปิดติดตาม (ไม่มี พขร. กด "ส่งเอกสาร") ต้องเข้าคิวลงค่าใช้จ่ายได้เลย
-      const settleSrc=S.jobs.filter(j=>_settlePlates.has(j.truckPlate)&&j.date&&j.date.startsWith(sm)&&!j.deleted&&!j._deleted&&(j.documentTime||!j.trackJob));
+      const _settleAll=S.jobs.filter(j=>_settlePlates.has(j.truckPlate)&&j.date&&j.date.startsWith(sm)&&!j.deleted&&!j._deleted&&(j.documentTime||!j.trackJob));
+      // ★ v.2026-09-27c: ฟลีตของเที่ยว = ฟลีตของ พขร. ที่ขับ (ไม่มี พขร. → พขร.ประจำรถ) · หาไม่เจอ = ไม่ระบุฟลีต
+      const _dFl={};(S.drivers||[]).forEach(d=>{_dFl[String(d.code)]=String(d.fleet||'').trim();});
+      const _tAsg={};(S.trucks||[]).forEach(t=>{_tAsg[t.plate]=String(t.assignedDriver||'');});
+      const _jobFleet=(j)=>_dFl[String(j.driverCode||'')]||_dFl[_tAsg[j.truckPlate]||'']||'__none__';
+      {const c={__all__:_settleAll.length};_settleAll.forEach(j=>{const k=_jobFleet(j);c[k]=(c[k]||0)+1;});this._settleFleetCounts=c;}
+      const _sFleet=S.effSettleFleet||'all';
+      const settleSrc=_sFleet==='all'?_settleAll:_settleAll.filter(j=>_jobFleet(j)===_sFleet);
+      out.settleFleetTitle=_sFleet==='all'?'':(_sFleet==='__none__'?' · ไม่ระบุฟลีต':(' · ฟลีต'+_sFleet));
       const _cmxS=this.costModeExpense();
       const expSum=(j)=>[j.fuelBaht,j.allowance,j.toll,j.repair,j.police,j.misc,(_cmxS?j.tire:0)].reduce((a,v)=>a+(parseFloat(v)||0),0);
       const settleStat=(j)=>!j.docsClosed?'awaitDocs':((_isSubPlate(j.truckPlate)?j.subDone:j.expenseDone)?'done':'awaitExp');
