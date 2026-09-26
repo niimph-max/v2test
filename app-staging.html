@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-26h · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -470,7 +470,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-26h</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7293,7 +7293,11 @@ const TODAY=new Date();
 const THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 // ★ v.2026-09-26c: ดัก localStorage เต็ม (~5 ล้านตัวอักษร/โดเมน) — ทุกจุดเขียนแบบ try/catch เงียบ
 //   เต็มแล้วสำเนาในเครื่อง + คิว pending บันทึกไม่ได้โดยไม่มีใครรู้ (26 ก.ย. 2569 เจอ prod ใช้ 5,242,169 จากรูปพนักงานเต็มขนาด)
-(function(){try{const _o=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){try{return _o.call(this,k,v);}catch(e){if(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014)){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
+// ★ v.2026-09-27a: สำเนาใบงาน/ออร์เดอร์ในเครื่องเก็บแบบบาง — ใบงาน 1 ใบเดิม ~3,600 ตัวอักษร ส่วนใหญ่เป็นช่องว่าง ~90 ช่อง
+//   iPhone (WebKit) เต็มที่ ~2.6 ล้านตัวอักษร · ตัดเฉพาะค่า ''/null/[] ที่ไม่มี _ft ของช่องนั้น · ผู้อ่านทุกจุด normJob/normOrder เติมคืน
+const LF_SLIM_KEYS={jobReg_v1:1,orderReg_v1:1};
+function lfSlimJSON(v){try{const a=JSON.parse(v);if(!Array.isArray(a))return v;return JSON.stringify(a.map(r=>{if(!r||typeof r!=='object')return r;const ft=(r._ft&&typeof r._ft==='object')?r._ft:{};const o={};for(const k in r){const x=r[k];if((x===''||x===null||(Array.isArray(x)&&!x.length))&&k!=='id'&&ft[k]==null)continue;o[k]=x;}return o;}));}catch(e){return v;}}
+(function(){try{const _o=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(LF_SLIM_KEYS[k]&&typeof v==='string'&&v.length>2000)v=lfSlimJSON(v);try{return _o.call(this,k,v);}catch(e){if(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014)){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
 // ===== Supabase backend (FleetTruck) =====
 // ===== v2 (multi-tenant + Supabase Auth) — ENV AUTO-SWITCH =====
 // default = PRODUCTION (lionflowapp.com). ใช้ staging เมื่อ hostname มี staging/localhost หรือใส่ ?env=staging
@@ -7545,15 +7549,18 @@ async function sbCreateJobToken(jobId,days){
   return token;
 }
 const SB_DRV_FIELDS=['pickupTime','pickupLat','pickupLng','arrivalTime','arrivalLat','arrivalLng','completionTime','completionLat','completionLng','documentTime'];
+// ★ v.2026-09-27a: Data API ตัดที่ Max rows = 1000 แถว/ครั้ง — ใบงาน 474 (ก.ย. 69) โต ~160/เดือน จะชนเพดานราว ม.ค.
+//   เดิมดึงครั้งเดียว → แถวเกิน 1000 หายจากเครื่องใหม่ (เครื่องเก่ารอดเพราะสำเนาในเครื่องเติมให้) · ตอบ error (เช่น 401) ต้อง throw ไม่ใช่ []
+async function sbGetPaged(path,order){const out=[];let off=0;for(let i=0;i<200;i++){const r=await fetch(SB_REST+path+'&order='+order+'&limit=1000&offset='+off,{headers:SB_HEADERS});if(!r.ok)throw new Error('HTTP '+r.status+' '+path.split('?')[0]);const a=await r.json();if(!Array.isArray(a))throw new Error('bad page '+path.split('?')[0]);out.push(...a);if(a.length<1000)break;off+=1000;}return out;}
 async function sbGetAll(){
   const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID);
   const A=x=>Array.isArray(x)?x:[];
   const [dr,tr,jb,cu,od,og,tp,tm,ins,ost,wo,pm]=await Promise.all([
     fetch(SB_REST+'/drivers'+q+'&select=code,data',{headers:SB_HEADERS}).then(r=>r.json()),
     fetch(SB_REST+'/trucks'+q+'&select=plate,data',{headers:SB_HEADERS}).then(r=>r.json()),
-    fetch(SB_REST+'/jobs'+q+'&select=id,data,progress,deleted',{headers:SB_HEADERS}).then(r=>r.json()),
+    sbGetPaged('/jobs'+q+'&select=id,data,progress,deleted','id.asc'),
     fetch(SB_REST+'/customers'+q+'&select=id,data',{headers:SB_HEADERS}).then(r=>r.json()).catch(()=>[]),
-    fetch(SB_REST+'/orders'+q+'&select=id,data,deleted',{headers:SB_HEADERS}).then(r=>r.json()).catch(()=>[]),
+    sbGetPaged('/orders'+q+'&select=id,data,deleted','id.asc').catch(()=>[]),
     fetch(SB_REST+'/origins'+q+'&select=id,data',{headers:SB_HEADERS}).then(r=>r.json()).catch(()=>[]),
     fetch(SB_REST+'/tire_patches'+q+'&select=id,data',{headers:SB_HEADERS}).then(r=>r.json()).catch(()=>[]),
     fetch(SB_REST+'/tire_moves'+q+'&select=id,data',{headers:SB_HEADERS}).then(r=>r.json()).catch(()=>[]),
@@ -7664,6 +7671,9 @@ class Component extends DCLogic {
     if(SB_SESSION){ this._initSession(); }
     else{ /* v2: ไม่มี session ที่ใช้ได้ → ล้าง auth เก่า บังคับ login ใหม่ */ try{localStorage.removeItem('fleet_auth_v1');}catch(e){} if(this.state.auth){this.setState({auth:null});} this.loadCloudMeta(); }
     try{if(this.state.auth)localStorage.setItem('lf_returning_v1','1');}catch(e){}
+    try{localStorage.removeItem('transport_autosave');}catch(e){}   // 27a: ล้างสำเนาชุดที่สองของเก่า
+    // 27a: เขียนสำเนาใบงาน/ออร์เดอร์ใหม่หนึ่งครั้งให้เป็นแบบบาง (ของเดิมเขียนก่อนมีตัวตัดช่องว่าง)
+    try{['jobReg_v1','orderReg_v1'].forEach(k=>{const v=localStorage.getItem(k);if(v&&v.length>2000&&v.indexOf('""')>=0)localStorage.setItem(k,v);});}catch(e){}
     // 26h: เครื่องที่ login ค้างไว้ auth มาจาก state เริ่มต้น (section:'dashboard') → เดิมข้ามการเช็ค ?go=quick
     if(this.state.auth){try{const _a=this.state.auth;const _s=(_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||[]);const _l=this._qdLanding(_s,_a.role);if(_l.section)this.setState(_l);}catch(e){}}
     if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fss=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']));const _fs=_fss[0]||'dashboard';this.setState({auth:_a,section:_fs,...this._qdLanding(_fss,_a.role)});}}catch(e){}}
@@ -7675,7 +7685,8 @@ class Component extends DCLogic {
     this._wheelGuard=(e)=>{const a=document.activeElement;if(a&&a.tagName==='INPUT'&&a.type==='number'&&(e.target===a||a.contains(e.target))){e.preventDefault();a.blur();}};
     window.addEventListener('wheel',this._wheelGuard,{passive:false});
     this._beforeUnload=()=>{
-      try{const S=this.state;localStorage.setItem('transport_autosave',JSON.stringify({version:2,exportedAt:new Date().toISOString(),drivers:S.drivers,trucks:S.trucks,jobs:S.jobs,office:S.office,officeDepts:S.officeDepts,customers:S.customers,orders:S.orders,origins:S.origins,tirePatches:S.tirePatches,tireMoves:S.tireMoves,inspections:S.inspections,workOrders:(S.workOrders!==undefined?S.workOrders:this._getWO())}));}catch(e){}
+      // ★ v.2026-09-27a: เลิกเขียนสำเนาชุดที่สอง (transport_autosave) — ไม่มีโค้ดไหนอ่าน กินพื้นที่เท่าข้อมูลทั้งหมด
+      if(false)try{const S=this.state;localStorage.setItem('transport_autosave',JSON.stringify({version:2,exportedAt:new Date().toISOString(),drivers:S.drivers,trucks:S.trucks,jobs:S.jobs,office:S.office,officeDepts:S.officeDepts,customers:S.customers,orders:S.orders,origins:S.origins,tirePatches:S.tirePatches,tireMoves:S.tireMoves,inspections:S.inspections,workOrders:(S.workOrders!==undefined?S.workOrders:this._getWO())}));}catch(e){}
     };
     window.addEventListener('beforeunload',this._beforeUnload);
     try{let q=localStorage.getItem('qrBaseUrl');if(q&&/niimph-max\.github\.io\/singthongtruck/.test(q)){q='https://lionflowapp.com/';localStorage.setItem('qrBaseUrl',q);}if(q)this.setState({qrBaseUrl:q});}catch(e){}
