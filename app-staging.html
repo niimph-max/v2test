@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27i · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27j · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27i</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27j</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9966,7 +9966,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   _qNum(v){const n=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return isFinite(n)?n:0;}
   _qFmt(v){return (Number(v)||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});}
   _qCalc(m){const lines=(m.lines||[]).map(l=>({...l,amount:Math.round(this._qNum(l.trips)*this._qNum(l.price)*100)/100}));const total=Math.round(lines.reduce((a,l)=>a+l.amount,0)*100)/100;const wht=m.corporate?Math.round(total)/100:0;const net=Math.round((total-wht)*100)/100;let pct=this._qNum(m.depositPct);if(!(pct>0&&pct<=100))pct=30;const due=m.payMode==='deposit'?Math.round(net*pct)/100:(m.payMode==='full'?net:0);return {lines,total,wht,net,due,pct};}
-  _quoteBase(){const b=(this.state.qrBaseUrl&&this.state.qrBaseUrl.trim())?this.state.qrBaseUrl.trim().replace(/\/+$/,'')+'/':String(location.href).replace(/[?#].*$/,'').replace(/[^\/]*$/,'');return b+'quote.html'+(LF_ENV==='staging'?'?env=staging':'');}
+  _quoteBase(){const _q=String(this.state.qrBaseUrl||'').trim();const b=/^https:\/\/[^\s"<>]+$/.test(_q)?_q.replace(/\/+$/,'')+'/':String(location.href).replace(/[?#].*$/,'').replace(/[^\/]*$/,'');return b+'quote.html'+(LF_ENV==='staging'?'?env=staging':'');}
   _quoteUrl(token){const b=this._quoteBase();return b+(b.indexOf('?')>=0?'&':'?')+'t='+encodeURIComponent(token);}
   _qErr(e){const m=String(e||'');if(/issue_web_quote|reject_web_job|function|schema cache/i.test(m)&&/find|exist|schema/i.test(m))return 'ยังไม่ได้ติดตั้ง SQL ใบเสนอราคาบนฐานข้อมูลนี้';if(m==='status')return 'สถานะงานเปลี่ยนไปแล้ว — รอข้อมูลอัปเดต (30 วินาที) แล้วลองใหม่';if(m==='lines')return 'ใส่อย่างน้อย 1 เส้นทาง พร้อมจำนวนเที่ยวและราคา';if(m==='link_base')return 'ที่อยู่หน้าลูกค้าไม่ถูกต้อง (ต้องเปิดแอปผ่าน https)';if(m==='not_found')return 'ไม่พบงานนี้บนคลาวด์ — รอบันทึกขึ้นคลาวด์ก่อน';if(m==='timeout'||m==='network'||/Failed to fetch|NetworkError|Load failed/i.test(m))return 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';return m;}
   async _qRpc(fn,args){const r=await sbFetchT(SB_REST+'/rpc/'+fn,{method:'POST',headers:SB_HEADERS,body:JSON.stringify(args)},20000);const d=await r.json().catch(()=>null);if(!r.ok||!d||d.ok===false)throw new Error((d&&(d.error||d.message))||('HTTP '+r.status));return d;}
