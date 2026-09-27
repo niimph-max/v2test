@@ -194,8 +194,8 @@ function render(d){
     tr.appendChild(c1);tr.appendChild(c2);tr.appendChild(c3);tr.appendChild(c4);tb.appendChild(tr);});
   $('tTotal').textContent=fmt(q.total);$('tWht').textContent=q.corporate?('−'+fmt(q.wht)):'-';show('rWht',!!q.corporate);$('tNet').textContent=fmt(q.net)+' บาท';
   var mode=q.payMode||'deposit';
-  show('rDue',mode!=='credit');$('tDueLabel').textContent=mode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':('มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ');$('tDue').textContent=fmt(q.due)+' บาท';
-  $('payText').textContent=mode==='credit'?'ชำระตามรอบวางบิล':(mode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':'มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ · ส่วนที่เหลือชำระเมื่อส่งสินค้าเสร็จ')+(q.corporate?' · หักภาษี ณ ที่จ่าย 1% แล้ว':'');
+  show('rDue',mode==='deposit'||mode==='full');$('tDueLabel').textContent=mode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':('มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ');$('tDue').textContent=fmt(q.due)+' บาท';
+  $('payText').textContent=mode==='credit'?'ชำระตามรอบวางบิล':mode==='ondelivery'?'ไม่มีมัดจำ · ชำระเต็มจำนวนเมื่อส่งสินค้าเสร็จ':(mode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':'มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ · ส่วนที่เหลือชำระเมื่อส่งสินค้าเสร็จ')+(q.corporate?' · หักภาษี ณ ที่จ่าย 1% แล้ว':'');
   $('nValid').textContent='ราคานี้เป็นราคาต่อเที่ยว ยืนราคา '+(q.validDays||15)+' วันนับจากวันที่ออก และใช้เฉพาะรายการในใบเสนอราคานี้';
   var notes=$('notes');Array.prototype.slice.call(notes.querySelectorAll('.extra')).forEach(function(x){x.remove();});
   if(q.trucksPerDay){var li=document.createElement('li');li.className='extra';li.textContent='บริษัทฯ จัดรถได้วันละ '+q.trucksPerDay+' คัน ตามลำดับการยืนยันและชำระเงิน';notes.appendChild(li);}
@@ -209,7 +209,7 @@ function render(d){
   else if(st==='หมดอายุ'){cls='b-off';msg='ใบเสนอราคานี้เลยวันยืนราคาแล้ว หากยังต้องการใช้บริการ กรุณาติดต่อเจ้าหน้าที่เพื่อขอราคาใหม่';}
   else if(st==='ลูกค้าไม่รับ'){cls='b-off';msg='ท่านแจ้งไม่รับราคานี้แล้ว'+(d.declineReason?(' ('+d.declineReason+')'):'')+' ขอบคุณที่ให้โอกาสเรา';}
   else if(st==='ปฏิเสธงาน'||st==='ยกเลิก'){cls='b-off';msg='ใบเสนอราคานี้ถูกยกเลิกแล้ว กรุณาติดต่อเจ้าหน้าที่';}
-  else if(st==='รอจัดรถ'){cls='b-ok';msg=(q.payMode==='credit'||d.paidConfirmed)?'ยืนยันงานเรียบร้อย — เจ้าหน้าที่กำลังจัดรถ และจะติดต่อกลับเพื่อยืนยันรถ':'ยืนยันงานแล้ว — เจ้าหน้าที่กำลังจัดรถ';}
+  else if(st==='รอจัดรถ'){cls='b-ok';msg=(q.payMode==='credit'||q.payMode==='ondelivery'||d.paidConfirmed)?'ยืนยันงานเรียบร้อย — เจ้าหน้าที่กำลังจัดรถ และจะติดต่อกลับเพื่อยืนยันรถ':'ยืนยันงานแล้ว — เจ้าหน้าที่กำลังจัดรถ';}
   else if(st){cls='b-ok';msg='งานของท่านอยู่ระหว่างดำเนินการ ('+st+')';}
   b.className='banner '+cls;b.textContent=msg;show('banner',!!msg);
   show('loading',false);show('main',true);
