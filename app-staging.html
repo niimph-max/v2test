@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27l · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27m · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27l</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27m</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5400,6 +5400,32 @@
             <label style="font-size:12px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">น้ำหนัก (ตัน)</label>
             <input type="number" value="{{ jd.weight }}" onInput="{{ onJobWeight }}" placeholder="0" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;">
           </div>
+          <!-- ★ v.27m: หลายบิลในเที่ยวเดียว (ลูกค้าเดียวกัน) — จ่ายงานตรงจากหน้านี้ได้ โครงสร้าง shipments เดียวกับที่ผูกจากหน้ารับงาน ใบวางบิลแยกบรรทัดเหมือนเดิม -->
+          <div style="grid-column:1 / -1;border:1px dashed #d0d5dd;border-radius:10px;padding:12px 14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#16263a;">🔗 บิลในเที่ยวนี้ (ลูกค้าเดียวกันหลายบิล)</div>
+                <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;">{{ jobShipHint }}</div>
+              </div>
+              <button onClick="{{ onAddJobShip }}" style="padding:7px 12px;background:#eff4ff;color:#175cd3;border:1px solid #d3e0f7;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">+ เพิ่มบิล</button>
+            </div>
+            <sc-if value="{{ jobHasShips }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:26px 1.2fr 1fr 1fr 96px 34px;gap:6px;align-items:center;font-size:11.5px;font-weight:600;color:#667085;margin:10px 0 5px;">
+                <div>#</div><div>เลขบิล</div><div>ต้นทาง</div><div>ปลายทาง</div><div style="text-align:right;">น้ำหนัก (ตัน)</div><div></div>
+              </div>
+              <sc-for list="{{ jobShipRows }}" as="sp" hint-placeholder-count="2">
+                <div style="display:grid;grid-template-columns:26px 1.2fr 1fr 1fr 96px 34px;gap:6px;align-items:center;margin-bottom:6px;">
+                  <div style="font-size:12px;font-weight:700;color:#2f6fb0;">{{ sp.idx }}</div>
+                  <input value="{{ sp.bill }}" onInput="{{ sp.onBill }}" placeholder="เลขบิล" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+                  <input value="{{ sp.origin }}" onInput="{{ sp.onOrigin }}" placeholder="เหมือนใบงาน" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+                  <input value="{{ sp.destination }}" onInput="{{ sp.onDest }}" placeholder="เหมือนใบงาน" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+                  <input type="number" value="{{ sp.weight }}" onInput="{{ sp.onWeight }}" placeholder="0" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;text-align:right;">
+                  <button onClick="{{ sp.onDel }}" title="ลบบิลนี้" style="padding:6px 0;background:#fef3f2;color:#b42318;border:none;border-radius:7px;font-size:13px;cursor:pointer;">✕</button>
+                </div>
+              </sc-for>
+              <div style="font-size:12.5px;color:#344054;margin-top:4px;">รวม {{ jobShipCount }} บิล · น้ำหนักรวม <b>{{ jobShipTotal }}</b> ตัน (ใส่ช่องน้ำหนักของใบงานให้แล้ว) · บิลแรกเป็นเลขที่เอกสารหลัก · ต้นทาง/ปลายทางว่าง = ใช้ของใบงาน</div>
+            </sc-if>
+          </div>
         </div>
         </sc-if>
         <div style="margin-top:16px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;">
@@ -10233,6 +10259,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   dispatchOrder=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;const S=this.state;let members=o.tripId?S.orders.filter(x=>x.tripId===o.tripId):[o];members=members.slice().sort((a,b)=>(parseFloat(b.weight)||0)-(parseFloat(a.weight)||0));const pr=members[0];const totW=Math.round(members.reduce((s,m)=>s+(parseFloat(m.weight)||0),0)*1000)/1000;const ships=members.map(m=>({bill:m.billNo||'',custDeliveryNo:m.custDeliveryNo||'',origin:m.origin||'',destination:m.destination||'',customer:m.customer||'',weight:m.weight||'',size:m.size||'',note:m.driverNote||''}));const _notes=[...new Set(members.map(m=>m.driverNote).filter(Boolean))].join(' · ');this.dispatchingOrderId=pr.id;this.dispatchingTripIds=members.map(m=>m.id);this.editingJobId=null;const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const _ymd=today.replace(/-/g,'').slice(2);const _prefix='JB-'+_ymd+'-';const _seq=S.jobs.filter(x=>String(x.jobNo||'').startsWith(_prefix)).reduce((mx,x)=>{const n=parseInt(String(x.jobNo).slice(_prefix.length),10);return isNaN(n)?mx:Math.max(mx,n);},0)+1;this.setState({jobDraft:{id:null,jobNo:_prefix+String(_seq).padStart(3,'0'),date:(pr.requiredDate||today),time:new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date()),driverCode:'',truckPlate:'',origin:pr.origin||'',destination:pr.destination||'',customer:pr.customer||'',weight:String(totW||pr.weight||''),revenue:'',deliveryNo:pr.billNo||'',dispatchPoint:'สระบุรี',status:'รับงาน',fuelLiters:'',fuelBaht:'',toll:'',allowance:'',tire:'',repair:'',police:'',misc:'',remark:pr.remark||'',driverNote:_notes||pr.driverNote||'',driverRequest:[...new Set(members.map(m=>m.driverRequest).filter(Boolean))].join(' · '),shipments:ships,driverFleet:'',truckDept:'',dispatcher:'',dispatcherOther:''},jobIsNew:true,jobView:'form',jobFormError:'',section:'jobs',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false});this.scrollMain();};
   viewOrderJob=(jobId)=>{const j=this.state.jobs.find(x=>String(x.id)===String(jobId));if(!j){window.alert('ไม่พบใบงานที่เชื่อมไว้ (อาจถูกลบ)');return;}this.editingJobId=j.id;this.setState({jobDraft:{...j},jobIsNew:false,jobView:'form',jobFormError:'',section:'jobs',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false});this.scrollMain();};
   setJ(field,val){this.setState(s=>({jobDraft:{...s.jobDraft,[field]:val}}));}
+  // ★ v.27m: บิลในเที่ยวนี้ — น้ำหนักรวม/เลขบิลหลัก/ลูกค้า ตามรายการบิลเสมอ
+  _jShipSync(d){const sh=Array.isArray(d.shipments)?d.shipments:[];if(sh.length>=2){d.shipments=sh.map(x=>({...x,customer:d.customer||x.customer||''}));const tw=Math.round(sh.reduce((a,x)=>a+(parseFloat(x.weight)||0),0)*1000)/1000;d.weight=tw?String(tw):'';const b0=String(sh[0].bill||'').trim();if(b0)d.deliveryNo=b0;const r=this.calcRevenue(d);if(r!=='')d.revenue=r;}return d;}
+  _jNewShip(d,first){return {bill:first?(d.deliveryNo||''):'',custDeliveryNo:'',origin:'',destination:'',customer:d.customer||'',weight:first?(d.weight||''):'',size:'',note:''};}
+  addJobShip=()=>this.setState(s=>{const d={...s.jobDraft};const sh=Array.isArray(d.shipments)?d.shipments.slice():[];if(!sh.length)sh.push(this._jNewShip(d,true));sh.push(this._jNewShip(d,false));d.shipments=sh;return {jobDraft:this._jShipSync(d)};});
+  setJobShip=(i,f,v)=>this.setState(s=>{const d={...s.jobDraft};d.shipments=(d.shipments||[]).map((x,j)=>j===i?{...x,[f]:v}:x);return {jobDraft:this._jShipSync(d)};});
+  delJobShip=(i)=>this.setState(s=>{const d={...s.jobDraft};const sh=(d.shipments||[]).filter((_,j)=>j!==i);if(sh.length<2){const one=sh[0];if(one){if(String(one.bill||'').trim())d.deliveryNo=one.bill;if(one.weight){d.weight=String(one.weight);const r=this.calcRevenue(d);if(r!=='')d.revenue=r;}}d.shipments=[];}else d.shipments=sh;return {jobDraft:this._jShipSync(d)};});
   readJobAttachment=(e)=>{const file=e.target.files&&e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=(ev)=>{const img=new Image();img.onload=()=>{const max=1400;let w=img.width,h=img.height;if(w>max||h>max){if(w>=h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);let data;try{data=c.toDataURL('image/jpeg',0.72);}catch(err){data=ev.target.result;}this.setJ('attachment',data);};img.src=ev.target.result;};reader.readAsDataURL(file);};
   removeJobAttachment=()=>this.setJ('attachment','');
   _fileToDataUrl=(file)=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(file);});
@@ -13037,6 +13069,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.onJobNewCustomer=(e)=>this.setJ('newCustomer',e.target.value);out.onSaveJobCustomer=this.addJobCustomerInline;
       out.onJobNewOrigin=(e)=>this.setJ('newOrigin',e.target.value);out.onSaveJobOrigin=this.addJobOriginInline;
       out.onJobDeliveryNo=(e)=>this.setJ('deliveryNo',e.target.value);
+      {const _sh=Array.isArray(jd.shipments)?jd.shipments:[];out.jobHasShips=_sh.length>=2;out.jobShipCount=_sh.length;out.jobShipTotal=String(Math.round(_sh.reduce((a,x)=>a+(parseFloat(x.weight)||0),0)*1000)/1000);out.jobShipHint=out.jobHasShips?'ใบวางบิลจะแยกบรรทัดตามบิล (น้ำหนักและเงินตามบิล) เหมือนเที่ยวที่ผูกจากหน้ารับงาน':'เที่ยวนี้มีบิลเดียว — กด "+ เพิ่มบิล" ถ้าลูกค้าให้หลายบิลในเที่ยวเดียว';out.onAddJobShip=this.addJobShip;
+       out.jobShipRows=out.jobHasShips?_sh.map((x,i)=>({idx:String(i+1),bill:x.bill||'',origin:x.origin||'',destination:x.destination||'',weight:x.weight||'',onBill:e=>this.setJobShip(i,'bill',e.target.value),onOrigin:e=>this.setJobShip(i,'origin',e.target.value),onDest:e=>this.setJobShip(i,'destination',e.target.value),onWeight:e=>this.setJobShip(i,'weight',e.target.value),onDel:()=>this.delJobShip(i)})):[];}
       {const _b=String(jd.deliveryNo||'').trim().toLowerCase(),_me=String(this.editingJobId||'');
        const _dupJ=_b?(S.jobs||[]).filter(x=>String(x.id)!==_me&&!x.deleted&&String(x.deliveryNo||'').trim().toLowerCase()===_b).map(x=>({text:'ใบงาน · '+(x.date||'-')+' · '+(x.truckPlate||'—')+' · '+String(x.customer||'—').slice(0,22)})):[];
        const _dupO=_b?(S.orders||[]).filter(x=>x.status!=='ยกเลิก'&&String(x.jobId||'')!==_me&&String(x.billNo||'').trim().toLowerCase()===_b).map(x=>({text:'งานรับเข้า · '+(x.receivedDate||'-')+' · '+String(x.customer||'—').slice(0,26)+' · '+(x.status||'')})):[];
