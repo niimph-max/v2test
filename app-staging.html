@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27h · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27i · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27h</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27i</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5756,7 +5756,7 @@
 
     <!-- ===== ORDER LIST (รับงาน) ===== -->
     <sc-if value="{{ isOrderList }}" hint-placeholder-val="{{ false }}">
-    <div style="padding:26px 30px 60px;max-width:1300px;">
+    <div style="padding:26px 30px 60px;max-width:1600px;">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;">
         <div>
           <h1 style="margin:0;font-size:22px;font-weight:700;color:#16263a;">งานรับเข้า</h1>
@@ -5792,7 +5792,7 @@
       </sc-if>
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04);">
         <div style="overflow-x:auto;">
-        <div style="display:grid;grid-template-columns:44px 130px 104px 150px 1fr 84px 110px 110px 150px 250px;min-width:1290px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
+        <div style="display:grid;grid-template-columns:40px 116px 88px minmax(90px,1fr) minmax(120px,1.4fr) 60px 92px 92px 140px 210px;min-width:1040px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
           <div style="padding:11px 8px;"></div>
           <div style="padding:11px 15px;font-size:12px;font-weight:600;color:#667085;">เลขที่บิล</div>
           <div style="padding:11px 15px;font-size:12px;font-weight:600;color:#667085;">วันรับแจ้ง</div>
@@ -5805,7 +5805,7 @@
           <div style="padding:11px 15px;font-size:12px;font-weight:600;color:#667085;text-align:right;">จัดการ</div>
         </div>
         <sc-for list="{{ orderRows }}" as="r" hint-placeholder-count="5">
-          <div style="display:grid;grid-template-columns:44px 130px 104px 150px 1fr 84px 110px 110px 150px 250px;min-width:1290px;border-bottom:1px solid #f0f2f5;align-items:center;background:{{ r.rowBg }};">
+          <div style="display:grid;grid-template-columns:40px 116px 88px minmax(90px,1fr) minmax(120px,1.4fr) 60px 92px 92px 140px 210px;min-width:1040px;border-bottom:1px solid #f0f2f5;align-items:center;background:{{ r.rowBg }};">
             <div style="padding:12px 8px;display:flex;justify-content:center;"><sc-if value="{{ r.showCheckbox }}" hint-placeholder-val="{{ true }}"><input type="checkbox" checked="{{ r.selected }}" onChange="{{ r.onToggleSel }}" style="width:16px;height:16px;cursor:pointer;"></sc-if></div>
             <div onClick="{{ r.onEdit }}" style="padding:12px 15px;cursor:pointer;">
               <div style="font-size:13.5px;font-weight:700;color:#16263a;"><span style="color:#98a2b3;font-weight:400;">{{ r.billPrefix }}</span>{{ r.billNo }}</div>
