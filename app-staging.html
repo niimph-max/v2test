@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27l · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27l</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5899,6 +5899,14 @@
             </select>
           </div>
           <div>
+            <label style="font-size:12px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">เบอร์โทรลูกค้า</label>
+            <input type="tel" value="{{ od.webPhone }}" onInput="{{ onOrderPhone }}" placeholder="ใช้ยืนยันว่าเป็นลูกค้าจริง" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="font-size:12px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">อีเมลลูกค้า (ส่งใบเสนอราคา)</label>
+            <input type="email" value="{{ od.webEmail }}" onInput="{{ onOrderEmail }}" placeholder="ไม่มีก็ได้ — ส่งลิงก์ทาง LINE แทน" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
             <label style="font-size:12px;font-weight:600;color:#667085;display:block;margin-bottom:5px;">วันที่รับแจ้ง</label>
             <input type="date" value="{{ od.receivedDate }}" onInput="{{ onOrderReceivedDate }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
           </div>
@@ -7474,6 +7482,8 @@ const QUOTE_SIGNER={name:'ปกรณ์ ลิ้นทอง',title:'รอ�
 // payMode: deposit=มัดจำก่อนจัดรถ · full=จ่ายเต็มก่อนจัดรถ · ondelivery=ไม่มีมัดจำ ชำระเมื่อส่งเสร็จ (v.27h) · credit=ลูกค้าเครดิต ตามรอบวางบิล
 const QUOTE_PAY_NOW=['deposit','full'];
 function ordTodayBkk(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+// ★ v.27l: หน้ารับงาน = คำขอใหม่จากลูกค้า → งานที่รอพนักงานทำต่อ (ใช้กับเลขที่เมนู + เลือกการ์ดเริ่มต้น)
+function ordNeedsStaff(o){const s=ordEffStatus(o);return s==='รอใบเสนอราคา'||s==='รอจัดรถ'||(s==='รอชำระเงิน'&&(Number(o.slipCount)||0)>0);}
 function ordEffStatus(o){const s=(o&&o.status)||'รอจัดรถ';if(s==='รอลูกค้ายืนยัน'&&o.quote&&o.quote.validUntil&&String(o.quote.validUntil)<ordTodayBkk())return 'หมดอายุ';return s;}
 function normCustomer(c){return {id:c.id||Date.now(),name:c.name||'',contact:c.contact||'',code:String(c.code||'').trim(),aliases:c.aliases||'',province:c.province||'',address:c.address||'',ecArAcct:String(c.ecArAcct||'').trim(),minWeight:String(c.minWeight==null?'':c.minWeight).trim(),branch:c.branch||'',taxId:c.taxId||'',address:c.address||'',phone:c.phone||'',lastSale:c.lastSale||'',group:c.group||'',multiCode:!!c.multiCode,rateBasis:(c.rateBasis==='ton'?'ton':(c.rateBasis==='trip'?'trip':'')),active:c.active!==false};}
 function normOrigin(o){return {id:o.id||Date.now(),name:o.name||''};}
@@ -9899,7 +9909,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   qdDispatchOrder=(id)=>{const f=this._qdFleetNow();this.dispatchOrder(id);this.setState(s=>({jobView:'qform',qdTruckQ:'',jobDraft:{...(s.jobDraft||{}),trackJob:true,driverFleet:(s.jobDraft&&s.jobDraft.driverFleet)||f}}));};
   qdBack=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({jobView:'qlist',jobFormError:''});this.scrollMain();};
   qdSave=()=>{const j=this.state.jobDraft||{};if(!String(j.truckPlate||'').trim()){this.setState({jobFormError:'กรุณาเลือกทะเบียนรถ'});return;}this.saveJob();setTimeout(()=>{if(this.state.jobView==='list'&&!this.state.jobFormError){this.setState({jobView:'qlist',qdTruckQ:''});this.scrollMain();}},0);};
-  onGoOrders=()=>this.setState({section:'orders',orderView:'list'});
+  onGoOrders=()=>{const q=(this.state.orders||[]).some(o=>{const s=ordEffStatus(o);return s==='รอใบเสนอราคา'||(s==='รอชำระเงิน'&&(Number(o.slipCount)||0)>0);});this.setState({section:'orders',orderView:'list',orderStatusFilter:q?'quote':'pending'});};
   _parseDMY(s){s=String(s||'').trim();const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m){let y=+m[3];if(y>2400)y-=543;return y+'-'+String(+m[2]).padStart(2,'0')+'-'+String(+m[1]).padStart(2,'0');}return '';}
   openImport=()=>this.setState({importOpen:true,importText:'',importPreview:null,importError:''});
   closeImport=()=>this.setState({importOpen:false,importPreview:null,importError:''});
@@ -9946,11 +9956,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   toggleTripSel=(ids)=>this.setState(s=>{const set=new Set((s.selectedOrderIds||[]).map(String));const keys=(ids||[]).map(String);const all=keys.length>0&&keys.every(k=>set.has(k));keys.forEach(k=>all?set.delete(k):set.add(k));return{selectedOrderIds:[...set]};});
   linkTrip=()=>{const ids=(this.state.selectedOrderIds||[]).map(String);if(ids.length<2)return;const tripId='T'+Date.now().toString().slice(-7);const orders=this.state.orders.map(o=>ids.includes(String(o.id))?normOrder({...o,tripId}):o);this.setState({orders,selectedOrderIds:[]});this.persistOrders(orders,ids,['tripId']);};
   unlinkOrder=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o||!o.tripId)return;const tid=o.tripId;const clearAll=this.state.orders.filter(x=>x.tripId===tid).length<=2;const orders=this.state.orders.map(x=>((clearAll&&x.tripId===tid)||String(x.id)===String(id))?normOrder({...x,tripId:''}):x);const _cids=this.state.orders.filter(x=>(clearAll&&x.tripId===tid)||String(x.id)===String(id)).map(x=>x.id);this.setState({orders});this.persistOrders(orders,_cids,['tripId']);};
-  openOrderNew=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const S=this.state;const _ymd=today.replace(/-/g,'').slice(2);const _prefix='OR-'+_ymd+'-';const _seq=S.orders.filter(x=>String(x.orderNo||'').startsWith(_prefix)).reduce((mx,x)=>{const n=parseInt(String(x.orderNo).slice(_prefix.length),10);return isNaN(n)?mx:Math.max(mx,n);},0)+1;this.editingOrderId=null;this.setState({orderDraft:normOrder({orderNo:_prefix+String(_seq).padStart(3,'0'),receivedDate:today,requiredDate:today}),orderIsNew:true,orderView:'form',orderFormError:'',orderAddingCustomer:false,section:'orders'});this.scrollMain();};
+  openOrderNew=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const S=this.state;const _ymd=today.replace(/-/g,'').slice(2);const _prefix='OR-'+_ymd+'-';const _seq=S.orders.filter(x=>String(x.orderNo||'').startsWith(_prefix)).reduce((mx,x)=>{const n=parseInt(String(x.orderNo).slice(_prefix.length),10);return isNaN(n)?mx:Math.max(mx,n);},0)+1;this.editingOrderId=null;this.setState({orderDraft:normOrder({orderNo:_prefix+String(_seq).padStart(3,'0'),receivedDate:today,requiredDate:today,status:'รอใบเสนอราคา',channel:'โทรศัพท์'}),orderIsNew:true,orderView:'form',orderFormError:'',orderAddingCustomer:false,section:'orders'});this.scrollMain();};
   openOrderEdit=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;this._orderOrig={...o};this.editingOrderId=id;this.setState({orderDraft:{...o},orderIsNew:false,orderView:'form',orderFormError:'',orderAddingCustomer:false,section:'orders'});this.scrollMain();};
   cancelOrderForm=()=>this.setState({orderView:'list',orderFormError:''});
   setO(field,val){this.setState(s=>({orderDraft:{...s.orderDraft,[field]:val}}));}
-  saveOrder=()=>{const o=this.state.orderDraft;if(o&&!this._plGuard(o.receivedDate,'order',this.editingOrderId,'งานรับเข้า '+(o.billNo||o.orderNo||''),this.editingOrderId==null))return;if(!o||!String(o.customer||'').trim()){this.setState({orderFormError:'กรุณาเลือกลูกค้า / ผู้ว่าจ้าง'});return;}let _bill=String(o.billNo||'').trim();if(!_bill){const _bd=String(o.receivedDate||'').replace(/-/g,'').slice(2,8)||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'2-digit',month:'2-digit',day:'2-digit'}).format(new Date()).replace(/-/g,'');const _pfx='NB-'+_bd+'-';let _mx=0;this.state.orders.forEach(x=>{const m=String(x.billNo||'').match(new RegExp('^'+_pfx+'(\\d+)$'));if(m)_mx=Math.max(_mx,parseInt(m[1],10));});_bill=_pfx+String(_mx+1).padStart(2,'0');}
+  saveOrder=()=>{const o=this.state.orderDraft;if(o&&!this._plGuard(o.receivedDate,'order',this.editingOrderId,'งานรับเข้า '+(o.billNo||o.orderNo||''),this.editingOrderId==null))return;if(!o||!String(o.customer||'').trim()){this.setState({orderFormError:'กรุณาเลือกลูกค้า / ผู้ว่าจ้าง'});return;}if(this.state.orderIsNew&&!/^[0-9\-\s+]{9,}$/.test(String(o.webPhone||'').trim())){this.setState({orderFormError:'กรุณาใส่เบอร์โทรลูกค้า (ใช้ยืนยันก่อนเสนอราคา)'});return;}if(String(o.webEmail||'').trim()&&!/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(String(o.webEmail).trim())){this.setState({orderFormError:'อีเมลลูกค้าไม่ถูกต้อง'});return;}let _bill=String(o.billNo||'').trim();if(!_bill){const _bd=String(o.receivedDate||'').replace(/-/g,'').slice(2,8)||new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'2-digit',month:'2-digit',day:'2-digit'}).format(new Date()).replace(/-/g,'');const _pfx='NB-'+_bd+'-';let _mx=0;this.state.orders.forEach(x=>{const m=String(x.billNo||'').match(new RegExp('^'+_pfx+'(\\d+)$'));if(m)_mx=Math.max(_mx,parseInt(m[1],10));});_bill=_pfx+String(_mx+1).padStart(2,'0');}
     // กันคีย์เลขที่บิลซ้ำ (เตือน + ให้ยืนยัน) — เลขที่บิลคือกุญแจเชื่อมไปการจ่ายงาน
     {const _me=String(this.editingOrderId||'');
      const _dup=(this.state.orders||[]).filter(x=>String(x.id)!==_me&&x.status!=='ยกเลิก'&&String(x.billNo||'').trim().toLowerCase()===_bill.toLowerCase());
@@ -11960,7 +11970,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       onGoOrders:this.onGoOrders,
       navOrdersStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='orders'?'background:rgba(255,255,255,.1);color:#fff;':'background:transparent;color:#cdd7e1;'),
       navOrdersBadge:'font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(S.section==='orders'?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;'),
-      orderPendingCount:S.orders.filter(o=>{const s=ordEffStatus(o);return s!=='จ่ายงานแล้ว'&&s!=='ยกเลิก'&&ORDER_LOST.indexOf(s)<0;}).length,
+      orderPendingCount:S.orders.filter(ordNeedsStaff).length,
       onGoEff:()=>this.setState({section:'efficiency',effView:'overview'}),
       onGoTrucks:()=>this.setState({section:'trucks',truckView:'list',truckStatusFilter:'all',truckDeptFilter:'รถบริษัท'}),
       onGoDrivers:()=>this.setState({section:'drivers',view:'list',statusFilter:'all',fleet:'all'}),
@@ -13186,7 +13196,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.onOrderNewOrigin=(e)=>this.setO('newOrigin',e.target.value);out.onSaveOrderOrigin=this.addOrderOriginInline;
       out.onOrderDropPoint=(e)=>this.setO('dropPoint',e.target.value);out.onOrderTruckType=(e)=>this.setO('truckType',e.target.value);
       out.onOrderRequiredDate=(e)=>this.setO('requiredDate',e.target.value);out.onOrderProduct=(e)=>this.setO('product',e.target.value);
-      out.onOrderRemark=(e)=>this.setO('remark',e.target.value);out.onOrderDriverRequest=(e)=>this.setO('driverRequest',e.target.value);out.onSaveOrder=this.saveOrder;out.onCancelOrder=this.cancelOrderForm;
+      out.onOrderRemark=(e)=>this.setO('remark',e.target.value);out.onOrderPhone=(e)=>this.setO('webPhone',e.target.value);out.onOrderEmail=(e)=>this.setO('webEmail',e.target.value);out.onOrderDriverRequest=(e)=>this.setO('driverRequest',e.target.value);out.onSaveOrder=this.saveOrder;out.onCancelOrder=this.cancelOrderForm;
       out.orderFormErrorVisible=!!S.orderFormError;out.orderFormErrorText=S.orderFormError;
     }
     // ===== AUTH + DASHBOARD =====
