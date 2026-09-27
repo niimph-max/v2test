@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27n · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27o · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27n</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27o</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -808,6 +808,7 @@
               <div style="font-size:15px;font-weight:700;">🏪 {{ sh.shop }}</div>
               <div style="font-size:12px;color:#9fb2c4;">{{ sh.count }} รายการ · {{ sh.plateCount }} คัน · {{ sh.monthCount }} เดือน</div>
               <div style="margin-left:auto;font-size:12.5px;color:#9fb2c4;">รวม <span style="font-size:15px;font-weight:800;color:#fff;">{{ sh.total }}</span></div>
+              <button onClick="{{ sh.onPrint }}" title="พิมพ์เฉพาะร้านนี้" style="padding:6px 12px;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;border:1px solid #9fb2c4;background:transparent;color:#fff;white-space:nowrap;">🖨️ พิมพ์ร้านนี้</button>
             </div>
             <sc-for list="{{ sh.months }}" as="mo" hint-placeholder-count="2">
               <div style="border-top:1px solid #eef0f3;">
@@ -9267,9 +9268,13 @@ class Component extends DCLogic {
     const grand=list.reduce((a,s)=>({total:a.total+s.total,count:a.count+s.count}),{total:0,count:0});
     return {shops:list,grand};
   }
-  printWOShopReport=(from,to)=>{
-    const {shops,grand}=this._woShopAgg(from,to);
+  // onlyShop (v.27o) = พิมพ์เฉพาะร้านนั้นร้านเดียว (ปุ่ม 🖨️ ที่หัวการ์ดร้าน) — ไม่มีตารางสรุปทุกร้าน
+  printWOShopReport=(from,to,onlyShop)=>{
+    const agg=this._woShopAgg(from,to);
+    const shops=onlyShop==null?agg.shops:agg.shops.filter(x=>x.shop===onlyShop);
+    const grand=agg.grand;
     if(!shops.length){alert('ช่วงเดือนที่เลือกไม่มีรายการที่ระบุชื่อร้านค้า');return;}
+    const one=onlyShop!=null;
     const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
     const fmt=(n)=>'฿'+_LFB2(n);
     const co=(this.state.company&&this.state.company.name)||'บริษัทขนส่ง';
@@ -9293,12 +9298,12 @@ class Component extends DCLogic {
       +'thead th{background:#16263a;color:#fff;font-weight:600;border-bottom:none;font-size:10.5px;}td.n,th.n{text-align:right;white-space:nowrap;}td.c,th.c{text-align:center;color:#667085;}td.b{font-weight:700;}td.sm{font-size:10px;color:#667085;}'
       +'tbody tr:nth-child(even){background:#fafbfc;}tfoot td{border-top:1px solid #dfe3e8;border-bottom:none;background:#f8fafc;font-weight:700;}'
       +'.note{font-size:10.5px;color:#98a2b3;margin-top:10px;}';
-    const html='<!doctype html><html><head><meta charset="utf-8"><title>รายงานร้านค้า</title>'
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>'+(one?'รายงานร้าน '+esc(onlyShop):'รายงานร้านค้า')+'</title>'
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page">'
       +'<div class="top"><div class="brand"><div class="cn">'+esc(co)+'</div><div class="ci">'+esc(coAddr)+'</div></div>'
-      +'<div class="doc"><div class="t">รายงานยอดซื้อแยกรายร้านค้า</div><div class="d">ช่วง '+esc(range)+'<br>พิมพ์ '+esc(this._dpThaiDate(new Date().toISOString().slice(0,10)))+'</div></div></div>'
-      +'<div class="sec"><div class="sech">สรุปยอดแต่ละร้าน</div><table><thead><tr><th>ร้านค้า</th><th class="c">รายการ</th><th class="c">คัน</th><th class="c">เดือน</th><th class="n">ยอดรวม</th></tr></thead><tbody>'+sumRows+'</tbody>'
-      +'<tfoot><tr><td style="text-align:right;">รวมทั้งช่วง</td><td class="c">'+grand.count+'</td><td class="c"></td><td class="c"></td><td class="n b">'+fmt(grand.total)+'</td></tr></tfoot></table></div>'
+      +'<div class="doc"><div class="t">'+(one?'รายงานยอดซื้อ — '+esc(onlyShop):'รายงานยอดซื้อแยกรายร้านค้า')+'</div><div class="d">ช่วง '+esc(range)+'<br>พิมพ์ '+esc(this._dpThaiDate(new Date().toISOString().slice(0,10)))+'</div></div></div>'
+      +(one?'':'<div class="sec"><div class="sech">สรุปยอดแต่ละร้าน</div><table><thead><tr><th>ร้านค้า</th><th class="c">รายการ</th><th class="c">คัน</th><th class="c">เดือน</th><th class="n">ยอดรวม</th></tr></thead><tbody>'+sumRows+'</tbody>'
+      +'<tfoot><tr><td style="text-align:right;">รวมทั้งช่วง</td><td class="c">'+grand.count+'</td><td class="c"></td><td class="c"></td><td class="n b">'+fmt(grand.total)+'</td></tr></tfoot></table></div>')
       +secs
       +'<div class="note">* นับเฉพาะรายการอะไหล่/บิลในใบสั่งซ่อมที่กรอกชื่อร้านค้าไว้ · ยอดตามวันที่ของแต่ละบิล</div>'
       +'</div></body></html>';
@@ -13502,7 +13507,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         out.onWoRepTabShop=()=>this.setState({woRepTab:'shop'});
         const _sag=this._woShopAgg(_rf,_rt);
         out.woShopEmpty=_sag.shops.length===0;
-        out.woShops=_sag.shops.map(s=>({shop:s.shop,count:s.count,plateCount:s.plateCount,monthCount:s.months.length,total:_fB(s.total),
+        out.woShops=_sag.shops.map(s=>({shop:s.shop,onPrint:()=>this.printWOShopReport(_rf,_rt,s.shop),count:s.count,plateCount:s.plateCount,monthCount:s.months.length,total:_fB(s.total),
           months:s.months.map(m=>({monthLabel:this._thMonthLabel(m.month),count:m.count,total:_fB(m.total),
             items:m.items.map((it,i)=>({date:this._dpThaiDate(it.date),plate:it.plate,item:it.item,ref:[it.billNo,it.no].filter(Boolean).join(' · ')||'—',amt:_fB(it.amt),
               rowStyle:'display:grid;grid-template-columns:104px 128px minmax(180px,1fr) 118px 108px;font-size:12.5px;align-items:start;'+(i>0?'border-top:1px solid #f4f6f8;':'')}))}))}));
