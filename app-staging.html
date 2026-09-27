@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27o · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27p · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27o</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27p</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4418,7 +4418,7 @@
 
     <!-- ===== TRUCK LIST ===== -->
     <sc-if value="{{ isTruckList }}" hint-placeholder-val="{{ false }}">
-    <div style="padding:26px 30px 60px;max-width:1180px;">
+    <div style="padding:26px 30px 60px;max-width:1600px;">
       <sc-if value="{{ orphanPlateHas }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:#fffaeb;border:1px solid #fedf89;border-radius:12px;padding:12px 16px;margin-bottom:18px;">
           <div style="flex:1;min-width:240px;font-size:13.5px;color:#93370d;line-height:1.5;">⚠ มีใบงาน <b>{{ orphanPlateJobs }}</b> ใบ ที่ชื่อทะเบียนไม่ตรงกับรถในทะเบียน ({{ orphanPlateText }}) — ใบงานเหล่านี้จะไม่ขึ้นในรายงานประสิทธิภาพ</div>
@@ -4436,6 +4436,7 @@
             <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#98a2b3;font-size:15px;">⌕</span>
           </div>
           <button onClick="{{ onExportTrucks }}" style="padding:9px 15px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap;">⬇ Excel</button>
+          <label title="นำเข้าขนาดกระบะจากไฟล์ Excel สเปกรถ — จับคู่ตามทะเบียน" style="display:inline-flex;align-items:center;padding:9px 15px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap;cursor:pointer;">⬆ นำเข้าสเปก<input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange="{{ onImportTruckSpec }}" style="display:none;"></label>
           <button onClick="{{ onPrintTrucks }}" style="padding:9px 15px;background:#fff;color:#2f6fb0;border:1px solid #cfe0f2;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap;">🖨️ พิมพ์ / PDF</button>
           <button onClick="{{ onAddNewTruck }}" style="padding:9px 15px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:600;white-space:nowrap;">+ เพิ่มรถบรรทุก</button>
         </div>
@@ -4502,27 +4503,27 @@
       </div>
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04);">
         <div style="overflow-x:auto;">
-        <div style="display:grid;grid-template-columns:160px 150px 90px 80px 90px 120px 100px 100px 100px 100px 90px;min-width:1180px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
+        <div style="display:grid;grid-template-columns:minmax(118px,1.1fr) minmax(120px,1.4fr) 80px 90px 74px 84px 96px 96px 96px 96px 84px;min-width:1040px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
           <sc-for list="{{ truckHeaders }}" as="h" hint-placeholder-count="8">
             <div onClick="{{ h.onClick }}" style="{{ h.style }}">{{ h.label }}<span style="font-size:10px;opacity:.55;margin-left:2px;">{{ h.icon }}</span></div>
           </sc-for>
         </div>
         <sc-for list="{{ truckRows }}" as="r" hint-placeholder-count="6">
-          <div onClick="{{ r.onOpen }}" style="display:grid;grid-template-columns:160px 150px 90px 80px 90px 120px 100px 100px 100px 100px 90px;min-width:1180px;cursor:pointer;border-bottom:1px solid #f0f2f5;">
-            <div style="padding:12px 15px;font-size:14.5px;font-weight:700;color:#16263a;">{{ r.plate }}</div>
-            <div style="padding:12px 15px;font-size:12.5px;color:#475467;line-height:1.35;">{{ r.owner }}</div>
-            <div style="padding:12px 15px;">
+          <div onClick="{{ r.onOpen }}" style="display:grid;grid-template-columns:minmax(118px,1.1fr) minmax(120px,1.4fr) 80px 90px 74px 84px 96px 96px 96px 96px 84px;min-width:1040px;cursor:pointer;border-bottom:1px solid #f0f2f5;">
+            <div style="padding:12px 12px;font-size:14.5px;font-weight:700;color:#16263a;">{{ r.plate }}</div>
+            <div style="padding:12px 12px;font-size:12.5px;color:#475467;line-height:1.35;">{{ r.owner }}</div>
+            <div style="padding:12px 12px;">
               <div style="font-size:13px;font-weight:700;color:#16263a;line-height:1.3;">{{ r.ttCode }}</div>
               <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;line-height:1.3;">{{ r.ttName }}</div>
             </div>
-            <div style="padding:12px 15px;"><span style="{{ r.deptStyle }}">{{ r.deptLabel }}</span></div>
-            <div style="padding:12px 15px;font-size:12.5px;color:#475467;">{{ r.fuelText }}</div>
-            <div style="padding:12px 15px;font-size:12.5px;color:#2f6fb0;font-weight:600;">{{ r.rateText }}</div>
-            <div style="padding:12px 15px;font-size:13px;"><span style="{{ r.regStyle }}">{{ r.regText }}</span></div>
-            <div style="padding:12px 15px;font-size:13px;"><span style="{{ r.insStyle }}">{{ r.insText }}</span></div>
-            <div style="padding:12px 15px;font-size:13px;"><span style="{{ r.cargoStyle }}">{{ r.cargoText }}</span></div>
-            <div style="padding:12px 15px;font-size:13px;"><span style="{{ r.actStyle }}">{{ r.actText }}</span></div>
-            <div style="padding:12px 15px;"><span style="{{ r.maintStyle }}">{{ r.maintText }}</span></div>
+            <div style="padding:12px 12px;"><span style="{{ r.deptStyle }}">{{ r.deptLabel }}</span></div>
+            <div style="padding:12px 12px;font-size:12.5px;color:#475467;">{{ r.fuelText }}</div>
+            <div style="padding:12px 12px;font-size:12.5px;color:#2f6fb0;font-weight:600;">{{ r.rateText }}</div>
+            <div style="padding:12px 12px;font-size:13px;"><span style="{{ r.regStyle }}">{{ r.regText }}</span></div>
+            <div style="padding:12px 12px;font-size:13px;"><span style="{{ r.insStyle }}">{{ r.insText }}</span></div>
+            <div style="padding:12px 12px;font-size:13px;"><span style="{{ r.cargoStyle }}">{{ r.cargoText }}</span></div>
+            <div style="padding:12px 12px;font-size:13px;"><span style="{{ r.actStyle }}">{{ r.actText }}</span></div>
+            <div style="padding:12px 12px;"><span style="{{ r.maintStyle }}">{{ r.maintText }}</span></div>
           </div>
         </sc-for>
         <sc-if value="{{ truckEmptyVisible }}" hint-placeholder-val="{{ false }}">
@@ -4878,6 +4879,30 @@
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">น้ำหนักบรรทุก (กก.)</label>
             <input value="{{ draft.loadWeight }}" onInput="{{ onLoadWeight }}" placeholder="เช่น 15000" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">กระบะกว้าง (ซม.)</label>
+            <input value="{{ draft.bedWidth }}" onInput="{{ onBedWidth }}" inputMode="decimal" placeholder="ซม." style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">กระบะยาว (ซม.)</label>
+            <input value="{{ draft.bedLength }}" onInput="{{ onBedLength }}" inputMode="decimal" placeholder="ซม." style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ความยาวรถรวมหัวเก๋ง (ซม.)</label>
+            <input value="{{ draft.totalLength }}" onInput="{{ onTotalLength }}" inputMode="decimal" placeholder="ซม." style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">กระบะสูงถึงพื้น ช่วงหัว (ซม.)</label>
+            <input value="{{ draft.bedHFront }}" onInput="{{ onBedHFront }}" inputMode="decimal" placeholder="ซม." style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">กระบะสูงถึงพื้น ช่วงกลาง (ซม.)</label>
+            <input value="{{ draft.bedHMid }}" onInput="{{ onBedHMid }}" inputMode="decimal" placeholder="ซม." style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">กระบะสูงถึงพื้น ช่วงท้าย (ซม.)</label>
+            <input value="{{ draft.bedHRear }}" onInput="{{ onBedHRear }}" inputMode="decimal" placeholder="ซม." style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
           </div>
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">เลขตัวถัง</label>
@@ -7485,7 +7510,7 @@ function normTruck(t){
   const boolParse=(v)=>v===true||v==='true'||v==='TRUE';
   // normalize date fields: ตัด timestamp ออก เหลือแค่ YYYY-MM-DD
   const normDate=(v)=>toBkkDate(v);
-  const r={plate:'',truckType:'',fuel:'',dept:'',maker:'',model:'',year:'',color:'',chassis:'',engine:'',weight:'',loadWeight:'',gps:'',gpsDeviceId:'',phoneTrack:false,owner:'',ecaccVendor:'',ownerIdCard:'',ownerPhone:'',ownerLine:'',account:'',trailerPlate:'',remark:'',maintenance:[],photo:null,contractDate:'',regExpiry:'',hasRegFile:false,insuranceExpiry:'',hasInsuranceFile:false,ownerIdExpiry:'',hasOwnerIdFile:false,cargoInsExpiry:'',hasCargoInsFile:false,hasContractFile:false,salary:'',installment:'',socialSecurity:'',fuelRateLoaded:'',fuelRateEmpty:'',makerOther:'',regFee:'',regRenew:'',actRenew:'',insRenew:'',cargoRenew:'',regNoRenew:false,actNoRenew:false,insNoRenew:false,cargoNoRenew:false,...t,maintenance:maint,hasRegFile:boolParse(t.hasRegFile),hasInsuranceFile:boolParse(t.hasInsuranceFile),hasOwnerIdFile:boolParse(t.hasOwnerIdFile),hasCargoInsFile:boolParse(t.hasCargoInsFile),hasContractFile:boolParse(t.hasContractFile),regExpiry:normDate(t.regExpiry),insuranceExpiry:normDate(t.insuranceExpiry),ownerIdExpiry:normDate(t.ownerIdExpiry),cargoInsExpiry:normDate(t.cargoInsExpiry),contractDate:normDate(t.contractDate),regRenew:normDate(t.regRenew),actRenew:normDate(t.actRenew),insRenew:normDate(t.insRenew),cargoRenew:normDate(t.cargoRenew)};if(r.dept&&r.dept.startsWith('01'))r.dept='รถบริษัท';else if(r.dept&&!['รถบริษัท','รถร่วม','รถผู้บริหาร',''].includes(r.dept))r.dept='รถร่วม';if(!Array.isArray(r.maintenance)){try{const p=JSON.parse(r.maintenance);r.maintenance=Array.isArray(p)?p:[];}catch(e){r.maintenance=[];}}return r;}
+  const r={plate:'',truckType:'',fuel:'',dept:'',maker:'',model:'',year:'',color:'',chassis:'',engine:'',weight:'',loadWeight:'',bedHFront:'',bedHMid:'',bedHRear:'',bedWidth:'',bedLength:'',totalLength:'',gps:'',gpsDeviceId:'',phoneTrack:false,owner:'',ecaccVendor:'',ownerIdCard:'',ownerPhone:'',ownerLine:'',account:'',trailerPlate:'',remark:'',maintenance:[],photo:null,contractDate:'',regExpiry:'',hasRegFile:false,insuranceExpiry:'',hasInsuranceFile:false,ownerIdExpiry:'',hasOwnerIdFile:false,cargoInsExpiry:'',hasCargoInsFile:false,hasContractFile:false,salary:'',installment:'',socialSecurity:'',fuelRateLoaded:'',fuelRateEmpty:'',makerOther:'',regFee:'',regRenew:'',actRenew:'',insRenew:'',cargoRenew:'',regNoRenew:false,actNoRenew:false,insNoRenew:false,cargoNoRenew:false,...t,maintenance:maint,hasRegFile:boolParse(t.hasRegFile),hasInsuranceFile:boolParse(t.hasInsuranceFile),hasOwnerIdFile:boolParse(t.hasOwnerIdFile),hasCargoInsFile:boolParse(t.hasCargoInsFile),hasContractFile:boolParse(t.hasContractFile),regExpiry:normDate(t.regExpiry),insuranceExpiry:normDate(t.insuranceExpiry),ownerIdExpiry:normDate(t.ownerIdExpiry),cargoInsExpiry:normDate(t.cargoInsExpiry),contractDate:normDate(t.contractDate),regRenew:normDate(t.regRenew),actRenew:normDate(t.actRenew),insRenew:normDate(t.insRenew),cargoRenew:normDate(t.cargoRenew)};if(r.dept&&r.dept.startsWith('01'))r.dept='รถบริษัท';else if(r.dept&&!['รถบริษัท','รถร่วม','รถผู้บริหาร',''].includes(r.dept))r.dept='รถร่วม';if(!Array.isArray(r.maintenance)){try{const p=JSON.parse(r.maintenance);r.maintenance=Array.isArray(p)?p:[];}catch(e){r.maintenance=[];}}return r;}
 function toBkkDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);if(isNaN(d))return s.slice(0,10);try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}catch(e){return s.slice(0,10);}}
 function _LFB2(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function normJob(j){const o=_normJob0(j);if(Array.isArray(o.miscItems)&&o.miscItems.length){const ms=o.miscItems.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);o.misc=ms?String(Math.round(ms*100)/100):'';}if(Array.isArray(o.fuelRefills)&&o.fuelRefills.length){const s=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.baht)||0),0);const l=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.liters)||0),0);if(s)o.fuelBaht=String(Math.round(s*100)/100);if(l)o.fuelLiters=String(Math.round(l*100)/100);}return o;}
@@ -9436,7 +9461,8 @@ class Component extends DCLogic {
     }
     return rows;
   }
-  async _parseTruckXlsx(ab){
+  // อ่านทุกชีตในไฟล์ .xlsx → [rows ของแต่ละชีต] (rows = [{A:..,B:..}]) — ใช้ร่วมกันทั้งนำเข้าตารางรถ และนำเข้าสเปกรถ (v.27p)
+  async _xlsxSheets(ab){
     const u8=new Uint8Array(ab);const dv=new DataView(u8.buffer);
     let i=u8.length-22;for(;i>=0;i--){if(dv.getUint32(i,true)===0x06054b50)break;}
     if(i<0)throw new Error('ไม่ใช่ไฟล์ Excel (.xlsx)');
@@ -9446,8 +9472,13 @@ class Component extends DCLogic {
     const ssXml=await readEntry('xl/sharedStrings.xml')||'';const strings=[];
     {const re=/<si>([\s\S]*?)<\/si>/g;let m;while((m=re.exec(ssXml))){const t=[...m[1].matchAll(/<t[^>]*>([\s\S]*?)<\/t>/g)].map(x=>x[1]).join('');strings.push(this._xmlDec(t));}}
     const sheetNames=Object.keys(files).filter(n=>/^xl\/worksheets\/sheet\d+\.xml$/.test(n)).sort();
+    const sheets=[];for(const sn of sheetNames){const xml=await readEntry(sn);if(!xml)continue;sheets.push(this._xlRows(xml,strings));}
+    return sheets;
+  }
+  async _parseTruckXlsx(ab){
+    const sheets=await this._xlsxSheets(ab);
     let best=null;
-    for(const sn of sheetNames){const xml=await readEntry(sn);if(!xml)continue;const rows=this._xlRows(xml,strings);if(!rows.length)continue;let hIdx=-1;for(let r=0;r<Math.min(6,rows.length);r++){const j=Object.values(rows[r]).join('|');if(j.includes('ทะเบียนรถ')&&j.includes('ชนิดรถ')){hIdx=r;break;}}if(hIdx>=0){best={rows,hIdx};break;}}
+    for(const rows of sheets){if(!rows.length)continue;let hIdx=-1;for(let r=0;r<Math.min(6,rows.length);r++){const j=Object.values(rows[r]).join('|');if(j.includes('ทะเบียนรถ')&&j.includes('ชนิดรถ')){hIdx=r;break;}}if(hIdx>=0){best={rows,hIdx};break;}}
     if(!best)throw new Error('ไม่พบชีตที่มีคอลัมน์ "ทะเบียนรถ" และ "ชนิดรถ"');
     const {rows,hIdx}=best;const colMap={};
     Object.keys(rows[hIdx]).forEach(col=>{const f=this._mapTruckHeader(rows[hIdx][col]);if(f&&!Object.values(colMap).includes(f))colMap[col]=f;});
@@ -9460,6 +9491,46 @@ class Component extends DCLogic {
       if(hasPlate&&rec.plate)out.push(rec);}
     return out;
   }
+  // ===== นำเข้าสเปกรถจาก Excel ของลูกค้า (v.27p) — จับคู่ตามทะเบียน อัปเดตเฉพาะขนาดกระบะ ไม่สร้างรถใหม่ ไม่แตะน้ำหนักรถ =====
+  _plateKey(p){return String(p||'').replace(/\s+/g,'').replace(/[ก-๙.]+$/,'');}
+  _mapSpecHeader(h){
+    const s=String(h||'').replace(/\s+/g,'');if(!s)return null;
+    if(s.includes('ทะเบียน'))return 'plate';
+    if(s.includes('ช่วงหัว'))return 'bedHFront';
+    if(s.includes('ช่วงกลาง'))return 'bedHMid';
+    if(s.includes('ช่วงท้าย'))return 'bedHRear';
+    if(s.includes('กระบะกว้าง'))return 'bedWidth';
+    if(s.includes('กระบะยาว'))return 'bedLength';
+    if(s.includes('ความยาวรถ')||s.includes('รวมหัว'))return 'totalLength';
+    return null;
+  }
+  onImportTruckSpec=async(e)=>{
+    const f=e.target.files&&e.target.files[0];if(e.target)e.target.value='';if(!f)return;
+    let sheets;try{sheets=await this._xlsxSheets(await f.arrayBuffer());}catch(err){window.alert('อ่านไฟล์ไม่สำเร็จ: '+(err&&err.message||err));return;}
+    let recs=[];
+    for(const rows of sheets){let hIdx=-1;for(let r=0;r<Math.min(8,rows.length);r++){const j=Object.values(rows[r]).join('|');if(j.includes('ทะเบียน')&&j.includes('กระบะ')){hIdx=r;break;}}if(hIdx<0)continue;
+      const colMap={};Object.keys(rows[hIdx]).forEach(c=>{const k=this._mapSpecHeader(rows[hIdx][c]);if(k&&!Object.values(colMap).includes(k))colMap[c]=k;});
+      for(let r=hIdx+1;r<rows.length;r++){const rec={};Object.keys(rows[r]).forEach(c=>{const k=colMap[c];if(!k)return;const v=String(rows[r][c]==null?'':rows[r][c]).trim();if(v)rec[k]=v;});if(rec.plate)recs.push(rec);}
+      if(recs.length)break;}
+    if(!recs.length){window.alert('ไม่พบตารางสเปกรถในไฟล์\n(หัวตารางต้องมีคอลัมน์ "ทะเบียน" และ "กระบะ...")');return;}
+    const byKey={};this.state.trucks.forEach(t=>{if(t.retired)return;const k=this._plateKey(t.plate);(byKey[k]=byKey[k]||[]).push(t);});
+    const F=['bedHFront','bedHMid','bedHRear','bedWidth','bedLength','totalLength'];
+    const LB={bedHFront:'สูงหัว',bedHMid:'สูงกลาง',bedHRear:'สูงท้าย',bedWidth:'กว้าง',bedLength:'ยาว',totalLength:'ยาวรวมหัว'};
+    const upd=[],same=[],miss=[],dup=[];
+    recs.forEach(rec=>{const m=byKey[this._plateKey(rec.plate)]||[];if(!m.length){miss.push(rec.plate);return;}if(m.length>1){dup.push(rec.plate);return;}
+      const t=m[0];const patch={};F.forEach(k=>{if(rec[k]!=null&&String(t[k]||'')!==rec[k])patch[k]=rec[k];});
+      if(Object.keys(patch).length)upd.push({plate:t.plate,patch});else same.push(t.plate);});
+    let msg='พบรถในไฟล์ '+recs.length+' คัน\n\n✓ จะอัปเดตขนาดกระบะ '+upd.length+' คัน'+(same.length?(' · ข้อมูลตรงอยู่แล้ว '+same.length+' คัน'):'');
+    if(upd.length)msg+='\n'+upd.map(u=>'   '+u.plate+': '+F.filter(k=>u.patch[k]).map(k=>LB[k]+' '+u.patch[k]).join(' · ')).join('\n');
+    if(miss.length)msg+='\n\n✗ ไม่พบทะเบียนในระบบ (ข้าม) '+miss.length+' คัน: '+miss.join(', ');
+    if(dup.length)msg+='\n\n⚠ ทะเบียนตรงกับรถหลายคัน (ข้าม): '+dup.join(', ');
+    if(!upd.length){window.alert(msg+'\n\nไม่มีอะไรต้องอัปเดต');return;}
+    if(!window.confirm(msg+'\n\nหน่วยเซนติเมตร · ไม่แตะน้ำหนักรถและข้อมูลอื่น\nยืนยันบันทึก?'))return;
+    let trucks=this.state.trucks;
+    upd.forEach(u=>{trucks=trucks.map(t=>t.plate===u.plate?{...t,...u.patch}:t);this.persistTrucks(trucks,u.plate);});
+    this.setState({trucks});
+    window.alert('บันทึกสเปกรถแล้ว '+upd.length+' คัน');
+  };
   onImportTruckXlsx=async(e)=>{
     const f=e.target.files&&e.target.files[0];if(e.target)e.target.value='';if(!f)return;
     let list;
@@ -11953,7 +12024,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const onTruckSort=(col)=>{let a=[...(S.truckSortKeys||[])].filter(k=>k&&k.col);const i=a.findIndex(k=>k.col===col);if(i===0){a[0]={col,dir:a[0].dir==='asc'?'desc':'asc'};}else{a=a.filter(k=>k.col!==col);a.unshift({col,dir:'asc'});}this.setState({truckSortKeys:a});};
     const tKeyIdx=(col)=>(S.truckSortKeys||[]).findIndex(k=>k&&k.col===col);
     const tMulti=(S.truckSortKeys||[]).filter(k=>k&&k.col).length>1;
-    const mkTruckHdr=(label,col)=>{const idx=tKeyIdx(col);const active=idx>=0;const k=active?S.truckSortKeys[idx]:null;const icon=active?((k.dir==='asc'?'↑':'↓')+(tMulti?String(idx+1):'')):'↕';return{label,icon,style:'padding:11px 15px;font-size:12px;font-weight:600;color:'+(active?'#1d2b3a':'#667085')+';cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;',onClick:()=>onTruckSort(col)};};
+    const mkTruckHdr=(label,col)=>{const idx=tKeyIdx(col);const active=idx>=0;const k=active?S.truckSortKeys[idx]:null;const icon=active?((k.dir==='asc'?'↑':'↓')+(tMulti?String(idx+1):'')):'↕';return{label,icon,style:'padding:11px 12px;font-size:12px;font-weight:600;color:'+(active?'#1d2b3a':'#667085')+';cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;',onClick:()=>onTruckSort(col)};};
     const ds=S.driverSort||{col:'',dir:'asc'};
     const ts=S.truckSort||{col:'',dir:'asc'};
     const driverHeaders=[mkSortHdr('รหัสพนักงาน','code',ds,onDriverSort),mkSortHdr('ชื่อพนักงานขับรถ','name',ds,onDriverSort),mkSortHdr('ฟลีต','fleet',ds,onDriverSort),mkSortHdr('วันที่เริ่มงาน','startDate',ds,onDriverSort),noSortHdr('ประวัติ'),mkSortHdr('ใบขับขี่หมดอายุ','licenseExpiry',ds,onDriverSort),mkSortHdr('บัตร ปชช.หมดอายุ','idExpiry',ds,onDriverSort),mkSortHdr('สถานะเอกสาร','status',ds,onDriverSort)];
@@ -12111,7 +12182,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(tsel){
       const tst=this.truckDocStatus(tsel);
       out.truckSel={plate:tsel.plate,truckType:tsel.truckType||'—',maker:tsel.maker||'—',model:tsel.model||'',modelSuffix:tsel.model?' '+tsel.model:'',dept:tsel.dept||'—',deptStyle:this.deptChip(tsel.dept),statusLabel:tst.label,statusStyle:this.chip(tst.fg,tst.bg),retired:!!tsel.retired,retiredDate:tsel.retiredDate||''};out.truckActive=!tsel.retired;
-      out.truckInfoRows=[{label:'ทะเบียนรถ',value:tsel.plate},{label:'ชนิดรถ',value:tsel.truckType||'—'},{label:'รุ่น',value:tsel.model||'—'},{label:'เชื้อเพลิง',value:tsel.fuel||'—'},{label:'แผนก',value:tsel.dept||'—'},{label:'ผู้ผลิต',value:tsel.maker||'—'},{label:'ปีที่ผลิต',value:tsel.year||'—'},{label:'สีรถ',value:tsel.color||'—'},{label:'เลขตัวถัง',value:tsel.chassis||'—'},{label:'เลขเครื่อง',value:tsel.engine||'—'},{label:'⛽ เรทน้ำมัน บรรทุก',value:tsel.fuelRateLoaded?(tsel.fuelRateLoaded+' กม./ลิตร'):'—'},{label:'⛽ เรทน้ำมัน วิ่งเปล่า',value:tsel.fuelRateEmpty?(tsel.fuelRateEmpty+' กม./ลิตร'):'—'},{label:'ค่าผ่อน/ค่าเสื่อม',value:tsel.installment?('฿'+_LFB2(parseFloat(tsel.installment)||0)+' /เดือน'):'—'},{label:'หมายเหตุ',value:tsel.remark||'—'}];
+      out.truckInfoRows=[{label:'ทะเบียนรถ',value:tsel.plate},{label:'ชนิดรถ',value:tsel.truckType||'—'},{label:'รุ่น',value:tsel.model||'—'},{label:'เชื้อเพลิง',value:tsel.fuel||'—'},{label:'แผนก',value:tsel.dept||'—'},{label:'ผู้ผลิต',value:tsel.maker||'—'},{label:'ปีที่ผลิต',value:tsel.year||'—'},{label:'สีรถ',value:tsel.color||'—'},{label:'เลขตัวถัง',value:tsel.chassis||'—'},{label:'เลขเครื่อง',value:tsel.engine||'—'},{label:'⛽ เรทน้ำมัน บรรทุก',value:tsel.fuelRateLoaded?(tsel.fuelRateLoaded+' กม./ลิตร'):'—'},{label:'⛽ เรทน้ำมัน วิ่งเปล่า',value:tsel.fuelRateEmpty?(tsel.fuelRateEmpty+' กม./ลิตร'):'—'},{label:'📐 ขนาดกระบะ (ซม.)',value:(()=>{const p=[['กว้าง',tsel.bedWidth],['ยาว',tsel.bedLength],['ยาวรวมหัว',tsel.totalLength],['สูงหัว',tsel.bedHFront],['สูงกลาง',tsel.bedHMid],['สูงท้าย',tsel.bedHRear]].filter(x=>x[1]).map(x=>x[0]+' '+x[1]);return p.length?p.join(' · '):'—';})()},{label:'ค่าผ่อน/ค่าเสื่อม',value:tsel.installment?('฿'+_LFB2(parseFloat(tsel.installment)||0)+' /เดือน'):'—'},{label:'หมายเหตุ',value:tsel.remark||'—'}];
       out.truckOwnerRows=[{label:'เจ้าของรถ',value:tsel.owner||'—'},{label:'เลขบัตร ปชช.',value:tsel.ownerIdCard||'—'},{label:'เบอร์โทร',value:tsel.ownerPhone||'—'},{label:'ไลน์ ID',value:tsel.ownerLine||'—'},{label:'เลขที่บัญชี',value:tsel.account||'—'},{label:'น้ำหนักรถ',value:tsel.weight?(tsel.weight+' กก.'):'—'},{label:'น้ำหนักบรรทุก',value:tsel.loadWeight?(tsel.loadWeight+' กก.'):'—'},{label:'บริษัท GPS',value:tsel.gps||'—'},{label:'วันทำสัญญา',value:this.thaiDate(tsel.contractDate)}];
       out.truckHasPhoto=!!tsel.photo;out.truckNoPhoto=!tsel.photo;
       out.truckPhotoNode=tsel.photo?React.createElement('img',{src:tsel.photo,style:{width:'100%',height:'100%',objectFit:'cover'}}):null;
@@ -12317,6 +12388,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onEngine=(e)=>this.setT('engine',e.target.value);
     out.onWeight=(e)=>this.setT('weight',e.target.value);
     out.onLoadWeight=(e)=>this.setT('loadWeight',e.target.value);
+    out.onBedWidth=(e)=>this.setT('bedWidth',e.target.value);out.onBedLength=(e)=>this.setT('bedLength',e.target.value);out.onTotalLength=(e)=>this.setT('totalLength',e.target.value);
+    out.onBedHFront=(e)=>this.setT('bedHFront',e.target.value);out.onBedHMid=(e)=>this.setT('bedHMid',e.target.value);out.onBedHRear=(e)=>this.setT('bedHRear',e.target.value);
+    out.onImportTruckSpec=this.onImportTruckSpec;
     out.onGps=(e)=>this.setT('gps',e.target.value);
     out.onGpsDev=(e)=>this.setT('gpsDeviceId',e.target.value);
     out.onPhoneTrack=(e)=>this.setT('phoneTrack',!!e.target.checked);   // v.2026-08-28d: ติดตามผ่านมือถือ พขร. เฉพาะคันที่ติ๊ก
