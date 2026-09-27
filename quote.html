@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>ใบเสนอราคา — สิงห์ทองทรัคทรานสปอร์ต</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@500&family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+<!--
+  หน้าใบเสนอราคาสำหรับลูกค้า (เปิดจากลิงก์ในอีเมล/LINE ไม่ต้อง login)
+  ?t=<token 64 ตัว> · ?env=staging = ฐานข้อมูล staging
+  RPC (anon, security definer): get_web_quote · respond_web_quote · submit_quote_slip
+  → sql/supabase_web_quotes_STAGING.sql
+-->
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Sarabun',sans-serif;background:#f5ead8;color:#201e1d;-webkit-font-smoothing:antialiased;font-size:15px;line-height:1.5;}
+  .wrap{max-width:760px;margin:0 auto;padding:16px 16px 48px;}
+  .brand{display:flex;align-items:center;gap:12px;padding:6px 2px 14px;}
+  .brand img{height:40px;width:auto;}
+  .brand .nm{font-family:'Mitr',sans-serif;font-weight:500;font-size:16px;line-height:1.25;}
+  .brand .sm{font-size:12px;color:#645c50;}
+  .card{background:#fff;border-radius:16px;padding:18px 18px;margin-bottom:14px;box-shadow:0 1px 3px rgba(60,40,20,.08);}
+  h1{font-family:'Mitr',sans-serif;font-weight:500;font-size:22px;margin:0 0 2px;line-height:1.25;}
+  h2{font-size:15px;margin:0 0 8px;color:#8a4a22;}
+  .muted{color:#645c50;font-size:13px;}
+  .banner{border-radius:12px;padding:12px 14px;font-size:14.5px;font-weight:600;margin-bottom:14px;}
+  .b-info{background:#eff8ff;color:#175cd3;} .b-ok{background:#ecfdf3;color:#067647;} .b-warn{background:#fffaeb;color:#b54708;} .b-off{background:#f2f4f7;color:#475467;}
+  .meta{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;font-size:14px;margin-top:10px;}
+  .meta span:nth-child(odd){color:#645c50;}
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  th,td{padding:8px 6px;border-bottom:1px solid #eee3d0;text-align:left;vertical-align:top;}
+  th{font-size:12.5px;color:#645c50;font-weight:600;}
+  .n{text-align:right;white-space:nowrap;}
+  .rules{font-size:13px;} .rules td:first-child{white-space:nowrap;} .rules th{white-space:normal;}
+  .tot td{border:none;padding:4px 6px;}
+  .tot .net td{background:#f5ead8;font-weight:700;padding:8px 6px;}
+  .due{color:#0e7090;font-weight:700;}
+  ol{margin:0;padding-left:20px;font-size:14px;} ol li{margin-bottom:3px;}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:999px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .p{background:#c67139;color:#fff;} .s{background:#fff;color:#8a4a22;border:1.5px solid #c67139;} .g{background:#3f4a2f;color:#f5ead8;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;} .row>*{flex:1;min-width:200px;}
+  label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px;}
+  input,select,textarea{width:100%;padding:11px 12px;border:1px solid #d9cdb8;border-radius:10px;font-size:15px;font-family:inherit;color:#201e1d;background:#fff;}
+  .bank{background:#fcf8f1;border:1px dashed #c9b99c;border-radius:12px;padding:12px 14px;font-size:14.5px;}
+  .bank b{font-size:17px;letter-spacing:.02em;}
+  .hide{display:none!important;}
+  .err{color:#b42318;font-size:14px;margin-top:8px;}
+  .spin{width:28px;height:28px;border:3px solid #eee3d0;border-top-color:#c67139;border-radius:50%;animation:sp .8s linear infinite;margin:40px auto;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+  .foot{text-align:center;font-size:13px;color:#645c50;margin-top:18px;}
+  .foot a{color:#8a4a22;}
+  @media print{body{background:#fff;} .noprint{display:none!important;} .card{box-shadow:none;border:1px solid #eee3d0;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">
+    <img src="https://singthongtruck.com/logo.png" alt="Singthong Truck Transport" onerror="this.style.display='none'">
+    <div><div class="nm">บริษัท สิงห์ทองทรัคทรานสปอร์ต จำกัด</div><div class="sm">2/5 ถ.อุไรรัตน์ ต.แก่งคอย อ.แก่งคอย จ.สระบุรี 18110 · เลขผู้เสียภาษี 0195542000095</div></div>
+  </div>
+
+  <div id="loading" class="spin"></div>
+  <div id="fail" class="card hide"><h1>เปิดใบเสนอราคาไม่ได้</h1><p id="failMsg" class="muted"></p><p class="muted">ติดต่อ โทร <a href="tel:036246202">036-246-202</a> · LINE <a href="https://lin.ee/ozydDGC">@singthongtruck</a></p></div>
+
+  <div id="main" class="hide">
+    <div id="banner" class="banner"></div>
+
+    <div class="card">
+      <h1>ใบเสนอราคาค่าบริการขนส่ง</h1>
+      <div class="muted">ราคาต่อเที่ยว · ยืนราคา · ไม่มีภาษีมูลค่าเพิ่ม</div>
+      <div class="meta">
+        <span>เลขที่</span><b id="qNo"></b>
+        <span>วันที่</span><span id="qIssued"></span>
+        <span>ยืนราคาถึง</span><span id="qUntil"></span>
+        <span>อ้างอิงคำขอ</span><span id="qRef"></span>
+        <span>เรียน</span><span id="qCust"></span>
+        <span>สินค้า</span><span id="qProduct"></span>
+        <span>วันที่ต้องการรถ</span><span id="qReq"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>รายการ</h2>
+      <table><thead><tr><th>เส้นทาง</th><th class="n">เที่ยว</th><th class="n">ราคา/เที่ยว</th><th class="n">จำนวนเงิน</th></tr></thead><tbody id="lines"></tbody></table>
+      <table class="tot" style="margin-top:8px;">
+        <tr><td>รวมค่าบริการขนส่ง</td><td class="n" id="tTotal"></td></tr>
+        <tr id="rWht"><td>หักภาษี ณ ที่จ่าย 1%</td><td class="n" id="tWht"></td></tr>
+        <tr class="net"><td>ยอดชำระสุทธิ</td><td class="n" id="tNet"></td></tr>
+        <tr id="rDue"><td id="tDueLabel"></td><td class="n due" id="tDue"></td></tr>
+      </table>
+      <div class="muted" style="margin-top:8px;" id="payText"></div>
+    </div>
+
+    <div class="card">
+      <h2>เงื่อนไขตามประเภทรถ</h2>
+      <table class="rules">
+        <thead><tr><th>ประเภทรถ</th><th class="n">น้ำหนักสูงสุด</th><th class="n">ประกันสินค้า</th><th class="n">ค่าใช้จ่ายเพิ่ม*</th></tr></thead>
+        <tbody>
+          <tr><td>รถหกล้อ</td><td class="n">7 ตัน</td><td class="n">500,000</td><td class="n">500</td></tr>
+          <tr><td>รถสิบล้อ</td><td class="n">16 ตัน</td><td class="n">500,000</td><td class="n">1,000</td></tr>
+          <tr><td>รถเทรลเลอร์</td><td class="n">32 ตัน</td><td class="n">1,000,000</td><td class="n">1,500</td></tr>
+        </tbody>
+      </table>
+      <div class="muted" style="margin:6px 0 12px;">น้ำหนักและประกันสินค้าต่อเที่ยว · * บาท · คิดต่อจุดขึ้น/ลงสินค้าที่เพิ่ม · ค่ารอคิดทุก 6 ชั่วโมงเต็มที่รอเกินเวลาฟรี</div>
+      <h2>หมายเหตุ</h2>
+      <ol id="notes">
+        <li id="nValid"></li>
+        <li>ค่าขนส่งดังกล่าวไม่รวมค่าขนลงสินค้า ณ ปลายทาง</li>
+        <li>น้ำหนักบรรทุกและวงเงินประกันสินค้าเป็นไปตามประเภทรถในตารางด้านบน และต้องไม่เกินพิกัดตามกฎหมาย</li>
+        <li>รอขึ้นและลงสินค้าฟรีรวม 6 ชั่วโมง/เที่ยว เกินจากนี้คิดค่ารอทุก 6 ชั่วโมงเต็ม (เศษไม่ถึง 6 ชั่วโมงไม่คิด)</li>
+        <li>ยกเลิกหรือเลื่อนงาน กรุณาแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง มิฉะนั้นบริษัทฯ ขอสงวนสิทธิ์ไม่คืนเงินมัดจำ</li>
+      </ol>
+    </div>
+
+    <!-- ลูกค้าตัดสินใจ -->
+    <div id="decide" class="card noprint hide">
+      <h2>ยืนยันใบเสนอราคา</h2>
+      <label for="accName">ชื่อผู้ยืนยัน</label>
+      <input id="accName" autocomplete="name" placeholder="ชื่อ-นามสกุล">
+      <div class="row" style="margin-top:14px;">
+        <button id="btnAccept" class="btn p">ยืนยันรับราคาและเงื่อนไข</button>
+        <button id="btnDeclineOpen" class="btn s">ไม่รับราคานี้</button>
+      </div>
+      <div id="declineBox" class="hide">
+        <label for="decReason">เหตุผล (ช่วยให้เราปรับปรุงบริการ)</label>
+        <select id="decReason"><option>ราคาสูงไป</option><option>เปลี่ยนแผน / ยกเลิกงาน</option><option>ได้ผู้ให้บริการอื่นแล้ว</option><option>อื่นๆ</option></select>
+        <textarea id="decNote" rows="2" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" style="margin-top:8px;"></textarea>
+        <button id="btnDecline" class="btn g" style="margin-top:10px;">ยืนยันไม่รับราคานี้</button>
+      </div>
+      <div id="decideErr" class="err hide"></div>
+    </div>
+
+    <!-- ชำระเงิน -->
+    <div id="pay" class="card noprint hide">
+      <h2>ชำระเงิน</h2>
+      <div class="bank">
+        โอนเข้าบัญชี ธนาคารไทยพาณิชย์ (SCB)<br>
+        เลขที่ <b>687-2-17814-0</b><br>
+        ชื่อบัญชี บจก. สิงห์ทองทรัคทรานสปอร์ต<br>
+        ยอดที่ต้องโอน <b class="due" id="payDue"></b>
+      </div>
+      <label for="slip">แนบสลิปโอนเงิน</label>
+      <input id="slip" type="file" accept="image/*">
+      <textarea id="slipNote" rows="2" placeholder="หมายเหตุ (ถ้ามี)" style="margin-top:8px;"></textarea>
+      <button id="btnSlip" class="btn p" style="margin-top:10px;">ส่งสลิป</button>
+      <div id="slipMsg" class="muted" style="margin-top:8px;"></div>
+      <div id="slipErr" class="err hide"></div>
+    </div>
+
+    <div class="row noprint">
+      <button class="btn s" onclick="window.print()">พิมพ์ / บันทึกเป็น PDF</button>
+    </div>
+  </div>
+
+  <div class="foot">สอบถาม โทร <a href="tel:036246202">036-246-202</a> · LINE <a href="https://lin.ee/ozydDGC">@singthongtruck</a> · <a href="https://singthongtruck.com">singthongtruck.com</a></div>
+</div>
+
+<script>
+// ===== config : ENV AUTO-SWITCH (เหมือน driver.html) =====
+var LF_ENVS={
+  prod:    {url:'https://ojttzvcqjqqqullopeqt.supabase.co', key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdHR6dmNxanFxcXVsbG9wZXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNzE1MDAsImV4cCI6MjA5Nzk0NzUwMH0.68VmEegEuj6IrG3XweK4AQEufhzvQiUz79ThL28LOzk'},
+  staging: {url:'https://vugqoevhxqssdqykwgpi.supabase.co', key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Z3FvZXZoeHFzc2RxeWt3Z3BpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMzE2MzYsImV4cCI6MjA5ODkwNzYzNn0.G_wDLk8lnbp4zWH83x28MFnbS5hYiExHB33ZNQSCkhg'}
+};
+var LF_ENV=(function(){try{var p=new URLSearchParams(location.search).get('env');if(p==='staging'||p==='prod')return p;if(/staging|localhost|127\.0\.0\.1/.test((location.hostname||'')+(location.pathname||'')))return 'staging';}catch(e){}return 'prod';})();
+var SUPABASE_URL=LF_ENVS[LF_ENV].url, SUPABASE_KEY=LF_ENVS[LF_ENV].key;
+var H={'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json'};
+var TOKEN=(function(){try{return new URLSearchParams(location.search).get('t')||'';}catch(e){return '';}})();
+
+function $(id){return document.getElementById(id);}
+function show(id,on){$(id).classList.toggle('hide',!on);}
+function fmt(v){return (Number(v)||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+var THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+function thDate(iso){var m=/^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso||''));if(!m)return '-';return (+m[3])+' '+THM[+m[2]-1]+' '+(+m[1]+543);}
+function rpc(fn,args){return fetch(SUPABASE_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:H,body:JSON.stringify(args)}).then(function(r){return r.json().then(function(d){return {ok:r.ok,data:d};},function(){return {ok:false,data:null};});});}
+function errText(e){var m=String(e||'');return {token:'ลิงก์ไม่ถูกต้อง หรือใบเสนอราคานี้ถูกยกเลิกแล้ว',status:'สถานะใบเสนอราคาเปลี่ยนไปแล้ว กรุณารีเฟรชหน้านี้',expired:'ใบเสนอราคานี้เลยวันยืนราคาแล้ว',image:'ไฟล์รูปไม่ถูกต้องหรือใหญ่เกินไป',limit:'แนบสลิปครบจำนวนแล้ว กรุณาติดต่อเจ้าหน้าที่',bad_request:'ข้อมูลไม่ถูกต้อง'}[m]||('เกิดข้อผิดพลาด ('+m+') กรุณาลองใหม่ หรือติดต่อเจ้าหน้าที่');}
+
+var Q=null;
+function render(d){
+  Q=d;var q=d.quote||{},o=d.order||{},st=d.status||'';
+  $('qNo').textContent=q.no||'-';$('qIssued').textContent=thDate(q.issuedAt);$('qUntil').textContent=thDate(q.validUntil);
+  $('qRef').textContent=o.ref||'-';$('qCust').textContent=(o.customer||'-')+(o.contact&&o.contact!==o.customer?(' · '+o.contact):'');
+  $('qProduct').textContent=o.product||'-';$('qReq').textContent=thDate(o.requiredDate);
+  var tb=$('lines');tb.innerHTML='';
+  (q.lines||[]).forEach(function(l){var tr=document.createElement('tr');
+    var c1=document.createElement('td');c1.textContent=(l.origin||'')+' → '+(l.destination||'');var sm=document.createElement('div');sm.className='muted';sm.textContent=String(l.truckType||'').replace('รถหัวลาก/เทรลเลอร์','รถเทรลเลอร์');c1.appendChild(sm);
+    var c2=document.createElement('td');c2.className='n';c2.textContent=l.trips;
+    var c3=document.createElement('td');c3.className='n';c3.textContent=fmt(l.price);
+    var c4=document.createElement('td');c4.className='n';c4.textContent=fmt(l.amount);
+    tr.appendChild(c1);tr.appendChild(c2);tr.appendChild(c3);tr.appendChild(c4);tb.appendChild(tr);});
+  $('tTotal').textContent=fmt(q.total);$('tWht').textContent=q.corporate?('−'+fmt(q.wht)):'-';show('rWht',!!q.corporate);$('tNet').textContent=fmt(q.net)+' บาท';
+  var mode=q.payMode||'deposit';
+  show('rDue',mode!=='credit');$('tDueLabel').textContent=mode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':('มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ');$('tDue').textContent=fmt(q.due)+' บาท';
+  $('payText').textContent=mode==='credit'?'ชำระตามรอบวางบิล':(mode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':'มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ · ส่วนที่เหลือชำระเมื่อส่งสินค้าเสร็จ')+(q.corporate?' · หักภาษี ณ ที่จ่าย 1% แล้ว':'');
+  $('nValid').textContent='ราคานี้เป็นราคาต่อเที่ยว ยืนราคา '+(q.validDays||15)+' วันนับจากวันที่ออก และใช้เฉพาะรายการในใบเสนอราคานี้';
+  var notes=$('notes');Array.prototype.slice.call(notes.querySelectorAll('.extra')).forEach(function(x){x.remove();});
+  if(q.trucksPerDay){var li=document.createElement('li');li.className='extra';li.textContent='บริษัทฯ จัดรถได้วันละ '+q.trucksPerDay+' คัน ตามลำดับการยืนยันและชำระเงิน';notes.appendChild(li);}
+  if(q.note){var li2=document.createElement('li');li2.className='extra';li2.textContent=q.note;notes.appendChild(li2);}
+  $('payDue').textContent=fmt(q.due)+' บาท';
+
+  var b=$('banner'),cls='b-info',msg='';
+  show('decide',false);show('pay',false);
+  if(st==='รอลูกค้ายืนยัน'){msg='กรุณาตรวจสอบราคาและเงื่อนไข แล้วกดยืนยันด้านล่าง (ยืนราคาถึง '+thDate(q.validUntil)+')';show('decide',true);}
+  else if(st==='รอชำระเงิน'){cls='b-warn';msg=d.slipCount?('ได้รับสลิปแล้ว '+d.slipCount+' รูป — เจ้าหน้าที่กำลังตรวจยอด แล้วจะยืนยันการจัดรถ'):'ยืนยันแล้ว — กรุณาโอนเงินตามยอดด้านล่างและแนบสลิปเพื่อให้เราจัดรถ';show('pay',true);}
+  else if(st==='หมดอายุ'){cls='b-off';msg='ใบเสนอราคานี้เลยวันยืนราคาแล้ว หากยังต้องการใช้บริการ กรุณาติดต่อเจ้าหน้าที่เพื่อขอราคาใหม่';}
+  else if(st==='ลูกค้าไม่รับ'){cls='b-off';msg='ท่านแจ้งไม่รับราคานี้แล้ว'+(d.declineReason?(' ('+d.declineReason+')'):'')+' ขอบคุณที่ให้โอกาสเรา';}
+  else if(st==='ปฏิเสธงาน'||st==='ยกเลิก'){cls='b-off';msg='ใบเสนอราคานี้ถูกยกเลิกแล้ว กรุณาติดต่อเจ้าหน้าที่';}
+  else if(st==='รอจัดรถ'){cls='b-ok';msg=(q.payMode==='credit'||d.paidConfirmed)?'ยืนยันงานเรียบร้อย — เจ้าหน้าที่กำลังจัดรถ และจะติดต่อกลับเพื่อยืนยันรถ':'ยืนยันงานแล้ว — เจ้าหน้าที่กำลังจัดรถ';}
+  else if(st){cls='b-ok';msg='งานของท่านอยู่ระหว่างดำเนินการ ('+st+')';}
+  b.className='banner '+cls;b.textContent=msg;show('banner',!!msg);
+  show('loading',false);show('main',true);
+}
+function fail(m){show('loading',false);show('main',false);$('failMsg').textContent=m;show('fail',true);}
+function load(){
+  if(!/^[0-9a-f]{64}$/.test(TOKEN)){fail(errText('token'));return;}
+  rpc('get_web_quote',{p_token:TOKEN}).then(function(r){if(r.ok&&r.data&&r.data.ok)render(r.data);else fail(errText(r.data&&(r.data.error||r.data.message)));}).catch(function(){fail('เชื่อมต่อไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วรีเฟรชหน้านี้');});
+}
+function busy(btn,on,label){btn.disabled=on;if(label)btn.textContent=label;}
+function respond(action){
+  var e=$('decideErr');show('decideErr',false);
+  var name=$('accName').value.trim();
+  if(action==='accept'&&!name){e.textContent='กรุณาใส่ชื่อผู้ยืนยัน';show('decideErr',true);$('accName').focus();return;}
+  var reason=action==='decline'?($('decReason').value+($('decNote').value.trim()?(' · '+$('decNote').value.trim()):'')):'';
+  var btn=action==='accept'?$('btnAccept'):$('btnDecline');var old=btn.textContent;busy(btn,true,'กำลังส่ง…');
+  rpc('respond_web_quote',{p_token:TOKEN,p_action:action,p_reason:reason,p_name:name}).then(function(r){busy(btn,false,old);
+    if(r.ok&&r.data&&r.data.ok){load();window.scrollTo(0,0);}else{e.textContent=errText(r.data&&(r.data.error||r.data.message));show('decideErr',true);}
+  }).catch(function(){busy(btn,false,old);e.textContent='เชื่อมต่อไม่ได้ กรุณาลองใหม่';show('decideErr',true);});
+}
+// ย่อรูปสลิปให้ยาวสุด 1400px เป็น JPEG ก่อนส่ง (จำกัดฝั่งเซิร์ฟเวอร์ ~1.5 MB)
+function shrink(file){return new Promise(function(res,rej){var fr=new FileReader();fr.onerror=rej;fr.onload=function(){var img=new Image();img.onerror=rej;img.onload=function(){var s=Math.min(1,1400/Math.max(img.width,img.height));var c=document.createElement('canvas');c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);c.getContext('2d').drawImage(img,0,0,c.width,c.height);var q=.85,u=c.toDataURL('image/jpeg',q);while(u.length>1400000&&q>.4){q-=.15;u=c.toDataURL('image/jpeg',q);}res(u);};img.src=fr.result;};fr.readAsDataURL(file);});}
+function sendSlip(){
+  var e=$('slipErr');show('slipErr',false);var f=$('slip').files&&$('slip').files[0];
+  if(!f){e.textContent='กรุณาเลือกรูปสลิป';show('slipErr',true);return;}
+  var btn=$('btnSlip');busy(btn,true,'กำลังส่ง…');
+  shrink(f).then(function(u){return rpc('submit_quote_slip',{p_token:TOKEN,p_image:u,p_note:$('slipNote').value.trim()});}).then(function(r){busy(btn,false,'ส่งสลิป');
+    if(r.ok&&r.data&&r.data.ok){$('slip').value='';$('slipNote').value='';$('slipMsg').textContent='✅ ส่งสลิปแล้ว ขอบคุณ เจ้าหน้าที่จะตรวจยอดและยืนยันการจัดรถ';load();}
+    else{e.textContent=errText(r.data&&(r.data.error||r.data.message));show('slipErr',true);}
+  }).catch(function(){busy(btn,false,'ส่งสลิป');e.textContent='ส่งไม่สำเร็จ กรุณาลองใหม่ หรือส่งสลิปทาง LINE @singthongtruck';show('slipErr',true);});
+}
+$('btnAccept').onclick=function(){respond('accept');};
+$('btnDeclineOpen').onclick=function(){show('declineBox',true);$('btnDeclineOpen').classList.add('hide');};
+$('btnDecline').onclick=function(){respond('decline');};
+$('btnSlip').onclick=sendSlip;
+load();
+</script>
+</body>
+</html>

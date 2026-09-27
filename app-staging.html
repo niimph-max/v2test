@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5792,7 +5792,7 @@
       </sc-if>
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:12px;overflow:hidden;box-shadow:0 1px 2px rgba(16,24,40,.04);">
         <div style="overflow-x:auto;">
-        <div style="display:grid;grid-template-columns:44px 130px 104px 150px 1fr 84px 110px 110px 110px 180px;min-width:1180px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
+        <div style="display:grid;grid-template-columns:44px 130px 104px 150px 1fr 84px 110px 110px 150px 250px;min-width:1290px;background:#f8fafc;border-bottom:1px solid #e4e7ec;">
           <div style="padding:11px 8px;"></div>
           <div style="padding:11px 15px;font-size:12px;font-weight:600;color:#667085;">เลขที่บิล</div>
           <div style="padding:11px 15px;font-size:12px;font-weight:600;color:#667085;">วันรับแจ้ง</div>
@@ -5805,7 +5805,7 @@
           <div style="padding:11px 15px;font-size:12px;font-weight:600;color:#667085;text-align:right;">จัดการ</div>
         </div>
         <sc-for list="{{ orderRows }}" as="r" hint-placeholder-count="5">
-          <div style="display:grid;grid-template-columns:44px 130px 104px 150px 1fr 84px 110px 110px 110px 180px;min-width:1180px;border-bottom:1px solid #f0f2f5;align-items:center;background:{{ r.rowBg }};">
+          <div style="display:grid;grid-template-columns:44px 130px 104px 150px 1fr 84px 110px 110px 150px 250px;min-width:1290px;border-bottom:1px solid #f0f2f5;align-items:center;background:{{ r.rowBg }};">
             <div style="padding:12px 8px;display:flex;justify-content:center;"><sc-if value="{{ r.showCheckbox }}" hint-placeholder-val="{{ true }}"><input type="checkbox" checked="{{ r.selected }}" onChange="{{ r.onToggleSel }}" style="width:16px;height:16px;cursor:pointer;"></sc-if></div>
             <div onClick="{{ r.onEdit }}" style="padding:12px 15px;cursor:pointer;">
               <div style="font-size:13.5px;font-weight:700;color:#16263a;"><span style="color:#98a2b3;font-weight:400;">{{ r.billPrefix }}</span>{{ r.billNo }}</div>
@@ -5818,10 +5818,19 @@
             <div style="padding:12px 15px;font-size:13px;color:#475467;">{{ r.weight }}</div>
             <div style="padding:12px 15px;font-size:12.5px;color:#475467;">{{ r.truckType }}</div>
             <div style="padding:12px 15px;font-size:12.5px;color:#475467;">{{ r.requiredDate }}</div>
-            <div style="padding:12px 15px;"><span style="{{ r.statusStyle }}">{{ r.statusLabel }}</span></div>
+            <div style="padding:12px 15px;"><span style="{{ r.statusStyle }}">{{ r.statusLabel }}</span><sc-if value="{{ r.hasStatusSub }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;font-weight:600;margin-top:4px;line-height:1.35;color:{{ r.statusSubColor }};">{{ r.statusSub }}</div></sc-if></div>
             <div style="padding:10px 15px;display:flex;gap:5px;justify-content:flex-end;align-items:center;flex-wrap:wrap;">
               <sc-if value="{{ r.hasTrip }}" hint-placeholder-val="{{ false }}">
                 <button onClick="{{ r.onUnlink }}" style="padding:6px 9px;background:#fef3f2;color:#b42318;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">เลิกผูก</button>
+              </sc-if>
+              <sc-if value="{{ r.canQuote }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ r.onQuote }}" style="padding:6px 11px;background:#5925dc;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">{{ r.quoteBtnLabel }}</button>
+              </sc-if>
+              <sc-if value="{{ r.canReject }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ r.onReject }}" style="padding:6px 9px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">ปฏิเสธ</button>
+              </sc-if>
+              <sc-if value="{{ r.canPay }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ r.onPay }}" style="padding:6px 11px;background:#0e7090;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">{{ r.payBtnLabel }}</button>
               </sc-if>
               <sc-if value="{{ r.canDispatch }}" hint-placeholder-val="{{ true }}">
                 <button onClick="{{ r.onDispatch }}" style="padding:6px 11px;background:#067647;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">จ่ายงาน →</button>
@@ -7268,6 +7277,151 @@
       </div>
     </div>
     </sc-if>
+    <!-- ===== ★ v.2026-09-27g ใบเสนอราคา / ปฏิเสธงาน / รับเงิน ===== -->
+    <sc-if value="{{ qmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:flex-start;justify-content:center;z-index:4000;padding:28px 16px;overflow-y:auto;">
+      <div style="background:#fff;border-radius:16px;padding:22px 24px;width:100%;max-width:900px;box-shadow:0 20px 50px rgba(0,0,0,.3);">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:14px;">
+          <div>
+            <div style="font-size:18px;font-weight:800;color:#16263a;">📄 ใบเสนอราคา {{ qmTitleNo }}</div>
+            <div style="font-size:12.5px;color:#667085;margin-top:2px;">คำขอ {{ qmRef }} · ราคาต่อเที่ยว ยืนราคา · ไม่มี VAT</div>
+          </div>
+          <button onClick="{{ onQmClose }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;padding:7px 12px;">✕ ปิด</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 16px;background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px;padding:12px 14px;font-size:13px;color:#344054;margin-bottom:12px;">
+          <div><span style="color:#98a2b3;">ลูกค้า</span> {{ qmCustomer }}</div>
+          <div><span style="color:#98a2b3;">โทร</span> {{ qmPhone }}</div>
+          <div><span style="color:#98a2b3;">อีเมล</span> {{ qmEmail }}</div>
+          <div><span style="color:#98a2b3;">สินค้า</span> {{ qmProduct }}</div>
+          <div><span style="color:#98a2b3;">ต้องการรถ</span> {{ qmReqDate }}</div>
+          <div><span style="color:#98a2b3;">ผู้ติดต่อ</span> {{ qmContact }}</div>
+        </div>
+        <sc-if value="{{ qmNoEmail }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fffaeb;border:1px solid #fedf89;color:#b54708;border-radius:9px;padding:9px 12px;font-size:12.5px;margin-bottom:12px;">ไม่มีอีเมลลูกค้า — หลังบันทึกให้คัดลอกลิงก์ส่งทาง LINE หรือ SMS</div>
+        </sc-if>
+        <div style="overflow-x:auto;">
+          <div style="display:grid;grid-template-columns:1fr 1fr 150px 64px 104px 100px 34px;gap:6px;min-width:700px;font-size:12px;font-weight:600;color:#667085;margin-bottom:5px;">
+            <div>ต้นทาง</div><div>ปลายทาง</div><div>ประเภทรถ</div><div style="text-align:right;">เที่ยว</div><div style="text-align:right;">ราคา/เที่ยว</div><div style="text-align:right;">จำนวนเงิน</div><div></div>
+          </div>
+          <sc-for list="{{ qmLines }}" as="l" hint-placeholder-count="1">
+            <div style="display:grid;grid-template-columns:1fr 1fr 150px 64px 104px 100px 34px;gap:6px;min-width:700px;align-items:center;margin-bottom:6px;">
+              <input value="{{ l.origin }}" onInput="{{ l.onOrigin }}" placeholder="ต้นทาง" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+              <input value="{{ l.destination }}" onInput="{{ l.onDest }}" placeholder="ปลายทาง" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+              <select value="{{ l.truckType }}" onChange="{{ l.onTruck }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;"><option value="">— เลือก —</option><option value="รถหกล้อ">รถหกล้อ</option><option value="รถสิบล้อ">รถสิบล้อ</option><option value="รถหัวลาก/เทรลเลอร์">รถหัวลาก/เทรลเลอร์</option><option value="รถพ่วง">รถพ่วง</option><option value="รถปิคอัพ">รถปิคอัพ</option><option value="อื่นๆ">อื่นๆ</option></select>
+              <input type="number" min="1" value="{{ l.trips }}" onInput="{{ l.onTrips }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;text-align:right;">
+              <input type="number" min="0" value="{{ l.price }}" onInput="{{ l.onPrice }}" placeholder="บาท" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;text-align:right;">
+              <div style="text-align:right;font-size:13.5px;font-weight:700;color:#16263a;">{{ l.amountText }}</div>
+              <sc-if value="{{ l.canDel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ l.onDel }}" title="ลบบรรทัดนี้" style="padding:6px 0;background:#fef3f2;color:#b42318;border:none;border-radius:7px;font-size:13px;cursor:pointer;">✕</button></sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <button onClick="{{ onQmAddLine }}" style="padding:7px 12px;background:#f4f6f8;border:1px dashed #d0d5dd;border-radius:8px;font-size:12.5px;font-weight:600;color:#475467;cursor:pointer;margin:2px 0 14px;">+ เพิ่มเส้นทาง / ประเภทรถ</button>
+        <div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 14px;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">การชำระเงิน</label>
+            <select value="{{ qmPayMode }}" onChange="{{ onQmPayMode }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;"><option value="deposit">มัดจำก่อนจัดรถ</option><option value="full">จ่ายเต็มก่อนจัดรถ</option><option value="credit">ลูกค้าเครดิต (ไม่ต้องจ่ายก่อน)</option></select>
+          </div>
+          <div>
+            <sc-if value="{{ qmIsDeposit }}" hint-placeholder-val="{{ true }}">
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">มัดจำ (%)</label>
+            <input type="number" min="1" max="100" value="{{ qmDepositPct }}" onInput="{{ onQmDepositPct }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+            </sc-if>
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">จัดรถได้วันละ (คัน)</label>
+            <input value="{{ qmTrucksPerDay }}" onInput="{{ onQmTrucksPerDay }}" placeholder="เช่น 3" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">ยืนราคา (วัน)</label>
+            <input type="number" min="1" max="90" value="{{ qmValidDays }}" onInput="{{ onQmValidDays }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;">
+          </div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#344054;margin-bottom:10px;cursor:pointer;"><input type="checkbox" checked="{{ qmCorporate }}" onChange="{{ onQmCorporate }}" style="width:16px;height:16px;"> ลูกค้าเป็นนิติบุคคล (หักภาษี ณ ที่จ่าย 1%)</label>
+        <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">หมายเหตุเพิ่มเติมถึงลูกค้า (ถ้ามี)</label>
+        <textarea value="{{ qmNote }}" onInput="{{ onQmNote }}" rows="2" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;resize:vertical;margin-bottom:12px;"></textarea>
+        <div style="display:flex;justify-content:flex-end;margin-bottom:12px;">
+          <div style="min-width:300px;border:1px solid #e4e7ec;border-radius:10px;overflow:hidden;font-size:13.5px;">
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;border-bottom:1px solid #f0f2f5;"><span>รวมค่าบริการขนส่ง</span><b>{{ qmTotal }}</b></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;border-bottom:1px solid #f0f2f5;"><span>หักภาษี ณ ที่จ่าย 1%</span><span>−{{ qmWht }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:8px 12px;background:#f5ead8;font-weight:800;"><span>ยอดชำระสุทธิ</span><span>{{ qmNet }}</span></div>
+            <div style="display:flex;justify-content:space-between;padding:7px 12px;color:#0e7090;font-weight:700;"><span>{{ qmDueLabel }}</span><span>{{ qmDue }}</span></div>
+          </div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#344054;margin-bottom:12px;cursor:pointer;"><input type="checkbox" checked="{{ qmSendEmail }}" disabled="{{ qmEmailDisabled }}" onChange="{{ onQmSendEmail }}" style="width:16px;height:16px;"> ส่งอีเมลใบเสนอราคาถึงลูกค้าอัตโนมัติ</label>
+        <sc-if value="{{ qmErrShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#b42318;margin-bottom:10px;">⚠ {{ qmErr }}</div></sc-if>
+        <sc-if value="{{ qmHasResult }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#ecfdf3;border:1px solid #abefc6;border-radius:10px;padding:12px 14px;margin-bottom:12px;">
+            <div style="font-size:13.5px;font-weight:700;color:#067647;margin-bottom:6px;">✅ ใบเสนอราคา {{ qmResNo }} · {{ qmResText }}</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+              <input value="{{ qmResUrl }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;flex:1;min-width:240px;font-size:12px;">
+              <button onClick="{{ onQmCopy }}" style="padding:8px 12px;background:#fff;color:#067647;border:1px solid #abefc6;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;">{{ qmCopyLabel }}</button>
+              <button onClick="{{ onQmLine }}" style="padding:8px 12px;background:#06c755;color:#fff;border:none;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;">ส่งทาง LINE</button>
+            </div>
+          </div>
+        </sc-if>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <button onClick="{{ onQmSubmit }}" style="padding:11px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;flex:1;min-width:220px;">{{ qmSubmitLabel }}</button>
+          <button onClick="{{ onQmPrint }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;">🖨 พิมพ์ / PDF</button>
+          <button onClick="{{ onQmClose }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;">ปิด</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+    <sc-if value="{{ rjOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:flex-start;justify-content:center;z-index:4000;padding:28px 16px;overflow-y:auto;">
+      <div style="background:#fff;border-radius:16px;padding:22px 24px;width:100%;max-width:520px;box-shadow:0 20px 50px rgba(0,0,0,.3);">
+        <div style="font-size:17px;font-weight:800;color:#16263a;">✋ ปฏิเสธงาน {{ rjRef }}</div>
+        <div style="font-size:12.5px;color:#667085;margin:2px 0 14px;">{{ rjCustomer }} · {{ rjRoute }}</div>
+        <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">เหตุผล</label>
+        <select value="{{ rjReason }}" onChange="{{ onRjReason }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;margin-bottom:12px;"><option value="ไม่มีรถ">ไม่มีรถ</option><option value="ไม่มีประเภทรถที่ขอ">ไม่มีประเภทรถที่ขอ</option><option value="เส้นทางไม่ให้บริการ">เส้นทางไม่ให้บริการ</option><option value="สินค้าไม่รับขน">สินค้าไม่รับขน</option><option value="ติดต่อลูกค้าไม่ได้ / ข้อมูลไม่พอ">ติดต่อลูกค้าไม่ได้ / ข้อมูลไม่พอ</option><option value="งานซ้ำหรือสแปม">งานซ้ำหรือสแปม</option><option value="อื่นๆ">อื่นๆ</option></select>
+        <sc-if value="{{ rjNotSpam }}" hint-placeholder-val="{{ true }}">
+          <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">ข้อความถึงลูกค้า (แก้ได้)</label>
+          <textarea value="{{ rjMsg }}" onInput="{{ onRjMsg }}" rows="6" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;resize:vertical;margin-bottom:10px;line-height:1.5;"></textarea>
+          <sc-if value="{{ rjHasEmail }}" hint-placeholder-val="{{ true }}">
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:#344054;margin-bottom:10px;cursor:pointer;"><input type="checkbox" checked="{{ rjSendEmail }}" onChange="{{ onRjSendEmail }}" style="width:16px;height:16px;"> ส่งอีเมลแจ้งลูกค้า ({{ rjEmail }})</label>
+          </sc-if>
+          <sc-if value="{{ rjNoEmail }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#b54708;margin-bottom:10px;">ไม่มีอีเมลลูกค้า — แจ้งลูกค้าทางโทรศัพท์หรือ LINE</div></sc-if>
+        </sc-if>
+        <sc-if value="{{ rjIsSpam }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#667085;margin-bottom:10px;">งานซ้ำหรือสแปม — ไม่แจ้งลูกค้า</div></sc-if>
+        <sc-if value="{{ rjErrShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#b42318;margin-bottom:10px;">⚠ {{ rjErr }}</div></sc-if>
+        <div style="display:flex;gap:10px;">
+          <button onClick="{{ onRjSubmit }}" style="padding:11px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;flex:1;background:#b42318;">{{ rjSubmitLabel }}</button>
+          <button onClick="{{ onRjClose }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;">ปิด</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+    <sc-if value="{{ pmOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(15,25,40,.55);display:flex;align-items:flex-start;justify-content:center;z-index:4000;padding:28px 16px;overflow-y:auto;">
+      <div style="background:#fff;border-radius:16px;padding:22px 24px;width:100%;max-width:560px;box-shadow:0 20px 50px rgba(0,0,0,.3);">
+        <div style="font-size:17px;font-weight:800;color:#16263a;">💸 {{ pmTitle }}</div>
+        <div style="font-size:12.5px;color:#667085;margin:2px 0 12px;">{{ pmRef }} · {{ pmCustomer }}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px;padding:10px 12px;font-size:13px;margin-bottom:12px;">
+          <div><div style="color:#98a2b3;font-size:11.5px;">เงื่อนไข</div><b>{{ pmModeText }}</b></div>
+          <div><div style="color:#98a2b3;font-size:11.5px;">ยอดสุทธิทั้งงาน</div><b>{{ pmNet }}</b></div>
+          <div><div style="color:#98a2b3;font-size:11.5px;">ยอดที่ต้องรับครั้งนี้</div><b style="color:#0e7090;">{{ pmDue }}</b></div>
+        </div>
+        <div style="font-size:12.5px;font-weight:700;color:#344054;margin-bottom:6px;">สลิปที่ลูกค้าแนบ</div>
+        <sc-if value="{{ pmLoading }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#667085;margin-bottom:10px;">กำลังโหลดสลิป…</div></sc-if>
+        <sc-if value="{{ pmNoSlip }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#667085;margin-bottom:10px;">ยังไม่มีสลิปแนบในระบบ (ลูกค้าอาจส่งทาง LINE) — ตรวจยอดเข้าบัญชีก่อนยืนยัน</div></sc-if>
+        <div style="display:flex;flex-direction:column;gap:10px;max-height:420px;overflow-y:auto;margin-bottom:12px;">
+          <sc-for list="{{ pmSlips }}" as="sl" hint-placeholder-count="0">
+            <div style="border:1px solid #e4e7ec;border-radius:10px;padding:8px;">
+              <img src="{{ sl.image }}" alt="สลิปโอนเงิน" style="display:block;max-width:100%;max-height:380px;margin:0 auto;border-radius:6px;">
+              <div style="font-size:12px;color:#667085;margin-top:6px;">{{ sl.when }}<sc-if value="{{ sl.hasNote }}" hint-placeholder-val="{{ false }}"> · {{ sl.note }}</sc-if></div>
+            </div>
+          </sc-for>
+        </div>
+        <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:4px;">ยอดเงินที่ได้รับจริง (บาท)</label>
+        <input type="number" min="0" value="{{ pmAmount }}" onInput="{{ onPmAmount }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;width:100%;margin-bottom:10px;">
+        <sc-if value="{{ pmErrShow }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#b42318;margin-bottom:10px;">⚠ {{ pmErr }}</div></sc-if>
+        <div style="display:flex;gap:10px;">
+          <button onClick="{{ onPmSubmit }}" style="padding:11px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;flex:1;background:#0e7090;">{{ pmSubmitLabel }}</button>
+          <button onClick="{{ onPmClose }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;">ปิด</button>
+        </div>
+      </div>
+    </div>
+    </sc-if>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -7302,9 +7456,20 @@ const DISPATCHERS=['ปกรณ์ ลิ้นทอง','วารี ภั�
 const SUB_DED_DEFAULTS=['หักภาษี ณ ที่จ่าย','ค่าน้ำมัน','ค่าประกันสินค้า','ค่า GPS','ค่าโอน'];
 const ORDER_CHANNELS=['อีเมล','ไลน์','โทรศัพท์','เว็บไซต์','อื่นๆ'];
 const ORDER_TRUCK_TYPES=['รถปิคอัพ','รถหกล้อ','รถสิบล้อ','รถพ่วง','รถหัวลาก/เทรลเลอร์','อื่นๆ'];
+// ★ v.2026-09-27g: ใบเสนอราคางานจากเว็บ — สถานะก่อน "รอจัดรถ" + ทางออกที่ไม่ได้งาน
+//   รอใบเสนอราคา → รอลูกค้ายืนยัน → รอชำระเงิน → รอจัดรถ · ออก: ปฏิเสธงาน / ลูกค้าไม่รับ / หมดอายุ (คำนวณจาก quote.validUntil)
+//   ฝั่งเซิร์ฟเวอร์: sql/supabase_web_quotes_STAGING.sql (issue_web_quote · reject_web_job · quote_slips)
+const ORDER_QUOTE_STAGES=['รอใบเสนอราคา','รอลูกค้ายืนยัน','รอชำระเงิน'];
+const ORDER_LOST=['ปฏิเสธงาน','ลูกค้าไม่รับ','หมดอายุ'];
+const REJECT_REASONS=['ไม่มีรถ','ไม่มีประเภทรถที่ขอ','เส้นทางไม่ให้บริการ','สินค้าไม่รับขน','ติดต่อลูกค้าไม่ได้ / ข้อมูลไม่พอ','งานซ้ำหรือสแปม','อื่นๆ'];
+const QUOTE_TRUCKS=[{t:'รถหกล้อ',w:'7',ins:'500,000',x:'500'},{t:'รถสิบล้อ',w:'16',ins:'500,000',x:'1,000'},{t:'รถเทรลเลอร์',w:'32',ins:'1,000,000',x:'1,500'}];
+const QUOTE_BANK='ธนาคารไทยพาณิชย์ (SCB) เลขที่ 687-2-17814-0 · ชื่อบัญชี บจก. สิงห์ทองทรัคทรานสปอร์ต';
+const QUOTE_SIGNER={name:'ปกรณ์ ลิ้นทอง',title:'รองผู้จัดการ'};
+function ordTodayBkk(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());}
+function ordEffStatus(o){const s=(o&&o.status)||'รอจัดรถ';if(s==='รอลูกค้ายืนยัน'&&o.quote&&o.quote.validUntil&&String(o.quote.validUntil)<ordTodayBkk())return 'หมดอายุ';return s;}
 function normCustomer(c){return {id:c.id||Date.now(),name:c.name||'',contact:c.contact||'',code:String(c.code||'').trim(),aliases:c.aliases||'',province:c.province||'',address:c.address||'',ecArAcct:String(c.ecArAcct||'').trim(),minWeight:String(c.minWeight==null?'':c.minWeight).trim(),branch:c.branch||'',taxId:c.taxId||'',address:c.address||'',phone:c.phone||'',lastSale:c.lastSale||'',group:c.group||'',multiCode:!!c.multiCode,rateBasis:(c.rateBasis==='ton'?'ton':(c.rateBasis==='trip'?'trip':'')),active:c.active!==false};}
 function normOrigin(o){return {id:o.id||Date.now(),name:o.name||''};}
-function normOrder(o){return {customerCode:String(o.customerCode||'').trim(),id:o.id||0,orderNo:o.orderNo||'',customer:o.customer||'',channel:o.channel||'อีเมล',receivedDate:o.receivedDate?toBkkDate(o.receivedDate):'',product:o.product||'',origin:o.origin||'',destination:o.destination||'',dropPoint:o.dropPoint||'',billNo:o.billNo||'',weight:o.weight||'',truckType:o.truckType||'',requiredDate:o.requiredDate?toBkkDate(o.requiredDate):'',remark:o.remark||'',custDeliveryNo:o.custDeliveryNo||'',shipmentEnd:o.shipmentEnd?toBkkDate(o.shipmentEnd):'',saleDistrict:o.saleDistrict||'',size:o.size||'',note2:o.note2||'',productGroup:o.productGroup||'',driverNote:o.driverNote||'',driverRequest:o.driverRequest||'',shipments:Array.isArray(o.shipments)?o.shipments:[],tripId:o.tripId||'',status:o.status||'รอจัดรถ',jobId:o.jobId||'',canceledAt:o.canceledAt||'',_ft:(o._ft&&typeof o._ft==='object')?o._ft:{},_editedAt:o._editedAt};}
+function normOrder(o){return {customerCode:String(o.customerCode||'').trim(),id:o.id||0,orderNo:o.orderNo||'',customer:o.customer||'',channel:o.channel||'อีเมล',receivedDate:o.receivedDate?toBkkDate(o.receivedDate):'',product:o.product||'',origin:o.origin||'',destination:o.destination||'',dropPoint:o.dropPoint||'',billNo:o.billNo||'',weight:o.weight||'',truckType:o.truckType||'',requiredDate:o.requiredDate?toBkkDate(o.requiredDate):'',remark:o.remark||'',custDeliveryNo:o.custDeliveryNo||'',shipmentEnd:o.shipmentEnd?toBkkDate(o.shipmentEnd):'',saleDistrict:o.saleDistrict||'',size:o.size||'',note2:o.note2||'',productGroup:o.productGroup||'',driverNote:o.driverNote||'',driverRequest:o.driverRequest||'',shipments:Array.isArray(o.shipments)?o.shipments:[],tripId:o.tripId||'',status:o.status||'รอจัดรถ',jobId:o.jobId||'',canceledAt:o.canceledAt||'',webRef:o.webRef||'',webPhone:o.webPhone||'',webContact:o.webContact||'',webEmail:o.webEmail||'',webTruck:o.webTruck||'',webSource:o.webSource||'',quote:(o.quote&&typeof o.quote==='object')?o.quote:null,quoteToken:o.quoteToken||'',quoteSentAt:o.quoteSentAt||'',quoteRespondedAt:o.quoteRespondedAt||'',quoteAcceptName:o.quoteAcceptName||'',declineReason:o.declineReason||'',rejectReason:o.rejectReason||'',rejectNote:o.rejectNote||'',rejectedAt:o.rejectedAt||'',slipCount:Number(o.slipCount)||0,lastSlipAt:o.lastSlipAt||'',paymentConfirmedAt:o.paymentConfirmedAt||'',paymentConfirmedBy:o.paymentConfirmedBy||'',paidAmount:o.paidAmount||'',balanceDue:Number(o.balanceDue)||0,balancePaidAt:o.balancePaidAt||'',_ft:(o._ft&&typeof o._ft==='object')?o._ft:{},_editedAt:o._editedAt};}
 const TODAY=new Date();
 const THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 // ★ v.2026-09-26c: ดัก localStorage เต็ม (~5 ล้านตัวอักษร/โดเมน) — ทุกจุดเขียนแบบ try/catch เงียบ
@@ -9786,6 +9951,95 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     let _id=this.editingOrderId;if(!_id){_id=Date.now();while(this.state.orders.some(x=>String(x.id)===String(_id)))_id++;}const orig=this._orderOrig||{};const cur=this.state.orders.find(x=>String(x.id)===String(this.editingOrderId));let no;let _chKeys=null;if(this.state.orderIsNew||!cur){no=normOrder({...o,id:_id,billNo:_bill});}else{const changed={};Object.keys(o).forEach(k=>{if(JSON.stringify(o[k])!==JSON.stringify(orig[k]))changed[k]=o[k];});no=normOrder({...cur,...changed,id:_id,billNo:_bill});_chKeys=Object.keys(changed).filter(k=>k!=='_ft'&&k!=='_editedAt');if(String(_bill)!==String(cur.billNo||''))_chKeys.push('billNo');}let orders;if(this.state.orderIsNew){orders=[no,...this.state.orders];}else{orders=this.state.orders.map(x=>String(x.id)===String(this.editingOrderId)?no:x);}this.setState({orders,orderView:'list',orderFormError:''});this.persistOrders(orders,no.id,_chKeys);};
   deleteOrder=(id)=>{{const _o=(this.state.orders||[]).find(x=>String(x.id)===String(id))||{};if(!this._plGuard(_o.receivedDate,'order',id,'ยกเลิกงานรับเข้า '+(_o.billNo||_o.orderNo||id)))return;}if(!window.confirm('ยกเลิกงานรับเข้านี้? (ย้ายไปถังงานยกเลิก กู้คืนได้ภายใน 7 วัน)'))return;const orders=this.state.orders.map(x=>String(x.id)===String(id)?normOrder({...x,status:'ยกเลิก',jobId:'',canceledAt:new Date().toISOString()}):x);this.setState({orders});this.persistOrders(orders,id,['status','jobId','canceledAt']);};
   restoreOrder=(id)=>{const orders=this.state.orders.map(x=>String(x.id)===String(id)?normOrder({...x,status:'รอจัดรถ',canceledAt:''}):x);this.setState({orders});this.persistOrders(orders,id,['status','canceledAt']);};
+  // ===== ★ v.2026-09-27g ใบเสนอราคางานจากเว็บ =====
+  //   ออกใบ/ปฏิเสธ ทำผ่าน RPC (issue_web_quote / reject_web_job) เพราะต้องออกเลข QT + token + ส่งอีเมลลูกค้าฝั่งเซิร์ฟเวอร์
+  //   แล้วบันทึกช่องเดียวกันซ้ำผ่าน persistOrders ให้เครื่องนี้เห็นทันที (ค่าเท่ากับที่เซิร์ฟเวอร์เขียน)
+  _qTruck(t){const s=String(t||'');if(/หก|^6/.test(s))return 'รถหกล้อ';if(/สิบ|^10/.test(s))return 'รถสิบล้อ';if(/เทรล|หัวลาก|ตู้/.test(s))return 'รถหัวลาก/เทรลเลอร์';return ORDER_TRUCK_TYPES.indexOf(s)>=0?s:'';}
+  _qNum(v){const n=parseFloat(String(v==null?'':v).replace(/[^0-9.]/g,''));return isFinite(n)?n:0;}
+  _qFmt(v){return (Number(v)||0).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  _qCalc(m){const lines=(m.lines||[]).map(l=>({...l,amount:Math.round(this._qNum(l.trips)*this._qNum(l.price)*100)/100}));const total=Math.round(lines.reduce((a,l)=>a+l.amount,0)*100)/100;const wht=m.corporate?Math.round(total)/100:0;const net=Math.round((total-wht)*100)/100;let pct=this._qNum(m.depositPct);if(!(pct>0&&pct<=100))pct=30;const due=m.payMode==='deposit'?Math.round(net*pct)/100:(m.payMode==='full'?net:0);return {lines,total,wht,net,due,pct};}
+  _quoteBase(){const b=(this.state.qrBaseUrl&&this.state.qrBaseUrl.trim())?this.state.qrBaseUrl.trim().replace(/\/+$/,'')+'/':String(location.href).replace(/[?#].*$/,'').replace(/[^\/]*$/,'');return b+'quote.html'+(LF_ENV==='staging'?'?env=staging':'');}
+  _quoteUrl(token){const b=this._quoteBase();return b+(b.indexOf('?')>=0?'&':'?')+'t='+encodeURIComponent(token);}
+  _qErr(e){const m=String(e||'');if(/issue_web_quote|reject_web_job|function|schema cache/i.test(m)&&/find|exist|schema/i.test(m))return 'ยังไม่ได้ติดตั้ง SQL ใบเสนอราคาบนฐานข้อมูลนี้';if(m==='status')return 'สถานะงานเปลี่ยนไปแล้ว — รอข้อมูลอัปเดต (30 วินาที) แล้วลองใหม่';if(m==='lines')return 'ใส่อย่างน้อย 1 เส้นทาง พร้อมจำนวนเที่ยวและราคา';if(m==='link_base')return 'ที่อยู่หน้าลูกค้าไม่ถูกต้อง (ต้องเปิดแอปผ่าน https)';if(m==='not_found')return 'ไม่พบงานนี้บนคลาวด์ — รอบันทึกขึ้นคลาวด์ก่อน';if(m==='timeout'||m==='network'||/Failed to fetch|NetworkError|Load failed/i.test(m))return 'เชื่อมต่อไม่ได้ ลองใหม่อีกครั้ง';return m;}
+  async _qRpc(fn,args){const r=await sbFetchT(SB_REST+'/rpc/'+fn,{method:'POST',headers:SB_HEADERS,body:JSON.stringify(args)},20000);const d=await r.json().catch(()=>null);if(!r.ok||!d||d.ok===false)throw new Error((d&&(d.error||d.message))||('HTTP '+r.status));return d;}
+  _applyOrderPatch(id,patch){const orders=this.state.orders.map(x=>String(x.id)===String(id)?normOrder({...x,...patch}):x);this.setState({orders});this.persistOrders(orders,id,Object.keys(patch));}
+  _qNowText(){const d=new Date(Date.now()+7*3600e3).toISOString();return d.slice(0,10)+' '+d.slice(11,16);}
+  openQuote=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;const q=o.quote||{};const lines=(Array.isArray(q.lines)&&q.lines.length)?q.lines.map(l=>({origin:l.origin||'',destination:l.destination||'',truckType:l.truckType||'',trips:String(l.trips||''),price:String(l.price||'')})):[{origin:o.origin||'',destination:o.destination||'',truckType:this._qTruck(o.truckType||o.webTruck),trips:'1',price:''}];this.setState({quoteModal:{orderId:String(id),lines,payMode:q.payMode||'deposit',depositPct:String(q.depositPct||30),corporate:!!q.corporate,trucksPerDay:q.trucksPerDay||'',validDays:String(q.validDays||15),note:q.note||'',sendEmail:true,busy:false,err:'',copied:false,result:o.quoteToken?{url:this._quoteUrl(o.quoteToken),quoteNo:q.no||'',emailed:null,email:o.webEmail||''}:null}});};
+  closeQuote=()=>this.setState({quoteModal:null});
+  setQm=(f,v)=>this.setState(s=>({quoteModal:{...(s.quoteModal||{}),[f]:v,err:''}}));
+  setQmLine=(i,f,v)=>this.setState(s=>{const m=s.quoteModal||{};return {quoteModal:{...m,err:'',lines:(m.lines||[]).map((l,j)=>j===i?{...l,[f]:v}:l)}};});
+  addQmLine=()=>this.setState(s=>{const m=s.quoteModal||{};const ls=m.lines||[];const last=ls[ls.length-1]||{};return {quoteModal:{...m,lines:[...ls,{origin:last.origin||'',destination:'',truckType:last.truckType||'',trips:'1',price:''}]}};});
+  delQmLine=(i)=>this.setState(s=>{const m=s.quoteModal||{};const ls=(m.lines||[]).filter((_,j)=>j!==i);return {quoteModal:{...m,lines:ls.length?ls:m.lines}};});
+  submitQuote=async()=>{const m=this.state.quoteModal;if(!m||m.busy)return;const o=this.state.orders.find(x=>String(x.id)===String(m.orderId));if(!o)return;const c=this._qCalc(m);const lines=c.lines.filter(l=>l.amount>0);if(!lines.length){this.setQm('err',this._qErr('lines'));return;}
+    if(o.quoteToken&&!window.confirm('ใบเสนอราคานี้ส่งไปแล้ว — บันทึกราคาใหม่ทับและส่งอีกครั้ง? (ลิงก์เดิมจะแสดงราคาใหม่)'))return;
+    this.setState(s=>({quoteModal:{...s.quoteModal,busy:true,err:''}}));
+    try{const d=await this._qRpc('issue_web_quote',{p_order_id:String(m.orderId),p_quote:{lines:lines.map(l=>({origin:l.origin,destination:l.destination,truckType:l.truckType,trips:l.trips,price:l.price})),payMode:m.payMode,depositPct:c.pct,corporate:!!m.corporate,trucksPerDay:m.trucksPerDay,validDays:m.validDays,note:m.note},p_link_base:this._quoteBase(),p_send_email:!!m.sendEmail&&!!o.webEmail});
+      this._applyOrderPatch(m.orderId,{quote:d.quote,quoteToken:d.token,status:'รอลูกค้ายืนยัน',quoteSentAt:this._qNowText()});
+      this.setState(s=>({quoteModal:{...(s.quoteModal||{}),busy:false,copied:false,result:{url:d.url,quoteNo:d.quoteNo,emailed:!!d.emailed,email:d.email||''}}}));
+    }catch(e){this.setState(s=>({quoteModal:{...(s.quoteModal||{}),busy:false,err:'ส่งไม่สำเร็จ: '+this._qErr(e&&e.message)}}));}};
+  copyQuoteLink=()=>{const m=this.state.quoteModal;const u=m&&m.result&&m.result.url;if(!u)return;const done=()=>this.setState(s=>({quoteModal:{...(s.quoteModal||{}),copied:true}}));try{navigator.clipboard.writeText(u).then(done,()=>window.prompt('คัดลอกลิงก์นี้',u));}catch(e){window.prompt('คัดลอกลิงก์นี้',u);}};
+  shareQuoteLine=()=>{const m=this.state.quoteModal;const R=m&&m.result;if(!R)return;const o=this.state.orders.find(x=>String(x.id)===String(m.orderId))||{};const t='ใบเสนอราคา '+(R.quoteNo||'')+' สำหรับคำขอ '+(o.webRef||o.billNo||'')+'\nดูรายละเอียดและกดยืนยันได้ที่\n'+R.url+'\n\nบริษัท สิงห์ทองทรัคทรานสปอร์ต จำกัด · 036-246-202';window.open('https://line.me/R/msg/text/?'+encodeURIComponent(t),'_blank');};
+  _rejMsg(reason,o){const truck=String(o.truckType||o.webTruck||'').replace('รถหัวลาก/เทรลเลอร์','รถเทรลเลอร์');const d=o.requiredDate?('ในวันที่ '+this.thaiDate(o.requiredDate)):'ในวันที่ท่านต้องการ';const tail='\n\nหากเลื่อนวันหรือปรับรายละเอียดได้ กรุณาตอบกลับอีเมลนี้ หรือติดต่อ LINE @singthongtruck / โทร 036-246-202\nขอบคุณที่ไว้วางใจ บริษัท สิงห์ทองทรัคทรานสปอร์ต จำกัด';const T={'ไม่มีรถ':'ขออภัย '+d+' เราไม่มี'+(truck||'รถ')+'ว่างให้บริการ','ไม่มีประเภทรถที่ขอ':'ขออภัย เราไม่มี'+(truck||'ประเภทรถที่ท่านขอ')+'ให้บริการในขณะนี้','เส้นทางไม่ให้บริการ':'ขออภัย เส้นทาง '+(o.origin||'')+' → '+(o.destination||'')+' อยู่นอกพื้นที่ให้บริการของเรา','สินค้าไม่รับขน':'ขออภัย สินค้าประเภทนี้อยู่นอกเงื่อนไขการขนส่งของเรา','ติดต่อลูกค้าไม่ได้ / ข้อมูลไม่พอ':'เราได้รับคำขอของท่านแล้ว แต่ยังติดต่อกลับไม่ได้ และข้อมูลยังไม่พอสำหรับเสนอราคา','อื่นๆ':'ขออภัย เราไม่สามารถรับงานนี้ได้'};if(reason==='งานซ้ำหรือสแปม')return '';return (T[reason]||T['อื่นๆ'])+tail;}
+  openReject=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;this.setState({rejectModal:{orderId:String(id),reason:REJECT_REASONS[0],msg:this._rejMsg(REJECT_REASONS[0],o),msgEdited:false,sendEmail:true,busy:false,err:''}});};
+  setRjReason=(v)=>this.setState(s=>{const m=s.rejectModal||{};const o=s.orders.find(x=>String(x.id)===String(m.orderId))||{};return {rejectModal:{...m,reason:v,err:'',msg:m.msgEdited?m.msg:this._rejMsg(v,o)}};});
+  submitReject=async()=>{const m=this.state.rejectModal;if(!m||m.busy)return;const o=this.state.orders.find(x=>String(x.id)===String(m.orderId));if(!o)return;const spam=m.reason==='งานซ้ำหรือสแปม';
+    this.setState(s=>({rejectModal:{...s.rejectModal,busy:true,err:''}}));
+    try{await this._qRpc('reject_web_job',{p_order_id:String(m.orderId),p_reason:m.reason,p_message:spam?'':m.msg,p_send_email:!spam&&!!m.sendEmail&&!!o.webEmail});
+      this._applyOrderPatch(m.orderId,{status:'ปฏิเสธงาน',rejectReason:m.reason,rejectNote:spam?'':m.msg,rejectedAt:this._qNowText()});this.setState({rejectModal:null});
+    }catch(e){this.setState(s=>({rejectModal:{...(s.rejectModal||{}),busy:false,err:'บันทึกไม่สำเร็จ: '+this._qErr(e&&e.message)}}));}};
+  openPay=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;const q=o.quote||{};const kind=o.status==='รอชำระเงิน'?'first':'balance';const due=kind==='first'?(Number(q.due)||Number(q.net)||0):(Number(o.balanceDue)||0);this.setState({payModal:{orderId:String(id),kind,amount:due?String(due):'',slips:[],loading:true,busy:false,err:''}});
+    sbFetchT(SB_REST+'/quote_slips?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&order_id=eq.'+encodeURIComponent(String(id))+'&select=id,created_at,image,note&order=created_at.desc',{headers:SB_HEADERS},20000).then(r=>r.ok?r.json():[]).then(rows=>this.setState(s=>s.payModal&&String(s.payModal.orderId)===String(id)?{payModal:{...s.payModal,slips:Array.isArray(rows)?rows:[],loading:false}}:null)).catch(()=>this.setState(s=>s.payModal?{payModal:{...s.payModal,loading:false}}:null));};
+  submitPay=()=>{const m=this.state.payModal;if(!m||m.busy)return;const o=this.state.orders.find(x=>String(x.id)===String(m.orderId));if(!o)return;const q=o.quote||{};const amt=Math.round(this._qNum(m.amount)*100)/100;if(!(amt>0)){this.setState(s=>({payModal:{...s.payModal,err:'ใส่ยอดเงินที่ได้รับ'}}));return;}
+    const who=(this.state.auth&&this.state.auth.name)||'';const now=this._qNowText();
+    if(m.kind==='balance'){const bal=Math.max(0,Math.round(((Number(o.balanceDue)||0)-amt)*100)/100);if(!window.confirm('ยืนยันรับยอดคงเหลือ '+this._qFmt(amt)+' บาท?'))return;this._applyOrderPatch(m.orderId,{balanceDue:bal,balancePaidAt:bal>0?'':now,paidAmount:String(Math.round((this._qNum(o.paidAmount)+amt)*100)/100)});}
+    else{const net=Number(q.net)||0;const bal=Math.max(0,Math.round((net-amt)*100)/100);if(!window.confirm('ยืนยันรับเงิน '+this._qFmt(amt)+' บาท แล้วส่งงานไป "รอจัดรถ"?'+(bal>0?('\nยอดคงเหลือ '+this._qFmt(bal)+' บาท (ชำระเมื่อส่งสินค้าเสร็จ)'):'')))return;this._applyOrderPatch(m.orderId,{status:'รอจัดรถ',paymentConfirmedAt:now,paymentConfirmedBy:who,paidAmount:String(amt),balanceDue:bal});}
+    this.setState({payModal:null});};
+  _qRowVals(o){const es=ordEffStatus(o);const q=o.quote||{};const bal=Number(o.balanceDue)||0;let sub='',col='#667085';
+    if(es==='รอใบเสนอราคา'){sub=o.webRef?('จากเว็บ '+o.webRef):'';col='#5925dc';}
+    else if(es==='รอลูกค้ายืนยัน'){sub=(q.no||'')+(q.validUntil?(' · ยืนราคาถึง '+this.thaiDate(q.validUntil)):'');col='#175cd3';}
+    else if(es==='รอชำระเงิน'){sub=o.slipCount?('📎 แนบสลิปแล้ว '+o.slipCount+' รูป — รอตรวจ'):('รอโอน '+this._qFmt(q.due)+' บาท');col=o.slipCount?'#b54708':'#0e7090';}
+    else if(es==='หมดอายุ'){sub=(q.no||'')+' · เลยวันยืนราคา';}
+    else if(es==='ปฏิเสธงาน'){sub=o.rejectReason||'';}
+    else if(es==='ลูกค้าไม่รับ'){sub=o.declineReason||'';}
+    if(bal>0&&o.status!=='ยกเลิก'&&es!=='รอชำระเงิน'){sub=(sub?sub+' · ':'')+'ค้างชำระ '+this._qFmt(bal)+' บาท';col='#b54708';}
+    const canPay=o.status!=='ยกเลิก'&&(o.status==='รอชำระเงิน'||bal>0);
+    return {hasStatusSub:!!sub,statusSub:sub,statusSubColor:col,canQuote:['รอใบเสนอราคา','รอลูกค้ายืนยัน','ลูกค้าไม่รับ','หมดอายุ'].indexOf(es)>=0,quoteBtnLabel:es==='รอใบเสนอราคา'?'ทำใบเสนอราคา':'ใบเสนอราคา',onQuote:()=>this.openQuote(o.id),canReject:['รอใบเสนอราคา','รอลูกค้ายืนยัน','หมดอายุ'].indexOf(es)>=0,onReject:()=>this.openReject(o.id),canPay,payBtnLabel:o.status==='รอชำระเงิน'?'ยืนยันรับเงิน':'รับยอดคงเหลือ',onPay:()=>this.openPay(o.id)};}
+  printQuote=(id,useDraft)=>{const S=this.state;const o=S.orders.find(x=>String(x.id)===String(id));if(!o)return;let q=o.quote||null;
+    if(useDraft&&S.quoteModal&&String(S.quoteModal.orderId)===String(id)){const m=S.quoteModal;const c=this._qCalc(m);q={...(o.quote||{}),lines:c.lines.filter(l=>l.amount>0),total:c.total,wht:c.wht,net:c.net,due:c.due,payMode:m.payMode,depositPct:c.pct,corporate:!!m.corporate,trucksPerDay:m.trucksPerDay,validDays:this._qNum(m.validDays)||15,note:m.note};}
+    if(!q||!(q.lines||[]).length){window.alert('ยังไม่มีรายการราคา — ใส่เส้นทาง จำนวนเที่ยว และราคาก่อน');return;}
+    const esc=v=>String(v==null?'':v).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));const n2=v=>this._qFmt(v);
+    const co=S.company||{};const coName=co.name||'บริษัท สิงห์ทองทรัคทรานสปอร์ต จำกัด';const coAddr=String(co.address||co.addr||'2/5 ถ.อุไรรัตน์ ต.แก่งคอย อ.แก่งคอย จ.สระบุรี 18110').trim();const coTax=co.taxId||co.taxid||'0195542000095';const coPhone=co.phone||'036-246202';const coFax=co.fax||'036-245512';
+    const issued=q.issuedAt||ordTodayBkk();const vd=Number(q.validDays)||15;const until=q.validUntil||(()=>{const p=issued.split('-').map(Number);return new Date(Date.UTC(p[0],p[1]-1,p[2]+vd)).toISOString().slice(0,10);})();
+    const td=v=>v?this.thaiDate(v):'—';const draft=!q.no||useDraft&&!o.quoteToken;
+    const rows=q.lines.map((l,i)=>'<tr><td class="c">'+(i+1)+'</td><td>'+esc(l.origin)+'</td><td>'+esc(l.destination)+'</td><td>'+esc(String(l.truckType||'').replace('รถหัวลาก/เทรลเลอร์','รถเทรลเลอร์'))+'</td><td class="n">'+esc(l.trips)+'</td><td class="n">'+n2(l.price)+'</td><td class="n">'+n2(l.amount!=null?l.amount:this._qNum(l.trips)*this._qNum(l.price))+'</td></tr>').join('');
+    const rules=QUOTE_TRUCKS.map(t=>'<tr><td>'+t.t+'</td><td class="n">'+t.w+' ตัน</td><td class="n">'+t.ins+' บาท</td><td class="n">'+t.x+' บาท</td></tr>').join('');
+    const pay=q.payMode==='full'?'ชำระเต็มจำนวนก่อนจัดรถ':(q.payMode==='credit'?'ชำระตามรอบวางบิล (ลูกค้าเครดิต)':('มัดจำ '+(q.depositPct||30)+'% ก่อนจัดรถ · ส่วนที่เหลือชำระเมื่อส่งสินค้าเสร็จ'));
+    const url=o.quoteToken?this._quoteUrl(o.quoteToken):'';const qr=url?'<img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data='+encodeURIComponent(url)+'" style="width:64px;height:64px;background:#fff;border-radius:4px;">':'<div class="qrph">QR</div>';
+    const css='@page{size:A4;margin:0;}*{box-sizing:border-box;}body{margin:0;font-family:Sarabun,sans-serif;color:#201e1d;font-size:13px;line-height:1.45;}.page{width:210mm;min-height:297mm;padding:12mm 13mm 10mm;position:relative;}'
+      +'.hd{display:flex;gap:16px;align-items:center;border-bottom:2px solid #c67139;padding-bottom:10px;margin-bottom:10px;}.hd img{height:48px;}.hd .nm{font-size:17px;font-weight:700;}.hd .sm{font-size:11.5px;color:#4a4540;}'
+      +'.tt{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:10px;}.tt h1{margin:0;font-size:22px;}.tt .en{font-size:11.5px;letter-spacing:.12em;color:#4a4540;}.meta{display:grid;grid-template-columns:auto auto;column-gap:10px;font-size:12.5px;}.meta span:nth-child(odd){color:#4a4540;}'
+      +'.box2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}.box{border:1px solid #d9cdb8;border-radius:8px;padding:8px 12px;}.box .h{font-weight:700;color:#8a4a22;font-size:12px;}'
+      +'table{border-collapse:collapse;width:100%;font-size:12.5px;margin-bottom:10px;}th,td{border:1px solid #c9b99c;padding:5px 7px;text-align:left;}th{background:#f5ead8;}.n{text-align:right;}.c{text-align:center;}.rules th{background:#fcf8f1;}.fn{font-size:11.5px;color:#4a4540;margin:-6px 0 10px;}'
+      +'.pt{display:flex;gap:12px;margin-bottom:10px;}.pt .box{flex:1;font-size:12.5px;}.tot{width:270px;border-collapse:collapse;}.tot td{border:none;border-bottom:1px solid #d9cdb8;}.tot tr.net td{background:#f5ead8;font-weight:700;border:none;}'
+      +'ol{margin:0 0 10px;padding-left:18px;font-size:12.5px;}.sg{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:18px;text-align:center;font-size:12.5px;}.sg .ln{width:210px;border-top:1px solid #7a7066;margin:40px auto 2px;}'
+      +'.ft{display:flex;gap:12px;align-items:center;background:#3f4a2f;color:#f5ead8;border-radius:8px;padding:8px 12px;margin-top:14px;font-size:12px;}.qrph{width:64px;height:64px;border:1.5px dashed #f5ead8;border-radius:6px;display:flex;align-items:center;justify-content:center;}'
+      +'.dr{position:absolute;top:40%;left:0;right:0;text-align:center;font-size:90px;color:rgba(198,113,57,.12);transform:rotate(-20deg);font-weight:800;pointer-events:none;}';
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>ใบเสนอราคา '+esc(q.no||'ร่าง')+'</title><link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page">'
+      +(draft?'<div class="dr">ร่าง</div>':'')
+      +'<div class="hd">'+(co.logo?'<img src="'+esc(co.logo)+'">':'')+'<div><div class="nm">'+esc(coName)+'</div><div class="sm">'+esc(coAddr)+' · โทร '+esc(coPhone)+(coFax?' · โทรสาร '+esc(coFax):'')+'</div><div class="sm">เลขประจำตัวผู้เสียภาษี '+esc(coTax)+'</div></div></div>'
+      +'<div class="tt"><div><h1>ใบเสนอราคาค่าบริการขนส่ง</h1><div class="en">QUOTATION · ราคาต่อเที่ยว</div></div><div class="meta"><span>เลขที่</span><b>'+esc(q.no||'(ร่าง)')+'</b><span>วันที่</span><span>'+td(issued)+'</span><span>ยืนราคาถึง</span><span>'+td(until)+'</span><span>อ้างอิงคำขอ</span><span>'+esc(o.webRef||o.billNo||'-')+'</span></div></div>'
+      +'<div class="box2"><div class="box"><div class="h">เรียน (ลูกค้า)</div><b>'+esc(o.customer||'-')+'</b><div>ผู้ติดต่อ '+esc(o.webContact||o.customer||'-')+' · โทร '+esc(o.webPhone||'-')+'</div><div>อีเมล '+esc(o.webEmail||'-')+'</div></div>'
+      +'<div class="box"><div class="h">รายละเอียดงาน</div><div>สินค้า '+esc(o.product||'-')+'</div><div>วันที่ต้องการรถ '+td(o.requiredDate)+'</div>'+(q.trucksPerDay?'<div>จัดรถได้วันละ '+esc(q.trucksPerDay)+' คัน</div>':'')+'</div></div>'
+      +'<table><thead><tr><th class="c" style="width:34px">ลำดับ</th><th>ต้นทาง</th><th>ปลายทาง</th><th style="width:100px">ประเภทรถ</th><th class="n" style="width:50px">เที่ยว</th><th class="n" style="width:88px">ราคา/เที่ยว</th><th class="n" style="width:100px">จำนวนเงิน (บาท)</th></tr></thead><tbody>'+rows+'</tbody></table>'
+      +'<table class="rules"><thead><tr><th>เงื่อนไขตามประเภทรถ</th><th class="n">น้ำหนักบรรทุกสูงสุด/เที่ยว</th><th class="n">วงเงินประกันสินค้า/เที่ยว</th><th class="n">ค่าใช้จ่ายเพิ่ม*</th></tr></thead><tbody>'+rules+'</tbody></table>'
+      +'<div class="fn">* คิดต่อจุดขึ้น/ลงสินค้าที่เพิ่ม · ค่ารอคิดทุก 6 ชั่วโมงเต็มที่รอเกินเวลาฟรี</div>'
+      +'<div class="pt"><div class="box"><div class="h">การชำระเงิน</div><div>'+esc(pay)+'</div><div>โอนเข้าบัญชี '+esc(QUOTE_BANK)+'</div></div>'
+      +'<table class="tot"><tr><td>รวมค่าบริการขนส่ง</td><td class="n">'+n2(q.total)+'</td></tr><tr><td>หักภาษี ณ ที่จ่าย 1%</td><td class="n">'+(q.corporate?'−'+n2(q.wht):'-')+'</td></tr><tr class="net"><td>ยอดชำระสุทธิ</td><td class="n">'+n2(q.net)+'</td></tr>'+(q.payMode==='credit'?'':'<tr><td>'+(q.payMode==='full'?'ชำระก่อนจัดรถ':'มัดจำ '+(q.depositPct||30)+'%')+'</td><td class="n">'+n2(q.due)+'</td></tr>')+'<tr><td colspan="2" style="font-size:11.5px;color:#4a4540;border:none">ค่าบริการขนส่งไม่มีภาษีมูลค่าเพิ่ม · หัก 1% เฉพาะลูกค้านิติบุคคล</td></tr></table></div>'
+      +'<b>หมายเหตุ</b><ol><li>ราคานี้เป็นราคาต่อเที่ยว ยืนราคา '+vd+' วันนับจากวันที่ออก และใช้เฉพาะรายการในใบเสนอราคานี้</li><li>ค่าขนส่งดังกล่าวไม่รวมค่าขนลงสินค้า ณ ปลายทาง</li><li>น้ำหนักบรรทุกและวงเงินประกันสินค้าเป็นไปตามประเภทรถในตารางด้านบน และต้องไม่เกินพิกัดตามกฎหมาย</li><li>รอขึ้นและลงสินค้าฟรีรวม 6 ชั่วโมง/เที่ยว เกินจากนี้คิดค่ารอทุก 6 ชั่วโมงเต็มตามตารางด้านบน (เศษไม่ถึง 6 ชั่วโมงไม่คิด)</li><li>ยกเลิกหรือเลื่อนงาน กรุณาแจ้งล่วงหน้าอย่างน้อย 24 ชั่วโมง มิฉะนั้นบริษัทฯ ขอสงวนสิทธิ์ไม่คืนเงินมัดจำ</li>'+(q.trucksPerDay?'<li>บริษัทฯ จัดรถได้วันละ '+esc(q.trucksPerDay)+' คัน ตามลำดับการยืนยันและชำระเงิน</li>':'')+(q.note?'<li>'+esc(q.note)+'</li>':'')+'</ol>'
+      +'<div class="sg"><div>ขอแสดงความนับถือ<div class="ln"></div>('+esc(QUOTE_SIGNER.name)+')<br>'+esc(QUOTE_SIGNER.title)+' · ผู้เสนอราคา</div><div>ลูกค้ายืนยันรับราคาและเงื่อนไข<div class="ln"></div>(................................................)<br>วันที่ ____ / ____ / ______</div></div>'
+      +'<div class="ft">'+qr+'<div style="flex:1"><b>ยืนยันหรือตอบกลับใบเสนอราคาออนไลน์</b><br>สแกน QR หรือเปิดลิงก์ในอีเมล กด "ยืนยัน" หรือ "ไม่รับราคานี้" และแนบสลิปโอนเงินได้ในหน้าเดียวกัน</div><div style="text-align:right">LINE @singthongtruck<br>singthongtruck.com<br>singthongtruck@outlook.com</div></div>'
+      +'</div></body></html>';
+    this._printHtml(html);};
   purgeTrash=()=>{const cut=Date.now()-7*86400000;const isOld=o=>o.status==='ยกเลิก'&&o.canceledAt&&new Date(o.canceledAt).getTime()<cut;const gone=this.state.orders.filter(isOld);if(!gone.length)return;const orders=this.state.orders.filter(o=>!isOld(o));try{localStorage.setItem('orderReg_v1',JSON.stringify(orders));}catch(e){}try{const p=new Set(JSON.parse(localStorage.getItem('orderPendingIds')||'[]'));gone.forEach(o=>p.delete(String(o.id)));localStorage.setItem('orderPendingIds',JSON.stringify([...p]));}catch(e){}this.setState({orders});try{sbSoftDeleteOrders(gone.map(o=>String(o.id)));}catch(e){}};
   revertOrderDispatch=(id)=>{const o=this.state.orders.find(x=>String(x.id)===String(id));if(!o)return;if(!window.confirm('คืนงานนี้กลับไปสถานะ "รอจัดรถ"? (ยกเลิกการจ่ายงาน — ใบงานเดิมไม่ถูกลบ)'))return;const orders=this.state.orders.map(x=>String(x.id)===String(id)?normOrder({...x,status:'รอจัดรถ',jobId:''}):x);this.setState({orders});this.persistOrders(orders,id,['status','jobId']);};
   // safety net: งานรับเข้าที่ผูกกับใบงานซึ่งไม่มีอยู่แล้ว (ใบงานถูกลบ/หาย) → คืนกลับหน้ารับงานสถานะ "รอจัดรถ" กันงานหายจากทั้งสองหน้า
@@ -11695,7 +11949,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       onGoOrders:this.onGoOrders,
       navOrdersStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='orders'?'background:rgba(255,255,255,.1);color:#fff;':'background:transparent;color:#cdd7e1;'),
       navOrdersBadge:'font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(S.section==='orders'?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;'),
-      orderPendingCount:S.orders.filter(o=>o.status!=='จ่ายงานแล้ว'&&o.status!=='ยกเลิก').length,
+      orderPendingCount:S.orders.filter(o=>{const s=ordEffStatus(o);return s!=='จ่ายงานแล้ว'&&s!=='ยกเลิก'&&ORDER_LOST.indexOf(s)<0;}).length,
       onGoEff:()=>this.setState({section:'efficiency',effView:'overview'}),
       onGoTrucks:()=>this.setState({section:'trucks',truckView:'list',truckStatusFilter:'all',truckDeptFilter:'รถบริษัท'}),
       onGoDrivers:()=>this.setState({section:'drivers',view:'list',statusFilter:'all',fleet:'all'}),
@@ -12843,17 +13097,20 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const oq=String(S.orderSearch||'').trim().toLowerCase();
       const oList=S.orders.filter(o=>{
         if(S.orderStatusFilter==='canceled'){if(o.status!=='ยกเลิก')return false;}else if(o.status==='ยกเลิก')return false;
-        if(S.orderStatusFilter==='pending'&&(o.status==='จ่ายงานแล้ว'||o.status==='ยกเลิก'))return false;
+        const _es=ordEffStatus(o);
+        if(S.orderStatusFilter==='pending'&&(o.status==='จ่ายงานแล้ว'||o.status==='ยกเลิก'||ORDER_QUOTE_STAGES.indexOf(_es)>=0||ORDER_LOST.indexOf(_es)>=0))return false;
+        if(S.orderStatusFilter==='quote'&&ORDER_QUOTE_STAGES.indexOf(_es)<0)return false;
+        if(S.orderStatusFilter==='lost'&&ORDER_LOST.indexOf(_es)<0)return false;
         if(S.orderStatusFilter==='dispatched'&&o.status!=='จ่ายงานแล้ว')return false;
         if(S.orderDateFrom&&(o.receivedDate||'')<S.orderDateFrom)return false;
         if(S.orderDateTo&&(o.receivedDate||'')>S.orderDateTo)return false;
-        if(oq){const blob=[o.billNo,o.customer,o.origin,o.destination,o.product].join(' ').toLowerCase();if(blob.indexOf(oq)<0)return false;}
+        if(oq){const blob=[o.billNo,o.customer,o.origin,o.destination,o.product,o.webRef,o.webPhone,o.webEmail,o.quote&&o.quote.no].join(' ').toLowerCase();if(blob.indexOf(oq)<0)return false;}
         return true;
       }).sort((a,b)=>(Number(b.id)||0)-(Number(a.id)||0));
-      const oStatusChip=(s)=>{if(s==='จ่ายงานแล้ว')return this.chip('#067647','#ecfdf3');if(s==='ยกเลิก')return this.chip('#b42318','#fef3f2');return this.chip('#b54708','#fffaeb');};
+      const oStatusChip=(s)=>{if(s==='จ่ายงานแล้ว')return this.chip('#067647','#ecfdf3');if(s==='ยกเลิก')return this.chip('#b42318','#fef3f2');if(s==='รอใบเสนอราคา')return this.chip('#5925dc','#f4f3ff');if(s==='รอลูกค้ายืนยัน')return this.chip('#175cd3','#eff8ff');if(s==='รอชำระเงิน')return this.chip('#0e7090','#ecfdff');if(ORDER_LOST.indexOf(s)>=0)return this.chip('#475467','#f2f4f7');return this.chip('#b54708','#fffaeb');};
       const _osel=new Set((S.selectedOrderIds||[]).map(String));const _otc={};S.orders.forEach(o=>{if(o.tripId)_otc[o.tripId]=(_otc[o.tripId]||0)+1;});
       const _selOrders=S.orders.filter(o=>_osel.has(String(o.id)));out.orderSelectedCount=_osel.size;out.orderCanLink=_osel.size>=2&&_selOrders.every(o=>!o.tripId);out.orderLinkBar=_osel.size>0;out.onLinkTrip=this.linkTrip;out.onClearSel=()=>this.setState({selectedOrderIds:[]});
-      const _mkRow=(o,fl)=>({id:o.id,selected:fl.memberIds?fl.memberIds.every(mid=>_osel.has(String(mid))):_osel.has(String(o.id)),onToggleSel:fl.memberIds?(()=>this.toggleTripSel(fl.memberIds)):(()=>this.toggleOrderSel(o.id)),hasTrip:!!o.tripId,showCheckbox:!o.tripId||!!fl.isPrimary,onUnlink:()=>this.unlinkOrder(o.id),billNo:o.billNo||'—',billPrefix:fl.isSub?'↳ ':'',billCount:(o.shipments&&o.shipments.length)||1,multiBill:!!(o.shipments&&o.shipments.length>1),multiBillText:(o.shipments&&o.shipments.length>1)?('+'+(o.shipments.length-1)+' บิล'):'',customer:o.customer||'—',route:(o.origin||'—')+' → '+(o.destination||'—'),weight:o.weight?(o.weight+' ตัน'):'—',truckType:o.truckType||'—',requiredDate:o.requiredDate?this.thaiDate(o.requiredDate):'—',receivedDate:o.receivedDate?this.thaiDate(o.receivedDate):'—',statusLabel:o.status||'รอจัดรถ',statusStyle:oStatusChip(o.status),canDispatch:o.status!=='จ่ายงานแล้ว'&&o.status!=='ยกเลิก',dispatched:o.status==='จ่ายงานแล้ว',onEdit:()=>this.openOrderEdit(o.id),onDispatch:()=>this.dispatchOrder(o.id),onViewJob:()=>this.viewOrderJob(o.jobId),onRevertDispatch:()=>this.revertOrderDispatch(o.id),onDelete:()=>this.deleteOrder(o.id),canceled:o.status==='ยกเลิก',notCanceled:o.status!=='ยกเลิก',onRestore:()=>this.restoreOrder(o.id),isPrimary:!!fl.isPrimary,isSub:!!fl.isSub,showTripBadge:!!fl.isPrimary,tripBadgeFull:fl.tripBadgeFull||'',rowBg:fl.isSub?'#fafbfd':'#ffffff'});
+      const _mkRow=(o,fl)=>({id:o.id,selected:fl.memberIds?fl.memberIds.every(mid=>_osel.has(String(mid))):_osel.has(String(o.id)),onToggleSel:fl.memberIds?(()=>this.toggleTripSel(fl.memberIds)):(()=>this.toggleOrderSel(o.id)),hasTrip:!!o.tripId,showCheckbox:!o.tripId||!!fl.isPrimary,onUnlink:()=>this.unlinkOrder(o.id),billNo:o.billNo||'—',billPrefix:fl.isSub?'↳ ':'',billCount:(o.shipments&&o.shipments.length)||1,multiBill:!!(o.shipments&&o.shipments.length>1),multiBillText:(o.shipments&&o.shipments.length>1)?('+'+(o.shipments.length-1)+' บิล'):'',customer:o.customer||'—',route:(o.origin||'—')+' → '+(o.destination||'—'),weight:o.weight?(o.weight+' ตัน'):'—',truckType:o.truckType||'—',requiredDate:o.requiredDate?this.thaiDate(o.requiredDate):'—',receivedDate:o.receivedDate?this.thaiDate(o.receivedDate):'—',statusLabel:ordEffStatus(o),statusStyle:oStatusChip(ordEffStatus(o)),canDispatch:o.status!=='จ่ายงานแล้ว'&&o.status!=='ยกเลิก'&&ORDER_QUOTE_STAGES.indexOf(o.status)<0&&ORDER_LOST.indexOf(o.status)<0,...this._qRowVals(o),dispatched:o.status==='จ่ายงานแล้ว',onEdit:()=>this.openOrderEdit(o.id),onDispatch:()=>this.dispatchOrder(o.id),onViewJob:()=>this.viewOrderJob(o.jobId),onRevertDispatch:()=>this.revertOrderDispatch(o.id),onDelete:()=>this.deleteOrder(o.id),canceled:o.status==='ยกเลิก',notCanceled:o.status!=='ยกเลิก',onRestore:()=>this.restoreOrder(o.id),isPrimary:!!fl.isPrimary,isSub:!!fl.isSub,showTripBadge:!!fl.isPrimary,tripBadgeFull:fl.tripBadgeFull||'',rowBg:fl.isSub?'#fafbfd':'#ffffff'});
       const _usedTrip=new Set();const _rows=[];
       oList.forEach(o=>{
         if(o.tripId){if(_usedTrip.has(o.tripId))return;_usedTrip.add(o.tripId);
@@ -12868,13 +13125,18 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.orderSearch=S.orderSearch;out.onOrderSearch=(e)=>this.setState({orderSearch:e.target.value});out.onAddOrder=this.openOrderNew;
       out.orderDateFrom=S.orderDateFrom||'';out.orderDateTo=S.orderDateTo||'';out.onOrderDateFrom=(e)=>this.setState({orderDateFrom:e.target.value});out.onOrderDateTo=(e)=>this.setState({orderDateTo:e.target.value});out.onClearOrderDate=()=>this.setState({orderDateFrom:'',orderDateTo:''});
       const _oc=(label,key,count,fg,bg)=>({label,count,fg,onClick:()=>this.setState({orderStatusFilter:key}),cardStyle:'flex:1;min-width:130px;text-align:left;padding:15px 17px;border-radius:12px;border:1px solid '+(S.orderStatusFilter===key?'#2f6fb0':'#e4e7ec')+';background:'+bg+';cursor:pointer;'});
-      const _ogrp={};S.orders.forEach(o=>{const k=o.tripId||('o'+o.id);if(!(k in _ogrp))_ogrp[k]=o.status;});
+      const _ogrp={};S.orders.forEach(o=>{const k=o.tripId||('o'+o.id);if(!(k in _ogrp))_ogrp[k]=ordEffStatus(o);});
       const _ogroups=Object.keys(_ogrp).map(k=>_ogrp[k]);const _ototal=_ogroups.length;
-      const _pend=_ogroups.filter(s=>s!=='จ่ายงานแล้ว'&&s!=='ยกเลิก').length;
+      const _pend=_ogroups.filter(s=>s!=='จ่ายงานแล้ว'&&s!=='ยกเลิก'&&ORDER_QUOTE_STAGES.indexOf(s)<0&&ORDER_LOST.indexOf(s)<0).length;
+      const _quo=_ogroups.filter(s=>ORDER_QUOTE_STAGES.indexOf(s)>=0).length;const _lost=_ogroups.filter(s=>ORDER_LOST.indexOf(s)>=0).length;
       const _disp=_ogroups.filter(s=>s==='จ่ายงานแล้ว').length;
       const _canc=_ogroups.filter(s=>s==='ยกเลิก').length;
       out.orderTotalCount=_ototal;
-      out.orderStatCards=[_oc('ทั้งหมด','all',_ototal,'#16263a','#f8fafc'),_oc('รอจัดรถ','pending',_pend,'#b54708','#fff'),_oc('จ่ายงานแล้ว','dispatched',_disp,'#067647','#fff'),_oc('🗑 ถังยกเลิก','canceled',_canc,'#b42318','#fff')];
+      out.orderStatCards=[_oc('ทั้งหมด','all',_ototal,'#16263a','#f8fafc'),_oc('📄 ใบเสนอราคา','quote',_quo,'#5925dc',_quo>0?'#f4f3ff':'#fff'),_oc('รอจัดรถ','pending',_pend,'#b54708','#fff'),_oc('จ่ายงานแล้ว','dispatched',_disp,'#067647','#fff'),_oc('ไม่ได้งาน','lost',_lost,'#475467','#fff'),_oc('🗑 ถังยกเลิก','canceled',_canc,'#b42318','#fff')];
+      // ★ v.2026-09-27g modal ใบเสนอราคา / ปฏิเสธงาน / รับเงิน
+      {const m=S.quoteModal;out.qmOpen=!!m;if(m){const o=S.orders.find(x=>String(x.id)===String(m.orderId))||{};const c=this._qCalc(m);const f=v=>this._qFmt(v);out.qmTitleNo=(o.quote&&o.quote.no)||'(ใหม่)';out.qmRef=o.webRef||o.billNo||'-';out.qmCustomer=o.customer||'—';out.qmContact=o.webContact||o.customer||'—';out.qmPhone=o.webPhone||'—';out.qmEmail=o.webEmail||'—';out.qmProduct=o.product||'—';out.qmReqDate=o.requiredDate?this.thaiDate(o.requiredDate):'—';out.qmNoEmail=!o.webEmail;out.qmLines=c.lines.map((l,i)=>({origin:l.origin,destination:l.destination,truckType:l.truckType,trips:l.trips,price:l.price,amountText:f(l.amount),onOrigin:e=>this.setQmLine(i,'origin',e.target.value),onDest:e=>this.setQmLine(i,'destination',e.target.value),onTruck:e=>this.setQmLine(i,'truckType',e.target.value),onTrips:e=>this.setQmLine(i,'trips',e.target.value),onPrice:e=>this.setQmLine(i,'price',e.target.value),onDel:()=>this.delQmLine(i),canDel:c.lines.length>1}));out.onQmAddLine=this.addQmLine;out.qmPayMode=m.payMode;out.onQmPayMode=e=>this.setQm('payMode',e.target.value);out.qmIsDeposit=m.payMode==='deposit';out.qmDepositPct=m.depositPct;out.onQmDepositPct=e=>this.setQm('depositPct',e.target.value);out.qmCorporate=!!m.corporate;out.onQmCorporate=e=>this.setQm('corporate',e.target.checked);out.qmTrucksPerDay=m.trucksPerDay;out.onQmTrucksPerDay=e=>this.setQm('trucksPerDay',e.target.value);out.qmValidDays=m.validDays;out.onQmValidDays=e=>this.setQm('validDays',e.target.value);out.qmNote=m.note;out.onQmNote=e=>this.setQm('note',e.target.value);out.qmTotal=f(c.total);out.qmWht=f(c.wht);out.qmNet=f(c.net);out.qmDue=f(c.due);out.qmDueLabel=m.payMode==='deposit'?('มัดจำ '+c.pct+'% ก่อนจัดรถ'):(m.payMode==='full'?'ชำระเต็มก่อนจัดรถ':'ลูกค้าเครดิต (ไม่ต้องชำระก่อน)');out.qmSendEmail=!!m.sendEmail&&!!o.webEmail;out.qmEmailDisabled=!o.webEmail;out.onQmSendEmail=e=>this.setQm('sendEmail',e.target.checked);out.qmErr=m.err||'';out.qmErrShow=!!m.err;out.qmSubmitLabel=m.busy?'กำลังส่ง…':(o.quoteToken?'บันทึกและส่งใบเสนอราคาอีกครั้ง':'บันทึกและส่งใบเสนอราคา');out.onQmSubmit=this.submitQuote;out.onQmPrint=()=>this.printQuote(m.orderId,true);out.onQmClose=this.closeQuote;const R=m.result;out.qmHasResult=!!R;out.qmResUrl=R?R.url:'';out.qmResNo=R?R.quoteNo:'';out.qmResText=R?(R.emailed===true?('ส่งอีเมลถึง '+R.email+' แล้ว'):(R.emailed===false?(R.email?'ไม่ได้ส่งอีเมล — ส่งลิงก์ทาง LINE แทนได้':'ไม่มีอีเมลลูกค้า — ส่งลิงก์ทาง LINE หรือ SMS'):'ลิงก์ของใบเสนอราคานี้')):'';out.onQmCopy=this.copyQuoteLink;out.onQmLine=this.shareQuoteLine;out.qmCopyLabel=m.copied?'✓ คัดลอกแล้ว':'คัดลอกลิงก์';}}
+      {const m=S.rejectModal;out.rjOpen=!!m;if(m){const o=S.orders.find(x=>String(x.id)===String(m.orderId))||{};out.rjRef=o.webRef||o.billNo||'';out.rjCustomer=o.customer||'—';out.rjRoute=(o.origin||'—')+' → '+(o.destination||'—');out.rjReason=m.reason;out.onRjReason=e=>this.setRjReason(e.target.value);out.rjMsg=m.msg;out.onRjMsg=e=>{const v=e.target.value;this.setState(s=>({rejectModal:{...s.rejectModal,msg:v,msgEdited:true,err:''}}));};out.rjIsSpam=m.reason==='งานซ้ำหรือสแปม';out.rjNotSpam=!out.rjIsSpam;out.rjHasEmail=!!o.webEmail;out.rjNoEmail=!o.webEmail;out.rjEmail=o.webEmail||'';out.rjSendEmail=!!m.sendEmail;out.onRjSendEmail=e=>{const v=e.target.checked;this.setState(s=>({rejectModal:{...s.rejectModal,sendEmail:v}}));};out.rjErr=m.err||'';out.rjErrShow=!!m.err;out.rjSubmitLabel=m.busy?'กำลังบันทึก…':'ยืนยันปฏิเสธงาน';out.onRjSubmit=this.submitReject;out.onRjClose=()=>this.setState({rejectModal:null});}}
+      {const m=S.payModal;out.pmOpen=!!m;if(m){const o=S.orders.find(x=>String(x.id)===String(m.orderId))||{};const q=o.quote||{};const f=v=>this._qFmt(v);out.pmTitle=m.kind==='balance'?'รับยอดคงเหลือ':'ยืนยันรับเงิน';out.pmRef=(q.no||'')+(o.webRef?(' · '+o.webRef):'');out.pmCustomer=o.customer||'—';out.pmModeText=q.payMode==='full'?'จ่ายเต็มก่อนจัดรถ':(q.payMode==='credit'?'ลูกค้าเครดิต':('มัดจำ '+(q.depositPct||30)+'%'));out.pmNet=f(q.net);out.pmDue=f(m.kind==='balance'?o.balanceDue:q.due);out.pmAmount=m.amount;out.onPmAmount=e=>{const v=e.target.value;this.setState(s=>({payModal:{...s.payModal,amount:v,err:''}}));};out.pmLoading=!!m.loading;out.pmSlips=(m.slips||[]).map(sl=>({image:sl.image,when:sl.created_at?new Date(sl.created_at).toLocaleString('th-TH',{timeZone:'Asia/Bangkok'}):'',note:sl.note||'',hasNote:!!sl.note}));out.pmNoSlip=!m.loading&&!(m.slips||[]).length;out.pmErr=m.err||'';out.pmErrShow=!!m.err;out.pmSubmitLabel=m.busy?'กำลังบันทึก…':(m.kind==='balance'?'ยืนยันรับยอดคงเหลือ':'ยืนยันรับเงิน → รอจัดรถ');out.onPmSubmit=this.submitPay;out.onPmClose=()=>this.setState({payModal:null});}}
       const od=S.orderDraft||{};out.od=od;out.orderFormTitle=S.orderIsNew?'เพิ่มงานรับเข้า':'แก้ไขงานรับเข้า';
       const _hc=S.hiddenCustomers||[],_ho=S.hiddenOrigins||[];
       const _copts=[...new Set(S.customers.map(c=>c.name).filter(Boolean))].filter(n=>_hc.indexOf(n)<0);if(od.customer&&_copts.indexOf(od.customer)<0)_copts.unshift(od.customer);
@@ -13843,7 +14105,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.navDashStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='dashboard'?'background:rgba(47,111,176,.28);color:#fff;':'background:transparent;color:#cdd7e1;');
     const _today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
     const _jobsToday=S.jobs.filter(j=>j.date===_today).length;
-    const _ordPend=S.orders.filter(o=>o.status!=='จ่ายงานแล้ว'&&o.status!=='ยกเลิก').length;
+    const _ordPend=S.orders.filter(o=>o.status!=='จ่ายงานแล้ว'&&o.status!=='ยกเลิก'&&ORDER_QUOTE_STAGES.indexOf(o.status)<0&&ORDER_LOST.indexOf(o.status)<0).length;
     const _lvToday=(()=>{let c=0;drivers.forEach(d=>{(d.history||[]).forEach(h=>{if(LEAVE_TYPES.indexOf(h.type)>=0){const f=h.leaveFrom||h.date,to=h.leaveTo||h.date;if(f&&f<=_today&&_today<=(to||f))c++;}});});return c;})();
     const _kpi=[
       {key:'pendOrders',show:out.canOrders,icon:'📥',label:'งานรอจัดรถ',value:_ordPend,sub:'รายการรอจ่าย',accent:'#b54708',onClick:()=>this.setState({section:'orders',orderView:'list',orderStatusFilter:'pending'})},
