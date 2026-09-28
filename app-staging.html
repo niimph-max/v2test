@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -13319,7 +13319,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     // ===== AUTH + DASHBOARD =====
     const _role=S.auth?S.auth.role:null;const _rawSecs=(S.auth&&S.auth.sections&&S.auth.sections.length)?S.auth.sections:(ROLE_SECTIONS[_role]||[]);
     // v2: profiles.sections เก็บคีย์ระดับเมนู → ขยายเป็นคีย์ละเอียดที่ _can ใช้ (รองรับทั้งสอง vocabulary)
-    const _EXP={overview:['dashboard'],dispatch:['orders','jobs'],registry:['trucks','drivers'],office:['office'],report:['reports'],reports:['reports'],efficiency:['efficiency'],income:['income'],tire:['tires'],parts:['parts'],accounting:['customers']};
+    const _EXP={overview:['dashboard'],dispatch:['orders','jobs'],registry:['trucks','drivers'],office:['office'],report:['reports'],reports:['reports'],efficiency:['efficiency'],income:['income'],ecacc:['ecacc'],tire:['tires'],parts:['parts'],accounting:['customers']};
     let _secs=[];(_rawSecs||[]).forEach(k=>{if(_EXP[k])_secs=_secs.concat(_EXP[k]);_secs.push(k);});
     const _can=(k)=>(_role==='admin')||_secs.indexOf(k)>=0;
     out.authed=!!S.auth;out.notAuthed=!S.auth;
@@ -13481,7 +13481,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.jobTrashRows=(S.trashJobs||[]).map(j=>{const d=(S.drivers||[]).find(x=>String(x.code)===String(j.driverCode));return{id:j.id,dateFmt:(j.date||'—'),title:((j.jobNo||'ใบงาน')+(j.deliveryNo?(' · บิล '+j.deliveryNo):'')),driver:(d?d.name:(j.driverCode||'—')),plate:(j.truckPlate||'—'),onRestore:()=>this.restoreJobFromTrash(j.id),onPurge:()=>this.purgeJobFromTrash(j.id)};});
     {const _rim=((S.company||{}).regInsMode)||'full';out.regInsFull=(_rim==='full');out.regInsSpread=(_rim==='spread');out.onRegInsFull=()=>this.setRegInsMode('full');out.onRegInsSpread=()=>this.setRegInsMode('spread');const _ba='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #2f6fb0;background:#2f6fb0;color:#fff;';const _bi='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #d0d5dd;background:#fff;color:#475467;';out.regInsFullStyle=(_rim==='full')?_ba:_bi;out.regInsSpreadStyle=(_rim==='spread')?_ba:_bi;}out.onPushAllLocal=this.pushAllLocalToCloud;out.onResetLocal=this.resetLocalAndPull;out.onDedupeTrucks=this.dedupeTrucks;out.onImportTruckXlsx=this.onImportTruckXlsx;out.onGoIssue=this.onGoIssue;out.isIssue=S.section==='issue';out.navIssueStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='issue'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
     out.navSettingsStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='settings'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
-    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'}];
+    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'}];
       out.settingsUserRows=(S.profileUsers||[]).map(u=>({name:u.display_name||u.username,uname:u.username,isAdmin:!!u.is_admin,notAdmin:!u.is_admin,secText:u.is_admin?'ทุกเมนู (ผู้ดูแลระบบ)':((Array.isArray(u.sections)?u.sections:[]).map(k=>(_SECOPTS.find(o=>o.k===k)||{}).l).filter(Boolean).join(', ')||'—'),onEdit:()=>this.openUserEdit(u.id)}));
       out.settingsUsersEmpty=(S.profileUsers||[]).length===0;out.onOpenUser=this.openUserNew;
       const _ud=S.userDraft;out.userFormOpen=!!_ud;
@@ -14017,10 +14017,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.navCustSalesStyle=_navBase+(_csAct?'background:rgba(47,111,176,.28);color:#fff;':'background:transparent;color:#cdd7e1;');
       out.onGoCustSales=()=>{this.setState({section:'efficiency',effView:'custsales'});this.scrollMain();};}
     // ===== ส่งออกเข้า EASY-ACC =====
-    {const _ecOn=this.ecaccOn();out.showEcacc=_can('customers')&&_ecOn;
+    {const _ecOn=this.ecaccOn();out.showEcacc=_can('ecacc')&&_ecOn;   // 28c: เดิมผูกกับสิทธิ์ระบบบัญชี
       out.navEcStyle=_navBase+((S.section==='acctexport')?'background:rgba(47,111,176,.28);color:#fff;':'background:transparent;color:#cdd7e1;');
       out.onGoAcctExport=()=>{this.setState({section:'acctexport'});this.scrollMain();};
-      out.isAcctExport=S.section==='acctexport'&&_can('customers')&&_ecOn;
+      out.isAcctExport=S.section==='acctexport'&&_can('ecacc')&&_ecOn;
       if(out.isAcctExport){
         const cfg=this._ecCfg();
         out.ecArAcct=cfg.ar;out.onEcArAcct=(e)=>this.setEcCfg('ecArAcct',e.target.value);
@@ -14108,7 +14108,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     {const _blAct=(S.section==='billing');
       out.navBillingStyle=_navBase+(_blAct?'background:rgba(47,111,176,.28);color:#fff;':'background:transparent;color:#cdd7e1;');
       out.onGoBilling=()=>{this.setState({section:'billing'});this.scrollMain();};}
-    out.isBilling=S.section==='billing'&&_can('customers')&&this.ecaccOn();
+    out.isBilling=S.section==='billing'&&_can('ecacc')&&this.ecaccOn();
     if(out.isBilling){
       const _b2=(n)=>_LFB2(n);
       const _n3=(n)=>(Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
