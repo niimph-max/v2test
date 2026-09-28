@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28h · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28h</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -8059,7 +8059,8 @@ function normOLeave(l){l=l||{};return{id:l.id||(Date.now()+Math.floor(Math.rando
 function normOffice(o){const r={code:'',name:'',position:'',dept:'บัญชี',idCard:'',birthDate:'',phone:'',address:'',startDate:'',salary:'',photo:null,history:[],leave:[],...o,code:String(o.code||''),name:String(o.name||'')};if(!Array.isArray(r.history)){try{const p=JSON.parse(r.history);r.history=Array.isArray(p)?p:[];}catch(e){r.history=[];}}if(!Array.isArray(r.leave)){try{const p=JSON.parse(r.leave);r.leave=Array.isArray(p)?p:[];}catch(e){r.leave=[];}}r.leave=r.leave.map(normOLeave);return r;}
 const PM_ITEMS=[{key:'oil',label:'น้ำมันเครื่อง + กรองเครื่อง',km:10000,months:3},{key:'fuelFilter',label:'กรองโซล่า (เชื้อเพลิง)',km:20000,months:0},{key:'airFilter',label:'กรองอากาศ',km:40000,months:0},{key:'gearDiff',label:'น้ำมันเกียร์ + เฟืองท้าย',km:40000,months:0},{key:'brake',label:'ผ้าเบรก / ตรวจเบรก',km:10000,months:0},{key:'tire',label:'ยาง (สลับ/ตรวจดอกยาง)',km:10000,months:0},{key:'suspension',label:'ช่วงล่าง / ลูกหมาก',km:20000,months:0},{key:'major',label:'เช็คระยะใหญ่',km:50000,months:6}];
 
-// ===== ตรวจสภาพก่อนออกงาน — checklist template (แต่ละบริษัทปรับได้ที่บล็อกนี้ที่เดียว) =====
+// ===== ตรวจสภาพก่อนออกงาน — checklist template =====
+// ⚠️ แก้รายการที่นี่ ต้องแก้ให้ตรงกันอีก 2 จุด: src/driver.html (พขร. ตรวจเอง) และ _lbl ใน sql/supabase_driver_inspection.sql
 const INSPECT_VEH=[
   {g:'ยางและล้อ',icon:'🛞',items:['ลมยางทุกล้อ','ดอกยาง / รอยสึก','น็อตล้อครบ-แน่น','ยางอะไหล่']},
   {g:'ระบบเบรก',icon:'🛑',items:['ลมเบรก (แรงดัน)','ผ้าเบรก','เบรกมือ']},
@@ -10438,7 +10439,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ===== งานย้ายข้อมูลครั้งเดียว: เติมรหัสเจ้าหนี้รถร่วม / จับคู่รหัสลูกค้าย้อนหลัง =====
   // ใบงานเก่าที่ไม่เปิดติดตาม (ไม่มี QR) และเคยลงข้อมูลปิดงาน/รายได้ไว้แล้ว
   // ระบบใหม่ใช้ documentTime เป็นตัวส่งใบไปหน้ารายได้ → เติมย้อนหลังให้ใบเก่าไม่ตกกลับหน้าจ่ายงาน
-  _legacyNoQrJobs(){return (this.state.jobs||[]).filter(j=>!j.deleted&&!j.trackJob&&!j.documentTime&&(
+  _legacyNoQrJobs(){return (this.state.jobs||[]).filter(j=>!j.deleted&&!j.trackJob&&!j.documentTime&&String(j.date||'')<'2026-09-01'&&(
     String(j.revenue||'').trim()||String(j.ratePerTon||'').trim()||j.docsClosed||j.acctPosted||
     String(j.fuelBaht||'').trim()||String(j.driverPay||'').trim()||(Array.isArray(j.fuelRefills)&&j.fuelRefills.length)));}
   bulkBackfillDocTime=()=>{
@@ -12964,7 +12965,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const _trailerPlates=new Set(S.trucks.filter(t=>_isTrailer(t)).map(t=>t.plate));
       const _settlePlates=new Set(S.trucks.filter(t=>!t.retired&&(t.dept==='รถบริษัท'||/ร่วม/.test(t.dept||''))).map(t=>t.plate));
       // v.2026-08-31a: ใบงานที่ไม่ได้เปิดติดตาม (ไม่มี พขร. กด "ส่งเอกสาร") ต้องเข้าคิวลงค่าใช้จ่ายได้เลย
-      const _settleAll=S.jobs.filter(j=>_settlePlates.has(j.truckPlate)&&j.date&&j.date.startsWith(sm)&&!j.deleted&&!j._deleted&&(j.documentTime||!j.trackJob));
+      // ★ v.2026-09-28h: ผู้ใช้กำหนด — ทุกใบต้องกด "📄 ส่งเอกสาร" (หน้าจ่ายงาน/ลิงก์ พขร.) ก่อนถึงเข้าหน้านี้ ไม่ว่าจะเปิดติดตามหรือไม่
+      //   ใบก่อน 1 ก.ย. 2569 ที่ไม่เปิดติดตาม คงตามกฎเดิม (ย้อนดูเดือนเก่าได้เหมือนเดิม)
+      const _settleAll=S.jobs.filter(j=>_settlePlates.has(j.truckPlate)&&j.date&&j.date.startsWith(sm)&&!j.deleted&&!j._deleted&&(j.documentTime||j.docsClosed||(!j.trackJob&&j.date<'2026-09-01')));
       // ★ v.2026-09-27c: ฟลีตของเที่ยว = ฟลีตของ พขร. ที่ขับ (ไม่มี พขร. → พขร.ประจำรถ) · หาไม่เจอ = ไม่ระบุฟลีต
       const _dFl={};(S.drivers||[]).forEach(d=>{_dFl[String(d.code)]=String(d.fleet||'').trim();});
       const _tAsg={};(S.trucks||[]).forEach(t=>{_tAsg[t.plate]=String(t.assignedDriver||'');});
