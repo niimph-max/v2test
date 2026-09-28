@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-27p · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -283,7 +283,7 @@
 
       </sc-if>
       <!-- ★ v.2026-09-27c: รายได้ & ค่าใช้จ่าย แยกเป็นหมวดของตัวเอง + เมนูย่อยตามฟลีต (ฟลีต = ฟลีตของ พขร. ในหน้าพนักงาน) -->
-      <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ canIncome }}" hint-placeholder-val="{{ false }}">
       <div style="font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;padding:16px 8px 7px;">ระบบบันทึกรายได้และค่าใช้จ่าย</div>
       <button onClick="{{ onGoSettle }}" style="{{ navSettleStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🧾</span>รายได้ &amp; ค่าใช้จ่าย</span>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-27p</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7927,7 +7927,7 @@ class Component extends DCLogic {
     try{['jobReg_v1','orderReg_v1'].forEach(k=>{const v=localStorage.getItem(k);if(v&&v.length>2000&&v.indexOf('""')>=0)localStorage.setItem(k,v);});}catch(e){}
     // 26h: เครื่องที่ login ค้างไว้ auth มาจาก state เริ่มต้น (section:'dashboard') → เดิมข้ามการเช็ค ?go=quick
     if(this.state.auth){try{const _a=this.state.auth;const _s=(_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||[]);const _l=this._qdLanding(_s,_a.role);if(_l.section)this.setState(_l);}catch(e){}}
-    if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fss=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']));const _fs=_fss[0]||'dashboard';this.setState({auth:_a,section:_fs,...this._qdLanding(_fss,_a.role)});}}catch(e){}}
+    if(!this.state.auth){try{const _a=JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');if(_a&&_a.role){const _fss=((_a.sections&&_a.sections.length)?_a.sections:(ROLE_SECTIONS[_a.role]||['dashboard']));const _fs=_fss[0]||'dashboard';this.setState({auth:_a,section:_fs,...(_fs==='income'?{section:'efficiency',effView:'settle'}:{}),...this._qdLanding(_fss,_a.role)});}}catch(e){}}
     // ★ v.2026-09-26b: จอมือถือ → เริ่มแบบพับแถบเมนู (252px กินจอเกือบครึ่ง)
     try{if(this._qdSmall()&&this.state.sidebarOpen)this.setState({sidebarOpen:false});}catch(e){}
     // ★ v.2026-09-26c: พื้นที่ในเครื่องเต็ม → ขึ้นแถบเตือน (เดิมเงียบ)
@@ -9014,7 +9014,7 @@ class Component extends DCLogic {
   // โหมดลงต้นทุนซ่อม/ยาง: แบบ ก (ค่าเริ่มต้น) = คีย์ที่ใบสั่งซ่อม+ทะเบียนยาง · แบบ ข = คีย์ที่หน้าบันทึกค่าใช้จ่ายตามแถว/วันที่
   costModeExpense(){return !!(LF_MODULES&&LF_MODULES.costFromExpense===true);}
   _regInsCostTruck(t,ym){if(!t)return 0;let s=this._regInsCostFor(t.plate,ym);if(t.trailerPlate)s+=this._regInsCostFor(t.trailerPlate,ym);return s;}
-  _applyLogin=(u)=>{const auth={u:u.u,role:u.role||'custom',name:u.name,sections:u.sections||null};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}const _secs=(auth.sections&&auth.sections.length)?auth.sections:(ROLE_SECTIONS[auth.role]||['dashboard']);this.setState({auth,loginError:'',loginPin:'',section:_secs[0]||'dashboard',...this._qdLanding(_secs,auth.role)});};
+  _applyLogin=(u)=>{const auth={u:u.u,role:u.role||'custom',name:u.name,sections:u.sections||null};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}const _secs=(auth.sections&&auth.sections.length)?auth.sections:(ROLE_SECTIONS[auth.role]||['dashboard']);this.setState({auth,loginError:'',loginPin:'',section:_secs[0]||'dashboard',...(_secs[0]==='income'?{section:'efficiency',effView:'settle'}:{}),...this._qdLanding(_secs,auth.role)});};
   // ★ v.2026-09-26b: หัวหน้างานเปิดจากมือถือ → เข้าหน้าจ่ายงานเร็วเลย (แอดมินยังเข้าหน้าปกติ)
   // 26g: ลิงก์ตรง app.html?go=quick[&fleet=ชื่อฟลีต] → เข้าหน้าจ่ายงานเร็วหลัง login (ทุกบทบาทที่มีสิทธิ์จ่ายงาน)
   _qdLanding(secs,role){try{const _can=(secs||[]).includes('jobs')||(secs||[]).includes('dispatch')||role==='admin';let _p=null;try{_p=new URLSearchParams(location.search);}catch(e){}const _link=!!(_p&&_p.get('go')==='quick');if(_link&&_p.get('fleet')!==null)this.qdSetFleet(String(_p.get('fleet')||'').trim());if(_can&&(_link||(role!=='admin'&&this._qdSmall())))return {section:'jobs',jobView:'qlist',...(this._qdSmall()?{sidebarOpen:false}:{})};}catch(e){}return {};}
@@ -9569,7 +9569,7 @@ class Component extends DCLogic {
   onbNext=()=>this.setState(s=>({onbStep:Math.min(5,(s.onbStep||1)+1),userDraft:null}));
   onbBack=()=>this.setState(s=>({onbStep:Math.max(1,(s.onbStep||1)-1),userDraft:null}));
   setOnbAdmin=(f,v)=>this.setState(s=>({onbAdmin:{...(s.onbAdmin||{}),[f]:v}}));
-  onbFinish=()=>{const a=this.state.onbAdmin||{};this.persistCompany(this.state.company);if(String(a.u||'').trim()&&String(a.pin||'').trim()&&String(a.name||'').trim()){const _secs=['overview','dispatch','registry','reports','efficiency','office'];const rec={u:String(a.u).trim(),pin:String(a.pin).trim(),name:String(a.name).trim(),role:'admin',_secs,sections:this._secList(_secs)};const list=(this.state.appUsers||[]).filter(x=>x.u!==rec.u);list.unshift(rec);try{localStorage.setItem('fleet_users_v1',JSON.stringify(list));}catch(e){}sbSaveUsers(list);const auth={u:rec.u,role:'admin',name:rec.name,sections:rec.sections};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}this.setState({appUsers:list,auth,section:'dashboard'});}try{localStorage.setItem('onboardingDone_v1','1');}catch(e){}this.setState({onbOpen:false});};
+  onbFinish=()=>{const a=this.state.onbAdmin||{};this.persistCompany(this.state.company);if(String(a.u||'').trim()&&String(a.pin||'').trim()&&String(a.name||'').trim()){const _secs=['overview','dispatch','income','registry','reports','efficiency','office'];const rec={u:String(a.u).trim(),pin:String(a.pin).trim(),name:String(a.name).trim(),role:'admin',_secs,sections:this._secList(_secs)};const list=(this.state.appUsers||[]).filter(x=>x.u!==rec.u);list.unshift(rec);try{localStorage.setItem('fleet_users_v1',JSON.stringify(list));}catch(e){}sbSaveUsers(list);const auth={u:rec.u,role:'admin',name:rec.name,sections:rec.sections};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}this.setState({appUsers:list,auth,section:'dashboard'});}try{localStorage.setItem('onboardingDone_v1','1');}catch(e){}this.setState({onbOpen:false});};
   openUserEdit=(uid)=>{const p=(this.state.profileUsers||[]).find(x=>x.id===uid);if(!p)return;this.setState({userDraft:{uid:p.id,u:p.username,name:p.display_name||p.username,secs:(Array.isArray(p.sections)?p.sections.slice():[])}});};
   cancelUser=()=>this.setState({userDraft:null});
   setUD=(f,v)=>this.setState(s=>({userDraft:{...s.userDraft,[f]:v}}));
@@ -12481,7 +12481,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const isEffSection=S.section==='efficiency';
     out.isEffMonthly=isEffSection&&S.effView==='monthly';
     out.isEffTruck=isEffSection&&S.effView==='truck';
-    out.isEffSettle=isEffSection&&S.effView==='settle';
+    out.isEffSettle=isEffSection&&S.effView==='settle'&&((S.auth&&S.auth.role==='admin')||(Array.isArray(S.auth&&S.auth.sections)&&S.auth.sections.indexOf('income')>=0));
     out.isEffTrip=isEffSection&&S.effView==='tripreport';
     out.isEffOverview=isEffSection&&S.effView==='overview';
     out.isEffDriverPay=isEffSection&&S.effView==='driverpay';
@@ -13315,13 +13315,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     // ===== AUTH + DASHBOARD =====
     const _role=S.auth?S.auth.role:null;const _rawSecs=(S.auth&&S.auth.sections&&S.auth.sections.length)?S.auth.sections:(ROLE_SECTIONS[_role]||[]);
     // v2: profiles.sections เก็บคีย์ระดับเมนู → ขยายเป็นคีย์ละเอียดที่ _can ใช้ (รองรับทั้งสอง vocabulary)
-    const _EXP={overview:['dashboard'],dispatch:['orders','jobs'],registry:['trucks','drivers'],office:['office'],report:['reports'],reports:['reports'],efficiency:['efficiency'],tire:['tires'],parts:['parts'],accounting:['customers']};
+    const _EXP={overview:['dashboard'],dispatch:['orders','jobs'],registry:['trucks','drivers'],office:['office'],report:['reports'],reports:['reports'],efficiency:['efficiency'],income:['income'],tire:['tires'],parts:['parts'],accounting:['customers']};
     let _secs=[];(_rawSecs||[]).forEach(k=>{if(_EXP[k])_secs=_secs.concat(_EXP[k]);_secs.push(k);});
     const _can=(k)=>(_role==='admin')||_secs.indexOf(k)>=0;
     out.authed=!!S.auth;out.notAuthed=!S.auth;
     {let _lc='';try{_lc=String(S.companyLoginCode||localStorage.getItem('lf_login_code_v1')||'').trim();}catch(e){_lc=String(S.companyLoginCode||'').trim();}out.showCompanyGate=!S.auth&&!_lc;out.showLoginForm=!S.auth&&!out.showCompanyGate;out.companyCodeInput=S.companyCodeInput||'';out.onCompanyCodeInput=this.onCompanyCodeInput;out.onCompanyCodeKey=this.onCompanyCodeKey;out.onVerifyCompanyCode=this.verifyCompanyCode;out.companyGateError=S.companyGateError||'';out.companyGateHasError=!!S.companyGateError;out.hasCompanyCode=!!_lc;out.loginShowCompany=!!_lc;{let _cn='';try{_cn=String(localStorage.getItem('lf_co_name_'+_lc)||'').trim();}catch(e){}out.loginCompanyText=_cn?(_cn+' · '+_lc):('บริษัท: '+_lc);}out.onRelockCompany=this.relockCompany;}
     out.userName=S.auth?S.auth.name:'';out.userRoleLabel=S.auth?(ROLE_LABEL[S.auth.role]||''):'';
-    out.canDashboard=_can('dashboard');out.canOrders=_can('orders');out.canJobs=_can('jobs');out.canEff=_can('efficiency');out.canTrucks=_can('trucks');
+    out.canDashboard=_can('dashboard');out.canOrders=_can('orders');out.canJobs=_can('jobs');out.canEff=_can('efficiency');out.canIncome=_can('income');   // 28a: รายได้ & ค่าใช้จ่าย แยกสิทธิ์จากประสิทธิภาพout.canTrucks=_can('trucks');
     // ระบบยาง / ระบบซ่อมบำรุง = 2 โมดูลแยกกัน (ปิดได้ที่ LionFlow Admin) · ใบสั่งซ่อมยังซ่อนเพิ่มเมื่ออยู่แบบ ข
     {const _mOn=lfModuleOn('maintenance'),_tOn=lfModuleOn('tires');
      out.canTiresMenu=_tOn&&_can('efficiency');
@@ -13477,7 +13477,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.jobTrashRows=(S.trashJobs||[]).map(j=>{const d=(S.drivers||[]).find(x=>String(x.code)===String(j.driverCode));return{id:j.id,dateFmt:(j.date||'—'),title:((j.jobNo||'ใบงาน')+(j.deliveryNo?(' · บิล '+j.deliveryNo):'')),driver:(d?d.name:(j.driverCode||'—')),plate:(j.truckPlate||'—'),onRestore:()=>this.restoreJobFromTrash(j.id),onPurge:()=>this.purgeJobFromTrash(j.id)};});
     {const _rim=((S.company||{}).regInsMode)||'full';out.regInsFull=(_rim==='full');out.regInsSpread=(_rim==='spread');out.onRegInsFull=()=>this.setRegInsMode('full');out.onRegInsSpread=()=>this.setRegInsMode('spread');const _ba='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #2f6fb0;background:#2f6fb0;color:#fff;';const _bi='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #d0d5dd;background:#fff;color:#475467;';out.regInsFullStyle=(_rim==='full')?_ba:_bi;out.regInsSpreadStyle=(_rim==='spread')?_ba:_bi;}out.onPushAllLocal=this.pushAllLocalToCloud;out.onResetLocal=this.resetLocalAndPull;out.onDedupeTrucks=this.dedupeTrucks;out.onImportTruckXlsx=this.onImportTruckXlsx;out.onGoIssue=this.onGoIssue;out.isIssue=S.section==='issue';out.navIssueStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='issue'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
     out.navSettingsStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='settings'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
-    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'}];
+    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'}];
       out.settingsUserRows=(S.profileUsers||[]).map(u=>({name:u.display_name||u.username,uname:u.username,isAdmin:!!u.is_admin,notAdmin:!u.is_admin,secText:u.is_admin?'ทุกเมนู (ผู้ดูแลระบบ)':((Array.isArray(u.sections)?u.sections:[]).map(k=>(_SECOPTS.find(o=>o.k===k)||{}).l).filter(Boolean).join(', ')||'—'),onEdit:()=>this.openUserEdit(u.id)}));
       out.settingsUsersEmpty=(S.profileUsers||[]).length===0;out.onOpenUser=this.openUserNew;
       const _ud=S.userDraft;out.userFormOpen=!!_ud;
