@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7686,7 +7686,21 @@ const THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.
 //   iPhone (WebKit) เต็มที่ ~2.6 ล้านตัวอักษร · ตัดเฉพาะค่า ''/null/[] ที่ไม่มี _ft ของช่องนั้น · ผู้อ่านทุกจุด normJob/normOrder เติมคืน
 const LF_SLIM_KEYS={jobReg_v1:1,orderReg_v1:1};
 function lfSlimJSON(v){try{const a=JSON.parse(v);if(!Array.isArray(a))return v;return JSON.stringify(a.map(r=>{if(!r||typeof r!=='object')return r;const ft=(r._ft&&typeof r._ft==='object')?r._ft:{};const o={};for(const k in r){const x=r[k];if((x===''||x===null||(Array.isArray(x)&&!x.length))&&k!=='id'&&ft[k]==null)continue;o[k]=x;}return o;}));}catch(e){return v;}}
-(function(){try{const _o=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){if(LF_SLIM_KEYS[k]&&typeof v==='string'&&v.length>2000)v=lfSlimJSON(v);try{return _o.call(this,k,v);}catch(e){if(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014)){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
+// ★ v.2026-09-28f: iPhone ยังเต็ม (staging 2.6M: jobReg 1.4M) → สำเนาในเครื่องเก็บเฉพาะใบงาน/ออร์เดอร์ช่วง 90 วัน
+//   (หรือแก้ไขภายใน 90 วัน / ออร์เดอร์ที่ยังไม่จัดรถ) ของเก่ายังอยู่บน cloud ครบ และดึงมาแสดงทุกครั้งที่เปิดแอป
+//   ส่วนที่ตัดเก็บในหน่วยความจำ (LF_TRIM) แล้วต่อกลับตอน getItem → ทุกจุดที่อ่านสำเนาในรอบเปิดแอปนี้
+//   (prev ของ _stampFields / fullSync merge) เห็นครบเหมือนเดิม — ไม่เปลี่ยนตรรกะ _ft
+const LF_TRIM={},LF_TRIM_DAYS=90;
+function lfTrimSplit(k,a){const cutMs=Date.now()-LF_TRIM_DAYS*864e5;const cut=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date(cutMs));const keep=[],old=[];
+  a.forEach(r=>{if(!r||typeof r!=='object'){keep.push(r);return;}const d=String((k==='jobReg_v1'?r.date:(r.receivedDate||r.requiredDate))||'').slice(0,10);let rc=!d||d>=cut||Number(r._editedAt||0)>cutMs;
+    if(!rc&&r._ft&&typeof r._ft==='object'){for(const x in r._ft){if(Number(r._ft[x]||0)>cutMs){rc=true;break;}}}
+    if(!rc&&k==='orderReg_v1'&&!r.jobId&&!r.canceledAt&&r.status!=='ยกเลิก')rc=true;(rc?keep:old).push(r);});return [keep,old];}
+function lfSlimTrim(k,v){try{const a=JSON.parse(lfSlimJSON(v));if(!Array.isArray(a))return {v:lfSlimJSON(v),t:null};const p=lfTrimSplit(k,a);return {v:JSON.stringify(p[0]),t:p[1].length?JSON.stringify(p[1]):null};}catch(e){return {v:v,t:null};}}
+(function(){try{const _o=Storage.prototype.setItem,_g=Storage.prototype.getItem,_r=Storage.prototype.removeItem;
+  Storage.prototype.__lfRawGet=_g;   // ขนาดจริงในเครื่อง (ไม่รวมส่วนที่ต่อกลับจากหน่วยความจำ)
+  Storage.prototype.getItem=function(k){const v=_g.call(this,k);const t=(LF_SLIM_KEYS[k]&&this===window.localStorage)?LF_TRIM[k]:null;if(!t||typeof v!=='string'||v.charAt(0)!=='[')return v;return v.length<=2?t:(v.slice(0,-1)+','+t.slice(1));};
+  Storage.prototype.removeItem=function(k){if(LF_SLIM_KEYS[k]&&this===window.localStorage)delete LF_TRIM[k];return _r.call(this,k);};
+  Storage.prototype.setItem=function(k,v){let _t;if(LF_SLIM_KEYS[k]&&typeof v==='string'&&v.length>2000){if(this===window.localStorage){const z=lfSlimTrim(k,v);v=z.v;_t=z.t;}else v=lfSlimJSON(v);}try{const res=_o.call(this,k,v);if(_t!==undefined){if(_t)LF_TRIM[k]=_t;else delete LF_TRIM[k];}return res;}catch(e){if(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014)){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
 // ===== Supabase backend (FleetTruck) =====
 // ===== v2 (multi-tenant + Supabase Auth) — ENV AUTO-SWITCH =====
 // default = PRODUCTION (lionflowapp.com). ใช้ staging เมื่อ hostname มี staging/localhost หรือใส่ ?env=staging
@@ -10151,7 +10165,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // plate → {ฟลีต:จำนวนเที่ยว} จากใบงาน 60 วันล่าสุด (แคชตาม jobs array เดิม ไม่วนทุก render)
   _qdRecentFleets(jobs,dFleet){const c=this._qdRecentCache;if(c&&c.jobs===jobs)return c.map;const map={};let cut='';try{cut=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date(Date.now()-60*86400000));}catch(e){}(jobs||[]).forEach(j=>{if(j.deleted||j._deleted||!j.truckPlate||!j.driverCode)return;if(cut&&String(j.date||'')<cut)return;const fl=dFleet[String(j.driverCode)];if(!fl)return;const m=map[j.truckPlate]||(map[j.truckPlate]={});m[fl]=(m[fl]||0)+1;});this._qdRecentCache={jobs,map};return map;}
   // 26h: สรุปการใช้ localStorage ของโดเมนนี้ (รวมเว็บอื่นบน github.io เดียวกัน) — โชว์ในแถบเตือน
-  _lsUsage(){try{let t=0;const r=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);const n=(localStorage.getItem(k)||'').length+String(k).length;t+=n;r.push([k,n]);}r.sort((a,b)=>b[1]-a[1]);return 'ใช้ไป '+t.toLocaleString()+' ตัวอักษร · ใหญ่สุด: '+r.slice(0,3).map(x=>x[0]+' '+Math.round(x[1]/1000).toLocaleString()+'k').join(', ');}catch(e){return '';}}
+  _lsUsage(){try{let t=0;const r=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);const n=((localStorage.__lfRawGet?localStorage.__lfRawGet(k):localStorage.getItem(k))||'').length+String(k).length;t+=n;r.push([k,n]);}r.sort((a,b)=>b[1]-a[1]);return 'ใช้ไป '+t.toLocaleString()+' ตัวอักษร · ใหญ่สุด: '+r.slice(0,3).map(x=>x[0]+' '+Math.round(x[1]/1000).toLocaleString()+'k').join(', ');}catch(e){return '';}}
   _qdSmall(){try{return window.innerWidth<900;}catch(e){return false;}}
   _qdFleetNow(){const S=this.state;if(S.qdFleet!==undefined)return S.qdFleet;let v=null;try{v=localStorage.getItem('qdFleet_v1');}catch(e){}if(v!==null)return v;return this._fleetList().includes('ระยอง')?'ระยอง':'';}
   openQuickDispatch=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({section:'jobs',jobView:'qlist',jobFormError:'',...(this._qdSmall()?{sidebarOpen:false}:{})});this.scrollMain();};
