@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5695,6 +5695,7 @@
             <div style="flex:1;min-width:0;">
               <div style="font-size:21px;font-weight:800;color:#16263a;">{{ jd.truckPlate }}</div>
               <div style="font-size:13px;color:#2f6fb0;font-weight:600;">{{ jdTruckTypeLabel }}</div>
+              <sc-if value="{{ qdPickedBadge }}" hint-placeholder-val="{{ false }}"><div style="{{ qdPickedBadgeStyle }}">{{ qdPickedBadge }}</div></sc-if>
             </div>
             <button onClick="{{ onQdChangeTruck }}" style="flex:none;padding:9px 14px;background:#fff;color:#2f6fb0;border:1px solid #b2ccea;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;">เปลี่ยน</button>
           </div>
@@ -5707,6 +5708,7 @@
               <button onClick="{{ t.onClick }}" style="text-align:left;background:#f8fafc;border:1px solid #d0d5dd;border-radius:10px;padding:10px 12px;cursor:pointer;font-family:inherit;min-width:0;">
                 <div style="font-size:15.5px;font-weight:800;color:#16263a;">{{ t.plate }}</div>
                 <div style="font-size:11.5px;color:#667085;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.sub }}</div>
+                <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><div style="{{ t.badgeStyle }}">{{ t.badge }}</div></sc-if>
               </button>
             </sc-for>
           </div>
@@ -5829,6 +5831,7 @@
             <div style="flex:1;min-width:0;">
               <div style="font-size:21px;font-weight:800;color:#16263a;">{{ qiPlate }}</div>
               <div style="font-size:13px;color:#2f6fb0;font-weight:600;">{{ qiTruckType }}</div>
+              <sc-if value="{{ qiPickedBadge }}" hint-placeholder-val="{{ false }}"><div style="{{ qiPickedBadgeStyle }}">{{ qiPickedBadge }}</div></sc-if>
             </div>
             <button onClick="{{ onQiChangeTruck }}" style="flex:none;padding:9px 14px;background:#fff;color:#2f6fb0;border:1px solid #b2ccea;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;">เปลี่ยน</button>
           </div>
@@ -5841,6 +5844,7 @@
               <button onClick="{{ t.onClick }}" style="text-align:left;background:#f8fafc;border:1px solid #d0d5dd;border-radius:10px;padding:10px 12px;cursor:pointer;font-family:inherit;min-width:0;">
                 <div style="font-size:15.5px;font-weight:800;color:#16263a;">{{ t.plate }}</div>
                 <div style="font-size:11.5px;color:#667085;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.sub }}</div>
+                <sc-if value="{{ t.badge }}" hint-placeholder-val="{{ false }}"><div style="{{ t.badgeStyle }}">{{ t.badge }}</div></sc-if>
               </button>
             </sc-for>
           </div>
@@ -13276,7 +13280,16 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         const _inF=(t)=>!_qf||t.dept===_qf||_dFleet[String(t.assignedDriver||'')]===_qf||!!(_recent[t.plate]&&_recent[t.plate][_qf]);
         let _tl=_qq?_allT.filter(t=>(String(t.plate)+String(t.truckType||'')+(_dName[String(t.assignedDriver||'')]||'')).toLowerCase().replace(/\s+/g,'').indexOf(_qq)>=0):_allT.filter(_inF);
         const _fleetEmpty=!_qq&&!!_qf&&!_tl.length;if(_fleetEmpty)_tl=_allT;
-        out.qdTrucks=_tl.slice().sort((a,b)=>String(a.plate).localeCompare(String(b.plate),'th',{numeric:true})).slice(0,120).map(t=>({plate:t.plate,sub:[t.truckType,_dName[String(t.assignedDriver||'')]].filter(Boolean).join(' · ')||' ',onClick:()=>out.onJobTruck({target:{value:t.plate}})}));
+        // ★ v.2026-09-28e: ป้ายผลตรวจสภาพของวันนี้ (ใบล่าสุดของทะเบียนนั้น) — ไม่บังคับตรวจ แค่ให้เห็น
+        const _today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date());
+        const _insToday={};(S.inspections||[]).forEach(x=>{if(String(x.date||'')!==_today||!x.truckPlate||!x.result)return;const k=x.truckPlate;if(!_insToday[k]||(Number(x.id)||0)>(Number(_insToday[k].id)||0))_insToday[k]=x;});
+        const _insBadge=(plate)=>{const x=_insToday[plate];if(!x)return {badge:'',badgeStyle:''};const base='display:inline-block;margin-top:5px;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap;';
+          if(x.result==='fail')return {badge:'⛔ ไม่ผ่าน',badgeStyle:base+'background:#fef3f2;color:#b42318;border:1px solid #f3c9c3;'};
+          if(x.result==='review'&&!x.approvedBy)return {badge:'⚠ เฝ้าระวัง',badgeStyle:base+'background:#fef7ec;color:#b7791f;border:1px solid #f3dcae;'};
+          return {badge:'✓ ตรวจแล้ววันนี้',badgeStyle:base+'background:#ecfdf3;color:#067647;border:1px solid #bfe6cf;'};};
+        out.qdTrucks=_tl.slice().sort((a,b)=>String(a.plate).localeCompare(String(b.plate),'th',{numeric:true})).slice(0,120).map(t=>({plate:t.plate,sub:[t.truckType,_dName[String(t.assignedDriver||'')]].filter(Boolean).join(' · ')||' ',..._insBadge(t.plate),onClick:()=>out.onJobTruck({target:{value:t.plate}})}));
+        {const b=_insBadge(jd.truckPlate||'');out.qdPickedBadge=b.badge;out.qdPickedBadgeStyle=b.badgeStyle;}
+        out._insBadge=_insBadge;
         out.qdTruckHint=_qq?('ค้นทุกฟลีต · พบ '+_tl.length+' คัน'):(_fleetEmpty?('ไม่พบรถของฟลีต'+_qf+' — แสดงทุกคัน'):((_qf?('รถฟลีต'+_qf):'รถทุกคัน')+' · '+_tl.length+' คัน · แตะเพื่อเลือก'));
         out.qdTruckQ=S.qdTruckQ||'';out.onQdTruckQ=(e)=>this.setState({qdTruckQ:e.target.value});
         out.qdTruckPicked=!!jd.truckPlate;out.qdTruckNotPicked=!jd.truckPlate;
@@ -13294,7 +13307,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           out.qiJobText=_qi.jobNo?(' · ใบงาน '+_qi.jobNo):'';
           out.qiPlate=_qi.truckPlate||'';out.qiTruckPicked=!!_qi.truckPlate;out.qiTruckNotPicked=!_qi.truckPlate;
           {const _t=(S.trucks||[]).find(x=>x.plate===_qi.truckPlate);out.qiTruckType=_t?(_t.truckType||''):'';}
-          out.qiTrucks=(out.qdTrucks||[]).map(t=>({plate:t.plate,sub:t.sub,onClick:()=>this.qiPickTruck(t.plate)}));
+          out.qiTrucks=(out.qdTrucks||[]).map(t=>({plate:t.plate,sub:t.sub,badge:t.badge,badgeStyle:t.badgeStyle,onClick:()=>this.qiPickTruck(t.plate)}));
+          {const b=out._insBadge?out._insBadge(_qi.truckPlate||''):{badge:''};out.qiPickedBadge=b.badge;out.qiPickedBadgeStyle=b.badgeStyle;}
           out.onQiChangeTruck=()=>this.setState(s=>({qdTruckQ:'',inspectDraft:{...s.inspectDraft,truckPlate:''}}));
           out.qiDriverCode=_qi.driverCode||'';out.onQiDriver=(e)=>this.qiPickDriver(e.target.value);
           const _big=(key)=>{const cur=st[key]||'ok';const b=(val,label,fg,bg,bd)=>({label,onClick:()=>this.setInspectStatus(key,val),style:'flex:1;min-width:0;padding:11px 2px;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:1.5px solid '+(cur===val?bd:'#e0e4e9')+';background:'+(cur===val?bg:'#fff')+';color:'+(cur===val?fg:'#98a2b3')+';'});return [b('ok','ผ่าน','#067647','#ecfdf3','#067647'),b('warn','เฝ้าระวัง','#b7791f','#fef7ec','#E8A33D'),b('fail','ไม่ผ่าน','#b42318','#fef3f2','#b42318')];};
