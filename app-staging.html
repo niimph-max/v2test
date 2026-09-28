@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5655,7 +5655,11 @@
           <button onClick="{{ f.onClick }}" style="{{ f.style }}">{{ f.label }}</button>
         </sc-for>
       </div>
-      <button onClick="{{ onQdNew }}" style="width:100%;padding:18px;background:#1f8a5b;color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;margin-bottom:20px;box-shadow:0 6px 16px rgba(31,138,91,.25);font-family:inherit;">＋ จ่ายงานใหม่</button>
+      <sc-if value="{{ qiDoneMsg }}" hint-placeholder-val="{{ false }}">
+        <div style="{{ qiDoneStyle }}"><div style="display:flex;gap:10px;align-items:flex-start;"><div style="flex:1;">{{ qiDoneMsg }}</div><button onClick="{{ onQiDoneClose }}" style="flex:none;background:none;border:none;font-size:18px;color:inherit;cursor:pointer;padding:0;">✕</button></div></div>
+      </sc-if>
+      <button onClick="{{ onQdNew }}" style="width:100%;padding:18px;background:#1f8a5b;color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;margin-bottom:10px;box-shadow:0 6px 16px rgba(31,138,91,.25);font-family:inherit;">＋ จ่ายงานใหม่</button>
+      <button onClick="{{ onQiNew }}" style="width:100%;padding:15px;background:#fff;color:#16263a;border:1.5px solid #16263a;border-radius:14px;font-size:16px;font-weight:800;margin-bottom:20px;font-family:inherit;">🛡️ ตรวจสภาพรถก่อนออกงาน</button>
       <div style="font-size:14px;font-weight:700;color:#344054;margin:0 2px 9px;">📥 งานรอจัดรถ ({{ qdOrderCount }})</div>
       <sc-if value="{{ qdNoOrders }}" hint-placeholder-val="{{ false }}">
         <div style="background:#f8fafc;border:1px dashed #d0d5dd;border-radius:14px;padding:22px 16px;text-align:center;font-size:14px;color:#667085;line-height:1.6;">ไม่มีงานรอจัดรถ<br>กด "จ่ายงานใหม่" ได้เลย</div>
@@ -5802,6 +5806,133 @@
       </sc-if>
       <div style="position:sticky;bottom:0;background:linear-gradient(to top,#f4f6f8 70%,rgba(244,246,248,0));padding:10px 0 12px;">
         <button onClick="{{ onQdSave }}" style="width:100%;padding:17px;background:#1f8a5b;color:#fff;border:none;border-radius:14px;font-size:18px;font-weight:800;box-shadow:0 6px 16px rgba(31,138,91,.28);font-family:inherit;">✅ จ่ายงาน + แสดง QR</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ===== 🛡️ ตรวจสภาพก่อนออกงาน (มือถือ) ===== -->
+    <!-- ★ v.2026-09-28d: ใช้ inspectDraft/saveInspect เดิม · รูปขึ้น Storage · ไม่ผ่าน = เตือน (ไม่ล็อกการจ่ายงาน) -->
+    <sc-if value="{{ isQiForm }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px 14px 30px;max-width:620px;margin:0 auto;box-sizing:border-box;">
+      <div style="display:flex;align-items:center;gap:10px;padding-left:46px;min-height:40px;margin-bottom:14px;">
+        <button onClick="{{ onQiBack }}" style="flex:none;background:none;border:none;color:#475467;font-size:24px;cursor:pointer;padding:0 4px;line-height:1;">←</button>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:19px;font-weight:800;color:#16263a;">🛡️ ตรวจสภาพก่อนออกงาน</div>
+          <div style="font-size:12.5px;color:#667085;">{{ iDate }} {{ iTime }}{{ qiJobText }}</div>
+        </div>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:10px;">🚛 ทะเบียนรถ <span style="color:#d92d20;">*</span></div>
+        <sc-if value="{{ qiTruckPicked }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;background:#eaf1fb;border:1.5px solid #2f6fb0;border-radius:12px;padding:12px 14px;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:21px;font-weight:800;color:#16263a;">{{ qiPlate }}</div>
+              <div style="font-size:13px;color:#2f6fb0;font-weight:600;">{{ qiTruckType }}</div>
+            </div>
+            <button onClick="{{ onQiChangeTruck }}" style="flex:none;padding:9px 14px;background:#fff;color:#2f6fb0;border:1px solid #b2ccea;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;">เปลี่ยน</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ qiTruckNotPicked }}" hint-placeholder-val="{{ true }}">
+          <input value="{{ qdTruckQ }}" onInput="{{ onQdTruckQ }}" placeholder="🔍 พิมพ์ทะเบียน / ชื่อ พขร." style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+          <div style="font-size:12px;color:#98a2b3;margin:7px 2px 0;">{{ qdTruckHint }}</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;max-height:300px;overflow:auto;margin-top:10px;">
+            <sc-for list="{{ qiTrucks }}" as="t" hint-placeholder-count="6">
+              <button onClick="{{ t.onClick }}" style="text-align:left;background:#f8fafc;border:1px solid #d0d5dd;border-radius:10px;padding:10px 12px;cursor:pointer;font-family:inherit;min-width:0;">
+                <div style="font-size:15.5px;font-weight:800;color:#16263a;">{{ t.plate }}</div>
+                <div style="font-size:11.5px;color:#667085;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ t.sub }}</div>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+        <div style="font-size:14px;font-weight:700;color:#16263a;margin:16px 0 8px;">👤 พนักงานขับรถ</div>
+        <select value="{{ qiDriverCode }}" onChange="{{ onQiDriver }}" style="width:100%;padding:12px 12px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;background:#fff;font-family:inherit;">
+          <option value="">— ไม่ระบุ —</option>
+          <sc-for list="{{ qdDriverOptions }}" as="opt" hint-placeholder-count="5">
+            <option value="{{ opt.value }}">{{ opt.label }}</option>
+          </sc-for>
+        </select>
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin:14px 0 5px;">ลูกค้า / งาน</label>
+        <input value="{{ iCustomer }}" onInput="{{ onICustomer }}" placeholder="ชื่อลูกค้า (ถ้ามี)" style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;">
+      </div>
+
+      <sc-for list="{{ qiVehGroups }}" as="g" hint-placeholder-count="2">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+          <div style="font-size:15px;font-weight:800;color:#16263a;margin-bottom:6px;">{{ g.icon }} {{ g.group }}</div>
+          <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
+            <div style="padding:10px 0;border-top:1px solid #f2f4f7;">
+              <div style="font-size:14.5px;color:#1d2b3a;margin-bottom:8px;">{{ it.label }}</div>
+              <div style="display:flex;gap:6px;">
+                <sc-for list="{{ it.btns }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:800;color:#16263a;margin-bottom:6px;">🧑‍✈️ สภาพคนขับ</div>
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin:6px 0 5px;">ค่าแอลกอฮอล์ (mg%)</label>
+        <input type="number" inputmode="decimal" value="{{ iAlcohol }}" onInput="{{ onIAlcohol }}" style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;margin-bottom:6px;">
+        <sc-for list="{{ qiDrvItems }}" as="it" hint-placeholder-count="3">
+          <div style="padding:10px 0;border-top:1px solid #f2f4f7;">
+            <div style="font-size:14.5px;color:#1d2b3a;margin-bottom:8px;">{{ it.label }}</div>
+            <div style="display:flex;gap:6px;">
+              <sc-for list="{{ it.btns }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:800;color:#16263a;margin-bottom:6px;">🦺 ระเบียบลูกค้า / ความปลอดภัย</div>
+        <sc-for list="{{ qiCustItems }}" as="it" hint-placeholder-count="3">
+          <div style="padding:10px 0;border-top:1px solid #f2f4f7;">
+            <div style="font-size:14.5px;color:#1d2b3a;margin-bottom:8px;">{{ it.label }}</div>
+            <div style="display:flex;gap:6px;">
+              <sc-for list="{{ it.btns }}" as="b" hint-placeholder-count="3"><button onClick="{{ b.onClick }}" style="{{ b.style }}">{{ b.label }}</button></sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:800;color:#16263a;margin-bottom:4px;">📷 รูปประกอบ <span style="font-size:12px;font-weight:500;color:#98a2b3;">(ไม่บังคับ)</span></div>
+        <sc-for list="{{ qiPhotoSecs }}" as="p" hint-placeholder-count="3">
+          <div style="padding:10px 0;border-top:1px solid #f2f4f7;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <div style="font-size:14px;color:#1d2b3a;">{{ p.label }}</div>
+              <label style="flex:none;padding:9px 14px;background:#eaf1fb;color:#2f6fb0;border:1px solid #b2ccea;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">📷 ถ่ายรูป<input type="file" accept="image/*" capture="environment" onChange="{{ p.onPick }}" style="display:none;"></label>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;">
+              <sc-for list="{{ p.thumbs }}" as="ph" hint-placeholder-count="0">
+                <div style="position:relative;">
+                  <img src="{{ ph.src }}" style="width:76px;height:76px;object-fit:cover;border-radius:10px;border:1px solid #e4e7ec;display:block;">
+                  <button onClick="{{ ph.onRemove }}" style="position:absolute;top:-6px;right:-6px;width:24px;height:24px;border-radius:50%;border:none;background:#b42318;color:#fff;font-size:13px;line-height:24px;padding:0;cursor:pointer;">✕</button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ qiUploading }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#2f6fb0;font-weight:600;margin-top:6px;">{{ qiUploadText }}</div></sc-if>
+        <label style="font-size:13px;font-weight:600;color:#667085;display:block;margin:12px 0 5px;">หมายเหตุ</label>
+        <textarea value="{{ iNote }}" onInput="{{ onINote }}" rows="3" placeholder="สิ่งที่พบ / สิ่งที่ต้องแก้" style="width:100%;padding:12px 14px;border:1px solid #d0d5dd;border-radius:10px;font-size:16px;color:#1d2b3a;box-sizing:border-box;font-family:inherit;resize:vertical;"></textarea>
+      </div>
+
+      <sc-if value="{{ inspectFormError }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:12px 14px;background:#fef3f2;border:1px solid #f5c9c2;border-radius:10px;color:#b42318;font-size:14px;margin-bottom:12px;">{{ inspectFormErrorText }}</div>
+      </sc-if>
+      <div style="position:sticky;bottom:0;background:linear-gradient(to top,#f4f6f8 78%,rgba(244,246,248,0));padding:10px 0 12px;">
+        <div style="{{ qiGateStyle }}">
+          <div style="{{ qiGateTitleStyle }}">{{ iResultText }}</div>
+          <div style="{{ qiGateSubStyle }}">{{ iGateSummary }}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onClick="{{ onQiSave }}" style="flex:1;padding:15px;background:#fff;color:#16263a;border:1.5px solid #16263a;border-radius:14px;font-size:16px;font-weight:800;font-family:inherit;">💾 บันทึก</button>
+          <sc-if value="{{ iCanApprove }}" hint-placeholder-val="{{ true }}">
+            <button onClick="{{ onQiApprove }}" style="flex:2;padding:15px;background:#1f8a5b;color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:800;font-family:inherit;box-shadow:0 6px 16px rgba(31,138,91,.28);">✅ อนุมัติให้ออกงาน</button>
+          </sc-if>
+        </div>
       </div>
     </div>
     </sc-if>
@@ -7313,6 +7444,9 @@
           <div style="display:flex;justify-content:center;margin-bottom:14px;">
             {{ savedJobQrImgNode }}
           </div>
+          <sc-if value="{{ qdCanInspect }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onQdInspectThis }}" style="width:100%;padding:13px;background:#16263a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px;font-family:inherit;">🛡️ ตรวจสภาพรถคันนี้</button>
+          </sc-if>
           <button onClick="{{ onCloseSavedQr }}" style="width:100%;padding:11px;background:#f2f4f7;color:#475467;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;">ปิด</button>
         </div>
       </div>
@@ -7854,6 +7988,13 @@ async function sbSoftDeleteJobs(keys){const now=Date.now();for(const k of keys){
 // ยกเลิกธงลบบน cloud (คืนชีพงาน) — เรียกทุกครั้งที่บันทึก/แก้ใบงานที่ยังใช้อยู่ กันงานที่เคยติดธงลบค้างถูก poll ลบทิ้งต่อหน้า
 async function sbUndeleteJobs(keys){for(const k of keys){await fetch(SB_REST+'/jobs?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.'+encodeURIComponent(String(k)),{method:'PATCH',headers:{...SB_HEADERS,'Prefer':'return=minimal'},body:JSON.stringify({deleted:false})}).catch(()=>{});}}
 const SB_BUCKET='attachments';
+// ★ v.2026-09-28d: รูปใบตรวจสภาพ → Storage (attachments/<บริษัท>/inspections/<id>/...) เก็บแค่ URL ในใบตรวจ
+async function sbUploadInspectPhoto(blob,inspId){
+  const path=COMPANY_ID+'/inspections/'+inspId+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.jpg';
+  const res=await fetch(SUPABASE_URL+'/storage/v1/object/'+SB_BUCKET+'/'+encodeURI(path),{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},body:blob});
+  if(!res.ok){let t='';try{t=await res.text();}catch(e){}throw new Error('storage '+res.status+' '+t);}
+  return SUPABASE_URL+'/storage/v1/object/public/'+SB_BUCKET+'/'+encodeURI(path);
+}
 async function sbUploadFile(file,jobId){
   const safe=String(file.name||'file').replace(/[^\w.\-]+/g,'_').slice(-60);
   const path=COMPANY_ID+'/jobs/'+jobId+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'_'+safe;
@@ -10014,7 +10155,21 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   qdNew=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;const f=this._qdFleetNow();this.openJobNew();this.setState(s=>({jobView:'qform',qdTruckQ:'',jobDraft:{...(s.jobDraft||{}),trackJob:true,driverFleet:f}}));};
   qdDispatchOrder=(id)=>{const f=this._qdFleetNow();this.dispatchOrder(id);this.setState(s=>({jobView:'qform',qdTruckQ:'',jobDraft:{...(s.jobDraft||{}),trackJob:true,driverFleet:(s.jobDraft&&s.jobDraft.driverFleet)||f}}));};
   qdBack=()=>{this.dispatchingOrderId=null;this.dispatchingTripIds=null;this.setState({jobView:'qlist',jobFormError:''});this.scrollMain();};
-  qdSave=()=>{const j=this.state.jobDraft||{};if(!String(j.truckPlate||'').trim()){this.setState({jobFormError:'กรุณาเลือกทะเบียนรถ'});return;}this.saveJob();setTimeout(()=>{if(this.state.jobView==='list'&&!this.state.jobFormError){this.setState({jobView:'qlist',qdTruckQ:''});this.scrollMain();}},0);};
+  qdSave=()=>{const j=this.state.jobDraft||{};if(!String(j.truckPlate||'').trim()){this.setState({jobFormError:'กรุณาเลือกทะเบียนรถ'});return;}const _before=new Set((this.state.jobs||[]).map(x=>String(x.id)));this.saveJob();setTimeout(()=>{if(this.state.jobView==='list'&&!this.state.jobFormError){const _nj=(this.state.jobs||[]).find(x=>!_before.has(String(x.id)));this.setState({jobView:'qlist',qdTruckQ:'',qdLastJobId:_nj?_nj.id:null,qiDoneMsg:''});this.scrollMain();}},0);};
+  // ★ v.2026-09-28d: 🛡️ ตรวจสภาพก่อนออกงาน (มือถือ) — jobView 'qinspect' ใต้ section jobs
+  //   ใช้ inspectDraft / setInspectStatus / saveInspect / onInspectPickJob ของหน้าตรวจสภาพเดิมทั้งหมด (ใบตรวจเข้าหน้าตรวจสภาพบนคอมเหมือนเดิม)
+  qiNew=()=>{this.openInspectNew();this.setState({section:'jobs',jobView:'qinspect',qdTruckQ:'',qiDoneMsg:'',savedJobQrVisible:false,qdLastJobId:null,...(this._qdSmall()?{sidebarOpen:false}:{})});};
+  qiForJob=(jobId)=>{this.qiNew();this.onInspectPickJob(jobId);};
+  qiBack=()=>{this.setState({jobView:'qlist',inspectView:'list',inspectDraft:null,inspectError:''});this.scrollMain();};
+  qiPickTruck=(plate)=>{const t=(this.state.trucks||[]).find(x=>x.plate===plate);let dc=t&&t.assignedDriver;if(!dc&&t){const c={};(this.state.jobs||[]).forEach(j=>{if(j.truckPlate===plate&&j.driverCode)c[j.driverCode]=(c[j.driverCode]||0)+1;});let bn=0;for(const k in c){if(c[k]>bn){bn=c[k];dc=k;}}}const d=(this.state.drivers||[]).find(x=>String(x.code)===String(dc||''));this.setState(s=>({qdTruckQ:'',inspectDraft:{...s.inspectDraft,truckPlate:plate,driverCode:dc||s.inspectDraft.driverCode||'',driverName:d?d.name:(s.inspectDraft.driverName||'')}}));};
+  qiPickDriver=(code)=>{const d=(this.state.drivers||[]).find(x=>String(x.code)===String(code));this.setState(s=>({inspectDraft:{...s.inspectDraft,driverCode:code,driverName:d?d.name:''}}));};
+  qiSave=(approve)=>{if(this.state.qiUploading){this.setState({inspectError:'รอให้อัปโหลดรูปเสร็จก่อน'});return;}const d=this.state.inspectDraft||{};const _plate=d.truckPlate;this.saveInspect(approve);setTimeout(()=>{if(!this.state.inspectDraft){const r=(this.state.inspections||[]).find(x=>String(x.id)===String(d.id))||{};const t=r.result==='fail'?('⛔ '+_plate+' ไม่ผ่านการตรวจ — บันทึกแล้ว ห้ามออกงานจนกว่าจะแก้ไข'):(approve?('✅ '+_plate+' อนุมัติให้ออกงานแล้ว'):('💾 บันทึกใบตรวจ '+_plate+' แล้ว (ยังไม่อนุมัติ)'));this.setState({jobView:'qlist',qiDoneMsg:t});this.scrollMain();}},0);};
+  _compressToBlob(file,max,q){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{try{const sc=Math.min(1,max/Math.max(img.width||1,img.height||1));const w=Math.max(1,Math.round(img.width*sc)),h=Math.max(1,Math.round(img.height*sc));const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);c.toBlob(b=>b?res(b):rej(new Error('แปลงรูปไม่สำเร็จ')),'image/jpeg',q);}catch(e){rej(e);}};img.onerror=()=>rej(new Error('เปิดรูปนี้ไม่ได้ (ลองถ่ายใหม่)'));img.src=r.result;};r.onerror=()=>rej(new Error('อ่านไฟล์ไม่ได้'));r.readAsDataURL(file);});}
+  qiAddPhoto=(sec,e)=>{const f=e.target.files&&e.target.files[0];try{e.target.value='';}catch(_){}if(!f)return;const d=this.state.inspectDraft;if(!d)return;const id=d.id;this.setState(s=>({qiUploading:(s.qiUploading||0)+1}));
+    this._compressToBlob(f,1000,0.6).then(b=>sbUploadInspectPhoto(b,id)).then(url=>{this.setState(s=>{if(!s.inspectDraft||String(s.inspectDraft.id)!==String(id))return{};const ph={...(s.inspectDraft.photos||{})};ph[sec]=[...(ph[sec]||[]),url];return{inspectDraft:{...s.inspectDraft,photos:ph}};});})
+    .catch(err=>window.alert('อัปโหลดรูปไม่สำเร็จ: '+((err&&err.message)||err)))
+    .then(()=>this.setState(s=>({qiUploading:Math.max(0,(s.qiUploading||1)-1)})));};
+  qiRemovePhoto=(sec,url)=>this.setState(s=>{const ph={...((s.inspectDraft&&s.inspectDraft.photos)||{})};ph[sec]=(ph[sec]||[]).filter(u=>u!==url);return{inspectDraft:{...s.inspectDraft,photos:ph}};});
   onGoOrders=()=>{const q=(this.state.orders||[]).some(o=>{const s=ordEffStatus(o);return s==='รอใบเสนอราคา'||(s==='รอชำระเงิน'&&(Number(o.slipCount)||0)>0);});this.setState({section:'orders',orderView:'list',orderStatusFilter:q?'quote':'pending'});};
   _parseDMY(s){s=String(s||'').trim();const m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m){let y=+m[3];if(y>2400)y-=543;return y+'-'+String(+m[2]).padStart(2,'0')+'-'+String(+m[1]).padStart(2,'0');}return '';}
   openImport=()=>this.setState({importOpen:true,importText:'',importPreview:null,importError:''});
@@ -13130,6 +13285,30 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         const _dl=(S.drivers||[]).filter(d=>!d.resigned&&(!_qf||d.fleet===_qf||String(d.code)===String(jd.driverCode||'')));
         out.qdDriverOptions=(_dl.length?_dl:(S.drivers||[]).filter(d=>!d.resigned)).map(d=>({value:d.code,label:d.name}));
         out.qdGirDistStyle='width:100%;padding:12px 12px;border:1px solid #e5b78a;border-radius:10px;font-size:16px;color:#1d2b3a;font-family:inherit;margin-bottom:8px;background:'+(jd.destProvince?'#fffdf7':'#f4f6f8');
+        // ★ v.2026-09-28d: 🛡️ ตรวจสภาพ (มือถือ)
+        out.onQiNew=this.qiNew;out.qiDoneMsg=S.qiDoneMsg||'';out.qiDoneFail=/^⛔/.test(S.qiDoneMsg||'');
+        out.qiDoneStyle='border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:14px;font-weight:700;line-height:1.5;'+(out.qiDoneFail?'background:#fef3f2;border:1px solid #f3c9c3;color:#b42318;':'background:#ecfdf3;border:1px solid #bfe6cf;color:#067647;');
+        out.onQiDoneClose=()=>this.setState({qiDoneMsg:''});
+        {const _qi=S.inspectDraft;out.isQiForm=S.jobView==='qinspect'&&!!_qi;
+         if(out.isQiForm){const st=_qi.status||{};
+          out.qiJobText=_qi.jobNo?(' · ใบงาน '+_qi.jobNo):'';
+          out.qiPlate=_qi.truckPlate||'';out.qiTruckPicked=!!_qi.truckPlate;out.qiTruckNotPicked=!_qi.truckPlate;
+          {const _t=(S.trucks||[]).find(x=>x.plate===_qi.truckPlate);out.qiTruckType=_t?(_t.truckType||''):'';}
+          out.qiTrucks=(out.qdTrucks||[]).map(t=>({plate:t.plate,sub:t.sub,onClick:()=>this.qiPickTruck(t.plate)}));
+          out.onQiChangeTruck=()=>this.setState(s=>({qdTruckQ:'',inspectDraft:{...s.inspectDraft,truckPlate:''}}));
+          out.qiDriverCode=_qi.driverCode||'';out.onQiDriver=(e)=>this.qiPickDriver(e.target.value);
+          const _big=(key)=>{const cur=st[key]||'ok';const b=(val,label,fg,bg,bd)=>({label,onClick:()=>this.setInspectStatus(key,val),style:'flex:1;min-width:0;padding:11px 2px;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:1.5px solid '+(cur===val?bd:'#e0e4e9')+';background:'+(cur===val?bg:'#fff')+';color:'+(cur===val?fg:'#98a2b3')+';'});return [b('ok','ผ่าน','#067647','#ecfdf3','#067647'),b('warn','เฝ้าระวัง','#b7791f','#fef7ec','#E8A33D'),b('fail','ไม่ผ่าน','#b42318','#fef3f2','#b42318')];};
+          out.qiVehGroups=INSPECT_VEH.map((g,gi)=>({group:g.g,icon:g.icon,items:g.items.map((label,ii)=>({label,btns:_big('v'+gi+'_'+ii)}))}));
+          out.qiDrvItems=INSPECT_DRIVER.map((label,i)=>({label,btns:_big('d'+i)}));
+          out.qiCustItems=INSPECT_CUST.map((label,i)=>({label,btns:_big('c'+i)}));
+          out.qiPhotoSecs=[{k:'veh',label:'รูปสภาพรถ'},{k:'driver',label:'รูปคนขับ / เอกสาร'},{k:'cust',label:'รูปอุปกรณ์ / ระเบียบลูกค้า'}].map(p=>({label:p.label,onPick:(e)=>this.qiAddPhoto(p.k,e),thumbs:(((_qi.photos||{})[p.k])||[]).map(u=>({src:u,onRemove:()=>this.qiRemovePhoto(p.k,u)}))}));
+          out.qiUploading=!!S.qiUploading;out.qiUploadText='⏳ กำลังอัปโหลดรูป '+(S.qiUploading||0)+' รูป…';
+          {const _r=this._inspectResult(st);const _c={pass:['#ecfdf3','#067647','#bfe6cf'],review:['#fef7ec','#b7791f','#f3dcae'],fail:['#fef3f2','#b42318','#f3c9c3']}[_r]||['#eef1f4','#667085','#e4e7ec'];
+           out.qiGateStyle='border-radius:12px;padding:12px 14px;margin-bottom:10px;background:'+_c[0]+';border:1px solid '+_c[2]+';';out.qiGateTitleStyle='font-size:15px;font-weight:800;color:'+_c[1]+';';out.qiGateSubStyle='font-size:13px;color:'+_c[1]+';';}
+          out.onQiSave=()=>this.qiSave(false);out.onQiApprove=()=>this.qiSave(true);out.onQiBack=this.qiBack;
+         }}
+        // ปุ่ม "ตรวจสภาพรถคันนี้" ในหน้าต่าง QR หลังจ่ายงานจากหน้าจ่ายงานเร็ว
+        out.qdCanInspect=!!S.qdLastJobId&&!!S.savedJobQrVisible&&S.jobView==='qlist';out.onQdInspectThis=()=>this.qiForJob(S.qdLastJobId);
       }
       out.onJobOrigin=(e)=>this.setJ('origin',e.target.value);out.onJobDest=(e)=>this.setJ('destination',e.target.value);
       out.onJobDestDistrict=(e)=>this.setJ('destDistrict',e.target.value);out.onJobDestProvince=(e)=>this.setJ('destProvince',e.target.value);
@@ -13508,7 +13687,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       if(S.inspectFilterDate)_il=_il.filter(x=>String(x.date||'')===S.inspectFilterDate);
       if(_iq)_il=_il.filter(x=>((x.jobNo||'')+' '+(x.truckPlate||'')+' '+(x.driverName||'')+' '+(x.customer||'')).toLowerCase().indexOf(_iq)>=0);
       _il.sort((a,b)=>(Number(b.id)||0)-(Number(a.id)||0));
-      out.inspectRows=_il.map(x=>{const c=RM[x.result||'']||RM[''];return{id:x.id,jobNo:x.jobNo||'—',plate:x.truckPlate||'—',driver:x.driverName||'—',customer:x.customer||'—',inspector:x.inspector||'—',srcLabel:(x.source==='qr'?'📱 ผ่าน QR':(x.jobNo?('ใบงาน '+x.jobNo):'บันทึกในระบบ')),dateFmt:this.thaiDate(x.date)+' '+(x.time||''),score:(x.score||0)+'',statusText:c.t,badgeStyle:'flex:none;padding:3px 11px;border-radius:99px;font-size:11.5px;font-weight:700;background:'+c.bg+';color:'+c.fg+';',onOpen:()=>this.openInspectEdit(x.id),onDelete:()=>this.deleteInspect(x.id)};});
+      out.inspectRows=_il.map(x=>{const c=(x.result==='review'&&x.approvedBy)?{...RM.pass,t:'อนุมัติแล้ว (มีเฝ้าระวัง)'}:(RM[x.result||'']||RM['']);return{id:x.id,jobNo:x.jobNo||'—',plate:x.truckPlate||'—',driver:x.driverName||'—',customer:x.customer||'—',inspector:x.inspector||'—',srcLabel:(x.source==='qr'?'📱 ผ่าน QR':(x.jobNo?('ใบงาน '+x.jobNo):'บันทึกในระบบ')),dateFmt:this.thaiDate(x.date)+' '+(x.time||''),score:(x.score||0)+'',statusText:c.t,badgeStyle:'flex:none;padding:3px 11px;border-radius:99px;font-size:11.5px;font-weight:700;background:'+c.bg+';color:'+c.fg+';',onOpen:()=>this.openInspectEdit(x.id),onDelete:()=>this.deleteInspect(x.id)};});
       out.inspectEmpty=_il.length===0;out.inspectCount=_il.length;
       out.inspectNavCount=(S.inspections||[]).length||'';out.navInspectBadge='font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(S.section==='inspect'?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;');
       out.inspectSearch=S.inspectSearch||'';out.onInspectSearch=(e)=>this.setState({inspectSearch:e.target.value});
