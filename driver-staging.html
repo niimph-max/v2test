@@ -28,6 +28,22 @@
   .toast.show{opacity:1;}
   .spin{width:18px;height:18px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;animation:sp .8s linear infinite;vertical-align:middle;}
   @keyframes sp{to{transform:rotate(360deg);}}
+  /* ตรวจสภาพก่อนออกงาน (v.2026-09-28f) */
+  .ig{font-size:13.5px;font-weight:800;color:#16263a;margin:4px 0 8px;}
+  .ii{padding:10px 0;border-bottom:1px solid #f2f4f7;}
+  .ii:last-child{border-bottom:none;}
+  .il{font-size:14px;color:#1d2b3a;font-weight:600;margin-bottom:8px;}
+  .i3{display:flex;gap:6px;}
+  .i3 button{flex:1;padding:11px 4px;border-radius:10px;border:1px solid #d0d5dd;background:#fff;color:#667085;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer;}
+  .i3 button.on-ok{background:#ecfdf3;border-color:#1f8a5b;color:#067647;}
+  .i3 button.on-warn{background:#fef7ec;border-color:#d99a2b;color:#b7791f;}
+  .i3 button.on-fail{background:#fef3f2;border-color:#d92d20;color:#b42318;}
+  .inp{width:100%;padding:12px;border:1px solid #d0d5dd;border-radius:10px;font-size:15px;font-family:inherit;color:#1d2b3a;}
+  .thumbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+  .thumbs div{position:relative;width:72px;height:72px;border-radius:9px;overflow:hidden;background:#f2f4f7;}
+  .thumbs img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumbs span{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:13px;line-height:22px;text-align:center;cursor:pointer;}
+  .pick{display:inline-block;padding:9px 14px;border:1px dashed #98a2b3;border-radius:10px;font-size:13px;font-weight:700;color:#475467;cursor:pointer;background:#f9fafb;}
 </style>
 </head>
 <body>
@@ -150,7 +166,7 @@ function load(){
     JOB=r.data.job||{}; JOBID=r.data.jobId; DRIVER=r.data.driver||null;
     // v.2026-08-28d: รถคันนี้มีกล่อง GPS ติดรถอยู่แล้ว → ไม่ต้องส่งซ้ำจากมือถือ (ซ่อนการ์ดไปเงียบ)
     if(r.data.gps===false){shareSupported=false;stopShare();}
-    render();
+    render(); insLoad();
   }).catch(function(){fail('เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ต');});
 }
 function fail(msg){
@@ -180,7 +196,145 @@ function saveNote(){
   rpc('driver_update_progress',{_token:TOKEN,_patch:{driverNote:v}}).then(function(r){toast(r.ok?'บันทึกหมายเหตุแล้ว':'บันทึกไม่สำเร็จ');if(r.ok)JOB.driverNote=v;});
 }
 
+// ===== ตรวจสภาพก่อนออกงาน โดย พขร. เอง (v.2026-09-28f) =====
+// ใช้เมื่อรถไม่ได้อยู่ใกล้คนจ่ายงาน · ส่งผ่าน RPC driver_submit_inspection (ผูก token ใบงานนี้)
+// ⚠️ รายการต้องตรงกับ INSPECT_VEH / INSPECT_DRIVER / INSPECT_CUST ใน app.dc.html (คีย์ v<g>_<i> / d<i> / c<i>)
+var INSPECT_VEH=[
+  {g:'ยางและล้อ',icon:'🛞',items:['ลมยางทุกล้อ','ดอกยาง / รอยสึก','น็อตล้อครบ-แน่น','ยางอะไหล่']},
+  {g:'ระบบเบรก',icon:'🛑',items:['ลมเบรก (แรงดัน)','ผ้าเบรก','เบรกมือ']},
+  {g:'ไฟและสัญญาณ',icon:'💡',items:['ไฟหน้า / ไฟสูง','ไฟเลี้ยว-ไฟเบรก','แตร','ไฟฉุกเฉิน']},
+  {g:'ของเหลว / เครื่องยนต์',icon:'🛢️',items:['น้ำมันเครื่อง','น้ำหล่อเย็น','เชื้อเพลิง']},
+  {g:'อุปกรณ์นิรภัย',icon:'🧯',items:['ถังดับเพลิง','สามเหลี่ยมสะท้อนแสง','เข็มขัดนิรภัย']}
+];
+var INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พักผ่อน ≥ 8 ชม. ก่อนขับ','ชั่วโมงขับสะสม < 8 ชม./วัน','ใบขับขี่ ท.2 ไม่หมดอายุ','สุขภาพพร้อม / ไม่มีอาการป่วย'];
+var INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
+var INS_SECS=[{k:'veh',l:'รูปสภาพรถ'},{k:'driver',l:'รูปคนขับ / เอกสาร'},{k:'cust',l:'รูปอุปกรณ์ / ระเบียบลูกค้า'}];
+var INS={ready:false, supported:true, company:'', last:null, open:false, d:null, uploading:0, saving:false};
+function insBlank(){var st={};INSPECT_VEH.forEach(function(s,gi){s.items.forEach(function(_,ii){st['v'+gi+'_'+ii]='ok';});});INSPECT_DRIVER.forEach(function(_,i){st['d'+i]='ok';});INSPECT_CUST.forEach(function(_,i){st['c'+i]='ok';});return st;}
+function insLoad(){
+  rpc('driver_get_inspection',{_token:TOKEN}).then(function(r){
+    if(r.status===404||(r.data&&/function|does not exist|schema cache/i.test(String(r.data.message||'')))){INS.supported=false;renderIns();return;}
+    if(r.ok&&r.data){INS.company=r.data.company||'';INS.last=r.data.last||null;INS.ready=true;}
+    renderIns();
+  }).catch(function(){renderIns();});
+}
+var RES={pass:['✓ ผ่าน','#067647','#ecfdf3','#bfe6cf'],review:['⚠ ผ่าน (มีเฝ้าระวัง)','#b7791f','#fef7ec','#f3dcae'],fail:['⛔ ไม่ผ่าน','#b42318','#fef3f2','#f3c9c3']};
+function renderIns(){
+  var el=document.getElementById('insBox'); if(!el)return;
+  if(!INS.supported||!INS.ready){el.style.display='none';return;}
+  el.style.display='';
+  var L=INS.last, h='<div style="font-size:13.5px;font-weight:800;color:#16263a;">🛡️ ตรวจสภาพก่อนออกงาน</div>';
+  if(L&&L.result){
+    var c=RES[L.result]||RES.pass;
+    h+='<div style="margin-top:10px;padding:11px 12px;border-radius:10px;background:'+c[2]+';border:1px solid '+c[3]+';">'
+      +'<div style="font-size:14.5px;font-weight:800;color:'+c[1]+';">'+esc(c[0])+(L.score!=null?(' · '+esc(L.score)+'%'):'')+'</div>'
+      +'<div style="font-size:12px;color:#475467;margin-top:3px;">ตรวจเมื่อ '+esc(thDate(L.date))+' '+esc(L.time||'')+' น. · '
+      +(L.approvedBy?('อนุมัติแล้วโดย '+esc(L.approvedBy)):'รอหัวหน้างานอนุมัติ')+'</div>'
+      +(L.result==='fail'?'<div style="font-size:12.5px;color:#b42318;font-weight:700;margin-top:5px;">แจ้งหัวหน้างานก่อนออกรถ</div>':'')
+      +'</div>'
+      +'<button class="btn" style="margin:12px 0 0;background:#fff;border:1px solid #d0d5dd;color:#344054;" onclick="insOpen()">ตรวจใหม่</button>';
+  }else{
+    h+='<div class="muted" style="margin-top:5px;line-height:1.6;">ยังไม่มีใบตรวจของงานนี้ · ตรวจรถก่อนออกเดินทาง ใช้เวลาไม่ถึง 2 นาที</div>'
+      +'<button class="btn" style="margin:12px 0 0;background:#16263a;color:#fff;" onclick="insOpen()">เริ่มตรวจสภาพรถ</button>';
+  }
+  el.innerHTML=h;
+}
+function insOpen(){INS.open=true;INS.d={fid:'d'+Date.now()+Math.random().toString(36).slice(2,6),st:insBlank(),photos:{veh:[],driver:[],cust:[]},alcohol:'0.00',note:''};render();window.scrollTo(0,0);}
+function insClose(){if(INS.uploading){toast('รอให้อัปโหลดรูปเสร็จก่อน');return;}INS.open=false;INS.d=null;render();window.scrollTo(0,0);}
+function insItem(k,label){
+  var v=INS.d.st[k];
+  return '<div class="ii"><div class="il">'+esc(label)+'</div><div class="i3" id="i3_'+k+'">'
+    +'<button class="'+(v==='ok'?'on-ok':'')+'" onclick="insSet(\''+k+'\',\'ok\')">✓ ปกติ</button>'
+    +'<button class="'+(v==='warn'?'on-warn':'')+'" onclick="insSet(\''+k+'\',\'warn\')">⚠ เฝ้าระวัง</button>'
+    +'<button class="'+(v==='fail'?'on-fail':'')+'" onclick="insSet(\''+k+'\',\'fail\')">✕ ไม่ผ่าน</button>'
+    +'</div></div>';
+}
+function insSet(k,v){
+  INS.d.st[k]=v;
+  var b=document.getElementById('i3_'+k); if(b){var bs=b.getElementsByTagName('button');bs[0].className=v==='ok'?'on-ok':'';bs[1].className=v==='warn'?'on-warn':'';bs[2].className=v==='fail'?'on-fail':'';}
+  insSummary();
+}
+function insResult(){var v=Object.keys(INS.d.st).map(function(k){return INS.d.st[k];});if(v.indexOf('fail')>=0)return 'fail';if(v.indexOf('warn')>=0)return 'review';return 'pass';}
+function insSummary(){
+  var el=document.getElementById('insSum'); if(!el)return;
+  var r=insResult(), c=RES[r];
+  var nf=0,nw=0;Object.keys(INS.d.st).forEach(function(k){if(INS.d.st[k]==='fail')nf++;else if(INS.d.st[k]==='warn')nw++;});
+  el.style.background=c[2];el.style.borderColor=c[3];el.style.color=c[1];
+  el.innerHTML='<b>'+esc(c[0])+'</b>'+(nf||nw?(' · ไม่ผ่าน '+nf+' · เฝ้าระวัง '+nw):' · ทุกข้อปกติ');
+}
+function insThumbs(k){
+  return (INS.d.photos[k]||[]).map(function(u,i){return '<div><img src="'+esc(u)+'"/><span onclick="insDelPhoto(\''+k+'\','+i+')">✕</span></div>';}).join('');
+}
+function insRenderPhotos(k){var el=document.getElementById('th_'+k);if(el)el.innerHTML=insThumbs(k);var u=document.getElementById('insUp');if(u)u.textContent=INS.uploading?('กำลังอัปโหลดรูป '+INS.uploading+' รูป…'):'';}
+function insDelPhoto(k,i){INS.d.photos[k].splice(i,1);insRenderPhotos(k);}
+function compressToBlob(file,max,q){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){var img=new Image();img.onload=function(){try{var sc=Math.min(1,max/Math.max(img.width||1,img.height||1));var w=Math.max(1,Math.round(img.width*sc)),h=Math.max(1,Math.round(img.height*sc));var c=document.createElement('canvas');c.width=w;c.height=h;var g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,w,h);g.drawImage(img,0,0,w,h);c.toBlob(function(b){b?res(b):rej(new Error('แปลงรูปไม่สำเร็จ'));},'image/jpeg',q);}catch(e){rej(e);}};img.onerror=function(){rej(new Error('เปิดรูปนี้ไม่ได้ (ลองถ่ายใหม่)'));};img.src=r.result;};r.onerror=function(){rej(new Error('อ่านไฟล์ไม่ได้'));};r.readAsDataURL(file);});}
+function insAddPhoto(k,inp){
+  var f=inp.files&&inp.files[0]; try{inp.value='';}catch(e){} if(!f||!INS.d)return;
+  if((INS.d.photos[k]||[]).length>=6){toast('หมวดนี้ใส่ได้สูงสุด 6 รูป');return;}
+  var d=INS.d; INS.uploading++; insRenderPhotos(k);
+  var path=INS.company+'/inspections/'+d.fid+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.jpg';
+  compressToBlob(f,1000,0.6).then(function(b){
+    return fetch(SUPABASE_URL+'/storage/v1/object/attachments/'+encodeURI(path),{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},body:b});
+  }).then(function(res){
+    if(!res.ok)throw new Error('อัปโหลดไม่สำเร็จ ('+res.status+')');
+    if(INS.d===d)d.photos[k].push(SUPABASE_URL+'/storage/v1/object/public/attachments/'+encodeURI(path));
+  }).catch(function(e){toast((e&&e.message)||'อัปโหลดรูปไม่สำเร็จ');})
+  .then(function(){INS.uploading=Math.max(0,INS.uploading-1);insRenderPhotos(k);});
+}
+function insSubmit(){
+  if(INS.saving)return;
+  if(INS.uploading){toast('รอให้อัปโหลดรูปเสร็จก่อน');return;}
+  var d=INS.d, r=insResult();
+  if(r==='fail'&&!window.confirm('มีรายการ "ไม่ผ่าน" — ส่งใบตรวจและแจ้งหัวหน้างาน?'))return;
+  INS.saving=true;
+  var btn=document.getElementById('insGo'); if(btn){btn.disabled=true;btn.innerHTML='กำลังส่ง… <span class="spin"></span>';}
+  var alc=document.getElementById('insAlc'), nt=document.getElementById('insNote');
+  var photos={};INS_SECS.forEach(function(s){if(d.photos[s.k].length)photos[s.k]=d.photos[s.k];});
+  rpc('driver_submit_inspection',{_token:TOKEN,_data:{status:d.st,photos:photos,alcohol:alc?alc.value:'0.00',note:nt?nt.value:''}}).then(function(res){
+    INS.saving=false;
+    if(!res.ok){var m=String((res.data&&res.data.message)||res.status);
+      toast(/no truck/.test(m)?'ใบงานนี้ยังไม่ระบุทะเบียนรถ — แจ้งออฟฟิศ':(/too many/.test(m)?'วันนี้ส่งใบตรวจของงานนี้ครบ 10 ครั้งแล้ว':(/expired/.test(m)?'ลิงก์หมดอายุ':'ส่งไม่สำเร็จ · '+m)));
+      if(btn){btn.disabled=false;btn.textContent='ส่งผลตรวจ';}return;}
+    var p=function(n){return String(n).padStart(2,'0');},t=new Date();
+    INS.last={result:res.data.result,score:res.data.score,approvedBy:'',date:t.getFullYear()+'-'+p(t.getMonth()+1)+'-'+p(t.getDate()),time:p(t.getHours())+':'+p(t.getMinutes())};
+    INS.open=false;INS.d=null;render();window.scrollTo(0,0);
+    toast(res.data.result==='fail'?'ส่งแล้ว — แจ้งหัวหน้างานก่อนออกรถ':'✓ ส่งผลตรวจแล้ว');
+  }).catch(function(){INS.saving=false;toast('เชื่อมต่อไม่ได้ — ลองใหม่');if(btn){btn.disabled=false;btn.textContent='ส่งผลตรวจ';}});
+}
+function renderInsForm(){
+  var j=JOB, d=INS.d, h='';
+  document.getElementById('hTitle').textContent='ตรวจสภาพก่อนออกงาน';
+  document.getElementById('hSub').textContent=(j.truckPlate||'—')+' · ใบงาน '+(j.jobNo||'—');
+  h+='<div class="card" style="padding:12px 16px;"><button onclick="insClose()" style="border:none;background:none;font-family:inherit;font-size:14px;font-weight:700;color:#2f6fb0;padding:0;cursor:pointer;">‹ กลับหน้างาน</button>'
+    +'<div class="muted" style="margin-top:6px;line-height:1.6;">ทุกข้อตั้งเป็น "ปกติ" ไว้ให้แล้ว — กดเปลี่ยนเฉพาะข้อที่มีปัญหา</div></div>';
+  INSPECT_VEH.forEach(function(s,gi){
+    h+='<div class="card"><div class="ig">'+s.icon+' '+esc(s.g)+'</div>';
+    s.items.forEach(function(it,ii){h+=insItem('v'+gi+'_'+ii,it);});
+    h+='</div>';
+  });
+  h+='<div class="card"><div class="ig">🧑‍✈️ ความพร้อมคนขับ</div>';
+  INSPECT_DRIVER.forEach(function(it,i){h+=insItem('d'+i,it);});
+  h+='<div style="margin-top:10px;"><div class="il">ผลวัดแอลกอฮอล์ (mg%)</div><input id="insAlc" class="inp" inputmode="decimal" maxlength="10" value="'+esc(d.alcohol)+'" oninput="INS.d.alcohol=this.value"/></div></div>';
+  h+='<div class="card"><div class="ig">🦺 ระเบียบลูกค้า</div>';
+  INSPECT_CUST.forEach(function(it,i){h+=insItem('c'+i,it);});
+  h+='</div>';
+  h+='<div class="card"><div class="ig">📷 รูปถ่าย (ไม่บังคับ)</div>';
+  INS_SECS.forEach(function(s){
+    h+='<div style="padding:8px 0;"><div class="il" style="margin-bottom:6px;">'+esc(s.l)+'</div>'
+      +'<label class="pick">＋ ถ่าย / เลือกรูป<input type="file" accept="image/*" capture="environment" style="display:none;" onchange="insAddPhoto(\''+s.k+'\',this)"/></label>'
+      +'<div class="thumbs" id="th_'+s.k+'">'+insThumbs(s.k)+'</div></div>';
+  });
+  h+='<div id="insUp" class="muted" style="color:#2f6fb0;"></div></div>';
+  h+='<div class="card"><div class="ig">📝 หมายเหตุ</div><textarea id="insNote" maxlength="1000" placeholder="เช่น ยางหลังซ้ายลมอ่อน เติมแล้ว" oninput="INS.d.note=this.value">'+esc(d.note)+'</textarea></div>';
+  h+='<div class="card"><div id="insSum" style="padding:11px 12px;border-radius:10px;border:1px solid;font-size:14px;margin-bottom:12px;"></div>'
+    +'<button class="btn stepbtn" id="insGo" style="margin:0;" onclick="insSubmit()">ส่งผลตรวจ</button>'
+    +'<div class="muted" style="text-align:center;margin-top:8px;">ผลตรวจจะส่งให้หัวหน้างานอนุมัติ</div></div>';
+  document.getElementById('body').innerHTML=h+'<div style="height:20px;"></div>';
+  insSummary(); insRenderPhotos('veh');
+}
+
 function render(){
+  if(INS.open&&INS.d){renderInsForm();return;}
   var j=JOB;
   document.getElementById('hTitle').textContent='ใบงาน '+(j.jobNo||'—');
   document.getElementById('hSub').textContent=(j.deliveryNo?('บิล '+j.deliveryNo+' · '):'')+thDate(j.date);
@@ -202,8 +356,9 @@ function render(){
   var note='<div class="card"><div style="font-size:13px;font-weight:800;color:#16263a;margin-bottom:8px;">หมายเหตุถึงออฟฟิศ</div>'
     +'<textarea id="note" placeholder="พิมพ์หมายเหตุ (ถ้ามี)…">'+esc(j.driverNote||'')+'</textarea>'
     +'<button class="btn stepbtn" style="margin-top:10px;background:#475467;" onclick="saveNote()">บันทึกหมายเหตุ</button></div>';
-  document.getElementById('body').innerHTML=info+steps+share+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
-  renderShare(); startShare();
+  var ins=j.completionTime?'':'<div class="card" id="insBox" style="display:none;"></div>';   // ส่งของเสร็จแล้ว ไม่ต้องตรวจ
+  document.getElementById('body').innerHTML=info+ins+steps+share+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
+  renderShare(); startShare(); renderIns();
 }
 function row(k,v){return '<div class="row"><span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span></div>';}
 function sbtn(field,label,extra){
