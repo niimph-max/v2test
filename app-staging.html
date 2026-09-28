@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9048,6 +9048,10 @@ class Component extends DCLogic {
       try{localStorage.removeItem('fleet_auth_v1');}catch(e2){} sbSetSession(null); this.setState({auth:null}); return;
     }
     if(_p.company_id){try{localStorage.setItem('lf_active_company',_p.company_id);}catch(e){}}
+    // ★ v.2026-09-28b: ใช้สิทธิ์ล่าสุดจาก profiles ทุกครั้งที่เปิดแอป — เดิมจำไว้ตั้งแต่ login
+    //   (แอดมินติ๊กสิทธิ์ใหม่แล้ว ผู้ใช้ต้อง logout/login ถึงจะเห็นเมนู)
+    try{const _a=this.state.auth;if(_a){const _ns=(Array.isArray(_p.sections)&&_p.sections.length)?_p.sections:null;const _nr=_p.is_admin?'admin':'custom';
+      if(JSON.stringify(_ns)!==JSON.stringify(_a.sections||null)||_nr!==_a.role){const _na={..._a,sections:_ns,role:_nr};try{localStorage.setItem('fleet_auth_v1',JSON.stringify(_na));}catch(e){}this.setState({auth:_na});}}}catch(e){}
     try{this.loadCloudMeta();}catch(e){}
     try{this.syncFromSheets();}catch(e){}
   };
