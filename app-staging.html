@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28j · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-28k · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28j</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-28k</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7089,8 +7089,8 @@
                 <div style="padding:7px 9px;">
                   <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
                   <input type="number" key="{{ r.rateKey }}" defaultValue="{{ r.rateRaw }}" onBlur="{{ r.onRateCommit }}" placeholder="{{ r.ratePh }}" title="ราคาฐาน" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #2f6fb0;border-radius:7px;font-size:12.5px;font-weight:600;color:#16263a;text-align:right;box-sizing:border-box;background:#fff;">
-                  <input type="number" key="{{ r.rateAddWeightKey }}" defaultValue="{{ r.rateAddWeightRaw }}" onBlur="{{ r.onRateAddWeightCommit }}" placeholder="+นน./ตัน" title="+ น้ำหนัก (ต่อตัน)" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #f0c088;border-radius:7px;font-size:12px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
-                  <input type="number" key="{{ r.rateAddOtherKey }}" defaultValue="{{ r.rateAddOtherRaw }}" onBlur="{{ r.onRateAddOtherCommit }}" placeholder="+อื่น/ตัน" title="+ อื่นๆ (ต่อตัน)" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #f0c088;border-radius:7px;font-size:12px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
+                  <input type="number" key="{{ r.rateAddWeightKey }}" defaultValue="{{ r.rateAddWeightRaw }}" onBlur="{{ r.onRateAddWeightCommit }}" placeholder="{{ r.addWPh }}" title="{{ r.addWPh }}" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #f0c088;border-radius:7px;font-size:12px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
+                  <input type="number" key="{{ r.rateAddOtherKey }}" defaultValue="{{ r.rateAddOtherRaw }}" onBlur="{{ r.onRateAddOtherCommit }}" placeholder="{{ r.addOPh }}" title="{{ r.addOPh }}" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #f0c088;border-radius:7px;font-size:12px;font-weight:600;color:#b54708;text-align:right;box-sizing:border-box;background:#fff;">
                   <input type="number" key="{{ r.rateAddTripKey }}" defaultValue="{{ r.rateAddTripRaw }}" onBlur="{{ r.onRateAddTripCommit }}" placeholder="+/เที่ยว" title="+ บวกอื่นๆ ต่อเที่ยว (ก้อนเดียว ไม่คูณน้ำหนัก)" style="width:100%;min-width:0;padding:5px 6px;border:1px solid #d9a6f0;border-radius:7px;font-size:12px;font-weight:600;color:#7a2e9a;text-align:right;box-sizing:border-box;background:#fff;">
                   </div>
                   <div style="font-size:10px;color:#98a2b3;margin-top:4px;text-align:right;line-height:1.35;"><sc-if value="{{ r.effRateText }}" hint-placeholder-val="{{ false }}"><span style="color:#b54708;font-weight:700;">{{ r.effRateText }}</span><br></sc-if>{{ r.weightText }}<br>= <b style="color:#175cd3;">{{ r.revenueText }}</b></div>
@@ -7154,17 +7154,19 @@
                     <input type="number" value="{{ sd.ratePerTon }}" onInput="{{ onSettleRate }}" placeholder="230" style="width:100%;padding:9px 11px;border:1px solid #2f6fb0;border-radius:8px;font-size:15px;font-weight:600;color:#16263a;box-sizing:border-box;">
                   </div>
                   <div style="flex:1;min-width:82px;">
-                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกน้ำหนัก/ตัน</label>
+                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">{{ sdAddWLabel }}</label>
                     <input type="number" value="{{ sdRateAddWeight }}" onInput="{{ onSettleAddWeight }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
                   <div style="flex:1;min-width:82px;">
-                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/ตัน</label>
+                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">{{ sdAddOLabel }}</label>
                     <input type="number" value="{{ sdRateAddOther }}" onInput="{{ onSettleAddOther }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
+                  <sc-if value="{{ sdShowAddTrip }}" hint-placeholder-val="{{ true }}">
                   <div style="flex:1;min-width:82px;">
                     <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/เที่ยว</label>
                     <input type="number" value="{{ sdRateAddTrip }}" onInput="{{ onSettleAddTrip }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
+                  </sc-if>
                 </div>
                 <div style="font-size:12px;color:#475467;line-height:1.7;min-width:170px;">
                   น้ำหนัก <b style="color:#16263a;">{{ sdWeightText }}</b> · ระยะทาง <b style="color:#16263a;">{{ sdDistanceText }}</b><br>
@@ -7282,17 +7284,19 @@
                     <input type="number" value="{{ sd.ratePerTon }}" onInput="{{ onSettleRate }}" placeholder="230" style="width:100%;padding:9px 11px;border:1px solid #2f6fb0;border-radius:8px;font-size:15px;font-weight:600;color:#16263a;box-sizing:border-box;">
                   </div>
                   <div style="flex:1;min-width:82px;">
-                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกน้ำหนัก/ตัน</label>
+                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">{{ sdAddWLabel }}</label>
                     <input type="number" value="{{ sdRateAddWeight }}" onInput="{{ onSettleAddWeight }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
                   <div style="flex:1;min-width:82px;">
-                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/ตัน</label>
+                    <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">{{ sdAddOLabel }}</label>
                     <input type="number" value="{{ sdRateAddOther }}" onInput="{{ onSettleAddOther }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
+                  <sc-if value="{{ sdShowAddTrip }}" hint-placeholder-val="{{ true }}">
                   <div style="flex:1;min-width:82px;">
                     <label style="font-size:11.5px;font-weight:700;color:#b54708;display:block;margin-bottom:4px;">+ บวกอื่นๆ/เที่ยว</label>
                     <input type="number" value="{{ sdRateAddTrip }}" onInput="{{ onSettleAddTrip }}" placeholder="0" style="width:100%;padding:9px 11px;border:1px solid #f0c088;border-radius:8px;font-size:15px;font-weight:600;color:#b54708;box-sizing:border-box;">
                   </div>
+                  </sc-if>
                 </div>
                 <div style="font-size:12px;color:#475467;line-height:1.7;min-width:170px;">
                   น้ำหนัก <b style="color:#16263a;">{{ sdWeightText }}</b> · ระยะทาง <b style="color:#16263a;">{{ sdDistanceText }}</b><br>
@@ -13010,7 +13014,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       if(S.effSettleStatus!=='all')settleList=settleList.filter(j=>settleStat(j)===S.effSettleStatus);
       const _drvNm=(code)=>{const d=S.drivers.find(x=>String(x.code)===String(code));return d?d.name:(code||'—');};
       const _fmtThD=(iso)=>{if(!iso)return '—';const p=String(iso).slice(0,10).split('-');return (+p[2])+' '+THM[parseInt(p[1])-1]+' '+((+p[0])+543);};
-      out.settleRows=settleList.map(j=>{const st=settleStat(j);return{id:j.id,ratePh:(this.jobRateBasis(j)==='trip'?'ต่อเที่ยว':'ฐาน/ตัน'),rateKey:j.id+'|r|'+String(j.ratePerTon||''),rateAddWeightKey:j.id+'|w|'+String(j.rateAddWeight||''),rateAddOtherKey:j.id+'|o|'+String(j.rateAddOther||''),rateAddTripKey:j.id+'|t|'+String(j.rateAddTrip||''),rateAddTripRaw:(j.rateAddTrip===0||j.rateAddTrip)?String(j.rateAddTrip):'',onRateAddTripCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddTrip',e.target.value),onPrint:()=>this.printTripDetail(j.id),onReopen:()=>this.reopenJobFromEff(j.id),date:_fmtThD(j.date),jobNo:j.jobNo||'—',bill:j.deliveryNo||'—',plate:j.truckPlate||'—',driver:_drvNm(j.driverCode),customer:j.customer||'—',route:this._routeFull(j),revenue:j.revenue?fmt(parseFloat(j.revenue)||0):'—',revenueRaw:(j.revenue===0||j.revenue)?String(j.revenue):'',onRevenueCommit:(e)=>this.setSettleRowRevenue(j.id,e.target.value),rateRaw:(j.ratePerTon===0||j.ratePerTon)?String(j.ratePerTon):'',onRateCommit:(e)=>this.setSettleRowRateField(j.id,'ratePerTon',e.target.value),rateAddWeightRaw:(j.rateAddWeight===0||j.rateAddWeight)?String(j.rateAddWeight):'',onRateAddWeightCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddWeight',e.target.value),rateAddOtherRaw:(j.rateAddOther===0||j.rateAddOther)?String(j.rateAddOther):'',onRateAddOtherCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddOther',e.target.value),effRateText:(()=>{const b=parseFloat(j.ratePerTon)||0,aw=parseFloat(j.rateAddWeight)||0,ao=parseFloat(j.rateAddOther)||0,at=parseFloat(j.rateAddTrip)||0;const _u=this.jobRateBasis(j)==='trip'?'/เที่ยว':'/ตัน';return ((aw||ao)?('รวม '+(Math.round((b+aw+ao)*100)/100)+_u):'')+(at?(((aw||ao)?' ':'')+'+'+(Math.round(at*100)/100)+'/เที่ยว'):'');})(),weightText:j.weight?((parseFloat(j.weight)||0)+' ตัน'):'—',distanceText:j.distance?((parseFloat(j.distance)||0)+' กม.'):'',revenueText:j.revenue?fmt(parseFloat(j.revenue)||0):'—',expense:expSum(j)>0?fmt(expSum(j)):'—',statusLabel:_sMeta[st].label,statusStyle:_sMeta[st].style,onOpen:()=>this.openSettle(j.id)};});
+      out.settleRows=settleList.map(j=>{const st=settleStat(j);const _tp=this.jobRateBasis(j)==='trip';return{id:j.id,addWPh:_tp?'+นน./เที่ยว':'+นน./ตัน',addOPh:_tp?'+อื่น/เที่ยว':'+อื่น/ตัน',ratePh:(this.jobRateBasis(j)==='trip'?'ต่อเที่ยว':'ฐาน/ตัน'),rateKey:j.id+'|r|'+String(j.ratePerTon||''),rateAddWeightKey:j.id+'|w|'+String(j.rateAddWeight||''),rateAddOtherKey:j.id+'|o|'+String(j.rateAddOther||''),rateAddTripKey:j.id+'|t|'+String(j.rateAddTrip||''),rateAddTripRaw:(j.rateAddTrip===0||j.rateAddTrip)?String(j.rateAddTrip):'',onRateAddTripCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddTrip',e.target.value),onPrint:()=>this.printTripDetail(j.id),onReopen:()=>this.reopenJobFromEff(j.id),date:_fmtThD(j.date),jobNo:j.jobNo||'—',bill:j.deliveryNo||'—',plate:j.truckPlate||'—',driver:_drvNm(j.driverCode),customer:j.customer||'—',route:this._routeFull(j),revenue:j.revenue?fmt(parseFloat(j.revenue)||0):'—',revenueRaw:(j.revenue===0||j.revenue)?String(j.revenue):'',onRevenueCommit:(e)=>this.setSettleRowRevenue(j.id,e.target.value),rateRaw:(j.ratePerTon===0||j.ratePerTon)?String(j.ratePerTon):'',onRateCommit:(e)=>this.setSettleRowRateField(j.id,'ratePerTon',e.target.value),rateAddWeightRaw:(j.rateAddWeight===0||j.rateAddWeight)?String(j.rateAddWeight):'',onRateAddWeightCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddWeight',e.target.value),rateAddOtherRaw:(j.rateAddOther===0||j.rateAddOther)?String(j.rateAddOther):'',onRateAddOtherCommit:(e)=>this.setSettleRowRateField(j.id,'rateAddOther',e.target.value),effRateText:(()=>{const b=parseFloat(j.ratePerTon)||0,aw=parseFloat(j.rateAddWeight)||0,ao=parseFloat(j.rateAddOther)||0,at=parseFloat(j.rateAddTrip)||0;const _u=this.jobRateBasis(j)==='trip'?'/เที่ยว':'/ตัน';return ((aw||ao)?('รวม '+(Math.round((b+aw+ao)*100)/100)+_u):'')+(at?(((aw||ao)?' ':'')+'+'+(Math.round(at*100)/100)+'/เที่ยว'):'');})(),weightText:j.weight?((parseFloat(j.weight)||0)+' ตัน'):'—',distanceText:j.distance?((parseFloat(j.distance)||0)+' กม.'):'',revenueText:j.revenue?fmt(parseFloat(j.revenue)||0):'—',expense:expSum(j)>0?fmt(expSum(j)):'—',statusLabel:_sMeta[st].label,statusStyle:_sMeta[st].style,onOpen:()=>this.openSettle(j.id)};});
       out.settleEmpty=settleList.length===0;out.settleRowCount=settleList.length;
       const sd=S.settleDraft;out.settleModalOpen=!!S.settleModalOpen;
       if(sd){
@@ -13022,7 +13026,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
            +'ยอดรวมทั้งเที่ยว ไม่ใช่ของบิลใดบิลหนึ่ง · ส่วนแบ่งรายบิลดูได้ที่หน้าใบวางบิล';}
         out.sdDriver=_drvNm(sd.driverCode);out.sdRoute=this._routeFull(sd);out.sdCustomer=sd.customer||'—';
         out.sdWeightText=(function(){const _w=parseFloat(sd.weight)||0;if(!sd.weight)return '— (ไม่มีน้ำหนัก)';const _bw=this._billWeight(sd);return _bw!==_w?(_w+' ตัน → คิด '+_bw+' ตัน (ขั้นต่ำตามข้อตกลงลูกค้า)'):(_w+' ตัน');}).call(this);out.sdDistanceText=sd.distance?((parseFloat(sd.distance)||0)+' กม.'):'—';out.sdRevenueText=sd.revenue?fmt(parseFloat(sd.revenue)||0):'฿0';
-        {const _rb=parseFloat(sd.ratePerTon)||0,_rw=parseFloat(sd.rateAddWeight)||0,_ro=parseFloat(sd.rateAddOther)||0;const _eff=_rb+_rw+_ro;let _bd=String(_rb);if(_rw)_bd+=' + '+_rw+' (น้ำหนัก)';if(_ro)_bd+=' + '+_ro+' (อื่นๆ)';_bd+=' = '+(Math.round(_eff*100)/100)+' /ตัน';out.sdEffRateText=_bd;out.sdRateAddWeight=(sd.rateAddWeight!=null?String(sd.rateAddWeight):'');out.sdRateAddOther=(sd.rateAddOther!=null?String(sd.rateAddOther):'');out.sdRateAddTrip=(sd.rateAddTrip!=null?String(sd.rateAddTrip):'');{const _at=parseFloat(sd.rateAddTrip)||0;if(_at)out.sdEffRateText+=' · + '+(Math.round(_at*100)/100)+' /เที่ยว';}}
+        {const _rb=parseFloat(sd.ratePerTon)||0,_rw=parseFloat(sd.rateAddWeight)||0,_ro=parseFloat(sd.rateAddOther)||0;const _eff=_rb+_rw+_ro;let _bd=String(_rb);if(_rw)_bd+=' + '+_rw+' (น้ำหนัก)';if(_ro)_bd+=' + '+_ro+' (อื่นๆ)';const _trip=this.jobRateBasis(sd)==='trip';_bd+=' = '+(Math.round(_eff*100)/100)+(_trip?' /เที่ยว':' /ตัน');out.sdEffRateText=_bd;
+        // ★ v.2026-09-28k: คิดต่อเที่ยว → ช่องบวกเพิ่มเป็น /เที่ยว (คำนวณถูกอยู่แล้ว แค่ป้ายชื่อผิด) · ช่องบวกอื่นๆ/เที่ยว แยกซ่อนเพราะซ้ำ เว้นแต่มีค่าเดิม
+        out.sdAddWLabel=_trip?'+ บวกน้ำหนัก/เที่ยว':'+ บวกน้ำหนัก/ตัน';out.sdAddOLabel=_trip?'+ บวกอื่นๆ/เที่ยว':'+ บวกอื่นๆ/ตัน';out.sdShowAddTrip=!_trip||(parseFloat(sd.rateAddTrip)||0)!==0;out.sdRateAddWeight=(sd.rateAddWeight!=null?String(sd.rateAddWeight):'');out.sdRateAddOther=(sd.rateAddOther!=null?String(sd.rateAddOther):'');out.sdRateAddTrip=(sd.rateAddTrip!=null?String(sd.rateAddTrip):'');{const _at=parseFloat(sd.rateAddTrip)||0;if(_at)out.sdEffRateText+=' · + '+(Math.round(_at*100)/100)+' /เที่ยว';}}
         out.sdRateLabel=(this.jobRateBasis(sd)==='trip')?'💰 เรทต่อเที่ยว':'💰 เรทฐาน/ตัน';
         out.onSettleRate=(e)=>this.setSettleRateField('ratePerTon',e.target.value);
         out.onSettleAddWeight=(e)=>this.setSettleRateField('rateAddWeight',e.target.value);
