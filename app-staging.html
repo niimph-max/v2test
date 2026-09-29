@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11583,6 +11583,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   _blIsGir(){return GIR_CUST_CODES.indexOf(String(this.state.billCustCode||'').trim())>=0;}
   _girCat(j){const t=(this.state.trucks||[]).find(x=>x.plate===(j&&j.truckPlate));const s=String((t&&t.truckType)||(j&&j.truckType)||'');
     if(/^06|หก/.test(s))return '6';if(/^10|สิบ/.test(s))return '10';if(/^18|^21|หัวลาก|พ่วง|เทรล/.test(s))return 'trailer';return '';}
+  // สถานที่ส่งสินค้า = ชื่อร้าน + อำเภอ + จังหวัด (ผู้ใช้กำหนด 29 ก.ย.) · ชื่อร้านมีอำเภอ/จังหวัดอยู่แล้ว ไม่ต่อซ้ำ
+  _girPlace(j,l){const nz=x=>String(x||'').replace(/\s+/g,'');const dest=String(j.destination||(l&&l.dest)||'').trim();
+    const add=[String(j.destDistrict||'').trim(),String(j.destProvince||'').trim()].filter(x=>x&&nz(dest).indexOf(nz(x))<0);return [dest].concat(add).filter(Boolean).join(' ');}
   _girDate(iso){const m=String(iso||'').slice(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?(Number(m[3])+'/'+Number(m[2])+'/'+(Number(m[1])+543)):String(iso||'');}
   _girPref(k,def){const v=this.state[k];if(v!=null)return String(v);try{const x=localStorage.getItem('lf_'+k);return x!=null?x:(def||'');}catch(e){return def||'';}}
   _blSigner(){const v=this.state.billSigner;if(v!=null)return String(v);try{return localStorage.getItem('lf_bill_signer')||'';}catch(e){return '';}}
@@ -11598,7 +11601,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const rows=[];
     items.forEach(it=>{const j=it.j,l=it.l;const p=this._girParts(j,l,this._blLines(j).length);
       rows.push({no:rows.length+1,type:typ==='40'?GIR_BILL_TYPES['40']:(GIR_BILL_TYPES[this._girCat(j)]||'—'),plate:j.truckPlate||'',
-        date:this._girDate(j.date),bol:(l&&l.bill)||'',place:String(j.destination||'').trim()||String(j.destDistrict||'').trim()||String((l&&l.dest)||''),
+        date:this._girDate(j.date),bol:(l&&l.bill)||'',place:this._girPlace(j,l),
         prov:String(j.destProvince||'').trim(),normal:p.normal,ow:p.ow,ot:p.ot,tot:p.tot});});
     const sum=k=>Math.round(rows.reduce((a,r)=>a+(Number(r[k])||0),0)*100)/100;
     const sT=sum('tot');const wht=Math.round(sT*0.01*100)/100;const net=Math.round((sT-wht)*100)/100;
