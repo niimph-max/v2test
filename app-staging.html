@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29i · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29j · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29i</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29j</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11628,7 +11628,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     items.forEach(it=>{const j=it.j,l=it.l;const p=this._girParts(j,l,this._blLines(j).length);
       const _w=Math.round((Number(l&&l.w)||0)*1000)/1000;const _ton=this.jobRateBasis(j)!=='trip';
       const _rt=_ton?(Number(l&&l.rate)||0):(_w?Math.round(p.tot/_w*100)/100:0);
-      rows.push({w:_w,rate:_rt,isTon:_ton,note:(l&&l.note)||'',placeBare:this._girPlace(j,l,null,false,true),no:rows.length+1,type:typ==='40'?GIR_BILL_TYPES['40']:(GIR_BILL_TYPES[this._girCat(j)]||'—'),plate:j.truckPlate||'',
+      rows.push({w:_w,rate:_rt,isTon:_ton,note:(l&&l.note)||'',add:(l&&l.note)?(parseFloat(j.rateAddTrip)||0):0,orig:String((l&&l.origin)||j.origin||'').trim(),placeBare:this._girPlace(j,l,null,false,true),no:rows.length+1,type:typ==='40'?GIR_BILL_TYPES['40']:(GIR_BILL_TYPES[this._girCat(j)]||'—'),plate:j.truckPlate||'',
         date:this._girDate(j.date),bol:(l&&l.bill)||'',place:this._girPlace(j,l,p,typ==='40',std),
         prov:String(j.destProvince||'').trim(),normal:p.normal,ow:p.ow,ot:p.ot,tot:p.tot});});
     const sum=k=>Math.round(rows.reduce((a,r)=>a+(Number(r[k])||0),0)*100)/100;
@@ -11638,10 +11638,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const cu=(S.customers||[]).find(c=>String(c.code||'').trim()===String(S.billCustCode||'').trim())||{};
       layout=pick||(cu.rateBasis==='ton'?'ton':(cu.rateBasis==='trip'?'trip':(rows.filter(r=>r.isTon).length*2>=rows.length&&rows.length?'ton':'trip')));}
     const sW=Math.round(rows.reduce((a,r)=>a+(Number(r.w)||0),0)*1000)/1000;
+    if(std)rows.forEach(r=>{const tgt=layout==='ton'?r.placeBare:r.place;r.place=(r.orig?(r.orig+' → '):'')+tgt;});
+    const sAdd=sum('add');
     let title=typ?GIR_BILL_TYPES[typ]:'';
     if(!title){const cnt={};rows.forEach(r=>{cnt[r.type]=(cnt[r.type]||0)+1;});title=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||'';}
     return {rows:rows,sN:sum('normal'),sOW:sum('ow'),sOT:sum('ot'),sT:sT,wht:wht,net:net,title:title==='—'?'':title,
-      layout:layout,sW:sW,std:std,colOW:std?'บวกน้ำหนัก':'OW',colOT:std?'บวกอื่นๆ':(typ==='40'?'นำแร็คกลับ':'OT'),desc:String(S.billGirDesc==null?'ค่าขนส่ง LOGISTICS21':S.billGirDesc).trim(),
+      layout:layout,sW:sW,sAdd:sAdd,std:std,colOW:std?'บวกน้ำหนัก':'OW',colOT:std?'บวกอื่นๆ':(typ==='40'?'นำแร็คกลับ':'OT'),desc:String(S.billGirDesc==null?'ค่าขนส่ง LOGISTICS21':S.billGirDesc).trim(),
       signer:this._blSigner().trim(),words:this._bahtText(sT),netWords:this._bahtText(net)};
   }
   blToggle=(id)=>this.setState(s=>{const m={...(s.billSel||{})};const k=String(id);if(m[k])delete m[k];else m[k]=true;return{billSel:m};});
@@ -12056,16 +12058,17 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!chunks.length)chunks.push([]);
     if(chunks[chunks.length-1].reduce((a,r)=>a+_mm(r),0)>FIT_LAST)chunks.push([]);   // แถวรวม+ช่องเซ็นไม่พอ → ยกไปหน้าใหม่
     const TON=G.layout==='ton';
-    const W=TON?[4,7.5,8.5,9.5,12,21.5,7,9.5,9,11.5]:[3.5,5.5,8,9.5,12,19.5,6,10.5,7.5,7.5,10.5];
-    const H=TON?['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','เลขที่บิล','รายการ สถานที่ส่งสินค้า','จังหวัด','น้ำหนัก (ตัน)','ค่าขนส่ง ต่อตัน','รวมสุทธิ (บาท)']
-      :['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า',G.std?'เลขที่บิล':'BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ',G.colOW,G.colOT,'รวมสุทธิ (บาท)'];
+    const W=TON?[4,7,8,9,11,20.5,7,8.5,8,7,10]:[3.5,5.5,8,9.5,12,19.5,6,10.5,7.5,7.5,10.5];
+    const PL=G.std?'รายการ ต้นทาง → สถานที่ส่งสินค้า':'รายการ สถานที่ส่งสินค้า';
+    const H=TON?['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','เลขที่บิล',PL,'จังหวัด','น้ำหนัก (ตัน)','ค่าขนส่ง ต่อตัน','บวกเพิ่ม','รวมสุทธิ (บาท)']
+      :['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า',G.std?'เลขที่บิล':'BOL NO.',PL,'จังหวัด','ค่าขนส่ง ปกติ',G.colOW,G.colOT,'รวมสุทธิ (บาท)'];
     const thead='<thead><tr>'+H.map((h,i)=>'<th style="width:'+W[i]+'%'+(i===5?';padding:3px 2px':'')+'">'+esc(h)+'</th>').join('')+'</tr></thead>';
     const f0=(v)=>{const x=Math.round((Number(v)||0)*100)/100;return Number.isInteger(x)?x.toLocaleString('en-US'):n2(x);};
     const z=(v)=>(Number(v)||0)?f0(v):'';
     const w3=(v)=>(Number(v)||0).toLocaleString('en-US',{minimumFractionDigits:3,maximumFractionDigits:3});
-    const bodyTon=(ch)=>ch.map(r=>'<tr><td class="c">'+r.no+'</td><td class="c">'+esc(r.type)+'</td><td class="c">'+esc(r.plate)+'</td><td class="c">'+esc(r.date)+'</td><td class="c">'+esc(r.bol)+'</td><td>'+esc(r.placeBare+(r.note?(' '+r.note):''))+'</td><td class="c">'+esc(r.prov)+'</td>'
-      +'<td class="r">'+(r.w?w3(r.w):'')+'</td><td class="r">'+(r.rate?n2(r.rate):'')+'</td><td class="r" style="font-weight:700;font-size:13.5px">'+f0(r.tot)+'</td></tr>').join('');
-    const totRowTon='<tr class="tot"><td colspan="7" style="padding:3px 6px;text-align:center">( '+esc(G.words)+' )</td><td class="r">'+w3(G.sW)+'</td><td></td><td class="r">'+f0(G.sT)+'</td></tr>';
+    const bodyTon=(ch)=>ch.map(r=>'<tr><td class="c">'+r.no+'</td><td class="c">'+esc(r.type)+'</td><td class="c">'+esc(r.plate)+'</td><td class="c">'+esc(r.date)+'</td><td class="c">'+esc(r.bol)+'</td><td>'+esc(r.place)+'</td><td class="c">'+esc(r.prov)+'</td>'
+      +'<td class="r">'+(r.w?w3(r.w):'')+'</td><td class="r">'+(r.rate?n2(r.rate):'')+'</td><td class="r" style="font-size:11px">'+z(r.add)+'</td><td class="r" style="font-weight:700;font-size:13.5px">'+f0(r.tot)+'</td></tr>').join('');
+    const totRowTon='<tr class="tot"><td colspan="7" style="padding:3px 6px;text-align:center">( '+esc(G.words)+' )</td><td class="r">'+w3(G.sW)+'</td><td></td><td class="r">'+z(G.sAdd)+'</td><td class="r">'+f0(G.sT)+'</td></tr>';
     const body=(ch)=>ch.map(r=>'<tr><td class="c">'+r.no+'</td><td class="c">'+esc(r.type)+'</td><td class="c">'+esc(r.plate)+'</td><td class="c">'+esc(r.date)+'</td><td class="c">'+esc(r.bol)+'</td><td>'+esc(r.place)+'</td><td class="c">'+esc(r.prov)+'</td>'
       +'<td class="r">'+z(r.normal)+'</td><td class="r" style="font-size:11px">'+z(r.ow)+'</td><td class="r" style="font-size:11px">'+z(r.ot)+'</td><td class="r" style="font-weight:700;font-size:13.5px">'+f0(r.tot)+'</td></tr>').join('');
     const totRow='<tr class="tot"><td colspan="7" style="padding:3px 6px;text-align:center">( '+esc(G.words)+' )</td><td class="r">'+z(G.sN)+'</td><td class="r">'+z(G.sOW)+'</td><td class="r">'+z(G.sOT)+'</td><td class="r">'+f0(G.sT)+'</td></tr>';
@@ -12103,11 +12106,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     R.push([S_([D.cust.address||'',D.cust.taxId?('เลขประจำตัวผู้เสียภาษี '+D.cust.taxId):''].filter(Boolean).join('  '),11)]);M.push('A6:K6');
     R.push([S_('Invoice number : '+(D.inv||'—'),1),null,null,null,S_('Invoice date : '+this._blShortDate(D.docDate),1),null,null,S_('เลขที่ใบเสร็จรับเงิน : '+(D.rec||'—'),1)]);M.push('A7:D7','E7:G7','H7:K7');
     R.push([]);
-    R.push(['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า',G.std?'เลขที่บิล':'BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ',G.colOW,G.colOT,'รวมสุทธิ (บาท)'].map(h=>S_(h,3)));
-    if(G.layout==='ton'){R.pop();R.push(['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','เลขที่บิล','รายการ สถานที่ส่งสินค้า','จังหวัด','น้ำหนัก (ตัน)','ค่าขนส่ง ต่อตัน','รวมสุทธิ (บาท)'].map(h=>S_(h,3)));
-      G.rows.forEach(r=>R.push([N_(r.no,9),S_(r.type,9),S_(r.plate,9),S_(r.date,9),S_(r.bol,4),S_(r.placeBare+(r.note?(' '+r.note):''),4),S_(r.prov,4),N_(r.w,5),N_(r.rate,6),N_(r.tot,6)]));
-      const tr2=R.length+1;R.push([S_('('+G.words+')',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),N_(G.sW,8),S_('',10),N_(G.sT,7)]);M.push('A'+tr2+':G'+tr2);
-      return {cols:[7,11,12,12,15,32,14,13,13,15],rows:R,merges:M,heights:{4:24}};}
+    R.push(['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า',G.std?'เลขที่บิล':'BOL NO.',G.std?'รายการ ต้นทาง → สถานที่ส่งสินค้า':'รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ',G.colOW,G.colOT,'รวมสุทธิ (บาท)'].map(h=>S_(h,3)));
+    if(G.layout==='ton'){R.pop();R.push(['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','เลขที่บิล','รายการ ต้นทาง → สถานที่ส่งสินค้า','จังหวัด','น้ำหนัก (ตัน)','ค่าขนส่ง ต่อตัน','บวกเพิ่ม','รวมสุทธิ (บาท)'].map(h=>S_(h,3)));
+      G.rows.forEach(r=>R.push([N_(r.no,9),S_(r.type,9),S_(r.plate,9),S_(r.date,9),S_(r.bol,4),S_(r.place,4),S_(r.prov,4),N_(r.w,5),N_(r.rate,6),N_(r.add,6),N_(r.tot,6)]));
+      const tr2=R.length+1;R.push([S_('('+G.words+')',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),N_(G.sW,8),S_('',10),N_(G.sAdd,7),N_(G.sT,7)]);M.push('A'+tr2+':G'+tr2);
+      return {cols:[7,11,12,12,15,36,14,13,13,11,15],rows:R,merges:M,heights:{4:24}};}
     G.rows.forEach(r=>R.push([N_(r.no,9),S_(r.type,9),S_(r.plate,9),S_(r.date,9),S_(r.bol,4),S_(r.place,4),S_(r.prov,4),N_(r.normal,6),N_(r.ow,6),N_(r.ot,6),N_(r.tot,6)]));
     const tr=R.length+1;
     R.push([S_('('+G.words+')',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),N_(G.sN,7),N_(G.sOW,7),N_(G.sOT,7),N_(G.sT,7)]);M.push('A'+tr+':G'+tr);
