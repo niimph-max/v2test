@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29h · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29h</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2715,7 +2715,7 @@
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">วันที่เอกสาร</label>
             <input type="date" value="{{ blDocDate }}" onInput="{{ onBlDocDate }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;">
           </div>
-          <sc-if value="{{ blNotGir }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ blIsTata }}" hint-placeholder-val="{{ true }}">
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">รหัสลูกค้า</label>
             <input value="{{ blProdCode }}" onInput="{{ onBlProdCode }}" placeholder="เช่น สิงห์ทอง" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;font-family:inherit;">
@@ -2742,6 +2742,15 @@
           </div>
           </sc-if>
         </div>
+        <sc-if value="{{ blIsStd }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:12px;padding:10px 13px;background:#f6f7f9;border:1px solid #e4e7ec;border-radius:9px;font-size:12.5px;color:#475467;line-height:1.7;">
+            📄 รูปแบบมาตรฐาน: ใบวางบิล / ใบแจ้งหนี้ รายละเอียดรายเที่ยว (ค่าขนส่งปกติ · บวกน้ำหนัก · บวกอื่นๆ) — ไม่มีใบปะหน้า · ทาทาและการ์เดียนใช้แบบของลูกค้าเอง
+          </div>
+          <div style="margin-top:10px;max-width:260px;">
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ผู้รับรอง (ฝ่ายบัญชี)</label>
+            <input value="{{ blSigner }}" onInput="{{ onBlSigner }}" placeholder="ชื่อผู้ลงนาม" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;font-family:inherit;">
+          </div>
+        </sc-if>
         <sc-if value="{{ blIsGir }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:12px;padding:10px 13px;background:#f0f6ff;border:1px solid #c9dcf5;border-radius:9px;font-size:12.5px;color:#1e4f86;line-height:1.7;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
             <div style="flex:1;min-width:240px;">📄 รูปแบบการ์เดียน: พิมพ์ได้ <b>ใบปะหน้า (ใบแจ้งหนี้ หัก ณ ที่จ่าย 1%)</b> + <b>ใบวางบิลรายละเอียด</b> (ค่าขนส่งปกติ · OW = บวกน้ำหนัก · OT = บวกอื่นๆ) — ออก 1 ใบต่อ 1 ประเภทรถ</div>
@@ -7666,6 +7675,8 @@ const TYPE_MAP={'GIR6':'หกล้อ','GIR10':'สิบล้อ','GIRTL':'�
 const GIR_CUST_CODES=['30-005'];
 // ★ v.2026-09-29a: ใบวางบิลรูปแบบการ์เดียน — 1 ใบแจ้งหนี้ต่อ 1 ประเภทรถ (ตามแอป STT Invoice เดิม)
 const GIR_BILL_TYPES={'6':'6 ล้อ','10':'10 ล้อ','trailer':'เทรเลอร์','40':'40 GP'};
+// ★ v.2026-09-29h: รูปแบบใบวางบิล — ทาทามีแบบของตัวเอง · การ์เดียนมีใบปะหน้า · ลูกค้าอื่นใช้ใบรายละเอียดแบบการ์เดียนเป็นมาตรฐาน
+const TATA_CUST_CODES=['30-015'];
 const GIR_CO={name:'บริษัท สิงห์ทองทรัคทรานสปอร์ต จำกัด',hq:'สนญ./สระบุรี : 2/5 ถ.อุไรรัตน์ ต.แก่งคอย อ.แก่งคอย จ.สระบุรี โทร.036-246202 แฟกซ์ 036-245512',ry:'ระยอง : 2/1 หมู่ 11 ต.หนองละลอก อ.บ้านค่าย จ.ระยอง โทร./แฟกซ์ 0-3889-2396',tax:'เลขประจำตัวผู้เสียภาษี 019 554 200 009 5'};
 const GIR_DEST={"กรุงเทพฯ":["บางกะปิ","บางบอน","บางแค","บางเขน","บางขุนเทียน","บางพลัด","บางซื่อ","บึงกุ่ม","จตุจักร","คลองสามวา","ลาดพร้าว","มีนบุรี","หนองจอก","พระนคร","ประเวศ","ราษฎร์บูรณะ","ราชเทวี","สายไหม","สะพานสูง","สาธร","สวนหลวง","สุวินทวงศ์","ทวีวัฒนา","ทุ่งครุ","วังทองหลาง","ยานนาวา"],"ฉะเชิงเทรา":["ฉะเชิงเทรา"],"ชัยนาท":["ชัยนาท"],"ชัยภูมิ":["ชัยภูมิ"],"จันทบุรี":["จันทบุรี"],"เชียงใหม่":["เชียงใหม่","ดอยสะเก็ด","อ.สันทราย"],"เชียงราย":["เชียงราย","อ.เชียงแสน","แม่สาย"],"ชลบุรี":["บ้านบึง","เมืองชลบุรี","พนัสนิคม","พัทยา","บางละมุง","สัตหีบ","ศรีราชา"],"กาฬสินธุ์":["เมืองกาฬสินธุ์"],"กาญจนบุรี":["กาญจนบุรี","อ.ท่าม่วง"],"ขอนแก่น":["บ้านไผ่","เมือง ขอนแก่น"],"ลำปาง":["ลำปาง"],"ลำพูน":["ลำพูน"],"ลพบุรี":["ลพบุรี"],"นครปฐม":["กำแพงแสน","นครปฐม","นครชัยศรี","สามพราน","บางเลน","ศาลายา"],"นครราชสีมา":["เมือง นครราชสีมา","ปากช่อง","สีคิ้ว"],"นครสวรรค์":["นครสวรรค์"],"นครศรีธรรมราช":["นครศรีธรรมราช"],"นราธิวาส":["นราธิวาส"],"หนองคาย":["หนองคาย"],"นนทบุรี":["นนทบุรี"],"ปทุมธานี":["คลองหลวง","ลาดหลุมแก้ว","ลำลูกกา","เมืองปทุมธานี","สามโคก"],"พะเยา":["จุน"],"เพชรบูรณ์":["เพชรบูรณ์"],"เพชรบุรี":["เขาย้อยเพชรบุรี"],"พิษณุโลก":["พิษณุโลก"],"พระนครศรีอยุธยา":["บางไทร","อยุธยา","วังน้อย","บางปะอิน"],"แพร่":["แพร่"],"ภูเก็ต":["ภูเก็ต"],"ประจวบคีรีขันธ์":["ประจวบคีรีขันธ์"],"ราชบุรี":["ราชบุรี"],"ระยอง":["บ้านฉาง","บ้านค่าย","แกลง","นิคมพัฒนา","ปลวกแดง","เมืองระยอง"],"ร้อยเอ็ด":["ร้อยเอ็ด"],"สกลนคร":["เมืองสกลนคร","สว่างแดนดิน"],"สมุทรสาคร":["บางโทลัด","กระทุ่มแบน","สมุทรสาคร"],"สมุทรปราการ":["บางพลี","บางปู / (แอมพาส)","สมุทรปราการ","เทพารักษ์"],"สระบุรี":["หนองแค","สระบุรี","วิหารแดง"],"สตูล":["ควนกาหลง"],"สิงห์บุรี":["สิงห์บุรี"],"ศรีสะเกษ":["ศรีษะเกษ"],"สงขลา":["หาดใหญ่","จะนะ","สะเดา","นาหม่อม","รัตภูมิ","สิงหนคร","สงขลา"],"สุโขทัย":["สุโขทัย"],"สุพรรณบุรี":["สุพรรณบุรี"],"สุราษฎร์ธานี":["เกาะสมุย","สุราษฎร์ธานี"],"สุรินทร์":["จอมพระ","ศรีขรภูมิ","สุรินทร์"],"ตรัง":["ตรัง"],"ตราด":["ตราด"],"อุบลราชธานี":["อุบลราชธานี"],"อุดรธานี":["อุดรธานี"],"อุตรดิตถ์":["อุตรดิตถ์"],"อุทัยธานี":["อุทัยธานี"],"ยะลา":["ยะลา"]};
 // ★ v.2026-09-11: ปลายทางตามสัญญา ทาทาสตีล (ลูกค้า 30-015) — จังหวัด → อำเภอ (ราคาไม่ผูก กรอกมือ)
@@ -11581,14 +11592,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ===== ใบวางบิลรูปแบบการ์เดียน (GIR, ลูกค้า 30-005) =====
   // เอกสาร: ใบปะหน้า (ใบแจ้งหนี้ 1 ชุด หัก ณ ที่จ่าย 1%) + ใบวางบิลรายละเอียด (ปกติ / OW / OT) + ใบสรุปวางบิลรวม
   _blIsGir(){return GIR_CUST_CODES.indexOf(String(this.state.billCustCode||'').trim())>=0;}
+  _blFmt(){const c=String(this.state.billCustCode||'').trim();return GIR_CUST_CODES.indexOf(c)>=0?'gir':(TATA_CUST_CODES.indexOf(c)>=0?'tata':'std');}
   _girCat(j){const t=(this.state.trucks||[]).find(x=>x.plate===(j&&j.truckPlate));const s=String((t&&t.truckType)||(j&&j.truckType)||'');
     if(/^06|หก/.test(s))return '6';if(/^10|สิบ/.test(s))return '10';if(/^18|^21|หัวลาก|พ่วง|เทรล/.test(s))return 'trailer';return '';}
   // สถานที่ส่งสินค้า = ชื่อร้าน + อำเภอ + จังหวัด (ผู้ใช้กำหนด 29 ก.ย.) · ชื่อร้านมีอำเภอ/จังหวัดอยู่แล้ว ไม่ต่อซ้ำ
-  _girPlace(j,l,p,is40){const nz=x=>String(x||'').replace(/\s+/g,'');const dest=String(j.destination||(l&&l.dest)||'').trim();
+  _girPlace(j,l,p,is40,std){const nz=x=>String(x||'').replace(/\s+/g,'');const dest=String(j.destination||(l&&l.dest)||'').trim();
     const prov=String(j.destProvince||'').trim();const provShow=/^กรุงเทพ/.test(prov)?'กทม.':prov;
     const add=[String(j.destDistrict||'').trim(),provShow].filter(x=>x&&nz(dest).indexOf(nz(x))<0&&!(x==='กทม.'&&/กรุงเทพ|กทม/.test(dest)));
     let t=[dest].concat(add).filter(Boolean).join(' ');
-    const sfx=[];if(p&&Number(p.ow))sfx.push('+ นน.');if(p&&Number(p.ot))sfx.push(is40?'+ นำแร็คกลับ':'+ รอขึ้นสินค้า');
+    const sfx=[];if(p&&Number(p.ow))sfx.push('+ นน.');if(p&&Number(p.ot))sfx.push(std?'+ อื่นๆ':(is40?'+ นำแร็คกลับ':'+ รอขึ้นสินค้า'));
     return sfx.length?(t+' '+sfx.join('')):t;}
   _girDate(iso){const m=String(iso||'').slice(0,10).match(/^(\d{4})-(\d{2})-(\d{2})$/);return m?(Number(m[3])+'/'+Number(m[2])+'/'+(Number(m[1])+543)):String(iso||'');}
   _girPref(k,def){const v=this.state[k];if(v!=null)return String(v);try{const x=localStorage.getItem('lf_'+k);return x!=null?x:(def||'');}catch(e){return def||'';}}
@@ -11600,19 +11612,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const ow=r2(w*(parseFloat(j.rateAddWeight)||0)),ot=r2(w*(parseFloat(j.rateAddOther)||0)+(parseFloat(j.rateAddTrip)||0));
     return {normal:r2(tot-ow-ot),ow:ow,ot:ot,tot:tot};}
   _girData(D){
-    const S=this.state;const typ=S.billGirType||'';
+    const S=this.state;const std=this._blFmt()!=='gir';const typ=std?'':(S.billGirType||'');
     const items=D.items.slice().sort((a,b)=>String(a.j.date).localeCompare(String(b.j.date))||String((a.l&&a.l.bill)||'').localeCompare(String((b.l&&b.l.bill)||''),'en',{numeric:true}));
     const rows=[];
     items.forEach(it=>{const j=it.j,l=it.l;const p=this._girParts(j,l,this._blLines(j).length);
       rows.push({no:rows.length+1,type:typ==='40'?GIR_BILL_TYPES['40']:(GIR_BILL_TYPES[this._girCat(j)]||'—'),plate:j.truckPlate||'',
-        date:this._girDate(j.date),bol:(l&&l.bill)||'',place:this._girPlace(j,l,p,typ==='40'),
+        date:this._girDate(j.date),bol:(l&&l.bill)||'',place:this._girPlace(j,l,p,typ==='40',std),
         prov:String(j.destProvince||'').trim(),normal:p.normal,ow:p.ow,ot:p.ot,tot:p.tot});});
     const sum=k=>Math.round(rows.reduce((a,r)=>a+(Number(r[k])||0),0)*100)/100;
     const sT=sum('tot');const wht=Math.round(sT*0.01*100)/100;const net=Math.round((sT-wht)*100)/100;
     let title=typ?GIR_BILL_TYPES[typ]:'';
     if(!title){const cnt={};rows.forEach(r=>{cnt[r.type]=(cnt[r.type]||0)+1;});title=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a])[0]||'';}
     return {rows:rows,sN:sum('normal'),sOW:sum('ow'),sOT:sum('ot'),sT:sT,wht:wht,net:net,title:title==='—'?'':title,
-      colOT:typ==='40'?'นำแร็คกลับ':'OT',desc:String(S.billGirDesc==null?'ค่าขนส่ง LOGISTICS21':S.billGirDesc).trim(),
+      std:std,colOW:std?'บวกน้ำหนัก':'OW',colOT:std?'บวกอื่นๆ':(typ==='40'?'นำแร็คกลับ':'OT'),desc:String(S.billGirDesc==null?'ค่าขนส่ง LOGISTICS21':S.billGirDesc).trim(),
       signer:this._blSigner().trim(),words:this._bahtText(sT),netWords:this._bahtText(net)};
   }
   blToggle=(id)=>this.setState(s=>{const m={...(s.billSel||{})};const k=String(id);if(m[k])delete m[k];else m[k]=true;return{billSel:m};});
@@ -11833,8 +11845,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   exportBillingXlsx=(listArg)=>{
     const D=this._blDocData(listArg);if(!D)return;
-    if(this._blIsGir()){const G=this._girData(D);const safe=String(D.inv||'draft').replace(/[\\\/:*?"<>|]/g,'-');
-      this._downloadBytes('ใบวางบิล_GIR_'+safe+'.xlsx',this._xlsxBytes(D.inv||'GIR',this._girXlsxSheet(D,G)),'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');return;}
+    if(this._blFmt()!=='tata'){const G=this._girData(D);const safe=String(D.inv||'draft').replace(/[\\\/:*?"<>|]/g,'-');
+      this._downloadBytes('ใบวางบิล_'+(G.std?'':'GIR_')+safe+'.xlsx',this._xlsxBytes(D.inv||'GIR',this._girXlsxSheet(D,G)),'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');return;}
     const safe=String(D.inv||'draft').replace(/[\\\/:*?"<>|]/g,'-');
     this._downloadBytes('ใบวางบิล_'+safe+'.xlsx',this._xlsxBytes(D.inv||'ใบวางบิล',this._blXlsxSheet(D)),'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   };
@@ -11881,7 +11893,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   printBillingDoc=(listArg)=>{
     const D=this._blDocData(listArg);if(!D)return;
-    if(this._blIsGir())return this._printGirDoc(D);
+    if(this._blFmt()!=='tata')return this._printGirDoc(D);
     let {S,items,list,esc,n2,n3,co,coName,coAddr,coTax,coLine2,cust,custName,custLine,inv,rec,docDate,prod,tt,rows,sumW,sumA,words}=D;
     {const _miss=list.filter(j=>(!String(j.destDistrict||'').trim()||!String(j.destProvince||'').trim()));
      if(_miss.length&&!window.confirm('⚠ มี '+_miss.length+' เที่ยว ที่ยังไม่กรอกอำเภอ/จังหวัดปลายทาง\nคอลัมน์รายละเอียดจะใช้ข้อความปลายทางเดิมแทน\n\nพิมพ์ต่อเลยไหม?'))return;}
@@ -11991,9 +12003,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     +'.it td{padding:3px 3px;vertical-align:middle;word-wrap:break-word;}.it td.c{text-align:center;}.it td.r{text-align:right;white-space:nowrap;}'
     +'.it tr.tot td{font-weight:800;background:#f3f3f3;font-size:14px;padding:5px 3px;}.it tr.tot td.r{font-size:14px;}'
     +'tr{page-break-inside:avoid;}';}
-  _girCoBlock(big,withRy){return '<div class="co"><div class="n" style="font-size:'+(big?20:19)+'px">'+GIR_CO.name+'</div>'
-    +'<div style="font-size:'+(big?12:11)+'px">'+GIR_CO.hq+'</div>'+(withRy?('<div style="font-size:'+(big?12:11)+'px">'+GIR_CO.ry+'</div>'):'')
-    +'<div style="font-size:'+(big?12:11)+'px;'+(big?'font-weight:700;':'')+'">'+GIR_CO.tax+'</div>';}
+  _girCoBlock(D,big,withRy){const fs=big?12:11;const esc=D.esc;
+    const own=COMPANY_ID==='singthong';
+    const nm=own?GIR_CO.name:esc(D.coName||'');const lines=own?[GIR_CO.hq].concat(withRy?[GIR_CO.ry]:[]):[esc(D.coAddr||''),esc([D.co&&D.co.phone?('โทร. '+D.co.phone):''].filter(Boolean).join(''))].filter(Boolean);
+    const tax=own?GIR_CO.tax:(D.coTax?('เลขประจำตัวผู้เสียภาษี '+esc(D.coTax)):'');
+    return '<div class="co"><div class="n" style="font-size:'+(big?20:19)+'px">'+nm+'</div>'+lines.map(x=>'<div style="font-size:'+fs+'px">'+x+'</div>').join('')
+      +(tax?('<div style="font-size:'+fs+'px;'+(big?'font-weight:700;':'')+'">'+tax+'</div>'):'');}
   _girCust(D){const esc=D.esc;return '<div class="cu"><div><b>ลูกค้า</b>&nbsp;&nbsp;'+esc(D.custName||'')+'</div>'
     +'<div class="in">'+esc(D.cust.address||'')+'</div><div class="in">เลขประจำตัวผู้เสียภาษี '+esc(D.cust.taxId||'')+'</div></div>';}
   _printGirDoc(D){
@@ -12003,7 +12018,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     // ใบปะหน้า — ใบแจ้งหนี้ (ตามแบบเอกสารจริงทุกตำแหน่ง · ไม่มีช่องเซ็น)
     const cover='<div class="page" style="padding:6mm 6mm">'
       +'<div style="text-align:right;font-weight:700;font-size:12.5px;margin-bottom:20px">Invoice number :&nbsp;'+esc(D.inv||'')+'</div>'
-      +'<div style="margin-bottom:14px">'+this._girCoBlock(true,true)+'<div style="font-size:15px;font-weight:700;margin-top:8px">ใบแจ้งหนี้</div></div></div>'
+      +'<div style="margin-bottom:14px">'+this._girCoBlock(D,true,true)+'<div style="font-size:15px;font-weight:700;margin-top:8px">ใบแจ้งหนี้</div></div></div>'
       +'<div style="display:flex;justify-content:flex-end;margin:0 0 10px"><table style="font-size:12.5px;font-weight:700"><tr><td style="padding:2px 10px">วันที่</td><td style="padding:2px 16px;min-width:30mm;text-align:center">'+esc(date)+'</td></tr></table></div>'
       +'<div class="cu" style="margin-bottom:16px">'+this._girCust(D).replace(/^<div class="cu">/,'')
       +'<table style="width:100%;table-layout:fixed;font-size:12.5px"><thead><tr>'
@@ -12024,7 +12039,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!chunks.length)chunks.push([]);
     if(chunks[chunks.length-1].reduce((a,r)=>a+_mm(r),0)>FIT_LAST)chunks.push([]);   // แถวรวม+ช่องเซ็นไม่พอ → ยกไปหน้าใหม่
     const W=[3.5,5.5,8,9.5,12,19.5,6,10.5,7.5,7.5,10.5];
-    const H=['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ','OW',G.colOT,'รวมสุทธิ (บาท)'];
+    const H=['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า',G.std?'เลขที่บิล':'BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ',G.colOW,G.colOT,'รวมสุทธิ (บาท)'];
     const thead='<thead><tr>'+H.map((h,i)=>'<th style="width:'+W[i]+'%'+(i===5?';padding:3px 2px':'')+'">'+esc(h)+'</th>').join('')+'</tr></thead>';
     const f0=(v)=>{const x=Math.round((Number(v)||0)*100)/100;return Number.isInteger(x)?x.toLocaleString('en-US'):n2(x);};
     const z=(v)=>(Number(v)||0)?f0(v):'';
@@ -12037,15 +12052,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const pages=chunks.map((ch,i)=>'<div class="page" style="padding:6mm 6mm">'
       +'<div style="display:flex;justify-content:flex-end;margin-bottom:12px"><div style="font-size:11px;line-height:1.8;min-width:58mm">'
       +'<div>Invoice number : <b>'+esc(D.inv||'')+'</b></div><div>Invoice date : <b>'+esc(date)+'</b></div><div>เลขที่ใบเสร็จรับเงิน : <b>'+esc(D.rec||'')+'</b></div></div></div>'
-      +'<div style="margin-bottom:14px">'+this._girCoBlock(false,true)+'</div></div>'
+      +'<div style="margin-bottom:14px">'+this._girCoBlock(D,false,true)+'</div></div>'
       +'<div class="bar">ใบวางบิล / ใบแจ้งหนี้</div>'
       +'<div style="margin-bottom:14px">'+this._girCust(D)+'</div>'
       +'<table class="it">'+thead+'<tbody>'+body(ch)+(i===chunks.length-1?totRow:'')+'</tbody></table>'
       +(i===chunks.length-1?sign:'')
       +'<div style="text-align:right;font-size:11px;color:#555;margin-top:12px">หน้าที่ '+(i+1)+' ของ '+chunks.length+'</div></div>').join('');
-    const html='<!doctype html><html><head><meta charset="utf-8"><title>ใบวางบิล GIR '+esc(D.inv||'')+'</title>'
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>ใบวางบิล '+esc(D.inv||'')+'</title>'
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+this._girCss()+'</style></head><body>'
-      +cover+pages+'</body></html>';
+      +(G.std?'':cover)+pages+'</body></html>';
     this._printHtml(html);
     const items=D.items,inv=D.inv,rec=D.rec;
     if(inv&&!items.every(it=>this._blLineInv(it.j,it.l)===inv)){
@@ -12057,18 +12072,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   _girXlsxSheet(D,G){
     const S_=(v,st)=>({v:v,t:'s',s:st||0}),N_=(v,st)=>({v:v,t:'n',s:st});const R=[];const M=[];
-    R.push([S_(D.coName,2)]);M.push('A1:K1');
-    R.push([S_([D.coAddr,D.coLine2].filter(Boolean).join('  '),11)]);M.push('A2:K2');
+    R.push([S_(COMPANY_ID==='singthong'?GIR_CO.name:D.coName,2)]);M.push('A1:K1');
+    R.push([S_(COMPANY_ID==='singthong'?(GIR_CO.hq+'  '+GIR_CO.tax):[D.coAddr,D.coLine2].filter(Boolean).join('  '),11)]);M.push('A2:K2');
     R.push([]);
     R.push([S_('ใบวางบิล / ใบแจ้งหนี้'+(G.title?(' — '+G.title):''),2)]);M.push('A4:K4');
     R.push([S_('ลูกค้า '+(D.custName||'—'),1)]);M.push('A5:K5');
     R.push([S_([D.cust.address||'',D.cust.taxId?('เลขประจำตัวผู้เสียภาษี '+D.cust.taxId):''].filter(Boolean).join('  '),11)]);M.push('A6:K6');
     R.push([S_('Invoice number : '+(D.inv||'—'),1),null,null,null,S_('Invoice date : '+this._blShortDate(D.docDate),1),null,null,S_('เลขที่ใบเสร็จรับเงิน : '+(D.rec||'—'),1)]);M.push('A7:D7','E7:G7','H7:K7');
     R.push([]);
-    R.push(['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ','OW',G.colOT,'รวมสุทธิ (บาท)'].map(h=>S_(h,3)));
+    R.push(['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า',G.std?'เลขที่บิล':'BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ',G.colOW,G.colOT,'รวมสุทธิ (บาท)'].map(h=>S_(h,3)));
     G.rows.forEach(r=>R.push([N_(r.no,9),S_(r.type,9),S_(r.plate,9),S_(r.date,9),S_(r.bol,4),S_(r.place,4),S_(r.prov,4),N_(r.normal,6),N_(r.ow,6),N_(r.ot,6),N_(r.tot,6)]));
     const tr=R.length+1;
     R.push([S_('('+G.words+')',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),S_('',10),N_(G.sN,7),N_(G.sOW,7),N_(G.sOT,7),N_(G.sT,7)]);M.push('A'+tr+':G'+tr);
+    if(G.std)return {cols:[7,11,12,12,15,30,14,14,11,11,15],rows:R,merges:M,heights:{4:24}};
     R.push([]);
     const k=R.length+1;
     R.push([null,null,null,null,null,null,null,null,S_('Total',1),null,N_(G.sT,7)]);
@@ -14552,7 +14568,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.blProdCode=S.billProdCode==null?'':S.billProdCode;out.onBlProdCode=(e)=>this.setState({billProdCode:e.target.value});
       out.blTruckType=S.billTruckType==null?'18W_LARGE':S.billTruckType;out.onBlTruckType=(e)=>this.setState({billTruckType:e.target.value});
       // ★ v.2026-09-29a: ลูกค้าการ์เดียน → ฟอร์มใบวางบิลรูปแบบ GIR (ช่องรหัสลูกค้า/ประเภทรถแบบทาทาซ่อน)
-      out.blIsGir=this._blIsGir();out.blNotGir=!out.blIsGir;
+      out.blIsGir=this._blIsGir();out.blNotGir=!out.blIsGir;{const _f=this._blFmt();out.blIsTata=_f==='tata';out.blIsStd=_f==='std';}
       out.blGirType=S.billGirType||'';out.onBlGirType=(e)=>this.setState({billGirType:e.target.value,billSel:{}});
       out.blGirTypeOpts=[{value:'',label:'ทุกประเภท'}].concat(Object.keys(GIR_BILL_TYPES).map(k=>({value:k,label:GIR_BILL_TYPES[k]+(k==='40'?' (OT = นำแร็คกลับ)':'')})));
       out.blGirDesc=S.billGirDesc==null?'ค่าขนส่ง LOGISTICS21':S.billGirDesc;out.onBlGirDesc=(e)=>this.setState({billGirDesc:e.target.value});
