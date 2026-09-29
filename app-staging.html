@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11982,6 +11982,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     +'body{font-family:"Sarabun","TH Sarabun New",Tahoma,sans-serif;margin:0;color:#161616;background:#fff;}'
     +'.page{width:210mm;min-height:297mm;margin:0 auto;padding:8mm 8mm;display:flex;flex-direction:column;page-break-after:always;}'
     +'.page:last-child{page-break-after:auto;}'
+    +'@media print{.page{min-height:0;}}'
     +'table{border-collapse:collapse;}td,th{border:1px solid #161616;}'
     +'.co{text-align:center;line-height:1.5;}.co .n{font-weight:700;}'
     +'.bar{text-align:center;font-weight:700;font-size:16px;border-top:1.5px solid #161616;border-bottom:1.5px solid #161616;padding:4px 0;margin:14px 0;}'
@@ -12014,10 +12015,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<tr style="font-weight:700"><td colspan="2" style="padding:4px 6px;text-align:center">'+esc(G.netWords)+'</td><td style="padding:4px 6px;text-align:center">Net Pay</td><td style="padding:4px 6px;text-align:right">'+n2(G.net)+'</td></tr>'
       +'</tbody></table></div>';
     // ใบวางบิลรายละเอียด — หน้าละ 24 แถว (หน้าสุดท้าย 18 เผื่อแถวรวม + ช่องเซ็น)
-    const PER=24,PER_LAST=18;const chunks=[];let rest=G.rows.slice();
-    while(rest.length>PER){chunks.push(rest.slice(0,PER));rest=rest.slice(PER);}
-    if(rest.length>PER_LAST){chunks.push(rest);rest=[];}
-    chunks.push(rest);
+    // คอลัมน์สถานที่ส่ง ~38mm ≈ 21 ตัวอักษร/บรรทัด · จังหวัด ~11mm ≈ 5 ตัวอักษร · บรรทัดละ ~5.2mm
+    const _ln=(r)=>Math.max(1,Math.ceil(String(r.place||'').length/22),Math.ceil(String(r.prov||'').length/5),Math.ceil(String(r.date||'').length/10));
+    const _mm=(r)=>1.7+_ln(r)*4.35;   // วัดจริง 29 ก.ย.: 2 บรรทัด = 10.3mm · 3 บรรทัด = 14.6mm
+    const FIT=176,FIT_LAST=138;   // A4 297 − ขอบ 12 − หัวเอกสาร/ลูกค้า 86 − หัวตาราง 9 − เลขหน้า ~10 (วัดจริง) · หน้าสุดท้ายเหลือที่ให้แถวรวม+ช่องเซ็น
+    const chunks=[];{let cur=[],h=0;G.rows.forEach(r=>{const rh=_mm(r);if(cur.length&&h+rh>FIT){chunks.push(cur);cur=[];h=0;}cur.push(r);h+=rh;});
+      if(cur.length)chunks.push(cur);}
+    if(!chunks.length)chunks.push([]);
+    if(chunks[chunks.length-1].reduce((a,r)=>a+_mm(r),0)>FIT_LAST)chunks.push([]);   // แถวรวม+ช่องเซ็นไม่พอ → ยกไปหน้าใหม่
     const W=[3.5,5.5,8,9.5,12,19.5,6,10.5,7.5,7.5,10.5];
     const H=['ลำดับ','ประเภท','ทะเบียน','วันที่ส่งสินค้า','BOL NO.','รายการ สถานที่ส่งสินค้า','จังหวัด','ค่าขนส่ง ปกติ','OW',G.colOT,'รวมสุทธิ (บาท)'];
     const thead='<thead><tr>'+H.map((h,i)=>'<th style="width:'+W[i]+'%'+(i===5?';padding:3px 2px':'')+'">'+esc(h)+'</th>').join('')+'</tr></thead>';
