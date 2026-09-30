@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-29k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-09-30a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-29k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-09-30a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5603,6 +5603,9 @@
           <div style="font-size:14px;font-weight:700;color:#16263a;">📍 ต้องการติดตามงานนี้</div>
           <div style="font-size:12px;color:#667085;margin-top:2px;">{{ jobTrackHint }}</div>
         </div>
+        <sc-if value="{{ jdCanCustLink }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onJobCustLink }}" style="padding:9px 14px;background:#fff;color:#2f6fb0;border:1.5px solid #cfe0f2;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;">🔗 ลิงก์ติดตามสำหรับลูกค้า</button>
+        </sc-if>
       </div>
 
       <sc-if value="{{ jobTrackOn }}" hint-placeholder-val="{{ false }}">
@@ -7485,6 +7488,26 @@
       </div>
     </sc-if>
 
+    <!-- ===== ลิงก์ติดตามสำหรับลูกค้า (v.2026-09-30a) ===== -->
+    <sc-if value="{{ ctShow }}" hint-placeholder-val="{{ false }}">
+      <div style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1100;display:flex;align-items:center;justify-content:center;padding:24px;">
+        <div style="background:#fff;border-radius:18px;padding:24px 22px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);">
+          <div style="font-size:17px;font-weight:800;color:#16263a;">🔗 ลิงก์ติดตามสำหรับลูกค้า</div>
+          <div style="font-size:12.5px;color:#667085;margin:4px 0 14px;line-height:1.6;">{{ ctSub }}<br>ลูกค้าเปิดดูสถานะเที่ยวนี้ได้อย่างเดียว ไม่เห็นราคาและเบอร์ พขร. · ลิงก์ใช้ได้ 30 วัน</div>
+          <sc-if value="{{ ctLoading }}" hint-placeholder-val="{{ false }}"><div style="padding:18px;text-align:center;color:#667085;font-size:14px;">กำลังสร้างลิงก์…</div></sc-if>
+          <sc-if value="{{ ctHasError }}" hint-placeholder-val="{{ false }}"><div style="padding:12px;background:#fef3f2;border:1px solid #f3c9c3;border-radius:10px;color:#b42318;font-size:13.5px;margin-bottom:12px;">{{ ctError }}</div></sc-if>
+          <sc-if value="{{ ctReady }}" hint-placeholder-val="{{ false }}">
+            <input readonly value="{{ ctUrl }}" style="width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:9px;font-size:12.5px;color:#475467;margin-bottom:12px;font-family:inherit;box-sizing:border-box;">
+            <button onClick="{{ onCtLine }}" style="width:100%;padding:12px;border-radius:10px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;background:#06C755;color:#fff;border:none;">ส่งทาง LINE</button>
+            <button onClick="{{ onCtCopy }}" style="width:100%;padding:12px;border-radius:10px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;background:#fff;color:#2f6fb0;border:1.5px solid #cfe0f2;">คัดลอกข้อความ + ลิงก์</button>
+            <sc-if value="{{ ctCopied }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#067647;text-align:center;margin:-2px 0 8px;">คัดลอกแล้ว — วางในแชทลูกค้าได้เลย</div></sc-if>
+            <button onClick="{{ onCtOpen }}" style="width:100%;padding:12px;border-radius:10px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;background:#fff;color:#475467;border:1px solid #e4e7ec;">เปิดดูหน้าที่ลูกค้าเห็น</button>
+          </sc-if>
+          <button onClick="{{ onCtClose }}" style="width:100%;padding:12px;border-radius:10px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;margin-bottom:8px;background:#f4f6f8;color:#475467;border:1px solid #e4e7ec;margin-bottom:0;">ปิด</button>
+        </div>
+      </div>
+    </sc-if>
+
     <!-- ===== QR MODAL after save ===== -->
     <sc-if value="{{ savedJobQrVisible }}" hint-placeholder-val="{{ false }}">
       <div style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;">
@@ -7499,6 +7522,9 @@
           <div style="display:flex;justify-content:center;margin-bottom:14px;">
             {{ savedJobQrImgNode }}
           </div>
+          <sc-if value="{{ qrCanCustLink }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onQrCustLink }}" style="width:100%;padding:11px;background:#fff;color:#475467;border:1px solid #e4e7ec;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px;font-family:inherit;">🔗 ลิงก์ติดตามสำหรับลูกค้า</button>
+          </sc-if>
           <sc-if value="{{ qdCanInspect }}" hint-placeholder-val="{{ false }}">
             <button onClick="{{ onQdInspectThis }}" style="width:100%;padding:13px;background:#16263a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:8px;font-family:inherit;">🛡️ ตรวจสภาพรถคันนี้</button>
           </sc-if>
@@ -8000,6 +8026,18 @@ async function sbSignOut(){
   sbSetSession(null);COMPANY_ID='';
 }
 // สร้าง token ต่อ 1 งาน (ก้อน 2) — หัวหน้างาน login แล้ว insert ได้ตาม RLS ; anon อ่านตารางนี้ไม่ได้
+// ★ v.2026-09-30a: ลิงก์ติดตามสำหรับลูกค้า (status.html) — ดูอย่างเดียว · ใบงานเดียวใช้ลิงก์เดิมซ้ำจนใกล้หมดอายุ
+async function sbTrackToken(jobId){
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&job_id=eq.'+encodeURIComponent(String(jobId))+'&revoked=eq.false&select=token,expires_at&order=created_at.desc&limit=1';
+  const r0=await fetch(SB_REST+'/job_track_tokens'+q,{headers:SB_HEADERS});
+  if(!r0.ok){let t='';try{t=await r0.text();}catch(e){}throw new Error('track '+r0.status+' '+t);}
+  const a=await r0.json();const x=a&&a[0];
+  if(x&&(!x.expires_at||new Date(x.expires_at).getTime()>Date.now()+86400000))return x.token;
+  const b=new Uint8Array(16);crypto.getRandomValues(b);const token='ct_'+Array.from(b,v=>v.toString(16).padStart(2,'0')).join('');
+  const res=await fetch(SB_REST+'/job_track_tokens',{method:'POST',headers:{...SB_HEADERS,'Prefer':'return=minimal'},body:JSON.stringify([{token:token,company_id:COMPANY_ID,job_id:String(jobId),expires_at:new Date(Date.now()+30*86400000).toISOString(),revoked:false}])});
+  if(!res.ok){let t='';try{t=await res.text();}catch(e){}throw new Error('track '+res.status+' '+t);}
+  return token;
+}
 async function sbCreateJobToken(jobId,days){
   const token='jt_'+Date.now().toString(36)+Math.random().toString(36).slice(2,12)+Math.random().toString(36).slice(2,8);
   const expires_at=days?new Date(Date.now()+days*86400000).toISOString():null;
@@ -12256,7 +12294,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   };
   addJobDispatcherInline=()=>{const j=this.state.jobDraft||{};const name=String(j.newDispatcher||'').trim();if(!name)return;let list=this.state.dispatchers||[];if(!list.includes(name)){list=[...list,name].sort((a,b)=>String(a).localeCompare(String(b),'th'));try{localStorage.setItem('dispatcherReg_v1',JSON.stringify(list));}catch(e){}}this.setState(s=>({dispatchers:list,jobDraft:{...s.jobDraft,dispatcher:name,newDispatcher:''},jobAddingDispatcher:false}));};
   deleteDispatcherName=(name)=>{name=String(name||'').trim();if(!name)return;if(!window.confirm('ลบ "'+name+'" ออกจากรายชื่อผู้จ่ายงาน?'))return;const list=(this.state.dispatchers||[]).filter(n=>n!==name);try{localStorage.setItem('dispatcherReg_v1',JSON.stringify(list));}catch(e){}this.setState(s=>({dispatchers:list,jobDraft:(s.jobDraft&&s.jobDraft.dispatcher===name)?{...s.jobDraft,dispatcher:''}:s.jobDraft}));};
-  _issueDriverLink(job,driverName,kind){const base=(this.state.qrBaseUrl&&this.state.qrBaseUrl.trim())?this.state.qrBaseUrl.trim().replace(/\/+$/,'')+'/':'https://lionflowapp.com/';sbCreateJobToken(job.id,14).then(token=>{const url=base+(LF_ENV==='staging'?'driver-staging.html':'driver.html')+'?t='+encodeURIComponent(token)+(LF_ENV==='staging'?'&env=staging':'');const img='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);if(kind==='saved')this.setState({savedJobQrImgUrl:img,savedJobQrText:url,savedJobDriver:driverName});else this.setState({jobQrImgUrl:img,jobQrText:url});}).catch(err=>{const m='⚠ สร้างลิงก์ไม่สำเร็จ: '+((err&&err.message)||'');if(kind==='saved')this.setState({savedJobQrText:m});else this.setState({jobQrText:m});});}
+  openCustLink=(jobId)=>{if(jobId==null||jobId==='')return;const j=(this.state.jobs||[]).find(x=>String(x.id)===String(jobId))||{};
+    this.setState({ctLink:{jobId:String(jobId),loading:true,url:'',error:'',copied:false,bill:j.deliveryNo||j.jobNo||'',plate:j.truckPlate||''}});
+    sbTrackToken(jobId).then(tok=>{const base=(this.state.qrBaseUrl&&this.state.qrBaseUrl.trim())?this.state.qrBaseUrl.trim().replace(/\/+$/,'')+'/':'https://lionflowapp.com/';
+      const url=base+'status.html?t='+encodeURIComponent(tok)+(LF_ENV==='staging'?'&env=staging':'');this.setState(s=>({ctLink:{...(s.ctLink||{}),loading:false,url:url}}));})
+    .catch(e=>{const m=String((e&&e.message)||e);this.setState(s=>({ctLink:{...(s.ctLink||{}),loading:false,error:/ 404|PGRST205|does not exist|relation/.test(m)?'ระบบลิงก์ลูกค้ายังไม่เปิดใช้ (ต้องรัน SQL ก่อน)':'สร้างลิงก์ไม่สำเร็จ ลองใหม่อีกครั้ง'}}));});};
+  _issueDriverLink(job,driverName,kind){const base=(this.state.qrBaseUrl&&this.state.qrBaseUrl.trim())?this.state.qrBaseUrl.trim().replace(/\/+$/,'')+'/':'https://lionflowapp.com/';sbCreateJobToken(job.id,14).then(token=>{const url=base+(LF_ENV==='staging'?'driver-staging.html':'driver.html')+'?t='+encodeURIComponent(token)+(LF_ENV==='staging'?'&env=staging':'');const img='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);if(kind==='saved')this.setState({savedJobQrImgUrl:img,savedJobQrText:url,savedJobDriver:driverName,savedJobId:job.id});else this.setState({jobQrImgUrl:img,jobQrText:url});}).catch(err=>{const m='⚠ สร้างลิงก์ไม่สำเร็จ: '+((err&&err.message)||'');if(kind==='saved')this.setState({savedJobQrText:m});else this.setState({jobQrText:m});});}
   saveJob=()=>{{const _pg=this.state.jobDraft||{};if(!this._plGuard(_pg.date,'job',this.editingJobId,'ใบงาน '+(_pg.deliveryNo||_pg.jobNo||'')+' '+(_pg.date||''),this.editingJobId==null))return;}const _jd0=this.state.jobDraft;if(_jd0&&!String(_jd0.customerCode||'').trim()&&String(_jd0.customer||'').trim()){const _lbl=String(_jd0.customer).trim();const _hit=(this.state.customers||[]).find(c=>{const cd=String(c.code||'').trim();return cd&&(_lbl===(cd+' '+(c.name||''))||_lbl.indexOf(cd)===0);});if(_hit)_jd0.customerCode=String(_hit.code).trim();}const j=this.state.jobDraft;if(!j||!j.date){this.setState({jobFormError:'กรุณาเลือกวันที่'});return;}
     if(this.state.jobIsNew&&!(j.shipments||[]).some(sp=>sp&&String(sp.bill||'').trim())){const _dn=String(j.deliveryNo||'').trim();const _m=_dn.match(/^NB-(\d{6})-\d+$/);
       if(!_dn||(_m&&_m[1]!==String(j.date).replace(/-/g,'').slice(2,8)))j.deliveryNo=this._nextNbNo(j.date);}
@@ -12747,6 +12790,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onCloseSavedQr=()=>this.setState({savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:''});
     out.savedLinkCopied=S.savedLinkCopied||false;
     out.copyLinkLabel=S.savedLinkCopied?'✓ คัดลอกลิงก์แล้ว':'ก๊อปลิงก์';
+    {const c=S.ctLink;out.ctShow=!!c;out.ctLoading=!!(c&&c.loading);out.ctUrl=(c&&c.url)||'';out.ctReady=!!out.ctUrl;out.ctError=(c&&c.error)||'';out.ctHasError=!!out.ctError;out.ctCopied=!!(c&&c.copied);
+     out.ctSub=[(c&&c.bill)?('บิล '+c.bill):'',(c&&c.plate)?('รถ '+c.plate):''].filter(Boolean).join(' · ');
+     const _msg='ติดตามสถานะการขนส่ง'+(c&&c.bill?(' บิล '+c.bill):'')+(c&&c.plate?(' · รถ '+c.plate):'')+'\n'+out.ctUrl;
+     out.onCtCopy=()=>{this.copyText(_msg);this.setState(s=>({ctLink:{...(s.ctLink||{}),copied:true}}));};
+     out.onCtLine=()=>{window.open('https://line.me/R/msg/text/?'+encodeURIComponent(_msg),'_blank');};
+     out.onCtOpen=()=>{if(out.ctUrl)window.open(out.ctUrl,'_blank');};
+     out.onCtClose=()=>this.setState({ctLink:null});
+     out.qrCanCustLink=S.savedJobId!=null&&S.savedJobId!=='';out.onQrCustLink=()=>this.openCustLink(S.savedJobId);
+     out.jdCanCustLink=!S.jobIsNew&&this.editingJobId!=null;out.onJobCustLink=()=>this.openCustLink(this.editingJobId);}
     out.onCopyLink=()=>{this.copyText(S.savedJobQrText||'');this.setState({savedLinkCopied:true});clearTimeout(this._copyT);this._copyT=setTimeout(()=>this.setState({savedLinkCopied:false}),2200);};
     out.onShareLine=()=>{const no=S.savedJobNo||'ใบงาน';const dn=S.savedJobDriver?('พขร. '+S.savedJobDriver+'\n'):'';const msg='🚚 ใบงาน '+no+'\n'+dn+'กดลิงก์เพื่อบันทึกสถานะงาน:\n'+(S.savedJobQrText||'');window.open('https://line.me/R/msg/text/?'+encodeURIComponent(msg),'_blank');};
     out.pinModalOpen=S.pinModalOpen;out.pinInput=S.pinInput;out.pinError=S.pinError;
