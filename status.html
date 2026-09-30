@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="robots" content="noindex, nofollow" />
+<title>ติดตามการขนส่ง</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:'Sarabun',sans-serif;background:#eef0f3;color:#1d2b3a;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:24px;}
+  .head{background:#16263a;color:#fff;padding:18px 18px 20px;}
+  .co{display:flex;align-items:center;gap:10px;}
+  .co img{height:34px;max-width:90px;object-fit:contain;background:#fff;border-radius:6px;padding:2px;}
+  .card{background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:14px 16px;margin:12px 12px 0;}
+  .pill{display:inline-block;padding:4px 12px;border-radius:99px;font-size:13px;font-weight:700;margin-top:8px;}
+  .row{display:flex;gap:10px;padding:5px 0;font-size:14.5px;line-height:1.5;}
+  .row .k{color:#98a2b3;flex:none;width:34px;}
+  .step{display:flex;gap:12px;padding:7px 0;align-items:flex-start;}
+  .dot{width:22px;height:22px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;margin-top:1px;}
+  .muted{font-size:12px;color:#98a2b3;}
+  #map{height:190px;border-radius:10px;overflow:hidden;border:1px solid #e4e7ec;}
+  .btn{display:block;text-align:center;padding:12px;border-radius:10px;font-size:15px;font-weight:700;text-decoration:none;}
+  .spin{width:18px;height:18px;border:3px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;display:inline-block;animation:sp .8s linear infinite;vertical-align:middle;}
+  @keyframes sp{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="co" id="co"><div style="font-size:13px;color:#E8A33D;font-weight:700;">ติดตามการขนส่ง</div></div>
+    <div id="hTitle" style="font-size:21px;font-weight:800;margin-top:10px;">กำลังโหลด… <span class="spin"></span></div>
+    <div id="hPill"></div>
+  </div>
+  <div id="body"></div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ===== ลิงก์ติดตามสถานะสำหรับลูกค้า (v.2026-09-30a) =====
+// ดูอย่างเดียว · อ่านผ่าน RPC customer_track_job (ผูก token ลิงก์ลูกค้า) · ไม่มีข้อมูลราคา/เบอร์ พขร.
+// default = PRODUCTION · staging เมื่อ hostname/path มี staging/localhost หรือใส่ ?env=staging
+var LF_ENVS={
+  prod:    {url:'https://ojttzvcqjqqqullopeqt.supabase.co', key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdHR6dmNxanFxcXVsbG9wZXF0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIzNzE1MDAsImV4cCI6MjA5Nzk0NzUwMH0.68VmEegEuj6IrG3XweK4AQEufhzvQiUz79ThL28LOzk'},
+  staging: {url:'https://vugqoevhxqssdqykwgpi.supabase.co', key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Z3FvZXZoeHFzc2RxeWt3Z3BpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzMzE2MzYsImV4cCI6MjA5ODkwNzYzNn0.G_wDLk8lnbp4zWH83x28MFnbS5hYiExHB33ZNQSCkhg'}
+};
+var LF_ENV=(function(){try{var p=new URLSearchParams(location.search).get('env');if(p==='staging'||p==='prod')return p;if(/staging|localhost|127\.0\.0\.1/.test((location.hostname||'')+(location.pathname||'')))return 'staging';}catch(e){}return 'prod';})();
+var SB=LF_ENVS[LF_ENV];
+var TOKEN=new URLSearchParams(location.search).get('t')||'';
+var THM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+var MAP=null, TIMER=null;
+
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function thDate(iso){var m=String(iso||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?((+m[3])+' '+THM[(+m[2])-1]+' '+((+m[1])+543)):'';}
+function thDT(v){if(!v)return '';var s=String(v);var t=s.match(/T(\d{2}:\d{2})/);var d=thDate(s);return d+(t?(' · '+t[1]+' น.'):'');}
+function hhmm(iso){try{var d=new Date(iso);var p=function(n){return String(n).padStart(2,'0');};return p(d.getHours())+':'+p(d.getMinutes());}catch(e){return '';}}
+
+function load(){
+  if(!TOKEN){fail('ลิงก์ไม่ถูกต้อง');return;}
+  fetch(SB.url+'/rest/v1/rpc/customer_track_job',{method:'POST',headers:{'apikey':SB.key,'Authorization':'Bearer '+SB.key,'Content-Type':'application/json'},body:JSON.stringify({_token:TOKEN})})
+    .then(function(r){return r.json().then(function(d){return {ok:r.ok,data:d};});})
+    .then(function(r){
+      if(!r.ok){var m=(r.data&&r.data.message)||'';fail(/expired|invalid/i.test(m)?'ลิงก์นี้หมดอายุหรือถูกยกเลิกแล้ว':(/not found/i.test(m)?'ไม่พบข้อมูลการขนส่งนี้':'เปิดข้อมูลไม่ได้ในขณะนี้'));return;}
+      render(r.data||{});
+    }).catch(function(){fail('เชื่อมต่อไม่ได้ — ตรวจอินเทอร์เน็ตแล้วลองใหม่');});
+}
+function fail(msg){
+  document.getElementById('hTitle').textContent='ติดตามการขนส่ง';
+  document.getElementById('hPill').innerHTML='';
+  document.getElementById('body').innerHTML='<div class="card" style="text-align:center;padding:28px 16px;"><div style="font-size:15px;font-weight:700;color:#b42318;">'+esc(msg)+'</div><div class="muted" style="margin-top:8px;">ติดต่อผู้ให้บริการขนส่งเพื่อขอลิงก์ใหม่</div></div>';
+}
+function render(d){
+  var co=d.company||{}, j=d.job||{}, pos=d.pos||null;
+  document.getElementById('co').innerHTML=(co.logo?('<img src="'+esc(co.logo)+'" alt="">'):'')
+    +'<div><div style="font-size:15px;font-weight:700;">'+esc(co.name||'')+'</div><div style="font-size:12px;color:#E8A33D;font-weight:700;">ติดตามการขนส่ง</div></div>';
+  var bills=(j.bills&&j.bills.length)?j.bills:[j.bill].filter(Boolean);
+  document.getElementById('hTitle').textContent=bills.join(', ')||'—';
+  document.title='ติดตามการขนส่ง '+(bills[0]||'');
+  var cancelled=j.status==='ยกเลิก';
+  var st=cancelled?['ยกเลิกแล้ว','#fef3f2','#b42318']
+    :j.completionTime?['ส่งสำเร็จ','#ecfdf3','#067647']
+    :j.arrivalTime?['ถึงปลายทางแล้ว','#fef7ec','#b7791f']
+    :j.pickupTime?['กำลังเดินทาง','#eaf1fb','#2f6fb0']
+    :['รอรับสินค้า','#f2f4f7','#475467'];
+  document.getElementById('hPill').innerHTML='<span class="pill" style="background:'+st[1]+';color:'+st[2]+';">'+st[0]+'</span>';
+
+  var dest=[j.destination,j.destDistrict,j.destProvince].filter(Boolean).join(' ');
+  var h='<div class="card">'
+    +(j.origin?('<div class="row"><span class="k">จาก</span><span>'+esc(j.origin)+'</span></div>'):'')
+    +'<div class="row"><span class="k">ถึง</span><span>'+esc(dest||'—')+'</span></div>'
+    +(j.plate?('<div class="row"><span class="k">รถ</span><span>'+esc(j.plate)+(j.truckType?(' · '+esc(String(j.truckType).replace(/^\d+-/,''))):'')+'</span></div>'):'')
+    +'<div class="row"><span class="k">วันที่</span><span>'+esc(thDate(j.date))+'</span></div></div>';
+
+  if(pos&&!cancelled){
+    h+='<div class="card"><div id="map"></div><div class="muted" style="margin-top:7px;">ตำแหน่งรถโดยประมาณ · อัปเดต '+esc(hhmm(pos.ts))+' น.</div></div>';
+  }
+
+  var steps=[['จ่ายงาน',j.dispatchTime||(j.date?j.date:'')],['รับสินค้า / ออกเดินทาง',j.pickupTime],['ถึงปลายทาง',j.arrivalTime],['ส่งสำเร็จ',j.completionTime]];
+  var cur=-1;steps.forEach(function(s,i){if(s[1])cur=i;});
+  h+='<div class="card"><div style="font-size:14px;font-weight:800;margin-bottom:6px;">สถานะการขนส่ง</div>';
+  steps.forEach(function(s,i){
+    var done=!!s[1]&&!cancelled, isCur=(i===cur&&!cancelled&&i<3);
+    var dot=done?(isCur?'background:#2f6fb0;color:#fff;':'background:#1f8a5b;color:#fff;'):'background:#f2f4f7;color:#98a2b3;border:1px solid #e4e7ec;';
+    h+='<div class="step"><div class="dot" style="'+dot+'">'+(done?'✓':'')+'</div><div><div style="font-size:14.5px;'+(done?'font-weight:700;':'color:#98a2b3;')+'">'+esc(s[0])+'</div>'
+      +(done?('<div class="muted">'+esc(i===0&&!/T/.test(String(s[1]))?thDate(s[1]):thDT(s[1]))+'</div>'):'')+'</div></div>';
+  });
+  if(cancelled)h+='<div style="font-size:13px;color:#b42318;margin-top:6px;">งานขนส่งนี้ถูกยกเลิก</div>';
+  h+='</div>';
+
+  if(co.phone){h+='<div class="card" style="padding:12px;"><a class="btn" style="background:#16263a;color:#fff;" href="tel:'+esc(String(co.phone).replace(/[^\d+]/g,''))+'">โทรหาผู้ให้บริการ '+esc(co.phone)+'</a></div>';}
+  h+='<div class="muted" style="text-align:center;padding:14px 16px 0;line-height:1.6;">สถานะอัปเดตตามที่พนักงานขับรถบันทึก · หน้านี้รีเฟรชเองทุก 1 นาที</div>';
+  document.getElementById('body').innerHTML=h;
+
+  if(pos&&!cancelled&&window.L){
+    try{MAP=L.map('map',{zoomControl:false,attributionControl:false,dragging:true,scrollWheelZoom:false}).setView([pos.lat,pos.lng],11);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:13}).addTo(MAP);
+      L.circle([pos.lat,pos.lng],{radius:1500,color:'#2f6fb0',weight:2,fillColor:'#2f6fb0',fillOpacity:.18}).addTo(MAP);}catch(e){}
+  }
+  clearTimeout(TIMER);
+  if(!j.completionTime&&!cancelled)TIMER=setTimeout(function(){if(MAP){try{MAP.remove();}catch(e){}MAP=null;}load();},60000);
+}
+load();
+</script>
+</body>
+</html>
