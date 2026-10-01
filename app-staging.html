@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-01a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-01b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-01a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-01b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -530,7 +530,7 @@
         <div style="position:relative;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
           <div>
             <div style="font-size:12.5px;color:#9fb8d4;font-weight:600;letter-spacing:.02em;">ระบบจ่ายงาน · ความปลอดภัย</div>
-            <div style="font-size:24px;font-weight:800;color:#fff;margin-top:4px;">🛡️ ตรวจสภาพก่อนออกงาน <span style="font-size:11px;font-weight:800;padding:4px 11px;border-radius:99px;background:rgba(232,163,61,.2);color:#E8A33D;border:1px solid rgba(232,163,61,.4);vertical-align:middle;">เร็วๆ นี้</span></div>
+            <div style="font-size:24px;font-weight:800;color:#fff;margin-top:4px;">🛡️ ตรวจสภาพก่อนออกงาน</div>
             <div style="font-size:13px;color:#c3d2e2;margin-top:6px;max-width:540px;line-height:1.6;">ตรวจสภาพรถ + สภาพคนขับ + ระเบียบลูกค้า ก่อนอนุมัติให้ออกงาน เพื่อรับงานได้ราบรื่นและปลอดภัยตามมาตรฐานที่ลูกค้ากำหนด</div>
           </div>
           <sc-if value="{{ inspectListView }}" hint-placeholder-val="{{ true }}">
