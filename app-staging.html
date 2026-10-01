@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-01c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-01d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -488,7 +488,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-01c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-01d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11611,12 +11611,20 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const problems=[];
     if(noRev.length)problems.push('• ใบงานยังไม่ใส่ค่าขนส่ง '+noRev.length+' ใบ');
     if(notClosed.length)problems.push('• ใบงานยังไม่ปิดงาน/ส่งเอกสาร '+notClosed.length+' ใบ');
-    return {total:jobs.length,noRev:noRev.length,notClosed:notClosed.length,problems:problems};
+    // ★ v.2026-10-01d: ตรวจว่าส่งออก EASY-ACC ครบทั้ง AR และ AP (รถร่วม) — ดูจากป้าย acctPosted / acctApPosted
+    const subPl={};(this.state.trucks||[]).forEach(t=>{if(t&&/ร่วม/.test(String(t.dept||'')))subPl[String(t.plate||'')]=1;});
+    const noAr=jobs.filter(j=>(parseFloat(j.revenue)||0)&&!String(j.acctPosted||'').trim());
+    const noAp=jobs.filter(j=>subPl[String(j.truckPlate||'')]&&!String(j.acctApPosted||'').trim());
+    if(noAr.length)problems.push('• ยังไม่ส่งออก EASY-ACC ฝั่ง AR '+noAr.length+' ใบ');
+    if(noAp.length)problems.push('• ยังไม่ส่งออก EASY-ACC ฝั่ง AP (รถร่วม) '+noAp.length+' ใบ');
+    const _eg=(l)=>l.slice(0,5).map(j=>'   '+(j.date||'')+' '+(j.truckPlate||'')+' '+(j.deliveryNo||j.jobNo||'')).join('\n')+(l.length>5?'\n   …':'');
+    const details=[];if(noAr.length)details.push('ยังไม่ส่ง AR:\n'+_eg(noAr));if(noAp.length)details.push('ยังไม่ส่ง AP:\n'+_eg(noAp));
+    return {total:jobs.length,noRev:noRev.length,notClosed:notClosed.length,noAr:noAr.length,noAp:noAp.length,problems:problems,details:details};
   }
   plCloseMonth=(month)=>{
     if(!this._plCan()){window.alert('คุณไม่มีสิทธิ์ปิดงวดบัญชี');return;}
     const ml=this._thMonthLabel(month);const chk=this._plCheck(month);
-    if(chk.problems.length){if(!window.confirm('⚠ ตรวจงวด '+ml+' พบ:\n'+chk.problems.join('\n')+'\n\nยังยืนยันปิดงวดไหม?'))return;}
+    if(chk.problems.length){if(!window.confirm('⚠ ตรวจงวด '+ml+' พบ:\n'+chk.problems.join('\n')+(chk.details.length?('\n\n'+chk.details.join('\n\n')):'')+((chk.noAr||chk.noAp)?'\n\nส่งออกได้ที่เมนู ⤓ ส่งออกเข้า EASY-ACC':'')+'\n\nยังยืนยันปิดงวดไหม?'))return;}
     else if(!window.confirm('ปิดบัญชีงวด '+ml+' ('+chk.total+' ใบงาน)\n\nหลังปิด ทุกคนจะแก้/สร้างรายการในเดือนนี้ไม่ได้ ต้องขออนุมัติ'))return;
     const d=this._plGet();
     this._plSave({months:[...d.months.filter(x=>String(x.month)!==String(month)),{month:String(month),closed:true,at:this._plNow(),by:this._plWho()}],reqs:d.reqs});
