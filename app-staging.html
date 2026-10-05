@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-02a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -415,6 +415,9 @@
       </sc-if>
       <sc-if value="{{ showOfficeSys }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบสำนักงาน</div>
+      <button onClick="{{ onGoNews }}" style="{{ navNewsStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📣</span>ประกาศจากบริษัท</span>
+      </button>
       <button onClick="{{ onGoOffice }}" style="{{ navOfficeStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🏢</span>พนักงานออฟฟิศ</span>
         <span style="{{ navOfficeBadge }}">{{ officeTotalCount }}</span>
@@ -488,7 +491,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-02a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -1643,6 +1646,23 @@
           <div style="font-size:13.5px;color:#5a4413;margin-top:6px;font-weight:600;">{{ userRoleLabel }} · วันที่ {{ todayTH }}</div>
         </div>
       </div>
+      <sc-if value="{{ newsPinHas }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-bottom:18px;">
+          <sc-for list="{{ newsPinRows }}" as="n" hint-placeholder-count="1">
+            <div style="{{ n.barStyle }}">
+              <div style="display:flex;align-items:flex-start;gap:9px;">
+                <span style="font-size:15px;line-height:1.4;">📣</span>
+                <div style="flex:1;min-width:0;">
+                  <div style="{{ n.titleStyle }}">{{ n.title }}</div>
+                  <div style="{{ n.bodyStyle }}">{{ n.body }}</div>
+                </div>
+                <span style="font-size:12px;color:#98a2b3;white-space:nowrap;">{{ n.dateText }}</span>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ newsPinMore }}" hint-placeholder-val="{{ false }}"><div style="font-size:12.5px;color:#667085;">{{ newsPinMore }} — ดูที่เมนู “ประกาศจากบริษัท”</div></sc-if>
+        </div>
+      </sc-if>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;align-items:start;">
         <sc-if value="{{ canTrucks }}" hint-placeholder-val="{{ false }}">
         <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:20px;">
@@ -4385,6 +4405,95 @@
     </sc-if>
 
     <!-- ===== OFFICE LEAVE REPORT (บันทึกการลา ออฟฟิศ) ===== -->
+    <!-- ===== ประกาศจากบริษัท ===== -->
+    <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:26px 30px 60px;max-width:900px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#16263a;">📣 ประกาศจากบริษัท</div>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">ข่าวสารถึงผู้ใช้งานทุกคน · ประกาศที่ยังไม่หมดวันจะเด้งตอนเปิดแอปและขึ้นบนหน้าภาพรวม</div>
+        </div>
+        <sc-if value="{{ newsCanEdit }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onNewsNew }}" style="padding:10px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">＋ เขียนประกาศ</button>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ newsFormOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:20px;margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">หัวข้อ</div>
+            <input value="{{ ndTitle }}" onInput="{{ onNdTitle }}" placeholder="เช่น ย้ำเรื่องผ้าใบคลุมสินค้า" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ความสำคัญ</div>
+            <select value="{{ ndLevel }}" onChange="{{ onNdLevel }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+              <option value="normal">ทั่วไป</option>
+              <option value="important">สำคัญ</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">แสดงถึงวันที่</div>
+            <input type="date" value="{{ ndUntil }}" onInput="{{ onNdUntil }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เนื้อหา</div>
+        <textarea value="{{ ndBody }}" onInput="{{ onNdBody }}" rows="4" placeholder="เขียนสิ่งที่อยากบอกให้ชัดเจน" style="width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;resize:vertical;"></textarea>
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:12px;">
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ ndPopup }}" onChange="{{ onNdPopup }}" style="width:16px;height:16px;cursor:pointer;">เด้งตอนเปิดแอป</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ ndPin }}" onChange="{{ onNdPin }}" style="width:16px;height:16px;cursor:pointer;">ปักบนหน้าภาพรวม</label>
+          <div style="margin-left:auto;display:flex;gap:9px;">
+            <button onClick="{{ onNewsCancel }}" style="padding:9px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;">ยกเลิก</button>
+            <button onClick="{{ onNewsPublish }}" style="padding:9px 20px;background:#067647;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;">เผยแพร่</button>
+          </div>
+        </div>
+        <sc-if value="{{ newsErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:9px 13px;font-size:13px;">{{ newsErr }}</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ newsEmpty }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:40px;text-align:center;color:#98a2b3;font-size:14px;">ยังไม่มีประกาศ</div>
+      </sc-if>
+
+      <sc-for list="{{ newsRows }}" as="n" hint-placeholder-count="2">
+        <div style="{{ n.cardStyle }}">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">
+            <span style="{{ n.chipStyle }}">{{ n.chipLabel }}</span>
+            <span style="font-size:12.5px;color:#98a2b3;">{{ n.dateText }} · โดย {{ n.by }}</span>
+            <span style="font-size:12px;color:#98a2b3;">{{ n.untilText }}</span>
+            <sc-if value="{{ n.canEdit }}" hint-placeholder-val="{{ false }}">
+              <span style="margin-left:auto;display:flex;gap:8px;">
+                <button onClick="{{ n.onEdit }}" style="padding:5px 11px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">แก้ไข</button>
+                <button onClick="{{ n.onDelete }}" style="padding:5px 11px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">ลบ</button>
+              </span>
+            </sc-if>
+          </div>
+          <div style="font-size:15.5px;font-weight:700;color:#16263a;margin-bottom:5px;">{{ n.title }}</div>
+          <div style="font-size:14px;color:#475467;line-height:1.75;white-space:pre-wrap;">{{ n.body }}</div>
+        </div>
+      </sc-for>
+
+      <sc-if value="{{ newsPastHas }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:13px;font-weight:700;color:#667085;margin:26px 0 10px;">ประกาศที่ผ่านมา</div>
+        <sc-for list="{{ newsPastRows }}" as="n" hint-placeholder-count="2">
+          <div style="background:#f8fafc;border:1px solid #eef1f4;border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+            <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:4px;">
+              <span style="font-size:12.5px;color:#98a2b3;">{{ n.dateText }} · โดย {{ n.by }}</span>
+              <sc-if value="{{ n.canEdit }}" hint-placeholder-val="{{ false }}">
+                <span style="margin-left:auto;display:flex;gap:8px;">
+                  <button onClick="{{ n.onEdit }}" style="padding:4px 10px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">แก้ไข</button>
+                  <button onClick="{{ n.onDelete }}" style="padding:4px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">ลบ</button>
+                </span>
+              </sc-if>
+            </div>
+            <div style="font-size:14px;font-weight:700;color:#475467;margin-bottom:4px;">{{ n.title }}</div>
+            <div style="font-size:13px;color:#667085;line-height:1.7;white-space:pre-wrap;">{{ n.body }}</div>
+          </div>
+        </sc-for>
+      </sc-if>
+    </div>
+    </sc-if>
+
     <sc-if value="{{ isOLeaveRep }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:1100px;">
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px;">
@@ -7701,6 +7810,34 @@
       </div>
     </div>
     </sc-if>
+
+    <!-- ===== กล่องประกาศ เด้งตอนเปิดแอป ===== -->
+    <sc-if value="{{ newsPopupOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;background:rgba(16,24,40,.55);z-index:960;display:flex;align-items:center;justify-content:center;padding:24px;">
+      <div style="background:#fff;border-radius:16px;width:100%;max-width:520px;box-shadow:0 24px 56px rgba(16,24,40,.3);overflow:hidden;">
+        <div style="background:linear-gradient(120deg,#16263a 0%,#1e3b5c 100%);padding:16px 22px;display:flex;align-items:center;gap:10px;">
+          <span style="font-size:17px;">📣</span>
+          <span style="font-size:16px;font-weight:800;color:#fff;">ประกาศจากบริษัท</span>
+          <span style="margin-left:auto;font-size:12.5px;color:#9fb2c6;font-weight:600;">{{ newsPopupPos }}</span>
+        </div>
+        <div style="padding:20px 22px;">
+          <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:8px;">
+            <span style="{{ newsPopupChipStyle }}">{{ newsPopupChipLabel }}</span>
+            <span style="font-size:12.5px;color:#98a2b3;">{{ newsPopupDate }}</span>
+          </div>
+          <div style="font-size:17px;font-weight:800;color:#16263a;margin-bottom:8px;">{{ newsPopupTitle }}</div>
+          <div style="font-size:14.5px;color:#475467;line-height:1.8;white-space:pre-wrap;">{{ newsPopupBody }}</div>
+        </div>
+        <div style="padding:14px 22px 18px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid #eef1f4;">
+          <button onClick="{{ onNewsDontShow }}" style="padding:9px 15px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">รับทราบ ไม่ต้องแสดงอีก</button>
+          <div style="margin-left:auto;display:flex;gap:9px;">
+            <button onClick="{{ onNewsPopupNext }}" style="padding:9px 16px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:9px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">{{ newsPopupNextLabel }}</button>
+            <button onClick="{{ onNewsPopupClose }}" style="padding:9px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;">ปิด</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </sc-if>
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script>
@@ -8130,7 +8267,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -8167,7 +8304,7 @@ const INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พัก�
 const INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
 
 class Component extends DCLogic {
-  state={periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
+  state={news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
 
   componentWillUnmount(){if(this._gpsSim)clearInterval(this._gpsSim);window.removeEventListener('beforeunload',this._beforeUnload);if(this._wheelGuard)window.removeEventListener('wheel',this._wheelGuard);if(this._pollTimer)clearInterval(this._pollTimer);if(this._fullTimer)clearInterval(this._fullTimer);if(this._flushTimer)clearInterval(this._flushTimer);if(this._visHandler)document.removeEventListener('visibilitychange',this._visHandler);}
   componentDidMount(){
@@ -8304,6 +8441,7 @@ class Component extends DCLogic {
       try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
       try{this._kvApplyAll(meta);this._kvStartPoll();}catch(e){}
       try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
+      try{this._newsApplyCloud(meta.__news__);}catch(e){}
       if(cloudUsers){
         // คลาวด์เป็นแหล่งจริงของบัญชีผู้ใช้ (admin จัดการ) — sync ลงเครื่องนี้
         try{localStorage.setItem('fleet_users_v1',JSON.stringify(cloudUsers));}catch(e){}
@@ -11423,6 +11561,79 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.exportBillingXlsx(g.items));
   };
+  // ===== ประกาศถึงผู้ใช้งาน (v.2026-10-05a) =====
+  // เก็บเป็นแถวพิเศษในตาราง events id = __news__ รูป {items:[{id,title,body,level,until,popup,pin,by,at,deleted}]}
+  // (วิธีเดียวกับ __periodlock__ / __kv_* — ไม่ต้องรัน SQL) ทุกเครื่องรับภายใน 60 วิ หรือทันทีตอนเปิดแอป
+  // "ไม่ต้องแสดงอีก" จำแยกรายเครื่องใน localStorage newsRead_v1 — เปิดจากมือถือจะเด้งอีกครั้งโดยตั้งใจ
+  _newsAll(){const l=this.state.news;return Array.isArray(l)?l:[];}
+  _newsToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date());}
+  _newsSorted(list){return (list||[]).slice().sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));}
+  _newsLive(){const t=this._newsToday();return this._newsSorted(this._newsAll().filter(n=>n&&!n.deleted&&(!n.until||String(n.until)>=t)));}
+  _newsPast(){const t=this._newsToday();return this._newsSorted(this._newsAll().filter(n=>n&&!n.deleted&&n.until&&String(n.until)<t));}
+  _newsReadGet(){try{const a=JSON.parse(localStorage.getItem('newsRead_v1')||'[]');return Array.isArray(a)?a:[];}catch(e){return [];}}
+  _newsMarkRead(id){const s=new Set(this._newsReadGet());s.add(String(id));try{localStorage.setItem('newsRead_v1',JSON.stringify([...s]));}catch(e){}}
+  _newsCanEdit(){const a=this.state.auth||{};return a.role==='admin';}
+  _newsMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
+  _newsApplyCloud(data){
+    const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
+    const merged=this._newsMerge(this._newsAll(),list);
+    if(JSON.stringify(this._newsSorted(merged))!==JSON.stringify(this._newsSorted(this._newsAll()))){
+      this.setState({news:merged});try{localStorage.setItem('news_v1',JSON.stringify(merged));}catch(e){}
+    }
+    this._newsPopupMaybe(merged);
+  }
+  // เด้งกล่องประกาศครั้งเดียวต่อการเปิดแอป เฉพาะอันที่ยังไม่เคยกด "ไม่ต้องแสดงอีก" ในเครื่องนี้
+  _newsPopupMaybe(list){
+    if(this._newsShown)return;
+    const t=this._newsToday();const read=new Set(this._newsReadGet());
+    const q=this._newsSorted((list||[]).filter(n=>n&&!n.deleted&&n.popup!==false&&(!n.until||String(n.until)>=t)&&!read.has(String(n.id))));
+    if(!q.length)return;
+    this._newsShown=true;this.setState({newsPopupIdx:0,newsPopupOpen:true});
+  }
+  _newsPopupQueue(){
+    const t=this._newsToday();const read=new Set(this._newsReadGet());
+    return this._newsSorted(this._newsAll().filter(n=>n&&!n.deleted&&n.popup!==false&&(!n.until||String(n.until)>=t)&&!read.has(String(n.id))));
+  }
+  newsPopupNext=()=>{const q=this._newsPopupQueue();const i=(this.state.newsPopupIdx||0)+1;if(i>=q.length){this.setState({newsPopupOpen:false,newsPopupIdx:0});return;}this.setState({newsPopupIdx:i});};
+  newsPopupClose=()=>this.setState({newsPopupOpen:false,newsPopupIdx:0});
+  newsPopupDontShow=(id)=>{this._newsMarkRead(id);this.newsPopupNext();};
+  async _newsPush(items){
+    this.setState({news:items});try{localStorage.setItem('news_v1',JSON.stringify(items));}catch(e){}
+    if(!COMPANY_ID)return;
+    try{
+      let cloud=[];
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__news__&select=data',{headers:SB_HEADERS});
+      if(r&&r.ok){const j=await r.json();if(j&&j[0]&&j[0].data&&Array.isArray(j[0].data.items))cloud=j[0].data.items;}
+      const merged=this._newsMerge(cloud,items);
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__news__',data:{items:merged}}]);
+      this.setState({news:merged});try{localStorage.setItem('news_v1',JSON.stringify(merged));}catch(e){}
+    }catch(e){try{console.warn('[LionFlow] news push failed',e&&e.message);}catch(_){}}
+  }
+  setNewsDraft=(k,v)=>this.setState(s=>({newsDraft:{...(s.newsDraft||{}),[k]:v}}));
+  newsNew=()=>{const d=new Date(Date.now()+30*864e5);const until=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(d);
+    this.setState({newsDraft:{id:'',title:'',body:'',level:'normal',until:until,popup:true,pin:true},newsFormOpen:true,newsErr:''});};
+  newsEdit=(id)=>{const n=this._newsAll().find(x=>String(x.id)===String(id));if(!n)return;this.setState({newsDraft:{...n},newsFormOpen:true,newsErr:''});};
+  newsCancel=()=>this.setState({newsFormOpen:false,newsErr:''});
+  newsPublish=()=>{
+    if(!this._newsCanEdit()){window.alert('เฉพาะผู้ดูแลระบบเท่านั้นที่สร้างประกาศได้');return;}
+    const d=this.state.newsDraft||{};
+    if(!String(d.title||'').trim()){this.setState({newsErr:'กรุณากรอกหัวข้อ'});return;}
+    if(!String(d.body||'').trim()){this.setState({newsErr:'กรุณากรอกเนื้อหา'});return;}
+    const a=this.state.auth||{};const who=a.name||a.u||a.username||'—';
+    const rec={id:d.id||('NW'+Date.now()),title:String(d.title).trim(),body:String(d.body).trim(),
+      level:(d.level==='important'?'important':'normal'),until:String(d.until||'').slice(0,10),
+      popup:d.popup!==false,pin:d.pin!==false,by:who,at:new Date().toISOString(),deleted:false};
+    const list=this._newsAll().filter(x=>String(x.id)!==String(rec.id)).concat([rec]);
+    this._newsPush(list);
+    this.setState({newsFormOpen:false,newsErr:''});
+  };
+  newsDelete=(id)=>{
+    if(!this._newsCanEdit()){window.alert('เฉพาะผู้ดูแลระบบเท่านั้น');return;}
+    const n=this._newsAll().find(x=>String(x.id)===String(id));if(!n)return;
+    if(!window.confirm('ลบประกาศ "'+(n.title||'')+'" ?'))return;
+    const list=this._newsAll().map(x=>String(x.id)===String(id)?{...x,deleted:true,at:new Date().toISOString()}:x);
+    this._newsPush(list);
+  };
   // ===== ใบงานที่ "ลบถาวร" — เก็บรายชื่อไว้บน cloud (v.2026-09-24a) =====
   // เดิมลบถาวร = ลบแถวออกจาก cloud อย่างเดียว เครื่องอื่นที่ยังมีใบงานนั้นค้างในเครื่อง
   // จะดันกลับขึ้น cloud ตอนเปิดแอป งานที่ลบแล้วจึงโผล่กลับมาอีก (เจอจริง 24 ก.ย. 2569)
@@ -11529,12 +11740,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._kvPollT=setInterval(async()=>{
       try{
         if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
-        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22';
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22';
         const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
         if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
         this._kvApplyAll(meta);
         try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
         try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
+        try{this._newsApplyCloud(meta.__news__);}catch(e){}
       }catch(e){}
     },60000);
   }
@@ -13963,6 +14175,51 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     }
     out.onOfficeBack=this.onOfficeBack;
     // ===== OFFICE REPORTS (รายงานบุคคล ออฟฟิศ) =====
+    // ---- ประกาศจากบริษัท ----
+    {const _nCan=this._newsCanEdit();const _nd=S.newsDraft||{};
+      const _nThD=(iso)=>{const s=String(iso||'').slice(0,10);const p=s.split('-');if(p.length!==3)return s;return (+p[2])+' '+['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+p[1]]+' '+(+p[0]+543);};
+      const _nChip=(lv)=>lv==='important'?this.chip('#b42318','#fef3f2'):this.chip('#175cd3','#eff6ff');
+      const _nRow=(n)=>({id:n.id,title:n.title||'',body:n.body||'',by:n.by||'—',
+        dateText:_nThD(String(n.at||'').slice(0,10)),
+        untilText:n.until?('แสดงถึง '+_nThD(n.until)):'ไม่กำหนดวันสิ้นสุด',
+        chipLabel:(n.level==='important'?'สำคัญ':'ทั่วไป'),chipStyle:_nChip(n.level),
+        cardStyle:'background:#fff;border:1px solid '+(n.level==='important'?'#fecdca':'#e4e7ec')+';border-left:4px solid '+(n.level==='important'?'#d92d20':'#2f6fb0')+';border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:12px;',
+        canEdit:_nCan,onEdit:()=>this.newsEdit(n.id),onDelete:()=>this.newsDelete(n.id)});
+      const _nLive=this._newsLive();const _nPast=this._newsPast();
+      out.isNews=S.section==='news';
+      out.navNewsStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(out.isNews?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
+      out.onGoNews=()=>{this.setState({section:'news'});this.scrollMain();};
+      out.newsCanEdit=_nCan;out.newsFormOpen=!!S.newsFormOpen;out.newsErr=S.newsErr||'';
+      out.newsRows=_nLive.map(_nRow);out.newsEmpty=_nLive.length===0&&!S.newsFormOpen;
+      out.newsPastRows=_nPast.map(_nRow);out.newsPastHas=_nPast.length>0;
+      out.ndTitle=_nd.title||'';out.ndBody=_nd.body||'';out.ndLevel=_nd.level||'normal';out.ndUntil=_nd.until||'';
+      out.ndPopup=_nd.popup!==false;out.ndPin=_nd.pin!==false;
+      out.onNdTitle=(e)=>this.setNewsDraft('title',e.target.value);
+      out.onNdBody=(e)=>this.setNewsDraft('body',e.target.value);
+      out.onNdLevel=(e)=>this.setNewsDraft('level',e.target.value);
+      out.onNdUntil=(e)=>this.setNewsDraft('until',e.target.value);
+      out.onNdPopup=(e)=>this.setNewsDraft('popup',e.target.checked);
+      out.onNdPin=(e)=>this.setNewsDraft('pin',e.target.checked);
+      out.onNewsNew=this.newsNew;out.onNewsCancel=this.newsCancel;out.onNewsPublish=this.newsPublish;
+      // แถบบนหน้าภาพรวม — เฉพาะอันที่ติ๊ก "ปักบนหน้าภาพรวม"
+      const _nPin=_nLive.filter(n=>n.pin!==false);
+      out.newsPinHas=_nPin.length>0;
+      out.newsPinRows=_nPin.slice(0,3).map(n=>({title:n.title||'',body:n.body||'',dateText:_nThD(String(n.at||'').slice(0,10)),
+        barStyle:'background:'+(n.level==='important'?'#fef3f2':'#eff8ff')+';border:1px solid '+(n.level==='important'?'#fecdca':'#b2ddff')+';border-radius:12px;padding:13px 16px;margin-bottom:10px;',
+        titleStyle:'font-size:14.5px;font-weight:800;color:'+(n.level==='important'?'#b42318':'#175cd3')+';',
+        bodyStyle:'font-size:13.5px;color:'+(n.level==='important'?'#912018':'#1849a9')+';line-height:1.7;margin-top:3px;white-space:pre-wrap;'}));
+      out.newsPinMore=_nPin.length>3?('และอีก '+(_nPin.length-3)+' ประกาศ'):'';
+      // กล่องเด้ง
+      const _nq=this._newsPopupQueue();const _ni=Math.min(S.newsPopupIdx||0,Math.max(0,_nq.length-1));const _nCur=_nq[_ni];
+      out.newsPopupOpen=!!S.newsPopupOpen&&!!_nCur;
+      out.newsPopupTitle=_nCur?(_nCur.title||''):'';out.newsPopupBody=_nCur?(_nCur.body||''):'';
+      out.newsPopupDate=_nCur?_nThD(String(_nCur.at||'').slice(0,10)):'';
+      out.newsPopupChipLabel=_nCur&&_nCur.level==='important'?'สำคัญ':'ทั่วไป';
+      out.newsPopupChipStyle=_nChip(_nCur&&_nCur.level);
+      out.newsPopupPos=_nq.length>1?((_ni+1)+' / '+_nq.length):'';
+      out.newsPopupNextLabel=(_ni+1<_nq.length)?'ถัดไป':'อ่านแล้ว';
+      out.onNewsPopupNext=this.newsPopupNext;out.onNewsPopupClose=this.newsPopupClose;
+      out.onNewsDontShow=()=>{if(_nCur)this.newsPopupDontShow(_nCur.id);};}
     out.isORep=S.section==='orep';out.isOLeaveRep=S.section==='oleaverep';
     {const _navOff=(active)=>'width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(active?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');out.navORepStyle=_navOff(out.isORep);out.navOLeaveRepStyle=_navOff(out.isOLeaveRep);}
     out.onGoORep=this.onGoORep;out.onGoOLeaveRep=this.onGoOLeaveRep;
