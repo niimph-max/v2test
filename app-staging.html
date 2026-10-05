@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -496,7 +496,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6943,7 +6943,7 @@
         <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;overflow:hidden;margin-bottom:18px;">
           <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:13px 18px;background:#16263a;color:#fff;">
             <div style="font-size:15px;font-weight:700;">{{ mo.monthLabel }}</div>
-            <div style="font-size:12px;color:#9fb2c4;">{{ mo.trips }} เที่ยว</div>
+            <div style="font-size:12px;color:#9fb2c4;">{{ mo.tripsText }}</div>
             <div style="display:flex;gap:20px;margin-left:auto;flex-wrap:wrap;font-size:12.5px;color:#cdd7e1;">
               <div>ค่าขนส่ง <span style="font-weight:700;color:#7cc0ff;">{{ mo.revTotal }}</span></div>
               <div>ค่าใช้จ่าย <span style="font-weight:700;color:#f6b894;">{{ mo.grandExpTotal }}</span></div>
@@ -9549,6 +9549,19 @@ class Component extends DCLogic {
   _woCostFor(plate,ym){if(this.costModeExpense())return 0;let s=0;(this._getWO()||[]).forEach(w=>{if(w&&w.plate===plate&&w.status==='เสร็จแล้ว'){const mm=String(w.dateClose||w.date||'').slice(0,7);if(mm===ym)s+=(Number(w.costParts)||0)+(Number(w.costLabor)||0)+(Number(w.costOther)||0)+(Number(w.costVat)||0);}});return s;}
   // รวมค่าของหางพ่วงที่ผูกไว้เข้ากับหัวลาก (ยึดการผูกล่าสุด)
   _tireCostTruck(t,ym){if(!t)return 0;let s=this._tireCostFor(t.plate,ym);if(t.trailerPlate)s+=this._tireCostFor(t.trailerPlate,ym);return s;}
+  // เดือนที่รถมีค่าใช้จ่ายจริงแม้ไม่ได้วิ่งงาน (ใบสั่งซ่อมที่ปิดแล้ว · ยาง · ทะเบียน-ประกันที่ลงเต็มเดือนนั้น)
+  // เดิมรายงานสร้างเดือนจาก "เที่ยววิ่ง" อย่างเดียว เดือนที่รถจอดซ่อมทั้งเดือนจึงหายไปทั้งเดือน (เจอจริง 5 ต.ค. 2569)
+  _costOnlyMonths(t){
+    if(!t)return [];const plates=[t.plate].concat(t.trailerPlate?[t.trailerPlate]:[]);const set={};
+    (this._getWO()||[]).forEach(w=>{if(!w||w.status!=='เสร็จแล้ว')return;if(plates.indexOf(w.plate)<0)return;const m=String(w.dateClose||w.date||'').slice(0,7);if(m)set[m]=1;});
+    (this.state.tirePatches||[]).forEach(x=>{if(plates.indexOf(x.plate)<0)return;const m=String(x.date||'').slice(0,7);if(m)set[m]=1;});
+    (this.state.tireMoves||[]).forEach(x=>{if(plates.indexOf(x.plate)<0)return;if(x.action!=='in'&&x.action!=='retread')return;const m=String(x.date||'').slice(0,7);if(m)set[m]=1;});
+    if(((this.state.company||{}).regInsMode||'full')!=='spread'){
+      (this.state.trucks||[]).forEach(x=>{if(plates.indexOf(x.plate)<0)return;[x.actRenew,x.insRenew,x.cargoRenew,x.regRenew].forEach(d=>{const m=String(d||'').slice(0,7);if(m)set[m]=1;});});
+    }
+    return Object.keys(set);
+  }
+  _monthCostTotal(t,m){return (this._tireCostTruck(t,m)||0)+(this._woCostTruck(t,m)||0)+(this._regInsCostTruck(t,m)||0);}
   _woCostTruck(t,ym){if(!t)return 0;let s=this._woCostFor(t.plate,ym);if(t.trailerPlate)s+=this._woCostFor(t.trailerPlate,ym);return s;}
   // ค่าทะเบียน+ประกันรถ+ประกันสินค้า+พรบ. รายเดือน (หัวลาก+หาง) — ยังไม่เก็บข้อมูล คืน 0 ไว้เป็น hook รอเสียบทีหลัง
   _regInsCostFor(plate,ym){
@@ -11730,7 +11743,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.exportBillingXlsx(g.items));
   };
-  // ===== ตรวจสอบประวัติ พขร. (v.2026-10-05d) =====
+  // ===== ตรวจสอบประวัติ พขร. (v.2026-10-05c) =====
   // ข้อมูลใช้ภายในบริษัทเพื่อประกอบการพิจารณารับสมัคร พขร. เท่านั้น — ไม่มีปุ่มพิมพ์/ส่งออกโดยตั้งใจ
   // เก็บในตาราง events แถว __drvchk__ รูป {items:[...]} (ไม่ต้องรัน SQL) · รูปเก็บที่ Storage เหมือนรูปตรวจสภาพ
   // เลขบัตร: เก็บเฉพาะค่าที่เข้ารหัสแล้ว (idHash) + 4 ตัวท้าย ไม่เก็บเลขเต็ม
@@ -13586,10 +13599,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const sumF=(jobs,f)=>jobs.reduce((s,j)=>s+(parseFloat(j[f])||0),0);
       const fmt=n=>'฿'+_LFB2(n);
       const pct=(a,b)=>b>0?(a/b*100).toFixed(1)+'%':'0.0%';
-      const _drvFixed=(jobs)=>{const dc=((jobs||[]).find(j=>j.driverCode)||{}).driverCode;const d=S.drivers.find(x=>String(x.code)===String(dc));return {sal:parseFloat(d&&d.salary)||0,soc:parseFloat(d&&d.socialSecurity)||0};};
+      const _drvFixed=(jobs,plate)=>{let dc=((jobs||[]).find(j=>j.driverCode)||{}).driverCode;
+        if(!dc&&plate){const t0=S.trucks.find(x=>x.plate===plate);dc=t0?t0.assignedDriver:'';}   // เดือนที่ไม่มีเที่ยว ใช้ พขร. ประจำรถ
+        const d=S.drivers.find(x=>String(x.code)===String(dc));return {sal:parseFloat(d&&d.salary)||0,soc:parseFloat(d&&d.socialSecurity)||0};};
       // เงินเดือน/ประกันสังคม/ค่าผ่อน: ถ้ากรอกแก้ไว้ท้ายรายงานรายเที่ยว (fixedOverrides ทะเบียน|เดือน) ใช้ค่านั้นก่อน
       // เดิมใช้แค่ในหน้ารายเที่ยว → ตารางรายรถ/ประวัติรายเดือนยังโชว์ค่าตั้งต้น ไม่ตรงกัน (เจอจริง 18 ก.ย. 2026)
-      const _fixedFor=(plate,m,jobs,instDef)=>{const df=_drvFixed(jobs);const o=(S.fixedOverrides||{})[plate+'|'+m]||{};const h=k=>o[k]!==undefined&&o[k]!=='';
+      const _fixedFor=(plate,m,jobs,instDef)=>{const df=_drvFixed(jobs,plate);const o=(S.fixedOverrides||{})[plate+'|'+m]||{};const h=k=>o[k]!==undefined&&o[k]!=='';
         return {sal:h('salary')?(parseFloat(o.salary)||0):df.sal,soc:h('social')?(parseFloat(o.social)||0):df.soc,inst:h('installment')?(parseFloat(o.installment)||0):instDef};};
       const truckRows=companyTrucks.map(t=>{
         const jobs=S.jobs.filter(j=>j.truckPlate===t.plate&&j.date&&j.date.startsWith(sm));
@@ -13646,6 +13661,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const _mIsSub=!!(selTruckObj&&/ร่วม/.test(String(selTruckObj.dept||'')));this._capMonthIsSub=_mIsSub;
       out.effMonthC1Label=_mIsSub?'ค่าขนส่งรถร่วม':'น้ำมัน';out.effMonthC2Label=_mIsSub?'%ค่าขนส่งรถร่วม':'%น้ำมัน';
       const mMap={};selJobs.forEach(j=>{const m=j.date.slice(0,7);if(!mMap[m])mMap[m]=[];mMap[m].push(j);});
+      if(selTruckObj)this._costOnlyMonths(selTruckObj).forEach(m=>{if(!mMap[m]&&this._monthCostTotal(selTruckObj,m)>0)mMap[m]=[];});
       out.effTruckMonthRows=this._capMonthRows=Object.keys(mMap).sort().reverse().map(m=>{
         const jobs=mMap[m];const rev=sumF(jobs,'revenue'),fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance');
         const tire=this._tireCostTruck(selTruckObj,m),repair=sumF(jobs,'repair')+this._woCostTruck(selTruckObj,m),toll=sumF(jobs,'toll'),misc=sumF(jobs,'misc');
@@ -13684,10 +13700,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         out.fuelInlineBtnStyle='padding:7px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;border:1px solid '+(_sfi?'#2f6fb0':'#d0d5dd')+';background:'+(_sfi?'#eef5fc':'#fff')+';color:'+(_sfi?'#2f6fb0':'#667085')+';';}
       const _tripFrom=S.effTripFrom||'';const _tripTo=S.effTripTo||'';
       const _tripMMap={};selJobs.forEach(j=>{if((_tripFrom&&j.date<_tripFrom)||(_tripTo&&j.date>_tripTo))return;const m=j.date.slice(0,7);if(!_tripMMap[m])_tripMMap[m]=[];_tripMMap[m].push(j);});
+      if(selTruckObj)this._costOnlyMonths(selTruckObj).forEach(m=>{
+        if(_tripMMap[m])return;
+        if(_tripFrom&&m<String(_tripFrom).slice(0,7))return;
+        if(_tripTo&&m>String(_tripTo).slice(0,7))return;
+        if(this._monthCostTotal(selTruckObj,m)>0)_tripMMap[m]=[];});
       out.effTripFrom=_tripFrom;out.effTripTo=_tripTo;out.onEffTripFrom=(e)=>this.setState({effTripFrom:e.target.value});out.onEffTripTo=(e)=>this.setState({effTripTo:e.target.value});out.onClearTripDate=()=>this.setState({effTripFrom:'',effTripTo:''});out.effTripDateActive=!!(_tripFrom||_tripTo);
       out.effTripMonths=Object.keys(_tripMMap).sort().reverse().map(m=>{
         const jobs=_tripMMap[m].slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
-        const mp=m.split('-');const yr=mp[0],mo=mp[1];const _df=_drvFixed(jobs);
+        const mp=m.split('-');const yr=mp[0],mo=mp[1];const _df=_drvFixed(jobs,selPlate);
         const _ov=(S.fixedOverrides||{})[selPlate+'|'+m]||{};
         const _hasOv=(k)=>_ov[k]!==undefined&&_ov[k]!=='';
         const _salT=_hasOv('salary')?(parseFloat(_ov.salary)||0):_df.sal;
@@ -13721,7 +13742,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         const tRev=jobs.reduce((s,j)=>s+(parseFloat(j.revenue)||0),0);
         const sm2=jobs.reduce((a,j)=>{const e=_trEv(j);a.fuel+=e.fuel;a.allow+=e.allow;a.toll+=e.toll;a.tire+=e.tire;a.repair+=e.repair;a.misc+=e.misc;a.total+=e.total;return a;},{fuel:0,allow:0,toll:0,tire:0,repair:0,misc:0,total:0});
         const tireM=this._tireCostTruck(selTruckObj,m);const woM=this._woCostTruck(selTruckObj,m);const regInsM=this._regInsCostTruck(selTruckObj,m);const monthlyExtra=tireM+woM+regInsM;const tripRemain=tRev-sm2.total;const afterMonthly=tripRemain-monthlyExtra;const net=afterMonthly-_fixedT;const grandExp=sm2.total+monthlyExtra+_fixedT;
-        return{key:m,monthLabel:_thMonsFull[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,rows:rows,
+        return{key:m,monthLabel:_thMonsFull[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,tripsText:(jobs.length?(jobs.length+' เที่ยว'):'ไม่มีเที่ยววิ่ง · มีเฉพาะค่าใช้จ่าย'),rows:rows,
           fuelSumGiven:_fuelSumGiven,fuelSumActual:_fuelSumActual,fuelSumUsed:_fuelSumUsed,fuelSumCols:_fuelCols,fuelSumBills:_fuelSumBills,fuelSumAvg:_fuelSumAvg,fuelSumAvgDays:_fuelSumAvgDays,
           fuelNote:String(_ov.fuelNote||''),onFuelNote:(e)=>this.setFixedOverride(selPlate,m,'fuelNote',e.target.value),onPrintFuel:()=>this.printFuelMonth(m),fuelFrom:(((S.fuelPrintRange||{})[selPlate+'|'+m]||{}).from)||(m+'-01'),fuelTo:(((S.fuelPrintRange||{})[selPlate+'|'+m]||{}).to)||(m+'-'+String(new Date(parseInt(yr),parseInt(mo),0).getDate()).padStart(2,'0')),onFuelFrom:(e)=>this.setFuelPrintRange(selPlate,m,'from',e.target.value),onFuelTo:(e)=>this.setFuelPrintRange(selPlate,m,'to',e.target.value),
           revTotal:fmt(tRev),fuelTotal:fmt(sm2.fuel),allowTotal:fmt(sm2.allow),tollTotal:fmt(sm2.toll),repairTotal:fmt(sm2.repair),tireTotal:fmt(sm2.tire),miscTotal:fmt(sm2.misc),tireMonthly:fmt(tireM),woMonthly:fmt(woM),regInsMonthly:fmt(regInsM),monthlyExtraTotal:fmt(monthlyExtra),afterMonthlyText:fmt(afterMonthly),hasMonthlyExtra:(monthlyExtra>0),grandExpTotal:fmt(grandExp),
@@ -13745,7 +13766,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         const netT=grossT-_dedSum;
         this._capSubTripRows=rows;
         const _meta=(S.subMonthMeta||{})[selPlate+'|'+m]||{};
-        return{key:m,monthLabel:_thMonsFull[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,rows:rows,subPayTotal:fmt(grossT),dedRows:dedRows,dedSumText:fmt(_dedSum),netPayText:fmt(netT),onAddDed:()=>this.addSubMonthDeduct(selPlate,m),subPayDate:_meta.payDate||'',onSubPayDate:(e)=>this.setSubMonthMeta(selPlate,m,'payDate',e.target.value),subPaid:!!_meta.paid,onSubPaid:(e)=>this.setSubMonthMeta(selPlate,m,'paid',e.target.checked),subDone:!!_meta.done,onSubDone:(e)=>this.setSubMonthMeta(selPlate,m,'done',e.target.checked),onSubPayDoc:()=>this.printSubMonthPay(selPlate,m)};
+        return{key:m,monthLabel:_thMonsFull[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,tripsText:(jobs.length?(jobs.length+' เที่ยว'):'ไม่มีเที่ยววิ่ง · มีเฉพาะค่าใช้จ่าย'),rows:rows,subPayTotal:fmt(grossT),dedRows:dedRows,dedSumText:fmt(_dedSum),netPayText:fmt(netT),onAddDed:()=>this.addSubMonthDeduct(selPlate,m),subPayDate:_meta.payDate||'',onSubPayDate:(e)=>this.setSubMonthMeta(selPlate,m,'payDate',e.target.value),subPaid:!!_meta.paid,onSubPaid:(e)=>this.setSubMonthMeta(selPlate,m,'paid',e.target.checked),subDone:!!_meta.done,onSubDone:(e)=>this.setSubMonthMeta(selPlate,m,'done',e.target.checked),onSubPayDoc:()=>this.printSubMonthPay(selPlate,m)};
       });
       // ---- DRIVER PAY (จ่ายเบี้ยเลี้ยง/ค่าใช้จ่าย พขร. ทุก 15 วัน) ----
       {const _dpMonth=S.effPayMonth||S.effMonth;const _dpMode=S.effPayMode||'1';
