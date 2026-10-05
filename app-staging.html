@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -418,6 +418,11 @@
       <button onClick="{{ onGoNews }}" style="{{ navNewsStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📣</span>ประกาศจากบริษัท</span>
       </button>
+      <sc-if value="{{ canHr }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ onGoHr }}" style="{{ navHrStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🛡️</span>ตรวจสอบประวัติ พขร.</span>
+      </button>
+      </sc-if>
       <button onClick="{{ onGoOffice }}" style="{{ navOfficeStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🏢</span>พนักงานออฟฟิศ</span>
         <span style="{{ navOfficeBadge }}">{{ officeTotalCount }}</span>
@@ -491,7 +496,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4405,6 +4410,144 @@
     </sc-if>
 
     <!-- ===== OFFICE LEAVE REPORT (บันทึกการลา ออฟฟิศ) ===== -->
+    <!-- ===== ตรวจสอบประวัติ พขร. ===== -->
+    <sc-if value="{{ isHr }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:26px 30px 60px;max-width:960px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px;">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#16263a;">🛡️ ตรวจสอบประวัติ พขร.</div>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">ใช้ภายในบริษัทเพื่อประกอบการพิจารณารับสมัคร พขร. เท่านั้น · ไม่มีปุ่มพิมพ์และส่งออกไฟล์</div>
+        </div>
+        <button onClick="{{ onHrNew }}" style="padding:10px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">＋ บันทึกข้อมูลใหม่</button>
+      </div>
+      <div style="background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#93370d;line-height:1.6;margin:12px 0 16px;">
+        ⚠ ข้อมูลจากคู่ค้าหรือโซเชียลที่ยังไม่ได้ตรวจสอบ ใช้เป็นข้อมูลประกอบเท่านั้น ไม่ควรใช้ตัดสินลำพัง · ห้ามเผยแพร่ออกนอกบริษัท
+      </div>
+
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:18px;">
+        <input value="{{ hrQ }}" onInput="{{ onHrQ }}" placeholder="ค้นหา ชื่อ / เลขบัตร / เบอร์โทร / เลขใบขับขี่" style="flex:1;min-width:240px;padding:10px 13px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+        <button onClick="{{ onHrSearch }}" style="padding:10px 20px;background:#16263a;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">ค้นหา</button>
+      </div>
+
+      <sc-if value="{{ hrFormOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:20px;margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:700;color:#16263a;margin-bottom:14px;">{{ hrFormTitle }}</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ชื่อ-นามสกุล</div>
+            <input value="{{ hdName }}" onInput="{{ onHdName }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ชื่อเล่น</div>
+            <input value="{{ hdNick }}" onInput="{{ onHdNick }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เลขบัตรประชาชน</div>
+            <input value="{{ hdIdNo }}" onInput="{{ onHdIdNo }}" placeholder="{{ hdIdPh }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เบอร์โทร</div>
+            <input value="{{ hdPhone }}" onInput="{{ onHdPhone }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เลขใบขับขี่</div>
+            <input value="{{ hdLicense }}" onInput="{{ onHdLicense }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">วันที่เกิดเหตุ</div>
+            <input type="date" value="{{ hdDate }}" onInput="{{ onHdDate }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">แหล่งข้อมูล</div>
+            <select value="{{ hdSource }}" onChange="{{ onHdSource }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+              <option value="partner">คู่ค้า</option>
+              <option value="internal">ภายในบริษัท</option>
+              <option value="social">โซเชียล</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ใครแจ้ง / ที่มา</div>
+            <input value="{{ hdSourceNote }}" onInput="{{ onHdSourceNote }}" placeholder="เช่น บจก. เอ บี ซี (คุณสมศักดิ์)" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">สถานะการตรวจสอบ</div>
+            <select value="{{ hdStatus }}" onChange="{{ onHdStatus }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+              <option value="new">ยังไม่ตรวจสอบ</option>
+              <option value="true">ตรวจสอบแล้วว่าจริง</option>
+              <option value="false">ไม่เป็นความจริง</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">รายละเอียด (เขียนเป็นข้อเท็จจริง)</div>
+        <textarea value="{{ hdDetail }}" onInput="{{ onHdDetail }}" rows="3" placeholder="ใครแจ้ง เกิดอะไรขึ้น เมื่อไหร่" style="width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;resize:vertical;"></textarea>
+        <div style="font-size:12px;color:#b54708;line-height:1.6;margin:7px 0 12px;">เขียนตามข้อเท็จจริงและระบุแหล่งที่มา หลีกเลี่ยงการตัดสินนิสัยหรือกล่าวหาเรื่องคดีความ</div>
+
+        <div style="display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:12px;">
+          <sc-for list="{{ hdPhotos }}" as="p" hint-placeholder-count="0">
+            <div style="position:relative;">
+              <div style="{{ p.thumbStyle }}"></div>
+              <button onClick="{{ p.onRemove }}" style="position:absolute;top:-7px;right:-7px;width:22px;height:22px;border-radius:50%;background:#fff;color:#b42318;border:1px solid #fecdca;font-size:12px;font-weight:700;cursor:pointer;line-height:1;">×</button>
+            </div>
+          </sc-for>
+          <label style="display:inline-flex;align-items:center;gap:7px;padding:9px 15px;background:#fff;color:#2f6fb0;border:1px dashed #b2ddff;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;">
+            📷 แนบรูป
+            <input type="file" accept="image/*" onChange="{{ onHrPhoto }}" style="display:none;">
+          </label>
+          <span style="font-size:12.5px;color:#98a2b3;">{{ hrUploadText }}</span>
+        </div>
+
+        <div style="display:flex;gap:9px;justify-content:flex-end;">
+          <button onClick="{{ onHrCancel }}" style="padding:9px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;">ยกเลิก</button>
+          <button onClick="{{ onHrSave }}" style="padding:9px 20px;background:#067647;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;">บันทึก</button>
+        </div>
+        <sc-if value="{{ hrErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:9px 13px;font-size:13px;">{{ hrErr }}</div></sc-if>
+      </div>
+      </sc-if>
+
+      <div style="font-size:13px;color:#667085;margin-bottom:10px;">{{ hrCountText }}</div>
+
+      <sc-if value="{{ hrNoHit }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:36px;text-align:center;color:#98a2b3;font-size:14px;">ไม่พบข้อมูลในระบบ — ถ้าต้องการบันทึกไว้ กด “＋ บันทึกข้อมูลใหม่”</div>
+      </sc-if>
+
+      <sc-for list="{{ hrGroups }}" as="g" hint-placeholder-count="2">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:16px 18px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:10px;">
+            <div style="width:38px;height:38px;border-radius:50%;background:#eef4fb;color:#2f6fb0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;">{{ g.initials }}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:15px;font-weight:700;color:#16263a;">{{ g.name }}</div>
+              <div style="font-size:12.5px;color:#667085;">{{ g.sub }}</div>
+            </div>
+            <span style="{{ g.badgeStyle }}">{{ g.badgeText }}</span>
+          </div>
+          <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="1">
+            <div style="border-top:1px solid #f0f2f5;padding-top:11px;margin-top:11px;">
+              <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:5px;">
+                <span style="{{ r.chipStyle }}">{{ r.chipLabel }}</span>
+                <span style="font-size:12.5px;color:#667085;">{{ r.dateText }}</span>
+                <span style="font-size:12px;color:#b54708;">{{ r.oldText }}</span>
+                <span style="margin-left:auto;display:flex;gap:7px;">
+                  <button onClick="{{ r.onEdit }}" style="padding:4px 10px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">แก้ไข</button>
+                  <button onClick="{{ r.onDelete }}" style="padding:4px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">ลบ</button>
+                </span>
+              </div>
+              <div style="font-size:14px;color:#1d2b3a;line-height:1.75;white-space:pre-wrap;margin-bottom:5px;">{{ r.detail }}</div>
+              <div style="font-size:12.5px;color:#667085;margin-bottom:7px;">แหล่งข้อมูล: {{ r.sourceText }}</div>
+              <sc-if value="{{ r.hasPhotos }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:7px;">
+                  <sc-for list="{{ r.photos }}" as="p" hint-placeholder-count="0">
+                    <div onClick="{{ p.onOpen }}" style="{{ p.thumbStyle }}"></div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <div style="font-size:11.5px;color:#98a2b3;">บันทึกโดย {{ r.byText }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
     <!-- ===== ประกาศจากบริษัท ===== -->
     <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:900px;">
@@ -8244,6 +8387,13 @@ async function sbUploadInspectPhoto(blob,inspId){
   if(!res.ok){let t='';try{t=await res.text();}catch(e){}throw new Error('storage '+res.status+' '+t);}
   return SUPABASE_URL+'/storage/v1/object/public/'+SB_BUCKET+'/'+encodeURI(path);
 }
+// รูปประกอบการตรวจสอบประวัติ พขร. → Storage (attachments/<บริษัท>/hrchecks/<id>/...)
+async function sbUploadHrPhoto(blob,recId){
+  const path=COMPANY_ID+'/hrchecks/'+recId+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'.jpg';
+  const res=await fetch(SUPABASE_URL+'/storage/v1/object/'+SB_BUCKET+'/'+encodeURI(path),{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,'Content-Type':'image/jpeg','x-upsert':'true'},body:blob});
+  if(!res.ok){let t='';try{t=await res.text();}catch(e){}throw new Error('storage '+res.status+' '+t);}
+  return SUPABASE_URL+'/storage/v1/object/public/'+SB_BUCKET+'/'+encodeURI(path);
+}
 async function sbUploadFile(file,jobId){
   const safe=String(file.name||'file').replace(/[^\w.\-]+/g,'_').slice(-60);
   const path=COMPANY_ID+'/jobs/'+jobId+'/'+Date.now()+'_'+Math.random().toString(36).slice(2,7)+'_'+safe;
@@ -8267,7 +8417,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -8304,7 +8454,7 @@ const INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พัก�
 const INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
 
 class Component extends DCLogic {
-  state={news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
+  state={drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
 
   componentWillUnmount(){if(this._gpsSim)clearInterval(this._gpsSim);window.removeEventListener('beforeunload',this._beforeUnload);if(this._wheelGuard)window.removeEventListener('wheel',this._wheelGuard);if(this._pollTimer)clearInterval(this._pollTimer);if(this._fullTimer)clearInterval(this._fullTimer);if(this._flushTimer)clearInterval(this._flushTimer);if(this._visHandler)document.removeEventListener('visibilitychange',this._visHandler);}
   componentDidMount(){
@@ -8442,6 +8592,7 @@ class Component extends DCLogic {
       try{this._kvApplyAll(meta);this._kvStartPoll();}catch(e){}
       try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
       try{this._newsApplyCloud(meta.__news__);}catch(e){}
+      try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
       if(cloudUsers){
         // คลาวด์เป็นแหล่งจริงของบัญชีผู้ใช้ (admin จัดการ) — sync ลงเครื่องนี้
         try{localStorage.setItem('fleet_users_v1',JSON.stringify(cloudUsers));}catch(e){}
@@ -11561,6 +11712,108 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.exportBillingXlsx(g.items));
   };
+  // ===== ตรวจสอบประวัติ พขร. (v.2026-10-05c) =====
+  // ข้อมูลใช้ภายในบริษัทเพื่อประกอบการพิจารณารับสมัคร พขร. เท่านั้น — ไม่มีปุ่มพิมพ์/ส่งออกโดยตั้งใจ
+  // เก็บในตาราง events แถว __drvchk__ รูป {items:[...]} (ไม่ต้องรัน SQL) · รูปเก็บที่ Storage เหมือนรูปตรวจสภาพ
+  // เลขบัตร: เก็บเฉพาะค่าที่เข้ารหัสแล้ว (idHash) + 4 ตัวท้าย ไม่เก็บเลขเต็ม
+  _hrAll(){const l=this.state.drvChk;return Array.isArray(l)?l:[];}
+  _hrLive(){return this._hrAll().filter(r=>r&&!r.deleted).sort((a,b)=>String(b.at||'').localeCompare(String(a.at||'')));}
+  _hrCan(){const a=this.state.auth||{};if(a.role==='admin')return true;return (Array.isArray(a.sections)?a.sections:[]).indexOf('hr')>=0;}
+  _hrMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
+  _hrApplyCloud(data){
+    const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
+    const merged=this._hrMerge(this._hrAll(),list);
+    if(JSON.stringify(merged)!==JSON.stringify(this._hrAll())){this.setState({drvChk:merged});try{localStorage.setItem('drvChk_v1',JSON.stringify(merged));}catch(e){}}
+  }
+  async _hrPush(items){
+    this.setState({drvChk:items});try{localStorage.setItem('drvChk_v1',JSON.stringify(items));}catch(e){}
+    if(!COMPANY_ID)return;
+    try{
+      let cloud=[];
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__drvchk__&select=data',{headers:SB_HEADERS});
+      if(r&&r.ok){const j=await r.json();if(j&&j[0]&&j[0].data&&Array.isArray(j[0].data.items))cloud=j[0].data.items;}
+      const merged=this._hrMerge(cloud,items);
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__drvchk__',data:{items:merged}}]);
+      this.setState({drvChk:merged});try{localStorage.setItem('drvChk_v1',JSON.stringify(merged));}catch(e){}
+    }catch(e){try{console.warn('[LionFlow] drvchk push failed',e&&e.message);}catch(_){}}
+  }
+  _hrDigits(v){return String(v||'').replace(/[^0-9]/g,'');}
+  // เข้ารหัสเลขบัตรด้วย SHA-256 + ชื่อบริษัท — เก็บไว้ค้นหา ไม่เก็บเลขเต็ม
+  async _hrHashId(id){
+    const d=this._hrDigits(id);if(d.length<6)return '';
+    try{
+      const buf=new TextEncoder().encode('LFHR:'+(COMPANY_ID||'')+':'+d);
+      const h=await crypto.subtle.digest('SHA-256',buf);
+      return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }catch(e){return 'plainlen'+d.length+'_'+d.slice(-4);}
+  }
+  _hrKey(r){return r.idHash?('H'+r.idHash):('N'+String(r.name||'').replace(/\s+/g,'')+'|'+this._hrDigits(r.phone));}
+  // จัดกลุ่มรายการของคนเดียวกัน — ใช้เลขบัตรเป็นหลัก ถ้าไม่มีใช้ชื่อ+เบอร์
+  _hrGroups(list){
+    const g={};(list||[]).forEach(r=>{const k=this._hrKey(r);(g[k]=g[k]||[]).push(r);});
+    return Object.keys(g).map(k=>({key:k,rows:g[k].slice().sort((a,b)=>String(b.date||b.at||'').localeCompare(String(a.date||a.at||'')))}))
+      .sort((a,b)=>String((b.rows[0]||{}).at||'').localeCompare(String((a.rows[0]||{}).at||'')));
+  }
+  async _hrSearch(){
+    const q=String(this.state.hrQ||'').trim();
+    const live=this._hrLive();
+    if(!q){this.setState({hrResult:live.slice(0,30),hrSearched:false});return;}
+    const dq=this._hrDigits(q);let hash='';
+    if(dq.length>=13)hash=await this._hrHashId(dq);
+    const lq=q.toLowerCase();
+    const hit=live.filter(r=>{
+      if(hash&&r.idHash===hash)return true;
+      if(dq.length>=6&&this._hrDigits(r.phone).indexOf(dq)>=0)return true;
+      if(dq.length>=4&&String(r.idLast4||'')===dq.slice(-4)&&dq.length<13)return true;
+      if(q.length>=2&&String(r.license||'').toLowerCase().indexOf(lq)>=0)return true;
+      if(q.length>=2&&((String(r.name||'')+' '+String(r.nick||'')).toLowerCase().indexOf(lq)>=0))return true;
+      return false;});
+    this.setState({hrResult:hit,hrSearched:true});
+  }
+  setHrDraft=(k,v)=>this.setState(s=>({hrDraft:{...(s.hrDraft||{}),[k]:v}}));
+  hrNew=()=>{if(!this._hrCan())return;this.setState({hrDraft:{id:'',name:'',nick:'',idNo:'',idLast4:'',idHash:'',phone:'',license:'',date:'',detail:'',source:'partner',sourceNote:'',status:'new',photos:[]},hrFormOpen:true,hrErr:''});};
+  hrEditRec=(id)=>{const r=this._hrAll().find(x=>String(x.id)===String(id));if(!r||!this._hrCan())return;
+    this.setState({hrDraft:{...r,idNo:''},hrFormOpen:true,hrErr:''});};
+  hrCancel=()=>this.setState({hrFormOpen:false,hrErr:''});
+  hrSave=async()=>{
+    if(!this._hrCan()){window.alert('ไม่มีสิทธิ์');return;}
+    const d=this.state.hrDraft||{};
+    if(!String(d.name||'').trim()){this.setState({hrErr:'กรุณากรอกชื่อ-นามสกุล'});return;}
+    if(!String(d.detail||'').trim()){this.setState({hrErr:'กรุณากรอกรายละเอียดเรื่องที่เกิดขึ้น'});return;}
+    const a=this.state.auth||{};const who=a.name||a.u||a.username||'—';
+    const dig=this._hrDigits(d.idNo);
+    const rec={id:d.id||('HR'+Date.now()),name:String(d.name).trim(),nick:String(d.nick||'').trim(),
+      idHash:dig.length>=6?(await this._hrHashId(dig)):(d.idHash||''),
+      idLast4:dig.length>=4?dig.slice(-4):(d.idLast4||''),
+      phone:String(d.phone||'').trim(),license:String(d.license||'').trim(),
+      date:String(d.date||'').slice(0,10),detail:String(d.detail).trim(),
+      source:(['partner','internal','social'].indexOf(d.source)>=0?d.source:'partner'),
+      sourceNote:String(d.sourceNote||'').trim(),
+      status:(['new','true','false'].indexOf(d.status)>=0?d.status:'new'),
+      photos:Array.isArray(d.photos)?d.photos:[],
+      by:d.by||who,at:new Date().toISOString(),editedBy:who,deleted:false};
+    const list=this._hrAll().filter(x=>String(x.id)!==String(rec.id)).concat([rec]);
+    await this._hrPush(list);
+    this.setState({hrFormOpen:false,hrErr:''});this._hrSearch();
+  };
+  hrDeleteRec=(id)=>{
+    if(!this._hrCan())return;
+    const r=this._hrAll().find(x=>String(x.id)===String(id));if(!r)return;
+    if(!window.confirm('ลบรายการของ "'+(r.name||'')+'" ?\n\nลบแล้วกู้คืนไม่ได้'))return;
+    const list=this._hrAll().map(x=>String(x.id)===String(id)?{...x,deleted:true,at:new Date().toISOString()}:x);
+    this._hrPush(list).then(()=>this._hrSearch());
+  };
+  hrAddPhoto=(e)=>{
+    const f=e.target.files&&e.target.files[0];try{e.target.value='';}catch(_){}
+    if(!f)return;const d=this.state.hrDraft;if(!d)return;
+    const id=d.id||('HR'+Date.now());if(!d.id)this.setHrDraft('id',id);
+    this.setState(s=>({hrUploading:(s.hrUploading||0)+1}));
+    this._compressToBlob(f,1000,0.6).then(b=>sbUploadHrPhoto(b,id))
+      .then(url=>this.setState(s=>({hrDraft:{...(s.hrDraft||{}),photos:[...(((s.hrDraft||{}).photos)||[]),url]}})))
+      .catch(err=>window.alert('อัปโหลดรูปไม่สำเร็จ: '+((err&&err.message)||err)))
+      .then(()=>this.setState(s=>({hrUploading:Math.max(0,(s.hrUploading||1)-1)})));
+  };
+  hrRemovePhoto=(url)=>this.setState(s=>({hrDraft:{...(s.hrDraft||{}),photos:(((s.hrDraft||{}).photos)||[]).filter(u=>u!==url)}}));
   // ===== ประกาศถึงผู้ใช้งาน (v.2026-10-05a) =====
   // เก็บเป็นแถวพิเศษในตาราง events id = __news__ รูป {items:[{id,title,body,level,until,popup,pin,by,at,deleted}]}
   // (วิธีเดียวกับ __periodlock__ / __kv_* — ไม่ต้องรัน SQL) ทุกเครื่องรับภายใน 60 วิ หรือทันทีตอนเปิดแอป
@@ -11740,13 +11993,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._kvPollT=setInterval(async()=>{
       try{
         if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
-        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22';
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22,%22__drvchk__%22';
         const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
         if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
         this._kvApplyAll(meta);
         try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
         try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
         try{this._newsApplyCloud(meta.__news__);}catch(e){}
+        try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
       }catch(e){}
     },60000);
   }
@@ -14175,6 +14429,57 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     }
     out.onOfficeBack=this.onOfficeBack;
     // ===== OFFICE REPORTS (รายงานบุคคล ออฟฟิศ) =====
+    // ---- ตรวจสอบประวัติ พขร. ----
+    {const _hCan=this._hrCan();const _hd=S.hrDraft||{};
+      const _hThumb=(u,sz)=>'width:'+sz+'px;height:'+sz+'px;border-radius:9px;border:1px solid #e4e7ec;background:#f2f4f7 center/cover no-repeat url("'+String(u).replace(/"/g,'')+'");';
+      out.canHr=_hCan;out.isHr=S.section==='hr'&&_hCan;
+      out.navHrStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(out.isHr?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
+      out.onGoHr=()=>{this.setState({section:'hr'},()=>this._hrSearch());this.scrollMain();};
+      const _hThD=(iso)=>{const s=String(iso||'').slice(0,10);const p=s.split('-');if(p.length!==3)return s||'—';return (+p[2])+' '+['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+p[1]]+' '+(+p[0]+543);};
+      const _hSrc=(r)=>({partner:'คู่ค้า',internal:'ภายในบริษัท',social:'โซเชียล'}[r.source]||'—')+(r.sourceNote?(' — '+r.sourceNote):'');
+      const _hChip=(st)=>st==='true'?this.chip('#067647','#ecfdf3'):(st==='false'?this.chip('#667085','#f2f4f7'):this.chip('#b54708','#fffaeb'));
+      const _hChipL=(st)=>st==='true'?'ตรวจสอบแล้วว่าจริง':(st==='false'?'ไม่เป็นความจริง':'ยังไม่ตรวจสอบ');
+      const _hOld=(r)=>{const d=String(r.date||'').slice(0,10);if(!d)return '';const t=Date.parse(d+'T00:00:00Z');if(!t)return '';return (Date.now()-t>730*864e5)?'· เกิน 2 ปี ควรทบทวน':'';};
+      const _hRes=Array.isArray(S.hrResult)?S.hrResult:this._hrLive().slice(0,30);
+      const _hGroups=this._hrGroups(_hRes);
+      out.hrQ=S.hrQ||'';
+      out.onHrQ=(e)=>this.setState({hrQ:e.target.value});
+      out.onHrSearch=()=>this._hrSearch();
+      out.hrNoHit=!!S.hrSearched&&_hGroups.length===0;
+      out.hrCountText=_hGroups.length?('พบ '+_hGroups.length+' คน · '+_hRes.length+' รายการ'):(S.hrSearched?'':'ยังไม่มีข้อมูลที่บันทึกไว้');
+      out.hrGroups=_hGroups.map(g=>{const r0=g.rows[0]||{};const act=g.rows.filter(r=>r.status!=='false');
+        return {initials:String(r0.name||'?').trim().slice(0,2),
+          name:String(r0.name||'—')+(r0.nick?('  (ชื่อเล่น '+r0.nick+')'):''),
+          sub:[r0.idLast4?('บัตร xxxx-xxxx-x'+r0.idLast4):'',r0.phone||'',r0.license?('ใบขับขี่ '+r0.license):''].filter(Boolean).join(' · ')||'ไม่ระบุเลขบัตร/เบอร์',
+          badgeText:act.length+' รายการ',
+          badgeStyle:act.length?this.chip('#b42318','#fef3f2'):this.chip('#667085','#f2f4f7'),
+          rows:g.rows.map(r=>({chipLabel:_hChipL(r.status),chipStyle:_hChip(r.status),
+            dateText:'เกิดเหตุ '+_hThD(r.date),oldText:_hOld(r),detail:r.detail||'',sourceText:_hSrc(r),
+            byText:(r.by||'—')+' · '+_hThD(String(r.at||'').slice(0,10)),
+            hasPhotos:(r.photos||[]).length>0,
+            photos:(r.photos||[]).map(u=>({url:u,thumbStyle:_hThumb(u,72)+'cursor:pointer;',onOpen:()=>window.open(u,'_blank','noopener')})),
+            onEdit:()=>this.hrEditRec(r.id),onDelete:()=>this.hrDeleteRec(r.id)}))};});
+      out.hrFormOpen=!!S.hrFormOpen;out.hrErr=S.hrErr||'';
+      out.hrFormTitle=_hd.id?'แก้ไขข้อมูล':'บันทึกข้อมูลใหม่';
+      out.hdName=_hd.name||'';out.hdNick=_hd.nick||'';out.hdIdNo=_hd.idNo||'';
+      out.hdIdPh=_hd.idLast4?('บันทึกไว้แล้ว xxxx-xxxx-x'+_hd.idLast4+' — กรอกใหม่เมื่อต้องการแก้'):'13 หลัก';
+      out.hdPhone=_hd.phone||'';out.hdLicense=_hd.license||'';out.hdDate=_hd.date||'';
+      out.hdSource=_hd.source||'partner';out.hdSourceNote=_hd.sourceNote||'';
+      out.hdStatus=_hd.status||'new';out.hdDetail=_hd.detail||'';
+      out.hdPhotos=(_hd.photos||[]).map(u=>({url:u,thumbStyle:_hThumb(u,76),onRemove:()=>this.hrRemovePhoto(u)}));
+      out.hrUploadText=(S.hrUploading?'กำลังอัปโหลด…':'ย่อรูปให้อัตโนมัติ');
+      out.onHdName=(e)=>this.setHrDraft('name',e.target.value);
+      out.onHdNick=(e)=>this.setHrDraft('nick',e.target.value);
+      out.onHdIdNo=(e)=>this.setHrDraft('idNo',e.target.value);
+      out.onHdPhone=(e)=>this.setHrDraft('phone',e.target.value);
+      out.onHdLicense=(e)=>this.setHrDraft('license',e.target.value);
+      out.onHdDate=(e)=>this.setHrDraft('date',e.target.value);
+      out.onHdSource=(e)=>this.setHrDraft('source',e.target.value);
+      out.onHdSourceNote=(e)=>this.setHrDraft('sourceNote',e.target.value);
+      out.onHdStatus=(e)=>this.setHrDraft('status',e.target.value);
+      out.onHdDetail=(e)=>this.setHrDraft('detail',e.target.value);
+      out.onHrNew=this.hrNew;out.onHrCancel=this.hrCancel;out.onHrSave=this.hrSave;
+      out.onHrPhoto=this.hrAddPhoto;}
     // ---- ประกาศจากบริษัท ----
     {const _nCan=this._newsCanEdit();const _nd=S.newsDraft||{};
       const _nThD=(iso)=>{const s=String(iso||'').slice(0,10);const p=s.split('-');if(p.length!==3)return s;return (+p[2])+' '+['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+p[1]]+' '+(+p[0]+543);};
@@ -14297,7 +14602,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.jobTrashRows=(S.trashJobs||[]).map(j=>{const d=(S.drivers||[]).find(x=>String(x.code)===String(j.driverCode));return{id:j.id,dateFmt:(j.date||'—'),title:((j.jobNo||'ใบงาน')+(j.deliveryNo?(' · บิล '+j.deliveryNo):'')),driver:(d?d.name:(j.driverCode||'—')),plate:(j.truckPlate||'—'),onRestore:()=>this.restoreJobFromTrash(j.id),onPurge:()=>this.purgeJobFromTrash(j.id)};});
     {const _rim=((S.company||{}).regInsMode)||'full';out.regInsFull=(_rim==='full');out.regInsSpread=(_rim==='spread');out.onRegInsFull=()=>this.setRegInsMode('full');out.onRegInsSpread=()=>this.setRegInsMode('spread');const _ba='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #2f6fb0;background:#2f6fb0;color:#fff;';const _bi='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #d0d5dd;background:#fff;color:#475467;';out.regInsFullStyle=(_rim==='full')?_ba:_bi;out.regInsSpreadStyle=(_rim==='spread')?_ba:_bi;}out.onPushAllLocal=this.pushAllLocalToCloud;out.onResetLocal=this.resetLocalAndPull;out.onDedupeTrucks=this.dedupeTrucks;out.onImportTruckXlsx=this.onImportTruckXlsx;out.onGoIssue=this.onGoIssue;out.isIssue=S.section==='issue';out.navIssueStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='issue'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
     out.navSettingsStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='settings'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
-    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'}];
+    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'},{k:'hr',l:'ตรวจสอบประวัติ พขร.'}];
       out.settingsUserRows=(S.profileUsers||[]).map(u=>({name:u.display_name||u.username,uname:u.username,isAdmin:!!u.is_admin,notAdmin:!u.is_admin,secText:u.is_admin?'ทุกเมนู (ผู้ดูแลระบบ)':((Array.isArray(u.sections)?u.sections:[]).map(k=>(_SECOPTS.find(o=>o.k===k)||{}).l).filter(Boolean).join(', ')||'—'),onEdit:()=>this.openUserEdit(u.id)}));
       out.settingsUsersEmpty=(S.profileUsers||[]).length===0;out.onOpenUser=this.openUserNew;
       const _ud=S.userDraft;out.userFormOpen=!!_ud;
