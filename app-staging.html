@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -496,7 +496,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2573,6 +2573,14 @@
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ถึงวันที่</label>
             <input type="date" value="{{ ecApTo }}" onInput="{{ onEcApTo }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;" />
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ฟลีต</label>
+            <select value="{{ ecApFleet }}" onChange="{{ onEcApFleet }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-family:inherit;font-size:13.5px;color:#1d2b3a;background:#fff;box-sizing:border-box;">
+              <sc-for list="{{ ecApFleetOptions }}" as="fo" hint-placeholder-count="3">
+                <option value="{{ fo.value }}">{{ fo.label }}</option>
+              </sc-for>
+            </select>
           </div>
           
           <div>
@@ -11585,19 +11593,29 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   // ★ v.2026-09-30b: ผู้ใช้ส่ง AP แบบค่าจ้างเต็ม 100% → เลือกช่วงวันที่ได้เหมือน AR
   //   ตัดแบบ "สุทธิหลังหักรายการ" ออก (ผู้ใช้สั่ง 30 ก.ย. 2569) — รายการหักรถร่วมบัญชีหักแยกเอง
+  _jobFleetOf(j){
+    const S=this.state;const dv=(S.drivers||[]);
+    const d=dv.find(x=>String(x.code)===String((j&&j.driverCode)||''));
+    let f=d?String(d.fleet||'').trim():'';
+    if(!f){const t=(S.trucks||[]).find(x=>x.plate===(j&&j.truckPlate));const ad=t?String(t.assignedDriver||''):'';
+      const d2=ad?dv.find(x=>String(x.code)===ad):null;f=d2?String(d2.fleet||'').trim():'';}
+    return f||'__none__';
+  }
   _ecApData(){
     const S=this.state;
-    const fr=S.ecApFrom||'',to=S.ecApTo||'';
+    const fr=S.ecApFrom||'',to=S.ecApTo||'';const fl=S.ecApFleet||'all';
     const byPlate={};(S.trucks||[]).filter(t=>/ร่วม/.test(String(t.dept||''))).forEach(t=>{byPlate[t.plate]=t;});
     const jobs=(S.jobs||[]).filter(j=>{if(!j||j.deleted||j._deleted||!byPlate[j.truckPlate]||!j.documentTime)return false;
-        const d=String(j.date||'').slice(0,10);if(!d)return false;if(fr&&d<fr)return false;if(to&&d>to)return false;return true;})
+        const d=String(j.date||'').slice(0,10);if(!d)return false;if(fr&&d<fr)return false;if(to&&d>to)return false;
+        if(fl!=='all'&&this._jobFleetOf(j)!==fl)return false;return true;})
       .sort((a,b)=>String(a.truckPlate).localeCompare(String(b.truckPlate))||String(a.date).localeCompare(String(b.date)));
     const list=[...new Set(jobs.map(j=>j.truckPlate))].map(p=>{const t=byPlate[p]||{};const js=jobs.filter(j=>j.truckPlate===p);
       const g=js.reduce((a,j)=>a+this._ecSubCalc(j).gross,0);
       return {plate:p,owner:t.owner||'',vendor:String(t.ecaccVendor||'').trim(),trips:js.length,gross:g,ded:0,net:g,payDate:'',paid:false};});
     const pay={};jobs.forEach(j=>{const k=j.truckPlate+'|'+String(j.date).slice(0,7);if(pay[k]==null)pay[k]=((S.subMonthMeta||{})[k]||{}).payDate||'';});
-    const tag=(fr||to)?(String(fr).replace(/-/g,'')+'-'+String(to).replace(/-/g,'')):'all';
-    return {jobs:jobs,list:list,pay:pay,net:false,tag:tag,label:(fr||to)?('ช่วง '+(fr?this._blShortDate(fr):'…')+' ถึง '+(to?this._blShortDate(to):'…')):'ทุกวันที่'};
+    const _flTag=fl==='all'?'':('_'+(fl==='__none__'?'ไม่ระบุฟลีต':fl));
+    const tag=((fr||to)?(String(fr).replace(/-/g,'')+'-'+String(to).replace(/-/g,'')):'all')+_flTag;
+    return {jobs:jobs,list:list,pay:pay,net:false,tag:tag,label:((fr||to)?('ช่วง '+(fr?this._blShortDate(fr):'…')+' ถึง '+(to?this._blShortDate(to):'…')):'ทุกวันที่')+(fl==='all'?'':(' · '+(fl==='__none__'?'ไม่ระบุฟลีต':('ฟลีต'+fl))))};
   }
   // AP: เจ้าหนี้/ค่าใช้จ่าย 20 คอลัมน์ · CD=A ตั้งเจ้าหนี้ (1 แถว = 1 บิล · เที่ยวที่ผูก 2 บิล แตกเป็น 2 แถว)
   // ★ v.2026-10-01c: คำแนะนำตามสาเหตุที่ติดจริง (เดิมขึ้น "เติมรหัสเจ้าหนี้" ทุกกรณี)
@@ -11712,7 +11730,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const g=this._blInvRegister().find(x=>x.inv===inv);if(!g)return;
     this.setState({billInvNo:g.inv,billRecNo:g.rec||'',billCustCode:g.code||''},()=>this.exportBillingXlsx(g.items));
   };
-  // ===== ตรวจสอบประวัติ พขร. (v.2026-10-05c) =====
+  // ===== ตรวจสอบประวัติ พขร. (v.2026-10-05d) =====
   // ข้อมูลใช้ภายในบริษัทเพื่อประกอบการพิจารณารับสมัคร พขร. เท่านั้น — ไม่มีปุ่มพิมพ์/ส่งออกโดยตั้งใจ
   // เก็บในตาราง events แถว __drvchk__ รูป {items:[...]} (ไม่ต้องรัน SQL) · รูปเก็บที่ Storage เหมือนรูปตรวจสภาพ
   // เลขบัตร: เก็บเฉพาะค่าที่เข้ารหัสแล้ว (idHash) + 4 ตัวท้าย ไม่เก็บเลขเต็ม
@@ -15173,6 +15191,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
            :(all.length?('ส่งบัญชีไปแล้วทั้งหมด '+all.length+' เที่ยว'):'ไม่มีรายการในช่วงนี้');}
         const _nowM=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit'}).format(new Date()).slice(0,7);
         out.ecMonth=this._ecMonthSel();out.onEcMonth=(e)=>this.setState({ecMonth:e.target.value});
+        out.ecApFleet=S.ecApFleet||'all';
+        out.ecApFleetOptions=[{value:'all',label:'ทุกฟลีต'}].concat(this._fleetList().map(f=>({value:f,label:'ฟลีต'+f}))).concat([{value:'__none__',label:'ไม่ระบุฟลีต'}]);
+        out.onEcApFleet=(e)=>this.setState({ecApFleet:e.target.value});
         out.ecApFrom=S.ecApFrom||'';out.ecApTo=S.ecApTo||'';out.onEcApFrom=(e)=>this.setState({ecApFrom:e.target.value});out.onEcApTo=(e)=>this.setState({ecApTo:e.target.value});
         out.ecApBase=S.ecApBase||'gross';out.onEcApBase=(e)=>this.setState({ecApBase:e.target.value});
         out.ecApPrefix=S.ecApPrefix==null?'':S.ecApPrefix;out.onEcApPrefix=(e)=>this.setState({ecApPrefix:e.target.value});
