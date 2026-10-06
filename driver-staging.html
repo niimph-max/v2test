@@ -164,6 +164,7 @@ function load(){
     if(!r.ok){var m=(r.data&&r.data.message)||'';
       fail(/job not found/i.test(m)?'ไม่พบใบงานนี้ในระบบ (ใบงานอาจยังไม่ถูกบันทึกขึ้นคลาวด์ หรือถูกลบ)':(/invalid or expired/i.test(m)?'ลิงก์หมดอายุหรือถูกยกเลิก':(r.status===404?'ไม่พบงาน':('เปิดงานไม่ได้ · '+(m||r.status)))));return;}
     JOB=r.data.job||{}; JOBID=r.data.jobId; DRIVER=r.data.driver||null;
+    NOTICES=Array.isArray(r.data.notices)?r.data.notices:[];
     // v.2026-08-28d: รถคันนี้มีกล่อง GPS ติดรถอยู่แล้ว → ไม่ต้องส่งซ้ำจากมือถือ (ซ่อนการ์ดไปเงียบ)
     if(r.data.gps===false){shareSupported=false;stopShare();}
     render(); insLoad();
@@ -199,6 +200,7 @@ function saveNote(){
 // ===== ตรวจสภาพก่อนออกงาน โดย พขร. เอง (v.2026-09-28f) =====
 // ใช้เมื่อรถไม่ได้อยู่ใกล้คนจ่ายงาน · ส่งผ่าน RPC driver_submit_inspection (ผูก token ใบงานนี้)
 // ⚠️ รายการต้องตรงกับ INSPECT_VEH / INSPECT_DRIVER / INSPECT_CUST ใน app.dc.html (คีย์ v<g>_<i> / d<i> / c<i>)
+//    และชื่อรายการใน _lbl ของ sql/supabase_driver_inspection.sql (ข้อความ LINE ตอนไม่ผ่าน)
 var INSPECT_VEH=[
   {g:'ยางและล้อ',icon:'🛞',items:['ลมยางทุกล้อ','ดอกยาง / รอยสึก','น็อตล้อครบ-แน่น','ยางอะไหล่']},
   {g:'ระบบเบรก',icon:'🛑',items:['ลมเบรก (แรงดัน)','ผ้าเบรก','เบรกมือ']},
@@ -333,6 +335,18 @@ function renderInsForm(){
   insSummary(); insRenderPhotos('veh');
 }
 
+// ประกาศจากออฟฟิศที่ติ๊ก "ส่งถึง พขร." — มากับ driver_get_job (v.2026-10-06b)
+var NOTICES=[];
+function noticeCards(){
+  if(!NOTICES.length)return '';
+  return NOTICES.map(function(n){
+    var imp=n.level==='important';
+    return '<div class="card" style="border-left:4px solid '+(imp?'#d92d20':'#2f6fb0')+';background:'+(imp?'#fef3f2':'#eff6ff')+';">'
+      +'<div style="font-size:11px;font-weight:800;letter-spacing:.05em;color:'+(imp?'#b42318':'#175cd3')+';margin-bottom:5px;">'+(imp?'⚠ ประกาศสำคัญ':'📣 ประกาศจากออฟฟิศ')+'</div>'
+      +'<div style="font-size:15px;font-weight:800;color:#16263a;margin-bottom:5px;">'+esc(n.title||'')+'</div>'
+      +'<div style="font-size:14px;color:#344054;line-height:1.75;white-space:pre-wrap;">'+esc(n.body||'')+'</div></div>';
+  }).join('');
+}
 function render(){
   if(INS.open&&INS.d){renderInsForm();return;}
   var j=JOB;
@@ -357,7 +371,7 @@ function render(){
     +'<textarea id="note" placeholder="พิมพ์หมายเหตุ (ถ้ามี)…">'+esc(j.driverNote||'')+'</textarea>'
     +'<button class="btn stepbtn" style="margin-top:10px;background:#475467;" onclick="saveNote()">บันทึกหมายเหตุ</button></div>';
   var ins=j.completionTime?'':'<div class="card" id="insBox" style="display:none;"></div>';   // ส่งของเสร็จแล้ว ไม่ต้องตรวจ
-  document.getElementById('body').innerHTML=info+ins+steps+share+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
+  document.getElementById('body').innerHTML=noticeCards()+info+ins+steps+share+note+'<div class="muted" style="text-align:center;padding:6px 0 24px;">🔒 ลิงก์นี้เข้าถึงได้เฉพาะงานนี้งานเดียว</div>';
   renderShare(); startShare(); renderIns();
 }
 function row(k,v){return '<div class="row"><span class="k">'+esc(k)+'</span><span class="v">'+esc(v)+'</span></div>';}

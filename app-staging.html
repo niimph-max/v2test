@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-05e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-06c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -413,7 +413,7 @@
       </button>
       </sc-if>
       </sc-if>
-      <sc-if value="{{ showOfficeSys }}" hint-placeholder-val="{{ false }}">
+      <sc-if value="{{ showOfficeGrp }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบสำนักงาน</div>
       <button onClick="{{ onGoNews }}" style="{{ navNewsStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📣</span>ประกาศจากบริษัท</span>
@@ -423,6 +423,12 @@
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🛡️</span>ตรวจสอบประวัติ พขร.</span>
       </button>
       </sc-if>
+      <sc-if value="{{ canLetters }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ onGoLetters }}" style="{{ navLettersStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📄</span>หนังสือออก</span>
+      </button>
+      </sc-if>
+      <sc-if value="{{ canOfficeStaff }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ onGoOffice }}" style="{{ navOfficeStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🏢</span>พนักงานออฟฟิศ</span>
         <span style="{{ navOfficeBadge }}">{{ officeTotalCount }}</span>
@@ -440,6 +446,7 @@
       <button onClick="{{ onGoORep }}" style="{{ navORepStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🗂️</span>รายงานบุคคล (ออฟฟิศ)</span>
       </button>
+      </sc-if>
       </sc-if>
       <sc-if value="{{ showAcctSys }}" hint-placeholder-val="{{ true }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบบัญชี</div>
@@ -496,7 +503,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-05e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-06c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4556,6 +4563,160 @@
     </div>
     </sc-if>
 
+    <!-- ===== หนังสือออก (v.2026-10-06c) ===== -->
+    <sc-if value="{{ isLetters }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:26px 30px 60px;max-width:960px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#16263a;">📄 หนังสือออก</div>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">ทะเบียนหนังสือออกของบริษัท · ระบบพิมพ์หัวกระดาษให้ ใช้กระดาษเปล่าได้เลย</div>
+        </div>
+        <button onClick="{{ onLtNew }}" style="padding:10px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">＋ ออกหนังสือใหม่</button>
+      </div>
+
+      <sc-if value="{{ ltNoHead }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#93370d;line-height:1.6;margin-bottom:16px;">
+          ⚠ ยังไม่ได้กรอกที่อยู่ / เลขผู้เสียภาษี / โลโก้ ของบริษัท — หัวกระดาษจะไม่ครบ กรอกได้ที่ <strong>ตั้งค่าระบบ › ข้อมูลบริษัท</strong>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ ltFormOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:20px;margin-bottom:20px;">
+        <div style="font-size:15px;font-weight:700;color:#16263a;margin-bottom:14px;">{{ ltFormTitle }}</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ประเภทหนังสือ</div>
+            <select value="{{ ldType }}" onChange="{{ onLdType }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;background:#fff;box-sizing:border-box;">
+              <option value="sub">รับรองการทำงาน — รถร่วม</option>
+              <option value="emp">รับรองการทำงาน — พนักงาน</option>
+              <option value="income">รับรองรายได้</option>
+              <option value="general">หนังสือทั่วไป (พิมพ์เอง)</option>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เลขที่หนังสือ</div>
+            <input value="{{ ldNo }}" onInput="{{ onLdNo }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">วันที่ออกหนังสือ</div>
+            <input type="date" value="{{ ldDate }}" onInput="{{ onLdDate }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <sc-if value="{{ ltIsCert }}" hint-placeholder-val="{{ true }}">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ดึงจากทะเบียน (เลือกแล้วเติมให้)</div>
+            <select value="{{ ldPick }}" onChange="{{ onLdPick }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;background:#fff;box-sizing:border-box;">
+              <option value="">— เลือก / หรือพิมพ์เองด้านล่าง —</option>
+              <sc-for list="{{ ltPersonOpts }}" as="o" hint-placeholder-count="3">
+                <option value="{{ o.value }}">{{ o.label }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ชื่อ-นามสกุล (ผู้ที่ออกหนังสือให้)</div>
+            <input value="{{ ldToName }}" onInput="{{ onLdToName }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">{{ ltSubLabel }}</div>
+            <input value="{{ ldToSub }}" onInput="{{ onLdToSub }}" placeholder="{{ ltSubPh }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">{{ ltStartLabel }}</div>
+            <input type="date" value="{{ ldStart }}" onInput="{{ onLdStart }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">{{ ltAmtLabel }}</div>
+            <input value="{{ ldAmount }}" onInput="{{ onLdAmount }}" placeholder="เว้นว่างได้ ถ้าไม่ต้องการระบุ" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ข้อความเพิ่มเติม (ย่อหน้าก่อนประโยคปิดท้าย — เว้นว่างได้)</div>
+        <textarea value="{{ ldExtra }}" onInput="{{ onLdExtra }}" rows="2" placeholder="เช่น หนังสือฉบับนี้ออกให้เพื่อใช้ประกอบการยื่นกู้กับธนาคาร" style="width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;resize:vertical;margin-bottom:12px;"></textarea>
+        </sc-if>
+
+        <sc-if value="{{ ltIsGeneral }}" hint-placeholder-val="{{ false }}">
+        <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เรื่อง</div>
+        <input value="{{ ldSubject }}" onInput="{{ onLdSubject }}" placeholder="เช่น ขอความอนุเคราะห์ใช้พื้นที่จอดรถ" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;margin-bottom:12px;">
+        <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">เนื้อหา (เว้นบรรทัดว่าง = ขึ้นย่อหน้าใหม่)</div>
+        <textarea value="{{ ldBody }}" onInput="{{ onLdBody }}" rows="6" style="width:100%;padding:10px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;resize:vertical;margin-bottom:12px;"></textarea>
+        </sc-if>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ผู้ลงนาม</div>
+            <input value="{{ ldSigner }}" onInput="{{ onLdSigner }}" placeholder="ชื่อ-นามสกุล" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">ตำแหน่งผู้ลงนาม</div>
+            <input value="{{ ldSignerTitle }}" onInput="{{ onLdSignerTitle }}" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div>
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">หมายเหตุภายใน (ไม่พิมพ์ลงหนังสือ)</div>
+            <input value="{{ ldNote }}" onInput="{{ onLdNote }}" placeholder="เช่น ยื่นธนาคารกรุงไทย" style="width:100%;padding:9px 12px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+        </div>
+
+        <div style="background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px;padding:14px 16px;margin-bottom:14px;">
+          <div style="font-size:11.5px;color:#98a2b3;font-weight:700;letter-spacing:.04em;margin-bottom:7px;">ตัวอย่างเนื้อความที่จะพิมพ์</div>
+          <div style="font-size:14.5px;font-weight:700;color:#16263a;text-align:center;margin-bottom:9px;">{{ ltPvTitle }}</div>
+          <sc-for list="{{ ltPvParas }}" as="p" hint-placeholder-count="2">
+            <div style="font-size:14px;color:#1d2b3a;line-height:1.95;text-indent:2.5em;margin-bottom:7px;">{{ p.text }}</div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;">
+          <button onClick="{{ onLtCancel }}" style="padding:9px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;">ยกเลิก</button>
+          <button onClick="{{ onLtSave }}" style="padding:9px 20px;background:#fff;color:#067647;border:1px solid #abefc6;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;">บันทึก</button>
+          <button onClick="{{ onLtSavePrint }}" style="padding:9px 20px;background:#067647;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;">บันทึก + พิมพ์</button>
+        </div>
+        <sc-if value="{{ ltErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:9px 13px;font-size:13px;">{{ ltErr }}</div></sc-if>
+      </div>
+      </sc-if>
+
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;">
+        <input value="{{ ltQ }}" onInput="{{ onLtQ }}" placeholder="ค้นหา เลขที่ / ชื่อ / ทะเบียนรถ / เรื่อง" style="flex:1;min-width:230px;padding:10px 13px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;box-sizing:border-box;">
+        <select value="{{ ltYear }}" onChange="{{ onLtYear }}" style="min-width:140px;padding:10px 13px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;background:#fff;box-sizing:border-box;">
+          <sc-for list="{{ ltYearOpts }}" as="y" hint-placeholder-count="2">
+            <option value="{{ y.value }}">{{ y.label }}</option>
+          </sc-for>
+        </select>
+      </div>
+
+      <div style="font-size:13px;color:#667085;margin-bottom:10px;">{{ ltCountText }}</div>
+
+      <sc-if value="{{ ltEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:36px;text-align:center;color:#98a2b3;font-size:14px;">ยังไม่มีหนังสือในทะเบียน — กด “＋ ออกหนังสือใหม่”</div>
+      </sc-if>
+
+      <sc-for list="{{ ltRows }}" as="r" hint-placeholder-count="2">
+        <div style="{{ r.cardStyle }}">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:7px;">
+            <span style="font-size:15px;font-weight:800;color:#16263a;">{{ r.no }}</span>
+            <span style="{{ r.chipStyle }}">{{ r.chipLabel }}</span>
+            <span style="{{ r.statusStyle }}">{{ r.statusLabel }}</span>
+            <span style="font-size:12.5px;color:#667085;">{{ r.dateText }}</span>
+            <span style="margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;">
+              <button onClick="{{ r.onPrint }}" style="padding:5px 12px;background:#16263a;color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์</button>
+              <sc-if value="{{ r.canEdit }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ r.onEdit }}" style="padding:5px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">แก้ไข</button>
+              </sc-if>
+              <sc-if value="{{ r.showVoid }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ r.onVoid }}" style="padding:5px 12px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">ยกเลิกหนังสือ</button>
+              </sc-if>
+              <sc-if value="{{ r.showUnvoid }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ r.onUnvoid }}" style="padding:5px 12px;background:#fff;color:#667085;border:1px solid #d0d5dd;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">คืนสถานะใช้งาน</button>
+              </sc-if>
+            </span>
+          </div>
+          <div style="font-size:14.5px;color:#1d2b3a;font-weight:600;">{{ r.toText }}</div>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">{{ r.detailText }}</div>
+          <div style="font-size:11.5px;color:#98a2b3;margin-top:6px;">{{ r.byText }}</div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
     <!-- ===== ประกาศจากบริษัท ===== -->
     <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:900px;">
@@ -4593,6 +4754,7 @@
         <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:12px;">
           <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ ndPopup }}" onChange="{{ onNdPopup }}" style="width:16px;height:16px;cursor:pointer;">เด้งตอนเปิดแอป</label>
           <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ ndPin }}" onChange="{{ onNdPin }}" style="width:16px;height:16px;cursor:pointer;">ปักบนหน้าภาพรวม</label>
+          <label style="display:flex;align-items:center;gap:7px;font-size:13px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ ndToDriver }}" onChange="{{ onNdToDriver }}" style="width:16px;height:16px;cursor:pointer;">📱 ส่งถึง พขร. (ขึ้นในใบงานบนมือถือ)</label>
           <div style="margin-left:auto;display:flex;gap:9px;">
             <button onClick="{{ onNewsCancel }}" style="padding:9px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;">ยกเลิก</button>
             <button onClick="{{ onNewsPublish }}" style="padding:9px 20px;background:#067647;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;">เผยแพร่</button>
@@ -4610,6 +4772,7 @@
         <div style="{{ n.cardStyle }}">
           <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">
             <span style="{{ n.chipStyle }}">{{ n.chipLabel }}</span>
+            <sc-if value="{{ n.toDriver }}" hint-placeholder-val="{{ false }}"><span style="{{ n.drvChipStyle }}">📱 ถึง พขร.</span></sc-if>
             <span style="font-size:12.5px;color:#98a2b3;">{{ n.dateText }} · โดย {{ n.by }}</span>
             <span style="font-size:12px;color:#98a2b3;">{{ n.untilText }}</span>
             <sc-if value="{{ n.canEdit }}" hint-placeholder-val="{{ false }}">
@@ -8425,7 +8588,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -8462,7 +8625,7 @@ const INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พัก�
 const INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
 
 class Component extends DCLogic {
-  state={drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
+  state={letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
 
   componentWillUnmount(){if(this._gpsSim)clearInterval(this._gpsSim);window.removeEventListener('beforeunload',this._beforeUnload);if(this._wheelGuard)window.removeEventListener('wheel',this._wheelGuard);if(this._pollTimer)clearInterval(this._pollTimer);if(this._fullTimer)clearInterval(this._fullTimer);if(this._flushTimer)clearInterval(this._flushTimer);if(this._visHandler)document.removeEventListener('visibilitychange',this._visHandler);}
   componentDidMount(){
@@ -8601,6 +8764,7 @@ class Component extends DCLogic {
       try{this._purgedApply(meta.__purged_jobs__&&meta.__purged_jobs__.ids);}catch(e){}
       try{this._newsApplyCloud(meta.__news__);}catch(e){}
       try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
+      try{this._ltApplyCloud(meta.__letters__);}catch(e){}
       if(cloudUsers){
         // คลาวด์เป็นแหล่งจริงของบัญชีผู้ใช้ (admin จัดการ) — sync ลงเครื่องนี้
         try{localStorage.setItem('fleet_users_v1',JSON.stringify(cloudUsers));}catch(e){}
@@ -11845,6 +12009,160 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       .then(()=>this.setState(s=>({hrUploading:Math.max(0,(s.hrUploading||1)-1)})));
   };
   hrRemovePhoto=(url)=>this.setState(s=>({hrDraft:{...(s.hrDraft||{}),photos:(((s.hrDraft||{}).photos)||[]).filter(u=>u!==url)}}));
+  // ===== หนังสือออก (v.2026-10-06c) =====
+  // เก็บในตาราง events แถว __letters__ รูป {items:[...]} (ไม่ต้องรัน SQL) · สิทธิ์ใช้ของระบบสำนักงาน (office)
+  // เลขที่ = สท.<ปี พ.ศ.>/<ลำดับ 3 หลัก> เริ่มนับใหม่ทุกปี · ยกเลิกแล้วเลขยังอยู่ในทะเบียน (ห้ามใช้เลขซ้ำ)
+  _ltAll(){const l=this.state.letters;return Array.isArray(l)?l:[];}
+  _ltLive(){return this._ltAll().filter(x=>x&&!x.deleted).sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.no||'').localeCompare(String(a.no||'')));}
+  _ltMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
+  _ltApplyCloud(data){
+    const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
+    const merged=this._ltMerge(this._ltAll(),list);
+    if(JSON.stringify(merged)!==JSON.stringify(this._ltAll())){this.setState({letters:merged});try{localStorage.setItem('letters_v1',JSON.stringify(merged));}catch(e){}}
+  }
+  async _ltPush(items){
+    this.setState({letters:items});try{localStorage.setItem('letters_v1',JSON.stringify(items));}catch(e){}
+    if(!COMPANY_ID)return;
+    try{
+      let cloud=[];
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__letters__&select=data',{headers:SB_HEADERS});
+      if(r&&r.ok){const j=await r.json();if(j&&j[0]&&j[0].data&&Array.isArray(j[0].data.items))cloud=j[0].data.items;}
+      const merged=this._ltMerge(cloud,items);
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__letters__',data:{items:merged}}]);
+      this.setState({letters:merged});try{localStorage.setItem('letters_v1',JSON.stringify(merged));}catch(e){}
+    }catch(e){try{console.warn('[LionFlow] letters push failed',e&&e.message);}catch(_){}}
+  }
+  _ltCan(){const a=this.state.auth||{};if(a.role==='admin')return true;return (Array.isArray(a.sections)?a.sections:[]).indexOf('office')>=0;}
+  _ltToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date());}
+  _ltBE(iso){const y=parseInt(String(iso||this._ltToday()).slice(0,4),10);return y?(y+543):0;}
+  // เลขถัดไปของปีนั้น — นับจากเลขที่ใช้ไปแล้วทั้งหมดรวมฉบับที่ยกเลิก เพื่อไม่ให้เลขซ้ำ
+  _ltNextNo(dateISO){
+    const be=this._ltBE(dateISO);let mx=0;
+    this._ltAll().forEach(x=>{const m=String((x&&x.no)||'').match(/(\d{4})\s*\/\s*(\d+)\s*$/);if(!m)return;if(parseInt(m[1],10)!==be)return;mx=Math.max(mx,parseInt(m[2],10)||0);});
+    return 'สท.'+be+'/'+String(mx+1).padStart(3,'0');
+  }
+  _ltTypeLabel(t){return {sub:'รับรองการทำงาน — รถร่วม',emp:'รับรองการทำงาน — พนักงาน',income:'รับรองรายได้',general:'หนังสือทั่วไป'}[t]||'หนังสือทั่วไป';}
+  _ltTitle(l){return (l&&l.type==='general')?(String(l.subject||'').trim()||'หนังสือ'):(l&&l.type==='income'?'หนังสือรับรองรายได้':'หนังสือรับรองการทำงาน');}
+  _ltThaiDate(iso){const s=String(iso||'').slice(0,10);const p=s.split('-');if(p.length!==3)return s;
+    const M=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+    return (+p[2])+' '+M[+p[1]]+' '+(+p[0]+543);}
+  // รายชื่อให้เลือกจากทะเบียนที่มีอยู่ — เจ้าของรถร่วม / พนักงานขับรถ / พนักงานออฟฟิศ
+  _ltPersonOpts(type){
+    const out=[];
+    if(type==='emp'){
+      (this.state.drivers||[]).filter(d=>d&&d.name).forEach(d=>out.push({v:'D|'+d.code,l:'พขร. '+d.name}));
+      (this.state.office||[]).filter(o=>o&&o.name).forEach(o=>out.push({v:'O|'+o.code,l:'ออฟฟิศ '+o.name+(o.position?(' — '+o.position):'')}));
+    }else if(type==='sub'){
+      (this.state.trucks||[]).filter(t=>t&&t.plate&&t.dept==='รถร่วม').forEach(t=>out.push({v:'T|'+t.plate,l:t.plate+(t.owner?(' — '+t.owner):'')}));
+    }else{
+      (this.state.trucks||[]).filter(t=>t&&t.plate&&t.dept==='รถร่วม').forEach(t=>out.push({v:'T|'+t.plate,l:'รถร่วม '+t.plate+(t.owner?(' — '+t.owner):'')}));
+      (this.state.drivers||[]).filter(d=>d&&d.name).forEach(d=>out.push({v:'D|'+d.code,l:'พขร. '+d.name}));
+      (this.state.office||[]).filter(o=>o&&o.name).forEach(o=>out.push({v:'O|'+o.code,l:'ออฟฟิศ '+o.name}));
+    }
+    return out;
+  }
+  // เนื้อความของหนังสือ — ประกอบจากช่องที่กรอก (หนังสือทั่วไปใช้ข้อความที่พิมพ์เอง)
+  _ltBody(l){
+    const co=((this.state.company||{}).name)||'บริษัท';
+    const amt=parseFloat(String(l.amount||'').replace(/,/g,''))||0;
+    const money=amt?(_LFB2(amt)+' บาท ('+this._bahtText(amt)+')'):'';
+    const since=l.startDate?('ตั้งแต่วันที่ '+this._ltThaiDate(l.startDate)+' '):'';
+    const paras=[];
+    if(l.type==='sub'){
+      paras.push('หนังสือฉบับนี้ออกเพื่อเป็นการยืนยันว่า '+(l.toName||'')+(l.toSub?(' เจ้าของรถทะเบียน '+l.toSub):'')
+        +' เข้ามาวิ่งร่วมรับงานกับ'+co+' '+since+(money?('โดยได้รับรายได้เฉลี่ยเดือนละ '+money):''));
+    }else if(l.type==='emp'){
+      paras.push('หนังสือฉบับนี้ออกเพื่อเป็นการยืนยันว่า '+(l.toName||'')+' เป็นพนักงานของ'+co
+        +(l.toSub?(' ตำแหน่ง '+l.toSub):'')+' '+since+(money?('โดยได้รับค่าจ้างเดือนละ '+money):''));
+    }else if(l.type==='income'){
+      paras.push('หนังสือฉบับนี้ออกเพื่อเป็นการยืนยันว่า '+(l.toName||'')+(l.toSub?(' ('+l.toSub+')'):'')
+        +' มีรายได้จาก'+co+' '+since+(money?('เฉลี่ยเดือนละ '+money):''));
+    }else{
+      return String(l.body||'').split(/\n{2,}/).map(x=>x.trim()).filter(Boolean);
+    }
+    if(String(l.extra||'').trim())paras.push(String(l.extra).trim());
+    paras.push('ข้าพเจ้า ขอรับรองว่าข้อความดังกล่าวข้างต้นเป็นความจริงทุกประการ');
+    return paras.map(x=>String(x).replace(/[ \t]+/g,' ').trim());
+  }
+  ltSetDraft=(k,v)=>this.setState(s=>({ltDraft:{...(s.ltDraft||{}),[k]:v}}));
+  ltNew=()=>{if(!this._ltCan())return;const d=this._ltToday();const last=this._ltLive()[0]||{};
+    this.setState({ltDraft:{id:'',no:this._ltNextNo(d),date:d,type:'sub',toName:'',toSub:'',startDate:'',amount:'',extra:'',subject:'',body:'',
+      signer:last.signer||'',signerTitle:last.signerTitle||'ผู้จัดการ',note:'',status:'active'},ltFormOpen:true,ltErr:''});};
+  ltEdit=(id)=>{const l=this._ltAll().find(x=>String(x.id)===String(id));if(!l)return;this.setState({ltDraft:{...l},ltFormOpen:true,ltErr:''});};
+  ltCancelForm=()=>this.setState({ltFormOpen:false,ltErr:''});
+  // เลือกคนจากทะเบียนรถร่วม / พนักงานขับรถ / พนักงานออฟฟิศ แล้วเติมช่องให้
+  ltPickPerson=(key)=>{
+    const k=String(key||'');if(!k)return;
+    if(k.indexOf('T|')===0){const t=(this.state.trucks||[]).find(x=>x.plate===k.slice(2));if(t)this.setState(s=>({ltDraft:{...(s.ltDraft||{}),toName:String(t.owner||'').trim(),toSub:t.plate,startDate:(t.contractDate||(s.ltDraft||{}).startDate||'')}}));return;}
+    if(k.indexOf('D|')===0){const dr=(this.state.drivers||[]).find(x=>String(x.code)===k.slice(2));if(dr)this.setState(s=>({ltDraft:{...(s.ltDraft||{}),toName:String(dr.name||'').trim(),toSub:'พนักงานขับรถ',startDate:(dr.startDate||(s.ltDraft||{}).startDate||''),amount:(((s.ltDraft||{}).amount)||String(dr.salary||''))}}));return;}
+    if(k.indexOf('O|')===0){const of=(this.state.office||[]).find(x=>String(x.code)===k.slice(2));if(of)this.setState(s=>({ltDraft:{...(s.ltDraft||{}),toName:String(of.name||'').trim(),toSub:String(of.position||'พนักงานออฟฟิศ'),startDate:(of.startDate||(s.ltDraft||{}).startDate||''),amount:(((s.ltDraft||{}).amount)||String(of.salary||''))}}));return;}
+  };
+  ltSave=(andPrint)=>{
+    if(!this._ltCan()){window.alert('ไม่มีสิทธิ์ออกหนังสือ');return;}
+    const d=this.state.ltDraft||{};
+    if(!String(d.no||'').trim()){this.setState({ltErr:'กรุณากรอกเลขที่หนังสือ'});return;}
+    if(d.type==='general'){if(!String(d.subject||'').trim()||!String(d.body||'').trim()){this.setState({ltErr:'หนังสือทั่วไป ต้องกรอกเรื่องและเนื้อหา'});return;}}
+    else if(!String(d.toName||'').trim()){this.setState({ltErr:'กรุณาระบุชื่อผู้ที่ออกหนังสือให้'});return;}
+    if(!String(d.signer||'').trim()){this.setState({ltErr:'กรุณากรอกชื่อผู้ลงนาม'});return;}
+    const dup=this._ltAll().find(x=>x&&!x.deleted&&String(x.no||'')===String(d.no).trim()&&String(x.id)!==String(d.id||''));
+    if(dup){this.setState({ltErr:'เลขที่ '+d.no+' ถูกใช้ไปแล้ว (ออกให้ '+(dup.toName||dup.subject||'—')+')'});return;}
+    const a=this.state.auth||{};const who=a.name||a.u||'—';
+    const rec={id:d.id||('LT'+Date.now()),no:String(d.no).trim(),date:String(d.date||this._ltToday()).slice(0,10),
+      type:(['sub','emp','income','general'].indexOf(d.type)>=0?d.type:'general'),
+      toName:String(d.toName||'').trim(),toSub:String(d.toSub||'').trim(),startDate:String(d.startDate||'').slice(0,10),
+      amount:String(d.amount||'').trim(),extra:String(d.extra||'').trim(),
+      subject:String(d.subject||'').trim(),body:String(d.body||'').trim(),
+      signer:String(d.signer||'').trim(),signerTitle:String(d.signerTitle||'').trim(),
+      note:String(d.note||'').trim(),status:(d.status==='void'?'void':'active'),
+      by:d.by||who,at:new Date().toISOString(),deleted:false};
+    const list=this._ltAll().filter(x=>String(x.id)!==String(rec.id)).concat([rec]);
+    this._ltPush(list);
+    this.setState({ltFormOpen:false,ltErr:''});
+    if(andPrint)setTimeout(()=>this.printLetter(rec.id),150);
+  };
+  ltVoid=(id)=>{
+    if(!this._ltCan())return;
+    const l=this._ltAll().find(x=>String(x.id)===String(id));if(!l)return;
+    if(!window.confirm('ยกเลิกหนังสือ '+l.no+' ?'))return;
+    this._ltPush(this._ltAll().map(x=>String(x.id)===String(id)?{...x,status:'void',at:new Date().toISOString()}:x));
+  };
+  ltUnvoid=(id)=>{
+    if(!this._ltCan())return;
+    this._ltPush(this._ltAll().map(x=>String(x.id)===String(id)?{...x,status:'active',at:new Date().toISOString()}:x));
+  };
+  printLetter=(id)=>{
+    const l=this._ltAll().find(x=>String(x.id)===String(id));if(!l)return;
+    const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const co=this.state.company||{};
+    const coName=co.name||'บริษัทขนส่ง';
+    const coAddr=String(co.address||co.addr||'').trim();
+    const coLine2=[co.phone?('โทร. '+co.phone):'',co.fax?('โทรสาร '+co.fax):'',(co.taxId||co.taxid)?('เลขประจำตัวผู้เสียภาษี '+(co.taxId||co.taxid)):''].filter(Boolean).join('  ·  ');
+    const logo=String(co.logo||'');
+    const paras=this._ltBody(l).map(t=>'<p class="p">'+esc(t)+'</p>').join('');
+    const css='@page{size:A4;margin:0;}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}'
+      +'body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#111827;background:#fff;}'
+      +'.page{width:210mm;min-height:297mm;margin:0 auto;padding:18mm 20mm;position:relative;}'
+      +'.hd{display:flex;gap:10px;align-items:flex-start;border-bottom:1.5px solid #111827;padding-bottom:7px;}'
+      +'.lg{height:16mm;max-width:40mm;object-fit:contain;}'
+      +'.cn{font-size:19px;font-weight:800;}.ci{font-size:12.5px;color:#374151;line-height:1.55;}'
+      +'.rw{display:flex;align-items:flex-start;justify-content:space-between;margin-top:12mm;font-size:15px;}'
+      +'.ttl{font-size:17px;font-weight:800;text-align:center;margin:10mm 0 8mm;text-decoration:underline;}'
+      +'.p{font-size:15px;line-height:2.1;text-indent:3em;margin:0 0 10px;text-align:justify;}'
+      +'.sg{margin-top:20mm;text-align:center;width:72mm;margin-left:auto;font-size:15px;line-height:2.1;}'
+      +'.vd{position:absolute;top:120mm;left:0;right:0;text-align:center;font-size:60px;color:rgba(185,28,28,.18);font-weight:800;letter-spacing:8px;}'
+      +'@media print{.noprint{display:none;}}';
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(l.no)+'</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page">'
+      +(l.status==='void'?'<div class="vd">ยกเลิก</div>':'')
+      +'<div class="hd">'+(logo?('<img class="lg" src="'+logo+'" alt="">'):'')
+      +'<div><div class="cn">'+esc(coName)+'</div>'+(coAddr?('<div class="ci">'+esc(coAddr)+'</div>'):'')+(coLine2?('<div class="ci">'+esc(coLine2)+'</div>'):'')+'</div></div>'
+      +'<div class="rw"><div>ที่ '+esc(l.no)+'</div><div>วันที่ '+esc(this._ltThaiDate(l.date))+'</div></div>'
+      +'<div class="ttl">'+esc(this._ltTitle(l))+'</div>'
+      +paras
+      +'<div class="sg"><div>ขอแสดงความนับถือ</div><div style="height:20mm;"></div><div>('+esc(l.signer||'')+')</div><div>'+esc(l.signerTitle||'')+'</div></div>'
+      +'</div></body></html>';
+    this._printHtml(html);
+  };
   // ===== ประกาศถึงผู้ใช้งาน (v.2026-10-05a) =====
   // เก็บเป็นแถวพิเศษในตาราง events id = __news__ รูป {items:[{id,title,body,level,until,popup,pin,by,at,deleted}]}
   // (วิธีเดียวกับ __periodlock__ / __kv_* — ไม่ต้องรัน SQL) ทุกเครื่องรับภายใน 60 วิ หรือทันทีตอนเปิดแอป
@@ -11895,7 +12213,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   setNewsDraft=(k,v)=>this.setState(s=>({newsDraft:{...(s.newsDraft||{}),[k]:v}}));
   newsNew=()=>{const d=new Date(Date.now()+30*864e5);const until=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(d);
-    this.setState({newsDraft:{id:'',title:'',body:'',level:'normal',until:until,popup:true,pin:true},newsFormOpen:true,newsErr:''});};
+    this.setState({newsDraft:{id:'',title:'',body:'',level:'normal',until:until,popup:true,pin:true,toDriver:false},newsFormOpen:true,newsErr:''});};
   newsEdit=(id)=>{const n=this._newsAll().find(x=>String(x.id)===String(id));if(!n)return;this.setState({newsDraft:{...n},newsFormOpen:true,newsErr:''});};
   newsCancel=()=>this.setState({newsFormOpen:false,newsErr:''});
   newsPublish=()=>{
@@ -11906,7 +12224,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const a=this.state.auth||{};const who=a.name||a.u||a.username||'—';
     const rec={id:d.id||('NW'+Date.now()),title:String(d.title).trim(),body:String(d.body).trim(),
       level:(d.level==='important'?'important':'normal'),until:String(d.until||'').slice(0,10),
-      popup:d.popup!==false,pin:d.pin!==false,by:who,at:new Date().toISOString(),deleted:false};
+      popup:d.popup!==false,pin:d.pin!==false,toDriver:d.toDriver===true,by:who,at:new Date().toISOString(),deleted:false};
     const list=this._newsAll().filter(x=>String(x.id)!==String(rec.id)).concat([rec]);
     this._newsPush(list);
     this.setState({newsFormOpen:false,newsErr:''});
@@ -12024,7 +12342,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._kvPollT=setInterval(async()=>{
       try{
         if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
-        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22,%22__drvchk__%22';
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22';
         const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
         if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
         this._kvApplyAll(meta);
@@ -12032,6 +12350,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         try{if(meta.__periodlock__)this._plApplyCloud(meta.__periodlock__);}catch(e){}
         try{this._newsApplyCloud(meta.__news__);}catch(e){}
         try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
+        try{this._ltApplyCloud(meta.__letters__);}catch(e){}
       }catch(e){}
     },60000);
   }
@@ -14519,6 +14838,74 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.onHdDetail=(e)=>this.setHrDraft('detail',e.target.value);
       out.onHrNew=this.hrNew;out.onHrCancel=this.hrCancel;out.onHrSave=this.hrSave;
       out.onHrPhoto=this.hrAddPhoto;}
+    // ---- หนังสือออก ----
+    {const _lCan=this._ltCan();const _ld=S.ltDraft||{};const _lco=S.company||{};
+      out.canLetters=_lCan;out.isLetters=S.section==='letters'&&_lCan;
+      out.navLettersStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(out.isLetters?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
+      out.onGoLetters=()=>{this.setState({section:'letters'});this.scrollMain();};
+      out.ltNoHead=!String(_lco.address||_lco.addr||'').trim()||!String(_lco.taxId||_lco.taxid||'').trim()||!String(_lco.logo||'').trim();
+      out.ltFormOpen=!!S.ltFormOpen;out.ltErr=S.ltErr||'';
+      out.ltFormTitle=(_ld.id?'แก้ไขหนังสือ ':'ออกหนังสือใหม่ ')+(_ld.no?('('+_ld.no+')'):'');
+      out.ltIsGeneral=_ld.type==='general';out.ltIsCert=_ld.type!=='general';
+      out.ltSubLabel=_ld.type==='sub'?'ทะเบียนรถ':(_ld.type==='emp'?'ตำแหน่ง':'ตำแหน่ง / ทะเบียนรถ (ใส่ในวงเล็บ)');
+      out.ltSubPh=_ld.type==='sub'?'เช่น 70-0654 เพชรบูรณ์':'เช่น พนักงานขับรถ';
+      out.ltStartLabel=_ld.type==='sub'?'วันที่เริ่มร่วมงาน':'วันที่เริ่มงาน';
+      out.ltAmtLabel=_ld.type==='emp'?'ค่าจ้างต่อเดือน (บาท)':'รายได้เฉลี่ยต่อเดือน (บาท)';
+      out.ldType=_ld.type||'sub';out.ldNo=_ld.no||'';out.ldDate=_ld.date||'';
+      out.ldToName=_ld.toName||'';out.ldToSub=_ld.toSub||'';out.ldStart=_ld.startDate||'';
+      out.ldAmount=_ld.amount||'';out.ldExtra=_ld.extra||'';
+      out.ldSubject=_ld.subject||'';out.ldBody=_ld.body||'';
+      out.ldSigner=_ld.signer||'';out.ldSignerTitle=_ld.signerTitle||'';out.ldNote=_ld.note||'';
+      out.ldPick='';
+      out.ltPersonOpts=this._ltPersonOpts(_ld.type||'sub').map(o=>({value:o.v,label:o.l}));
+      out.onLdType=(e)=>this.ltSetDraft('type',e.target.value);
+      out.onLdNo=(e)=>this.ltSetDraft('no',e.target.value);
+      out.onLdDate=(e)=>this.ltSetDraft('date',e.target.value);
+      out.onLdToName=(e)=>this.ltSetDraft('toName',e.target.value);
+      out.onLdToSub=(e)=>this.ltSetDraft('toSub',e.target.value);
+      out.onLdStart=(e)=>this.ltSetDraft('startDate',e.target.value);
+      out.onLdAmount=(e)=>this.ltSetDraft('amount',e.target.value);
+      out.onLdExtra=(e)=>this.ltSetDraft('extra',e.target.value);
+      out.onLdSubject=(e)=>this.ltSetDraft('subject',e.target.value);
+      out.onLdBody=(e)=>this.ltSetDraft('body',e.target.value);
+      out.onLdSigner=(e)=>this.ltSetDraft('signer',e.target.value);
+      out.onLdSignerTitle=(e)=>this.ltSetDraft('signerTitle',e.target.value);
+      out.onLdNote=(e)=>this.ltSetDraft('note',e.target.value);
+      out.onLdPick=(e)=>this.ltPickPerson(e.target.value);
+      out.onLtNew=this.ltNew;out.onLtCancel=this.ltCancelForm;
+      out.onLtSave=()=>this.ltSave(false);out.onLtSavePrint=()=>this.ltSave(true);
+      out.ltPvTitle=this._ltTitle(_ld);
+      out.ltPvParas=(S.ltFormOpen?this._ltBody(_ld):[]).map(t=>({text:t}));
+      // ทะเบียนหนังสือ
+      const _lAll=this._ltLive();
+      const _lYears=[];_lAll.forEach(x=>{const y=this._ltBE(x.date);if(y&&_lYears.indexOf(y)<0)_lYears.push(y);});
+      _lYears.sort((a,b)=>b-a);
+      out.ltYearOpts=[{value:'all',label:'ทุกปี'}].concat(_lYears.map(y=>({value:String(y),label:'ปี '+y})));
+      out.ltQ=S.ltQ||'';out.ltYear=S.ltYear||'all';
+      out.onLtQ=(e)=>this.setState({ltQ:e.target.value});
+      out.onLtYear=(e)=>this.setState({ltYear:e.target.value});
+      const _lq=String(S.ltQ||'').trim().toLowerCase();
+      const _lRows=_lAll.filter(x=>{
+        if((S.ltYear||'all')!=='all'&&String(this._ltBE(x.date))!==String(S.ltYear))return false;
+        if(!_lq)return true;
+        return [x.no,x.toName,x.toSub,x.subject,x.note,x.signer].filter(Boolean).join(' ').toLowerCase().indexOf(_lq)>=0;
+      });
+      out.ltEmpty=_lRows.length===0&&!S.ltFormOpen;
+      out.ltCountText=_lRows.length?('ทะเบียนหนังสือ '+_lRows.length+' ฉบับ'):(_lq||((S.ltYear||'all')!=='all')?'ไม่พบหนังสือที่ค้นหา':'');
+      out.ltRows=_lRows.map(l=>{
+        const _void=l.status==='void';
+        return {no:'ที่ '+l.no,
+          chipLabel:this._ltTypeLabel(l.type),chipStyle:this.chip(_void?'#667085':'#175cd3',_void?'#f2f4f7':'#eff6ff'),
+          statusLabel:_void?'ยกเลิกแล้ว':'ใช้งาน',statusStyle:this.chip(_void?'#b42318':'#067647',_void?'#fef3f2':'#ecfdf3'),
+          dateText:this._ltThaiDate(l.date),
+          cardStyle:'background:#fff;border:1px solid '+(_void?'#e4e7ec':'#e4e7ec')+';border-left:4px solid '+(_void?'#98a2b3':'#2f6fb0')+';border-radius:0 12px 12px 0;padding:14px 18px;margin-bottom:11px;'+(_void?'opacity:.72;':''),
+          toText:(l.type==='general'?('เรื่อง '+(l.subject||'—')):(l.toName||'—')),
+          detailText:[(l.type==='general'?'':l.toSub),(l.amount?('เดือนละ '+l.amount+' บาท'):''),(l.note?('หมายเหตุ: '+l.note):'')].filter(Boolean).join(' · ')||'—',
+          byText:'ออกโดย '+(l.by||'—')+' · ผู้ลงนาม '+(l.signer||'—')+(l.signerTitle?(' ('+l.signerTitle+')'):''),
+          canEdit:_lCan&&!_void,showVoid:_lCan&&!_void,showUnvoid:_lCan&&_void,
+          onPrint:()=>this.printLetter(l.id),onEdit:()=>this.ltEdit(l.id),
+          onVoid:()=>this.ltVoid(l.id),onUnvoid:()=>this.ltUnvoid(l.id)};
+      });}
     // ---- ประกาศจากบริษัท ----
     {const _nCan=this._newsCanEdit();const _nd=S.newsDraft||{};
       const _nThD=(iso)=>{const s=String(iso||'').slice(0,10);const p=s.split('-');if(p.length!==3)return s;return (+p[2])+' '+['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+p[1]]+' '+(+p[0]+543);};
@@ -14527,6 +14914,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         dateText:_nThD(String(n.at||'').slice(0,10)),
         untilText:n.until?('แสดงถึง '+_nThD(n.until)):'ไม่กำหนดวันสิ้นสุด',
         chipLabel:(n.level==='important'?'สำคัญ':'ทั่วไป'),chipStyle:_nChip(n.level),
+        toDriver:n.toDriver===true,drvChipStyle:this.chip('#067647','#ecfdf3'),
         cardStyle:'background:#fff;border:1px solid '+(n.level==='important'?'#fecdca':'#e4e7ec')+';border-left:4px solid '+(n.level==='important'?'#d92d20':'#2f6fb0')+';border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:12px;',
         canEdit:_nCan,onEdit:()=>this.newsEdit(n.id),onDelete:()=>this.newsDelete(n.id)});
       const _nLive=this._newsLive();const _nPast=this._newsPast();
@@ -14537,13 +14925,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.newsRows=_nLive.map(_nRow);out.newsEmpty=_nLive.length===0&&!S.newsFormOpen;
       out.newsPastRows=_nPast.map(_nRow);out.newsPastHas=_nPast.length>0;
       out.ndTitle=_nd.title||'';out.ndBody=_nd.body||'';out.ndLevel=_nd.level||'normal';out.ndUntil=_nd.until||'';
-      out.ndPopup=_nd.popup!==false;out.ndPin=_nd.pin!==false;
+      out.ndPopup=_nd.popup!==false;out.ndPin=_nd.pin!==false;out.ndToDriver=_nd.toDriver===true;
       out.onNdTitle=(e)=>this.setNewsDraft('title',e.target.value);
       out.onNdBody=(e)=>this.setNewsDraft('body',e.target.value);
       out.onNdLevel=(e)=>this.setNewsDraft('level',e.target.value);
       out.onNdUntil=(e)=>this.setNewsDraft('until',e.target.value);
       out.onNdPopup=(e)=>this.setNewsDraft('popup',e.target.checked);
       out.onNdPin=(e)=>this.setNewsDraft('pin',e.target.checked);
+      out.onNdToDriver=(e)=>this.setNewsDraft('toDriver',e.target.checked);
       out.onNewsNew=this.newsNew;out.onNewsCancel=this.newsCancel;out.onNewsPublish=this.newsPublish;
       // แถบบนหน้าภาพรวม — เฉพาะอันที่ติ๊ก "ปักบนหน้าภาพรวม"
       const _nPin=_nLive.filter(n=>n.pin!==false);
@@ -14635,7 +15024,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onLoginKey=(e)=>{if(e.key==='Enter')this.doLogin();};
     out.onDoLogin=this.doLogin;out.onLogout=this.doLogout;out.onGoDashboard=this.onGoDashboard;
     out.onOpenPwChange=this.openPwChange;{const _pm=S.pwModal;out.pwModalOpen=!!_pm;out.pwN1=_pm?(_pm.n1||''):'';out.pwN2=_pm?(_pm.n2||''):'';out.pwErr=_pm?(_pm.err||''):'';out.pwErrShow=!!(_pm&&_pm.err);out.pwOk=!!(_pm&&_pm.ok);out.pwFormShow=!(_pm&&_pm.ok);out.pwSubmitLabel=(_pm&&_pm.busy)?'กำลังบันทึก…':'บันทึกรหัสใหม่';out.pwCloseLabel=(_pm&&_pm.ok)?'ปิด':'ยกเลิก';out.onPwN1=(e)=>this.setPwField('n1',e.target.value);out.onPwN2=(e)=>this.setPwField('n2',e.target.value);out.onPwSubmit=this.submitPwChange;out.onPwClose=this.closePwChange;}
-    out.canSettings=_role==='admin';out.showOfficeSys=(_role==='admin')&&lfModuleOn('office');out.isSettings=S.section==='settings'&&_role==='admin';out.onGoSettings=this.onGoSettings;
+    out.canSettings=_role==='admin';out.showOfficeSys=(_role==='admin'||_can('office'))&&lfModuleOn('office');out.canOfficeStaff=out.showOfficeSys;out.showOfficeGrp=out.showOfficeSys;out.isSettings=S.section==='settings'&&_role==='admin';out.onGoSettings=this.onGoSettings;
     out.sessionDead=!!S.sessionDead;out.onSessionRelogin=this.dismissSessionDead;
     out.onLoadJobTrash=this.loadJobTrash;out.jobTrashLoading=!!S.jobTrashLoading;out.jobTrashReady=Array.isArray(S.trashJobs)&&!S.jobTrashLoading;out.jobTrashEmpty=Array.isArray(S.trashJobs)&&S.trashJobs.length===0;out.jobTrashHas=Array.isArray(S.trashJobs)&&S.trashJobs.length>0;
     out.jobTrashRows=(S.trashJobs||[]).map(j=>{const d=(S.drivers||[]).find(x=>String(x.code)===String(j.driverCode));return{id:j.id,dateFmt:(j.date||'—'),title:((j.jobNo||'ใบงาน')+(j.deliveryNo?(' · บิล '+j.deliveryNo):'')),driver:(d?d.name:(j.driverCode||'—')),plate:(j.truckPlate||'—'),onRestore:()=>this.restoreJobFromTrash(j.id),onPurge:()=>this.purgeJobFromTrash(j.id)};});
