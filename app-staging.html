@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07i · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07j · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07i</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07j</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5159,7 +5159,7 @@
               <div style="font-size:13px;font-weight:700;color:#16263a;line-height:1.3;">{{ r.ttCode }}</div>
               <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;line-height:1.3;">{{ r.ttName }}</div>
             </div>
-            <div style="padding:12px 12px;"><span style="{{ r.deptStyle }}">{{ r.deptLabel }}</span></div>
+            <div style="padding:12px 12px;"><span style="{{ r.deptStyle }}">{{ r.deptLabel }}</span><div style="{{ r.fleetStyle }}">{{ r.fleetText }}</div></div>
             <div style="padding:12px 12px;font-size:12.5px;color:#475467;">{{ r.fuelText }}</div>
             <div style="padding:12px 12px;font-size:12.5px;color:#2f6fb0;font-weight:600;">{{ r.rateText }}</div>
             <div style="padding:12px 12px;font-size:13px;"><span style="{{ r.regStyle }}">{{ r.regText }}</span></div>
@@ -13872,7 +13872,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const tColVal=(t,col)=>{if(col==='plate')return t.plate||'';if(col==='owner')return t.owner||'';if(col==='truckType')return t.truckType||'';if(col==='dept')return t.dept||'';if(col==='fuel')return t.fuel||'';if(col==='regExpiry')return t.regExpiry||'9999-99-99';if(col==='insuranceExpiry')return t.insuranceExpiry||'9999-99-99';if(col==='cargoInsExpiry')return t.cargoInsExpiry||'9999-99-99';if(col==='actExpiry')return t.actExpiry||'9999-99-99';if(col==='status')return ({expired:0,soon:1,ok:2,incomplete:3})[tStatusKey(t)]??4;return '';};
     const tSortKeys=(S.truckSortKeys&&S.truckSortKeys.length)?S.truckSortKeys.filter(k=>k&&k.col):[];
     if(tSortKeys.length){tList.sort((a,b)=>{for(const k of tSortKeys){const av=tColVal(a,k.col),bv=tColVal(b,k.col);let c;if(typeof av==='number'&&typeof bv==='number')c=av-bv;else c=String(av).localeCompare(String(bv),'th');if(c)return k.dir==='desc'?-c:c;}return 0;});}
-    const truckRows=tList.map(t=>{const st=this.truckDocStatus(t);const ins=this.expiryCell(t.insuranceExpiry);const cargo=this.expiryCell(t.cargoInsExpiry);const reg=this.expiryCell(t.regExpiry);const act=this.expiryCell(t.actExpiry);const mCnt=(t.maintenance||[]).length;const mText=mCnt>0?(mCnt+' ครั้ง'):'—';const mStyle=mCnt>0?'font-size:13px;font-weight:600;color:#175cd3;':'font-size:13px;color:#b0b8c2;';const ttParts=(t.truckType||'').split('-');const ttCode=ttParts[0]||'';const ttName=ttParts.slice(1).join('-')||t.truckType||'—';return{id:t.plate,plate:t.plate,owner:t.owner||'—',truckType:t.truckType||'—',ttCode,ttName,dept:t.dept,deptLabel:DEPT_SHORT[t.dept]||t.dept||'—',deptStyle:this.deptChip(t.dept),fuelText:t.fuel||'—',rateText:(t.fuelRateLoaded||t.fuelRateEmpty)?((t.fuelRateLoaded||'—')+' / '+(t.fuelRateEmpty||'—')):'—',regText:reg.text,regStyle:reg.style,insText:ins.text,insStyle:ins.style,cargoText:cargo.text,cargoStyle:cargo.style,actText:act.text,actStyle:act.style,statusLabel:st.label,statusStyle:this.chip(st.fg,st.bg),maintText:mText,maintStyle:mStyle,onOpen:()=>this.openTruckProfile(t.plate)};});
+    const truckRows=tList.map(t=>{const _fl=String(t.fleet||'').trim();const st=this.truckDocStatus(t);const ins=this.expiryCell(t.insuranceExpiry);const cargo=this.expiryCell(t.cargoInsExpiry);const reg=this.expiryCell(t.regExpiry);const act=this.expiryCell(t.actExpiry);const mCnt=(t.maintenance||[]).length;const mText=mCnt>0?(mCnt+' ครั้ง'):'—';const mStyle=mCnt>0?'font-size:13px;font-weight:600;color:#175cd3;':'font-size:13px;color:#b0b8c2;';const ttParts=(t.truckType||'').split('-');const ttCode=ttParts[0]||'';const ttName=ttParts.slice(1).join('-')||t.truckType||'—';return{id:t.plate,plate:t.plate,owner:t.owner||'—',truckType:t.truckType||'—',ttCode,ttName,dept:t.dept,deptLabel:DEPT_SHORT[t.dept]||t.dept||'—',fleetText:(_fl?('ฟลีต'+_fl):'ไม่ระบุฟลีต'),fleetStyle:'font-size:11.5px;margin-top:3px;line-height:1.3;color:'+(_fl?'#667085':'#c3cbd5')+';',deptStyle:this.deptChip(t.dept),fuelText:t.fuel||'—',rateText:(t.fuelRateLoaded||t.fuelRateEmpty)?((t.fuelRateLoaded||'—')+' / '+(t.fuelRateEmpty||'—')):'—',regText:reg.text,regStyle:reg.style,insText:ins.text,insStyle:ins.style,cargoText:cargo.text,cargoStyle:cargo.style,actText:act.text,actStyle:act.style,statusLabel:st.label,statusStyle:this.chip(st.fg,st.bg),maintText:mText,maintStyle:mStyle,onOpen:()=>this.openTruckProfile(t.plate)};});
 
     // ---- SORT HANDLERS & HEADERS ----
     const mkSortHdr=(label,col,sortSt,onSort)=>{const active=sortSt.col===col;const icon=active?(sortSt.dir==='asc'?'↑':'↓'):'↕';return{label,icon,style:'padding:11px 15px;font-size:12px;font-weight:600;color:'+(active?'#1d2b3a':'#667085')+';cursor:pointer;user-select:none;display:flex;align-items:center;gap:3px;',onClick:()=>onSort(col)};};
