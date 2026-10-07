@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5488,6 +5488,17 @@
             </select>
           </div>
           <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ฟลีต</label>
+            <div style="display:flex;gap:7px;">
+              <select value="{{ draft.fleet }}" onChange="{{ onTruckFleet }}" style="flex:1;min-width:0;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
+                <option value="">— ไม่ระบุ (ใช้ฟลีตของ พขร.) —</option>
+                <sc-for list="{{ fleetOpts }}" as="f" hint-placeholder-count="2"><option value="{{ f.value }}">{{ f.value }}</option></sc-for>
+              </select>
+              <button onClick="{{ onAddTruckFleet }}" type="button" style="flex:none;padding:9px 13px;border:1px solid #d3e2fb;border-radius:8px;background:#eff4ff;color:#175cd3;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">＋ ใหม่</button>
+            </div>
+            <div style="font-size:11px;color:#98a2b3;margin-top:4px;">ตั้งไว้แล้วรายงานยึดฟลีตนี้เสมอ · เว้นว่าง = ใช้ฟลีตของ พขร. ที่วิ่งเหมือนเดิม</div>
+          </div>
+          <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ผู้ผลิต</label>
             <select value="{{ draft.maker }}" onChange="{{ onMaker }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
               <option value="">-- เลือก --</option>
@@ -8364,7 +8375,7 @@ function normTruck(t){
   const boolParse=(v)=>v===true||v==='true'||v==='TRUE';
   // normalize date fields: ตัด timestamp ออก เหลือแค่ YYYY-MM-DD
   const normDate=(v)=>toBkkDate(v);
-  const r={plate:'',truckType:'',fuel:'',dept:'',maker:'',model:'',year:'',color:'',chassis:'',engine:'',weight:'',loadWeight:'',bedHFront:'',bedHMid:'',bedHRear:'',bedWidth:'',bedLength:'',totalLength:'',gps:'',gpsDeviceId:'',phoneTrack:false,owner:'',ecaccVendor:'',ownerIdCard:'',ownerPhone:'',ownerLine:'',account:'',trailerPlate:'',remark:'',maintenance:[],photo:null,contractDate:'',regExpiry:'',hasRegFile:false,insuranceExpiry:'',hasInsuranceFile:false,ownerIdExpiry:'',hasOwnerIdFile:false,cargoInsExpiry:'',hasCargoInsFile:false,hasContractFile:false,salary:'',installment:'',socialSecurity:'',fuelRateLoaded:'',fuelRateEmpty:'',makerOther:'',regFee:'',regRenew:'',actRenew:'',insRenew:'',cargoRenew:'',regNoRenew:false,actNoRenew:false,insNoRenew:false,cargoNoRenew:false,...t,maintenance:maint,hasRegFile:boolParse(t.hasRegFile),hasInsuranceFile:boolParse(t.hasInsuranceFile),hasOwnerIdFile:boolParse(t.hasOwnerIdFile),hasCargoInsFile:boolParse(t.hasCargoInsFile),hasContractFile:boolParse(t.hasContractFile),regExpiry:normDate(t.regExpiry),insuranceExpiry:normDate(t.insuranceExpiry),ownerIdExpiry:normDate(t.ownerIdExpiry),cargoInsExpiry:normDate(t.cargoInsExpiry),contractDate:normDate(t.contractDate),regRenew:normDate(t.regRenew),actRenew:normDate(t.actRenew),insRenew:normDate(t.insRenew),cargoRenew:normDate(t.cargoRenew)};if(r.dept&&r.dept.startsWith('01'))r.dept='รถบริษัท';else if(r.dept&&!['รถบริษัท','รถร่วม','รถผู้บริหาร',''].includes(r.dept))r.dept='รถร่วม';if(!Array.isArray(r.maintenance)){try{const p=JSON.parse(r.maintenance);r.maintenance=Array.isArray(p)?p:[];}catch(e){r.maintenance=[];}}return r;}
+  const r={plate:'',truckType:'',fuel:'',dept:'',fleet:'',maker:'',model:'',year:'',color:'',chassis:'',engine:'',weight:'',loadWeight:'',bedHFront:'',bedHMid:'',bedHRear:'',bedWidth:'',bedLength:'',totalLength:'',gps:'',gpsDeviceId:'',phoneTrack:false,owner:'',ecaccVendor:'',ownerIdCard:'',ownerPhone:'',ownerLine:'',account:'',trailerPlate:'',remark:'',maintenance:[],photo:null,contractDate:'',regExpiry:'',hasRegFile:false,insuranceExpiry:'',hasInsuranceFile:false,ownerIdExpiry:'',hasOwnerIdFile:false,cargoInsExpiry:'',hasCargoInsFile:false,hasContractFile:false,salary:'',installment:'',socialSecurity:'',fuelRateLoaded:'',fuelRateEmpty:'',makerOther:'',regFee:'',regRenew:'',actRenew:'',insRenew:'',cargoRenew:'',regNoRenew:false,actNoRenew:false,insNoRenew:false,cargoNoRenew:false,...t,maintenance:maint,hasRegFile:boolParse(t.hasRegFile),hasInsuranceFile:boolParse(t.hasInsuranceFile),hasOwnerIdFile:boolParse(t.hasOwnerIdFile),hasCargoInsFile:boolParse(t.hasCargoInsFile),hasContractFile:boolParse(t.hasContractFile),regExpiry:normDate(t.regExpiry),insuranceExpiry:normDate(t.insuranceExpiry),ownerIdExpiry:normDate(t.ownerIdExpiry),cargoInsExpiry:normDate(t.cargoInsExpiry),contractDate:normDate(t.contractDate),regRenew:normDate(t.regRenew),actRenew:normDate(t.actRenew),insRenew:normDate(t.insRenew),cargoRenew:normDate(t.cargoRenew)};if(r.dept&&r.dept.startsWith('01'))r.dept='รถบริษัท';else if(r.dept&&!['รถบริษัท','รถร่วม','รถผู้บริหาร',''].includes(r.dept))r.dept='รถร่วม';if(!Array.isArray(r.maintenance)){try{const p=JSON.parse(r.maintenance);r.maintenance=Array.isArray(p)?p:[];}catch(e){r.maintenance=[];}}return r;}
 function toBkkDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);if(isNaN(d))return s.slice(0,10);try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}catch(e){return s.slice(0,10);}}
 function _LFB2(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function normJob(j){const o=_normJob0(j);if(Array.isArray(o.miscItems)&&o.miscItems.length){const ms=o.miscItems.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);o.misc=ms?String(Math.round(ms*100)/100):'';}if(Array.isArray(o.fuelRefills)&&o.fuelRefills.length){const s=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.baht)||0),0);const l=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.liters)||0),0);if(s)o.fuelBaht=String(Math.round(s*100)/100);if(l)o.fuelLiters=String(Math.round(l*100)/100);}return o;}
@@ -9803,7 +9814,10 @@ class Component extends DCLogic {
   // จุดจ่ายงาน / ฟลีต — ไม่ fix ค่า: รวมรายการที่บริษัทตั้งไว้ + ที่ใช้จริงในข้อมูล
   _saveNameList(metaId,lsKey,list){try{localStorage.setItem(lsKey,JSON.stringify(list));}catch(e){}try{sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:metaId,data:{list:list}}]).catch(function(){});}catch(e){}}
   _dpList(){const s={};(this.state.dpoints||[]).forEach(v=>{v=String(v||'').trim();if(v)s[v]=1;});(this.state.jobs||[]).forEach(j=>{const v=String(j.dispatchPoint||'').trim();if(v)s[v]=1;});(this.state.orders||[]).forEach(o=>{const v=String(o.dispatchPoint||'').trim();if(v)s[v]=1;});return Object.keys(s).sort((a,b)=>String(a).localeCompare(String(b),'th'));}
-  _fleetList(){const s={};(this.state.fleets||[]).forEach(v=>{v=String(v||'').trim();if(v)s[v]=1;});(this.state.drivers||[]).forEach(d=>{const v=String(d.fleet||'').trim();if(v)s[v]=1;});return Object.keys(s).sort((a,b)=>String(a).localeCompare(String(b),'th'));}
+  _fleetList(){const s={};(this.state.fleets||[]).forEach(v=>{v=String(v||'').trim();if(v)s[v]=1;});(this.state.drivers||[]).forEach(d=>{const v=String(d.fleet||'').trim();if(v)s[v]=1;});(this.state.trucks||[]).forEach(t=>{const v=String(t.fleet||'').trim();if(v)s[v]=1;});return Object.keys(s).sort((a,b)=>String(a).localeCompare(String(b),'th'));}
+  addTruckFleetPrompt=()=>{const n=window.prompt('ชื่อฟลีตใหม่ (เช่น ระยอง / สระบุรี / เทรลเลอร์)');if(n==null)return;const v=String(n).trim();if(!v)return;
+    const list=[...new Set([...(this.state.fleets||[]),...this._fleetList(),v])].sort((a,b)=>String(a).localeCompare(String(b),'th'));
+    this._saveNameList('__fleets__','fleetReg_v1',list);this.setState({fleets:list});this.setT('fleet',v);};
   addFleetPrompt=()=>{const n=window.prompt('ชื่อฟลีตใหม่ (เช่น ระยอง / สาขาใหญ่ / เทรลเลอร์)');if(n==null)return;const v=String(n).trim();if(!v)return;const list=[...new Set([...(this.state.fleets||[]),...this._fleetList(),v])].sort((a,b)=>String(a).localeCompare(String(b),'th'));this._saveNameList('__fleets__','fleetReg_v1',list);this.setState(s=>({fleets:list,draft:s.draft?{...s.draft,fleet:v}:s.draft}));};
   addDpPrompt=()=>{const n=window.prompt('ชื่อจุดจ่ายงานใหม่ (เช่น ระยอง / คลังสินค้า A)');if(n==null)return;const v=String(n).trim();if(!v)return;const list=[...new Set([...(this.state.dpoints||[]),...this._dpList(),v])].sort((a,b)=>String(a).localeCompare(String(b),'th'));this._saveNameList('__dpoints__','dpointReg_v1',list);this.setState(s=>({dpoints:list,jobDraft:s.jobDraft?{...s.jobDraft,dispatchPoint:v}:s.jobDraft}));};
   deleteDpName=(name)=>{name=String(name||'').trim();if(!name)return;
@@ -11963,6 +11977,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ฟลีตของรถร่วมหนึ่งคัน = ฟลีตที่พบบ่อยที่สุดจากเที่ยวของเดือนนั้น (กฎรายเที่ยวใช้ _jobFleetOf)
   // ไม่มีเที่ยวที่ระบุฟลีตได้เลย → ใช้ฟลีตของ พขร. ประจำรถ → ไม่มีอีกก็ __none__  (v.2026-10-07f)
   _subFleetOf(plate,jobs){
+    const tk=(this.state.trucks||[]).find(x=>x.plate===plate);
+    const tf=tk?String(tk.fleet||'').trim():'';
+    if(tf)return tf;
     const cnt={};(jobs||[]).forEach(j=>{const f=this._jobFleetOf(j);if(f&&f!=='__none__')cnt[f]=(cnt[f]||0)+1;});
     const ks=Object.keys(cnt);
     if(ks.length)return ks.sort((a,b)=>cnt[b]-cnt[a]||String(a).localeCompare(String(b),'th'))[0];
@@ -11970,6 +11987,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   _jobFleetOf(j){
     const S=this.state;const dv=(S.drivers||[]);
+    const tk=(S.trucks||[]).find(x=>x.plate===(j&&j.truckPlate));
+    const tf=tk?String(tk.fleet||'').trim():'';
+    if(tf)return tf;                                   // ฟลีตที่ตั้งไว้ในทะเบียนรถ มาก่อนเสมอ
     const d=dv.find(x=>String(x.code)===String((j&&j.driverCode)||''));
     let f=d?String(d.fleet||'').trim():'';
     if(!f){const t=(S.trucks||[]).find(x=>x.plate===(j&&j.truckPlate));const ad=t?String(t.assignedDriver||''):'';
@@ -14157,6 +14177,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onTruckType=(e)=>this.setT('truckType',e.target.value);
     out.onFuel=(e)=>this.setT('fuel',e.target.value);
     out.onDept=(e)=>this.setT('dept',e.target.value);
+    out.onTruckFleet=(e)=>this.setT('fleet',e.target.value);
+    out.onAddTruckFleet=this.addTruckFleetPrompt;
     out.onMaker=(e)=>this.setT('maker',e.target.value);
     out.onYear=(e)=>this.setT('year',e.target.value);
     out.onColor=(e)=>this.setT('color',e.target.value);
