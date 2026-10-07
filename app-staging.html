@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07h · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07h</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -3883,6 +3883,7 @@
                   <option value="">— เลือกฟลีต —</option>
                   <sc-for list="{{ fleetOpts }}" as="f" hint-placeholder-count="2"><option value="{{ f.value }}">{{ f.value }}</option></sc-for>
                 </select>
+                <button onClick="{{ onRenameFleet }}" type="button" title="เปลี่ยนชื่อฟลีตนี้ทั้งระบบ" style="flex:none;padding:9px 11px;border:1px solid #e4e7ec;border-radius:8px;background:#fff;color:#667085;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">✎</button>
                 <button onClick="{{ onAddFleet }}" style="flex:none;padding:9px 13px;border:1px solid #d3e2fb;border-radius:8px;background:#eff4ff;color:#175cd3;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">+ ฟลีตใหม่</button>
               </div>
               <div style="font-size:11px;color:#98a2b3;margin-top:4px;">เลือกจากรายการ · ตั้งฟลีตใหม่ครั้งเดียวแล้วใช้ร่วมกันทุกเครื่อง</div>
@@ -5494,6 +5495,7 @@
                 <option value="">— ไม่ระบุ (ใช้ฟลีตของ พขร.) —</option>
                 <sc-for list="{{ fleetOpts }}" as="f" hint-placeholder-count="2"><option value="{{ f.value }}">{{ f.value }}</option></sc-for>
               </select>
+              <button onClick="{{ onRenameFleet }}" type="button" title="เปลี่ยนชื่อฟลีตนี้ทั้งระบบ" style="flex:none;padding:9px 11px;border:1px solid #e4e7ec;border-radius:8px;background:#fff;color:#667085;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">✎</button>
               <button onClick="{{ onAddTruckFleet }}" type="button" style="flex:none;padding:9px 13px;border:1px solid #d3e2fb;border-radius:8px;background:#eff4ff;color:#175cd3;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">＋ ใหม่</button>
             </div>
             <div style="font-size:11px;color:#98a2b3;margin-top:4px;">ตั้งไว้แล้วรายงานยึดฟลีตนี้เสมอ · เว้นว่าง = ใช้ฟลีตของ พขร. ที่วิ่งเหมือนเดิม</div>
@@ -9815,6 +9817,40 @@ class Component extends DCLogic {
   _saveNameList(metaId,lsKey,list){try{localStorage.setItem(lsKey,JSON.stringify(list));}catch(e){}try{sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:metaId,data:{list:list}}]).catch(function(){});}catch(e){}}
   _dpList(){const s={};(this.state.dpoints||[]).forEach(v=>{v=String(v||'').trim();if(v)s[v]=1;});(this.state.jobs||[]).forEach(j=>{const v=String(j.dispatchPoint||'').trim();if(v)s[v]=1;});(this.state.orders||[]).forEach(o=>{const v=String(o.dispatchPoint||'').trim();if(v)s[v]=1;});return Object.keys(s).sort((a,b)=>String(a).localeCompare(String(b),'th'));}
   _fleetList(){const s={};(this.state.fleets||[]).forEach(v=>{v=String(v||'').trim();if(v)s[v]=1;});(this.state.drivers||[]).forEach(d=>{const v=String(d.fleet||'').trim();if(v)s[v]=1;});(this.state.trucks||[]).forEach(t=>{const v=String(t.fleet||'').trim();if(v)s[v]=1;});return Object.keys(s).sort((a,b)=>String(a).localeCompare(String(b),'th'));}
+  _fleetUseCount(name){
+    const f=String(name||'').trim();if(!f)return {drivers:0,trucks:0};
+    return {drivers:(this.state.drivers||[]).filter(d=>String(d.fleet||'').trim()===f).length,
+            trucks:(this.state.trucks||[]).filter(t=>String(t.fleet||'').trim()===f).length};
+  }
+  renameFleet(oldName,newName){
+    const o=String(oldName||'').trim(),n=String(newName||'').trim();
+    if(!o||!n||o===n)return {drivers:0,trucks:0};
+    const S=this.state;
+    const dList=(S.drivers||[]).map(d=>String(d.fleet||'').trim()===o?{...d,fleet:n}:d);
+    const dHit=(S.drivers||[]).filter(d=>String(d.fleet||'').trim()===o);
+    if(dHit.length){this.setState({drivers:dList});dHit.forEach(d=>this.persist(dList,d.code));}
+    const tList=(S.trucks||[]).map(t=>String(t.fleet||'').trim()===o?{...t,fleet:n}:t);
+    const tHit=(S.trucks||[]).filter(t=>String(t.fleet||'').trim()===o);
+    if(tHit.length){this.setState({trucks:tList});tHit.forEach(t=>this.persistTrucks(tList,t.plate));}
+    const list=[...new Set((this._fleetList()||[]).map(v=>v===o?n:v).concat([n]))].sort((a,b)=>String(a).localeCompare(String(b),'th'));
+    this._saveNameList('__fleets__','fleetReg_v1',list);this.setState({fleets:list});
+    // ตัวกรองที่ค้างอยู่บนหน้าจอ ให้ตามชื่อใหม่ ไม่งั้นจะเหมือนข้อมูลหาย
+    const fixSel=(v)=>String(v||'')===o?n:v;
+    this.setState(st=>({effSettleFleet:fixSel(st.effSettleFleet),ecApFleet:fixSel(st.ecApFleet)}));
+    return {drivers:dHit.length,trucks:tHit.length};
+  }
+  renameFleetPrompt=(cur)=>{
+    const o=String(cur||'').trim();
+    if(!o){window.alert('เลือกฟลีตที่ต้องการเปลี่ยนชื่อก่อน');return;}
+    const u=this._fleetUseCount(o);const NL=String.fromCharCode(10);
+    const n0=window.prompt('เปลี่ยนชื่อฟลีต "'+o+'" เป็น',o);if(n0==null)return;
+    const n=String(n0).trim();if(!n||n===o)return;
+    if(this._fleetList().indexOf(n)>=0){
+      if(!window.confirm('มีฟลีต "'+n+'" อยู่แล้ว'+NL+NL+'ยืนยันแล้วจะรวม "'+o+'" เข้าไปอยู่ใน "'+n+'" (ย้อนกลับไม่ได้)'))return;
+    }else if(!window.confirm('เปลี่ยนชื่อฟลีตทั้งระบบ'+NL+NL+'"'+o+'"  →  "'+n+'"'+NL+NL+'จะแก้ให้: พนักงานขับรถ '+u.drivers+' คน · รถ '+u.trucks+' คัน'+NL+'ใบงานและรายงานย้อนหลังไม่ต้องแก้ ตามมาเอง')){return;}
+    const r=this.renameFleet(o,n);
+    window.alert('✅ เปลี่ยนเป็น "'+n+'" แล้ว'+NL+'พนักงานขับรถ '+r.drivers+' คน · รถ '+r.trucks+' คัน');
+  };
   addTruckFleetPrompt=()=>{const n=window.prompt('ชื่อฟลีตใหม่ (เช่น ระยอง / สระบุรี / เทรลเลอร์)');if(n==null)return;const v=String(n).trim();if(!v)return;
     const list=[...new Set([...(this.state.fleets||[]),...this._fleetList(),v])].sort((a,b)=>String(a).localeCompare(String(b),'th'));
     this._saveNameList('__fleets__','fleetReg_v1',list);this.setState({fleets:list});this.setT('fleet',v);};
@@ -14145,6 +14181,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onType=(e)=>this.setD('type',e.target.value);
     out.onFleet=(e)=>this.setD('fleet',e.target.value);
     out.fleetOpts=this._fleetList().map(v=>({value:v}));
+    out.onRenameFleet=()=>this.renameFleetPrompt((out.draft&&out.draft.fleet)||'');
     out.onAddFleet=this.addFleetPrompt;
     out.coNameText=((S.company||{}).name)||'';
     out.xlsxAllowed=(COMPANY_ID==='singthong'||LF_ENV==='staging');out.xlsxLocked=!out.xlsxAllowed;
