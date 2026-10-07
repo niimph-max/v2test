@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4657,6 +4657,9 @@
 
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
         <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:12px;">③ ทะเบียนรายการ · ส่งเข้า EASY-ACC</div>
+        <sc-if value="{{ fcHasPreview }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:10px 14px;font-size:12.5px;color:#93370d;line-height:1.7;margin-bottom:13px;">⚠ ยังมีรายการที่อ่านจากไฟล์ค้างอยู่ในกล่อง ② — <b>กด “บันทึก … + เติมยอดหัก” ก่อน</b> รายการถึงจะเข้ามาอยู่ในทะเบียนนี้และส่งออกได้</div>
+        </sc-if>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:12px;">
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ตั้งแต่วันที่</label>
@@ -4688,7 +4691,7 @@
 
       <div style="font-size:13px;color:#667085;margin-bottom:10px;">{{ fcListText }}</div>
       <sc-if value="{{ fcListEmpty }}" hint-placeholder-val="{{ false }}">
-        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:34px;text-align:center;color:#98a2b3;font-size:14px;">ยังไม่มีรายการเติมน้ำมันในช่วงที่เลือก</div>
+        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:34px;text-align:center;color:#98a2b3;font-size:14px;line-height:1.8;">ยังไม่มีรายการเติมน้ำมันในช่วงที่เลือก<br/><span style="font-size:12.5px;">เพิ่งแนบไฟล์มา? อย่าลืมกดปุ่มสีเขียว “บันทึก … + เติมยอดหัก” ในกล่อง ② ก่อน</span></div>
       </sc-if>
       <sc-for list="{{ fcGroups }}" as="g" hint-placeholder-count="2">
         <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:14px 18px;margin-bottom:12px;">
@@ -12194,6 +12197,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // รหัสลูกค้าใน EASY-ACC = ทะเบียนแบบไม่มีขีด (ตามที่กรอกไว้ในโปรแกรมบัญชี)
   _fcCust(plate){return this._plateKey(plate).replace(/[^0-9A-Za-z]/g,'');}
   _fcTruckOf(ptPlate){const k=this._plateKey(ptPlate);return (this.state.trucks||[]).find(t=>t&&t.plate&&this._plateKey(t.plate)===k)||null;}
+  // ยังไม่กดบันทึกแล้วไปกดปุ่มในกล่องส่งออก — เตือนให้ตรงเหตุ ไม่ใช่ "ไม่มีรายการ" ลอยๆ (v.2026-10-07b)
+  _fcNagUnsaved(){
+    const pv=this.state.fcPreview;
+    if(!pv||!pv.ok||!pv.ok.length)return false;
+    window.alert('⚠ ยังไม่ได้บันทึกรายการที่เพิ่งอ่านมา\n\nไฟล์ '+(pv.file||'')+' มี '+pv.ok.length+' รายการรออยู่ในกล่อง ② ตรวจก่อนบันทึก\n'
+      +'กดปุ่มสีเขียว “บันทึก '+pv.ok.length+' รายการ + เติมยอดหัก” ก่อน แล้วค่อยกลับมากดปุ่มนี้');
+    return true;
+  }
   _fcInRange(from,to){
     return this._fcLive().filter(x=>{const d=String(x.date||'').slice(0,10);
       if(from&&d<from)return false;if(to&&d>to)return false;return true;}).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.id).localeCompare(String(b.id)));
@@ -12270,7 +12281,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const list=this._fcAll().concat(add);
     this._fcPush(list);
     const sync=this._fcSyncDeducts(add,list);
-    this.setState({fcPreview:null,fcErr:''});
+    // ตั้งช่วงวันที่ของกล่องส่งออกให้ตรงกับไฟล์ที่เพิ่งเข้า ไม่ต้องกรอกเอง
+    const _ds=add.map(x=>x.date).filter(Boolean).sort();
+    this.setState({fcPreview:null,fcErr:'',fcFrom:_ds[0]||'',fcTo:_ds[_ds.length-1]||'',fcPostDate:_ds[_ds.length-1]||''});
     window.alert('✅ นำเข้าแล้ว '+add.length+' รายการ · รวม '+_LFB2(add.reduce((s,x)=>s+x.amount,0))+' บาท'
       +(p.dup.length?('\nข้ามรายการที่เคยนำเข้าแล้ว '+p.dup.length+' รายการ'):'')
       +'\n\n🧾 เติมยอด “ค่าน้ำมัน” ในใบจ่ายรถร่วมแล้ว '+sync.done.length+' ช่อง (คัน×เดือน)'
@@ -12324,7 +12337,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!acct){window.alert('กรุณากรอก "บัญชีแยกประเภทลูกหนี้ค่าน้ำมัน" ก่อน (EASY-ACC บังคับ · ปกติคือ 207)');return;}
     const from=S.fcFrom||'',to=S.fcTo||'';
     const all=this._fcInRange(from,to);
-    if(!all.length){window.alert('ช่วงที่เลือกไม่มีรายการเติมน้ำมัน');return;}
+    if(!all.length){if(!this._fcNagUnsaved())window.alert('ช่วงที่เลือกไม่มีรายการเติมน้ำมัน');return;}
     const items=S.fcIncPosted?all:all.filter(x=>!String(x.ecPosted||'').trim());
     if(!items.length){window.alert('ช่วงนี้ส่งบัญชีไปแล้วทั้งหมด '+all.length+' รายการ\n\nถ้าต้องการส่งซ้ำ ให้ติ๊ก "รวมรายการที่ส่งแล้ว"');return;}
     const post=String(S.fcPostDate||'').slice(0,10)||items[items.length-1].date;
@@ -12350,7 +12363,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!this._fcCan())return;
     const S=this.state;const from=S.fcFrom||'',to=S.fcTo||'';
     const list=this._fcInRange(from,to).filter(x=>String(x.ecPosted||'').trim());
-    if(!list.length){window.alert('ช่วงนี้ไม่มีรายการที่ปักเครื่องหมายไว้');return;}
+    if(!list.length){if(!this._fcNagUnsaved())window.alert('ช่วงนี้ไม่มีรายการที่ปักเครื่องหมายไว้');return;}
     if(!window.confirm('ยกเลิกเครื่องหมาย '+list.length+' รายการ?\n\nช่วง '+(from||'ทั้งหมด')+' ถึง '+(to||'ทั้งหมด')+'\n\nรายการเหล่านี้จะกลับมาอยู่ในรายการที่ต้องส่งอีกครั้ง'))return;
     const ids={};list.forEach(x=>{ids[String(x.id)]=1;});
     this._fcPush(this._fcAll().map(x=>ids[String(x.id)]?{...x,ecPosted:'',at:new Date().toISOString()}:x));
@@ -12360,7 +12373,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   printFuelReport=()=>{
     const S=this.state;const from=S.fcFrom||'',to=S.fcTo||'';
     const items=this._fcInRange(from,to);
-    if(!items.length){window.alert('ช่วงที่เลือกไม่มีรายการเติมน้ำมัน');return;}
+    if(!items.length){if(!this._fcNagUnsaved())window.alert('ช่วงที่เลือกไม่มีรายการเติมน้ำมัน');return;}
     const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
     const co=this.state.company||{};
     const g={};items.forEach(x=>{const k=x.truckPlate||x.ptPlate;if(!g[k])g[k]={rows:[],lit:0,amt:0};g[k].rows.push(x);g[k].lit+=(parseFloat(x.litre)||0);g[k].amt+=(parseFloat(x.amount)||0);});
