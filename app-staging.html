@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-06e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -460,6 +460,7 @@
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบ ECACC</div>
       <button onClick="{{ onGoBilling }}" style="{{ navBillingStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🧾</span>ใบวางบิล/ใบแจ้งหนี้</span></button>
       <button onClick="{{ onGoAcctExport }}" style="{{ navEcStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">⤓</span>ส่งออกเข้า EASY-ACC</span></button>
+      <button onClick="{{ onGoFuelCr }}" style="{{ navFuelCrStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">⛽</span>ลูกหนี้ค่าน้ำมันรถร่วม</span></button>
       </sc-if>
       <sc-if value="{{ canSettings }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ตั้งค่า</div>
@@ -503,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-06e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4584,6 +4585,139 @@
     </div>
     </sc-if>
 
+    <!-- ===== ลูกหนี้ค่าน้ำมันรถร่วม (v.2026-10-07a) ===== -->
+    <sc-if value="{{ isFuelCr }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:26px 30px 60px;max-width:1180px;">
+      <div style="font-size:22px;font-weight:800;color:#16263a;">⛽ ลูกหนี้ค่าน้ำมันรถร่วม</div>
+      <div style="font-size:13px;color:#667085;margin:3px 0 18px;">แนบรายงาน PT (.xlsx) ที่ได้ทุกครึ่งเดือน → ระบบลงลูกหนี้ให้ใน EASY-ACC และเติมยอด “ค่าน้ำมัน” ในใบจ่ายรถร่วมเดือนนั้นให้อัตโนมัติ</div>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:4px;">① นำเข้ารายงานจาก PT</div>
+        <div style="font-size:12.5px;color:#667085;line-height:1.7;margin-bottom:13px;">ใช้ไฟล์ <b>.xlsx</b> เท่านั้น (ไฟล์ PDF ที่ PT ให้มาเป็นรูปภาพ ดึงตัวเลขไม่ได้) · นำเข้าไฟล์เดิมซ้ำได้ ระบบดูจาก Transaction ID แล้วข้ามรายการที่เคยเข้าแล้วให้เอง</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <label style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;background:#2f6fb0;color:#fff;border-radius:9px;font-size:13.5px;font-weight:800;cursor:pointer;">
+            📄 เลือกไฟล์รายงาน (.xlsx)
+            <input type="file" accept=".xlsx" onChange="{{ onFcPickFile }}" style="display:none;">
+          </label>
+          <span style="font-size:12.5px;color:#98a2b3;">{{ fcBusyText }}</span>
+        </div>
+        <sc-if value="{{ fcErr }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:11px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:10px 13px;font-size:13px;">{{ fcErr }}</div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ fcHasPreview }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #b2ddff;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:3px;">② ตรวจก่อนบันทึก</div>
+        <div style="font-size:12.5px;color:#667085;margin-bottom:12px;">{{ fcPvHead }}</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:13px;">
+          <sc-for list="{{ fcPvChips }}" as="c" hint-placeholder-count="3">
+            <span style="{{ c.style }}">{{ c.text }}</span>
+          </sc-for>
+        </div>
+        <sc-if value="{{ fcPvWarnHas }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:11px 14px;font-size:12.5px;color:#93370d;line-height:1.8;margin-bottom:13px;">
+            <sc-for list="{{ fcPvWarns }}" as="w" hint-placeholder-count="1">
+              <div>{{ w.text }}</div>
+            </sc-for>
+          </div>
+        </sc-if>
+        <sc-if value="{{ fcPvHasRows }}" hint-placeholder-val="{{ true }}">
+        <div style="overflow-x:auto;border:1px solid #e4e7ec;border-radius:10px;margin-bottom:13px;">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+            <thead><tr style="background:#f8fafc;">
+              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ทะเบียน</th>
+              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">เจ้าของรถ</th>
+              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ครั้ง</th>
+              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ลิตร</th>
+              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">จำนวนเงิน</th>
+              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">รหัสลูกค้า EASY-ACC</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ fcPvRows }}" as="r" hint-placeholder-count="3">
+                <tr>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;font-weight:700;color:#16263a;">{{ r.plate }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#475467;">{{ r.owner }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;color:#475467;">{{ r.n }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;color:#475467;">{{ r.litre }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;font-weight:700;color:#16263a;">{{ r.amount }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#667085;">{{ r.cust }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        </sc-if>
+        <div style="display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;">
+          <button onClick="{{ onFcCancel }}" style="padding:10px 17px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;">ยกเลิก</button>
+          <button onClick="{{ onFcConfirm }}" style="{{ fcConfirmStyle }}">{{ fcConfirmLabel }}</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:12px;">③ ทะเบียนรายการ · ส่งเข้า EASY-ACC</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ตั้งแต่วันที่</label>
+            <input type="date" value="{{ fcFrom }}" onInput="{{ onFcFrom }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ถึงวันที่</label>
+            <input type="date" value="{{ fcTo }}" onInput="{{ onFcTo }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">วันที่บันทึกใน EASY-ACC</label>
+            <input type="date" value="{{ fcPostDate }}" onInput="{{ onFcPostDate }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">บัญชีแยกประเภท (ลูกหนี้ค่าน้ำมัน)</label>
+            <input value="{{ fcAcct }}" onInput="{{ onFcAcct }}" placeholder="เช่น 207" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="font-size:11.5px;color:#98a2b3;line-height:1.7;margin-bottom:10px;">1 บรรทัด = 1 ครั้งที่เติม · เลขที่ใบกำกับ = Transaction ID · รหัสลูกค้า = ทะเบียนแบบไม่มีขีด · จำนวนเงินเป็นยอดเต็มรวม VAT (ไม่แยกภาษีขาย) · ครบกำหนด = วันเดียวกับวันที่บันทึก · หมายเหตุ = วันที่เติมน้ำมัน</div>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#475467;font-weight:600;cursor:pointer;margin-bottom:12px;"><input type="checkbox" checked="{{ fcIncPosted }}" onChange="{{ onFcIncPosted }}" style="width:15px;height:15px;cursor:pointer;" />รวมรายการที่ส่งแล้ว (ส่งซ้ำ) — ปกติไม่ต้องติ๊ก</label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button onClick="{{ onFcExport }}" style="padding:11px 20px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⤓ ecimport_fuel.csv</button>
+          <button onClick="{{ onFcPrint }}" style="padding:11px 16px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">🖨 รายงานสรุปรายคัน</button>
+          <button onClick="{{ onFcUnmark }}" style="padding:11px 14px;background:#fff;color:#98a2b3;border:1px solid #e4e7ec;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมาย</button>
+          <button onClick="{{ onFcResync }}" style="padding:11px 14px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">🔄 เติมยอดหักใหม่</button>
+          <div style="font-size:12.5px;color:#667085;">{{ fcPreviewText }}</div>
+        </div>
+      </div>
+
+      <div style="font-size:13px;color:#667085;margin-bottom:10px;">{{ fcListText }}</div>
+      <sc-if value="{{ fcListEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:34px;text-align:center;color:#98a2b3;font-size:14px;">ยังไม่มีรายการเติมน้ำมันในช่วงที่เลือก</div>
+      </sc-if>
+      <sc-for list="{{ fcGroups }}" as="g" hint-placeholder-count="2">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:14px 18px;margin-bottom:12px;">
+          <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:9px;">
+            <span style="font-size:15px;font-weight:800;color:#16263a;">{{ g.plate }}</span>
+            <span style="font-size:12.5px;color:#667085;">{{ g.owner }}</span>
+            <span style="margin-left:auto;font-size:13px;color:#16263a;font-weight:700;">{{ g.total }}</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+              <tbody>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
+                  <tr>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;color:#475467;white-space:nowrap;">{{ r.dateText }}</td>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;color:#667085;">{{ r.station }}</td>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;color:#667085;white-space:nowrap;">{{ r.litreText }}</td>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;text-align:right;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.amountText }}</td>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;color:#98a2b3;white-space:nowrap;">{{ r.id }}</td>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;white-space:nowrap;"><span style="{{ r.chipStyle }}">{{ r.chipText }}</span></td>
+                    <td style="padding:5px 7px;border-top:1px solid #f0f2f5;text-align:right;"><button onClick="{{ r.onDelete }}" style="padding:3px 9px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;">ลบ</button></td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
     <!-- ===== หนังสือออก (v.2026-10-06e) ===== -->
     <sc-if value="{{ isLetters }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:960px;">
@@ -8609,7 +8743,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22,%22__fuelcr__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -8646,7 +8780,7 @@ const INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พัก�
 const INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
 
 class Component extends DCLogic {
-  state={letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
+  state={fuelCr:(()=>{try{const s=localStorage.getItem('fuelCr_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),fcPreview:null,fcErr:'',fcBusy:false,fcFrom:'',fcTo:'',fcPostDate:'',fcIncPosted:false,letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
 
   componentWillUnmount(){if(this._gpsSim)clearInterval(this._gpsSim);window.removeEventListener('beforeunload',this._beforeUnload);if(this._wheelGuard)window.removeEventListener('wheel',this._wheelGuard);if(this._pollTimer)clearInterval(this._pollTimer);if(this._fullTimer)clearInterval(this._fullTimer);if(this._flushTimer)clearInterval(this._flushTimer);if(this._visHandler)document.removeEventListener('visibilitychange',this._visHandler);}
   componentDidMount(){
@@ -8786,6 +8920,7 @@ class Component extends DCLogic {
       try{this._newsApplyCloud(meta.__news__);}catch(e){}
       try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
       try{this._ltApplyCloud(meta.__letters__);}catch(e){}
+      try{this._fcApplyCloud(meta.__fuelcr__);}catch(e){}
       if(cloudUsers){
         // คลาวด์เป็นแหล่งจริงของบัญชีผู้ใช้ (admin จัดการ) — sync ลงเครื่องนี้
         try{localStorage.setItem('fleet_users_v1',JSON.stringify(cloudUsers));}catch(e){}
@@ -12030,6 +12165,235 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       .then(()=>this.setState(s=>({hrUploading:Math.max(0,(s.hrUploading||1)-1)})));
   };
   hrRemovePhoto=(url)=>this.setState(s=>({hrDraft:{...(s.hrDraft||{}),photos:(((s.hrDraft||{}).photos)||[]).filter(u=>u!==url)}}));
+  // ===== ลูกหนี้ค่าน้ำมันรถร่วม (เครดิตเติมน้ำมัน PT) — v.2026-10-07a =====
+  // PT ส่งรายงานทุกครึ่งเดือนเป็น .xlsx · นำเข้าแล้วได้ 2 อย่าง
+  //   1) ไฟล์ CSV ลงลูกหนี้ใน EASY-ACC — CD=I · รหัสลูกค้า = ทะเบียนตัดขีด (72-7980 → 727980) · บัญชีแยกประเภท 207
+  //   2) เติมยอด "ค่าน้ำมัน" ในรายการหักของใบจ่ายรถร่วมเดือนนั้นให้อัตโนมัติ
+  // เก็บในตาราง events แถว __fuelcr__ รูป {items:[...]} (ไม่ต้องรัน SQL) · กันนำเข้าซ้ำด้วย TRANSACTION_ID
+  _fcAll(){const l=this.state.fuelCr;return Array.isArray(l)?l:[];}
+  _fcLive(){return this._fcAll().filter(x=>x&&!x.deleted);}
+  _fcMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
+  _fcApplyCloud(data){
+    const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
+    const merged=this._fcMerge(this._fcAll(),list);
+    if(JSON.stringify(merged)!==JSON.stringify(this._fcAll())){this.setState({fuelCr:merged});try{localStorage.setItem('fuelCr_v1',JSON.stringify(merged));}catch(e){}}
+  }
+  async _fcPush(items){
+    this.setState({fuelCr:items});try{localStorage.setItem('fuelCr_v1',JSON.stringify(items));}catch(e){}
+    if(!COMPANY_ID)return;
+    try{
+      let cloud=[];
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__fuelcr__&select=data',{headers:SB_HEADERS});
+      if(r&&r.ok){const j=await r.json();if(j&&j[0]&&j[0].data&&Array.isArray(j[0].data.items))cloud=j[0].data.items;}
+      const merged=this._fcMerge(cloud,items);
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__fuelcr__',data:{items:merged}}]);
+      this.setState({fuelCr:merged});try{localStorage.setItem('fuelCr_v1',JSON.stringify(merged));}catch(e){}
+    }catch(e){try{console.warn('[LionFlow] fuel credit push failed',e&&e.message);}catch(_){}}
+  }
+  _fcCan(){const a=this.state.auth||{};if(a.role==='admin')return true;return (Array.isArray(a.sections)?a.sections:[]).indexOf('ecacc')>=0;}
+  // รหัสลูกค้าใน EASY-ACC = ทะเบียนแบบไม่มีขีด (ตามที่กรอกไว้ในโปรแกรมบัญชี)
+  _fcCust(plate){return this._plateKey(plate).replace(/[^0-9A-Za-z]/g,'');}
+  _fcTruckOf(ptPlate){const k=this._plateKey(ptPlate);return (this.state.trucks||[]).find(t=>t&&t.plate&&this._plateKey(t.plate)===k)||null;}
+  _fcInRange(from,to){
+    return this._fcLive().filter(x=>{const d=String(x.date||'').slice(0,10);
+      if(from&&d<from)return false;if(to&&d>to)return false;return true;}).sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.id).localeCompare(String(b.id)));
+  }
+  // อ่านรายงาน PT (.xlsx) — ใช้ตัวอ่าน xlsx ตัวเดียวกับที่นำเข้าตารางรถ
+  async _fcParse(ab){
+    const sheets=await this._xlsxSheets(ab);
+    let rows=null,hIdx=-1;
+    for(const sh of sheets){
+      for(let r=0;r<Math.min(40,sh.length);r++){
+        const j=Object.values(sh[r]||{}).join('|');
+        if(j.indexOf('LICENSE_PLATE_NO')>=0&&j.indexOf('TRANSACTION_ID')>=0){rows=sh;hIdx=r;break;}
+      }
+      if(rows)break;
+    }
+    if(!rows)throw new Error('ไม่ใช่รายงานของ PT — หาหัวตารางที่มีคอลัมน์ TRANSACTION_ID และ LICENSE_PLATE_NO ไม่เจอ');
+    const col={};Object.keys(rows[hIdx]).forEach(c=>{const h=String(rows[hIdx][c]==null?'':rows[hIdx][c]).trim();if(h&&col[h]===undefined)col[h]=c;});
+    const miss=['DATE','TRANSACTION_ID','LICENSE_PLATE_NO','AMOUNT'].filter(k=>!col[k]);
+    if(miss.length)throw new Error('รายงานขาดคอลัมน์: '+miss.join(', '));
+    const get=(row,k)=>{const c=col[k];return c?String(row[c]==null?'':row[c]).trim():'';};
+    const num=(v)=>parseFloat(String(v||'').replace(/,/g,''))||0;
+    const out=[];
+    for(let r=hIdx+1;r<rows.length;r++){
+      const row=rows[r]||{};
+      const id=get(row,'TRANSACTION_ID'),plate=get(row,'LICENSE_PLATE_NO');
+      if(!id||!plate)continue;
+      const dt=get(row,'DATE');const parts=dt.split(/\s+/);
+      out.push({id:String(id),date:this._xlDate(parts[0]||dt),time:(parts[1]||'').slice(0,5),
+        ptPlate:plate,driver:get(row,'DRIVER_NAME'),product:get(row,'PRODUCT_TYPE'),
+        station:get(row,'BRANCH_NAME'),litre:num(get(row,'LITRE')),
+        amountEx:num(get(row,'Amount Ex-vat')),vat:num(get(row,'VAT')),
+        discount:num(get(row,'DISCOUNT')),amount:num(get(row,'AMOUNT')),
+        status:get(row,'STATUS'),invNo:get(row,'เลขที่ใบกำกับ')});
+    }
+    return out;
+  }
+  // แยกประเภทรายการที่อ่านมา — เอาเฉพาะรถร่วมที่รู้จักเท่านั้นเข้าระบบ
+  _fcClassify(list){
+    const have={};this._fcLive().forEach(x=>{have[String(x.id)]=1;});
+    const res={ok:[],dup:[],bad:[],notTruck:[],notSub:[]};
+    list.forEach(r=>{
+      if(r.status&&r.status!=='สำเร็จ'){res.bad.push(r);return;}
+      if(have[String(r.id)]){res.dup.push(r);return;}
+      const t=this._fcTruckOf(r.ptPlate);
+      if(!t){res.notTruck.push(r);return;}
+      if(t.dept!=='รถร่วม'){res.notSub.push({...r,truckPlate:t.plate});return;}
+      res.ok.push({...r,truckPlate:t.plate});
+    });
+    return res;
+  }
+  onFcPickFile=async(e)=>{
+    const f=e.target.files&&e.target.files[0];if(e.target)e.target.value='';if(!f)return;
+    if(!this._fcCan()){window.alert('ไม่มีสิทธิ์นำเข้ารายงานน้ำมัน');return;}
+    this.setState({fcBusy:true,fcErr:'',fcPreview:null});
+    try{
+      const ab=await f.arrayBuffer();
+      const list=await this._fcParse(ab);
+      if(!list.length)throw new Error('ไม่พบรายการเติมน้ำมันในไฟล์');
+      const c=this._fcClassify(list);
+      const ds=list.map(x=>x.date).filter(Boolean).sort();
+      this.setState({fcBusy:false,fcPreview:{file:f.name,n:list.length,from:ds[0]||'',to:ds[ds.length-1]||'',...c}});
+    }catch(err){this.setState({fcBusy:false,fcErr:'อ่านไฟล์ไม่สำเร็จ — '+((err&&err.message)||'')});}
+  };
+  fcCancelPreview=()=>this.setState({fcPreview:null,fcErr:''});
+  // บันทึกเข้าระบบ แล้วเติมยอดค่าน้ำมันในรายการหักของเดือนนั้น
+  fcConfirmImport=()=>{
+    const p=this.state.fcPreview;if(!p||!p.ok.length)return;
+    if(!this._fcCan()){window.alert('ไม่มีสิทธิ์นำเข้ารายงานน้ำมัน');return;}
+    const a=this.state.auth||{};const who=a.name||a.u||'—';const now=new Date().toISOString();
+    const add=p.ok.map(r=>({id:String(r.id),date:r.date,time:r.time||'',truckPlate:r.truckPlate,ptPlate:r.ptPlate,
+      driver:r.driver||'',product:r.product||'',station:r.station||'',litre:r.litre||0,
+      amountEx:r.amountEx||0,vat:r.vat||0,discount:r.discount||0,amount:r.amount||0,
+      invNo:r.invNo||'',src:p.file||'',ecPosted:'',by:who,at:now,deleted:false}));
+    const list=this._fcAll().concat(add);
+    this._fcPush(list);
+    const sync=this._fcSyncDeducts(add,list);
+    this.setState({fcPreview:null,fcErr:''});
+    window.alert('✅ นำเข้าแล้ว '+add.length+' รายการ · รวม '+_LFB2(add.reduce((s,x)=>s+x.amount,0))+' บาท'
+      +(p.dup.length?('\nข้ามรายการที่เคยนำเข้าแล้ว '+p.dup.length+' รายการ'):'')
+      +'\n\n🧾 เติมยอด “ค่าน้ำมัน” ในใบจ่ายรถร่วมแล้ว '+sync.done.length+' ช่อง (คัน×เดือน)'
+      +(sync.locked.length?('\n🔒 ข้ามเดือนที่ปิดบัญชีแล้ว '+sync.locked.length+' ช่อง: '+sync.locked.join(', ')+'\n   เปิดงวดก่อนแล้วกด “เติมยอดหักใหม่” อีกครั้ง'):''));
+  };
+  // คำนวณยอด "ค่าน้ำมัน" ของแต่ละ คัน×เดือน ใหม่จากรายการที่เก็บไว้ (นำเข้าซ้ำแล้วยอดไม่บวกเกิน)
+  _fcSyncDeducts(scope,allItems){
+    const items=(allItems||this._fcAll()).filter(x=>x&&!x.deleted);
+    const keys={};(scope||items).forEach(x=>{const m=String(x.date||'').slice(0,7);if(x.truckPlate&&m)keys[x.truckPlate+'|'+m]=1;});
+    const entries=[],locked=[];
+    Object.keys(keys).forEach(k=>{
+      const i=k.lastIndexOf('|');const plate=k.slice(0,i),m=k.slice(i+1);
+      if(this._plLocked(m)){locked.push(k);return;}
+      const sum=items.filter(x=>x.truckPlate===plate&&String(x.date||'').slice(0,7)===m)
+        .reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+      const list=(this._subDedList(plate,m)||[]).map(d=>({...d}));
+      const at=list.findIndex(d=>String(d.label||'').trim()==='ค่าน้ำมัน');
+      const v=sum?String(Math.round(sum*100)/100):'';
+      if(at>=0)list[at].amount=v;else list.push({label:'ค่าน้ำมัน',amount:v});
+      entries.push([k,list]);
+    });
+    if(entries.length)this._fcSaveDeds(entries);
+    return {done:entries.map(e=>e[0]),locked:locked};
+  }
+  // เขียนรายการหักหลายช่องในครั้งเดียว — เรียก _saveSubDeds ทีละช่องจะทับกันเอง เพราะ state ยังไม่ทันอัปเดต
+  _fcSaveDeds(entries){
+    const cur={...(this.state.subMonthDeducts||{})};
+    entries.forEach(e=>{cur[e[0]]=e[1];});
+    try{localStorage.setItem('subMonthDeducts_v1',JSON.stringify(cur));}catch(e){}
+    entries.forEach(e=>this._kvTouch('subMonthDeducts',e[0],cur));
+    this.setState({subMonthDeducts:cur});
+  }
+  fcResync=()=>{
+    if(!this._fcCan())return;
+    const r=this._fcSyncDeducts(null,null);
+    window.alert('เติมยอดหักค่าน้ำมันใหม่แล้ว '+r.done.length+' ช่อง (คัน×เดือน)'
+      +(r.locked.length?('\n🔒 ข้ามเดือนที่ปิดบัญชีแล้ว '+r.locked.length+' ช่อง: '+r.locked.join(', ')):''));
+  };
+  fcDeleteRow=(id)=>{
+    if(!this._fcCan())return;
+    const x=this._fcAll().find(r=>String(r.id)===String(id));if(!x)return;
+    if(!window.confirm('ลบรายการเติมน้ำมัน '+x.id+' ('+x.truckPlate+' · '+_LFB2(x.amount)+' บาท) ?\n\nยอดหักค่าน้ำมันของเดือนนั้นจะถูกคำนวณใหม่'))return;
+    const list=this._fcAll().map(r=>String(r.id)===String(id)?{...r,deleted:true,at:new Date().toISOString()}:r);
+    this._fcPush(list);
+    this._fcSyncDeducts([x],list);
+  };
+  // ===== ออกไฟล์ลง EASY-ACC — ลูกหนี้ค่าน้ำมัน (CD = I) =====
+  exportFcAr=()=>{
+    const S=this.state;const cfg=this._ecCfg();
+    const acct=String((S.company||{}).ecFuelAcct||'').trim();
+    if(!acct){window.alert('กรุณากรอก "บัญชีแยกประเภทลูกหนี้ค่าน้ำมัน" ก่อน (EASY-ACC บังคับ · ปกติคือ 207)');return;}
+    const from=S.fcFrom||'',to=S.fcTo||'';
+    const all=this._fcInRange(from,to);
+    if(!all.length){window.alert('ช่วงที่เลือกไม่มีรายการเติมน้ำมัน');return;}
+    const items=S.fcIncPosted?all:all.filter(x=>!String(x.ecPosted||'').trim());
+    if(!items.length){window.alert('ช่วงนี้ส่งบัญชีไปแล้วทั้งหมด '+all.length+' รายการ\n\nถ้าต้องการส่งซ้ำ ให้ติ๊ก "รวมรายการที่ส่งแล้ว"');return;}
+    const post=String(S.fcPostDate||'').slice(0,10)||items[items.length-1].date;
+    const rows=[];
+    if(S.ecHeader)rows.push(['วันที่','CD','เลขที่ใบกำกับ','คลัง','รหัสลูกค้า','รหัสบัญชี','จำนวนเงิน','ส่วนลดจ่าย','ภาษีขาย','ครบกำหนด','พนักงานขาย','หมายเหตุ','ชื่อธนาคาร','เลขที่เช็ค','ลงวันที่','บัตรเครดิต','เลขที่บัตร','หมดอายุ','รายละเอียดอื่นๆ','รหัสบัญชีอื่นๆ','วันที่รับเงิน','จำนวนเงินยกเว้นภาษี']);
+    let sum=0;
+    items.forEach(x=>{
+      const amt=Math.round((parseFloat(x.amount)||0)*100)/100;sum+=amt;
+      rows.push([this._ecDate(post),'I',this._ecTxt(x.id),cfg.store,this._fcCust(x.ptPlate||x.truckPlate),acct,
+        amt.toFixed(2),'','',this._ecDate(post),'',this._ecDate(x.date),
+        '','','','','','','','','','']);
+    });
+    this._ecDownload('ecimport_fuel_'+(from||'all')+'_'+(to||'all')+'.csv',rows);
+    const ids={};items.forEach(x=>{ids[String(x.id)]=1;});
+    const stamped=this._fcAll().map(x=>ids[String(x.id)]?{...x,ecPosted:this._ecNow(),at:new Date().toISOString()}:x);
+    this._fcPush(stamped);
+    window.alert('✅ ส่งออกลูกหนี้ค่าน้ำมัน '+items.length+' บรรทัด · รวม '+_LFB2(sum)+' บาท'
+      +'\nลงบัญชีแยกประเภท '+acct+' · วันที่บันทึก '+this._ecDate(post)+' (ครบกำหนดวันเดียวกัน)'
+      +'\n\n🏷 ปักเครื่องหมาย "ส่งแล้ว" ให้ '+items.length+' รายการ — รอบหน้าจะไม่ถูกส่งซ้ำ'
+      +'\nถ้านำเข้า EASY-ACC ไม่สำเร็จ กด "↩ ยกเลิกเครื่องหมาย" เพื่อถอย');
+  };
+  fcUnmark=()=>{
+    if(!this._fcCan())return;
+    const S=this.state;const from=S.fcFrom||'',to=S.fcTo||'';
+    const list=this._fcInRange(from,to).filter(x=>String(x.ecPosted||'').trim());
+    if(!list.length){window.alert('ช่วงนี้ไม่มีรายการที่ปักเครื่องหมายไว้');return;}
+    if(!window.confirm('ยกเลิกเครื่องหมาย '+list.length+' รายการ?\n\nช่วง '+(from||'ทั้งหมด')+' ถึง '+(to||'ทั้งหมด')+'\n\nรายการเหล่านี้จะกลับมาอยู่ในรายการที่ต้องส่งอีกครั้ง'))return;
+    const ids={};list.forEach(x=>{ids[String(x.id)]=1;});
+    this._fcPush(this._fcAll().map(x=>ids[String(x.id)]?{...x,ecPosted:'',at:new Date().toISOString()}:x));
+    window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+list.length+' รายการ');
+  };
+  // ===== รายงานสรุปค่าน้ำมันรายคัน (A4) — แนบไปกับใบจ่ายรถร่วมได้ =====
+  printFuelReport=()=>{
+    const S=this.state;const from=S.fcFrom||'',to=S.fcTo||'';
+    const items=this._fcInRange(from,to);
+    if(!items.length){window.alert('ช่วงที่เลือกไม่มีรายการเติมน้ำมัน');return;}
+    const esc=(s)=>String(s==null?'':s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const co=this.state.company||{};
+    const g={};items.forEach(x=>{const k=x.truckPlate||x.ptPlate;if(!g[k])g[k]={rows:[],lit:0,amt:0};g[k].rows.push(x);g[k].lit+=(parseFloat(x.litre)||0);g[k].amt+=(parseFloat(x.amount)||0);});
+    const plates=Object.keys(g).sort();
+    let gl=0,ga=0;plates.forEach(p=>{gl+=g[p].lit;ga+=g[p].amt;});
+    const th=(iso)=>{const s=String(iso||'').slice(0,10).split('-');if(s.length!==3)return iso||'';return (+s[2])+'/'+(+s[1])+'/'+String((+s[0]+543)%100).padStart(2,'0');};
+    let body='';
+    plates.forEach(p=>{
+      const x=g[p];const owner=((this.state.trucks||[]).find(t=>t.plate===p)||{}).owner||'';
+      body+='<div class="tk"><div class="th"><b>'+esc(p)+'</b>'+(owner?(' · '+esc(owner)):'')+'<span class="r">'+x.rows.length+' ครั้ง · '+_LFB2(x.lit)+' ลิตร · <b>'+_LFB2(x.amt)+' บาท</b></span></div>'
+        +'<table><thead><tr><th>วันที่</th><th>เวลา</th><th>สถานี</th><th>ชนิด</th><th class="n">ลิตร</th><th class="n">จำนวนเงิน</th><th>Transaction ID</th></tr></thead><tbody>';
+      x.rows.forEach(r=>{body+='<tr><td>'+esc(th(r.date))+'</td><td>'+esc(r.time||'')+'</td><td>'+esc(r.station||'')+'</td><td>'+esc(r.product||'')+'</td><td class="n">'+_LFB2(r.litre)+'</td><td class="n">'+_LFB2(r.amount)+'</td><td>'+esc(r.id)+'</td></tr>';});
+      body+='</tbody></table></div>';
+    });
+    const css='@page{size:A4;margin:10mm 9mm;}*{box-sizing:border-box;}'
+      +'body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#111827;font-size:12px;}'
+      +'h1{font-size:17px;margin:0 0 2px;}.sub{font-size:12px;color:#374151;margin-bottom:9px;}'
+      +'.tot{border:1px solid #111827;padding:7px 10px;margin-bottom:11px;font-size:13px;}'
+      +'.tk{margin-bottom:11px;break-inside:avoid;}'
+      +'.th{background:#eef2f6;border:1px solid #cbd5e1;border-bottom:0;padding:5px 8px;font-size:12.5px;}'
+      +'.th .r{float:right;}'
+      +'table{width:100%;border-collapse:collapse;}'
+      +'th,td{border:1px solid #cbd5e1;padding:3px 6px;font-size:11.5px;}'
+      +'thead th{background:#f8fafc;font-weight:700;}'
+      +'.n{text-align:right;}';
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>สรุปค่าน้ำมันรถร่วม</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body>'
+      +'<h1>สรุปค่าน้ำมันรถร่วม (เครดิตเติมน้ำมัน)</h1>'
+      +'<div class="sub">'+esc(co.name||'')+' · ช่วงวันที่ '+esc(from?th(from):th(items[0].date))+' ถึง '+esc(to?th(to):th(items[items.length-1].date))+'</div>'
+      +'<div class="tot">รวม '+plates.length+' คัน · '+items.length+' ครั้ง · '+_LFB2(gl)+' ลิตร · รวมเป็นเงิน <b>'+_LFB2(ga)+' บาท</b></div>'
+      +body+'</body></html>';
+    this._printHtml(html);
+  };
   // ===== หนังสือออก (v.2026-10-06e) =====
   // เก็บในตาราง events แถว __letters__ รูป {items:[...]} (ไม่ต้องรัน SQL) · สิทธิ์ใช้ของระบบสำนักงาน (office)
   // เลขที่ = สท.<ปี พ.ศ.>/<ลำดับ 3 หลัก> เริ่มนับใหม่ทุกปี · ยกเลิกแล้วเลขยังอยู่ในทะเบียน (ห้ามใช้เลขซ้ำ)
@@ -12363,7 +12727,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._kvPollT=setInterval(async()=>{
       try{
         if(!COMPANY_ID||document.hidden)return;if(typeof sbBreakerOpen==='function'&&sbBreakerOpen())return;
-        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22';
+        const ids=Object.keys(this._kvKeys()).map(k=>'%22__kv_'+k+'__%22').join(',')+',%22__purged_jobs__%22,%22__periodlock__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22,%22__fuelcr__%22';
         const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.('+ids+')&select=id,data',{headers:SB_HEADERS});
         if(!r||!r.ok)return;const rows=await r.json();const meta={};(Array.isArray(rows)?rows:[]).forEach(x=>{meta[x.id]=x.data;});
         this._kvApplyAll(meta);
@@ -12372,6 +12736,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         try{this._newsApplyCloud(meta.__news__);}catch(e){}
         try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
         try{this._ltApplyCloud(meta.__letters__);}catch(e){}
+        try{this._fcApplyCloud(meta.__fuelcr__);}catch(e){}
       }catch(e){}
     },60000);
   }
@@ -14859,6 +15224,74 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.onHdDetail=(e)=>this.setHrDraft('detail',e.target.value);
       out.onHrNew=this.hrNew;out.onHrCancel=this.hrCancel;out.onHrSave=this.hrSave;
       out.onHrPhoto=this.hrAddPhoto;}
+    // ---- ลูกหนี้ค่าน้ำมันรถร่วม ----
+    {const _fCan=this._fcCan()&&this.ecaccOn();
+      out.canFuelCr=_fCan;out.isFuelCr=S.section==='fuelcr'&&_fCan;
+      out.navFuelCrStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(out.isFuelCr?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
+      out.onGoFuelCr=()=>{this.setState({section:'fuelcr'});this.scrollMain();};
+      const _fTh=(iso)=>{const p=String(iso||'').slice(0,10).split('-');if(p.length!==3)return iso||'';return (+p[2])+' '+['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+p[1]]+' '+(+p[0]+543);};
+      const _own=(plate)=>{const t=(S.trucks||[]).find(x=>x.plate===plate);return (t&&t.owner)?t.owner:'';};
+      out.fcBusyText=S.fcBusy?'กำลังอ่านไฟล์…':'';
+      out.fcErr=S.fcErr||'';
+      // ---- ตรวจก่อนบันทึก ----
+      const pv=S.fcPreview||null;
+      out.fcHasPreview=!!pv;
+      if(pv){
+        const sum=pv.ok.reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+        out.fcPvHead='ไฟล์ '+pv.file+' · '+pv.n+' รายการ · ช่วงวันที่ '+_fTh(pv.from)+' ถึง '+_fTh(pv.to);
+        const chip=(t,c,b)=>({text:t,style:this.chip(c,b)+'font-size:12.5px;'});
+        const chips=[chip('นำเข้าได้ '+pv.ok.length+' รายการ · '+_LFB2(sum)+' บาท','#067647','#ecfdf3')];
+        if(pv.dup.length)chips.push(chip('เคยนำเข้าแล้ว '+pv.dup.length+' (ข้าม)','#667085','#f2f4f7'));
+        if(pv.notTruck.length)chips.push(chip('ไม่พบทะเบียนในระบบ '+pv.notTruck.length,'#b54708','#fffaeb'));
+        if(pv.notSub.length)chips.push(chip('ไม่ใช่รถร่วม '+pv.notSub.length,'#b54708','#fffaeb'));
+        if(pv.bad.length)chips.push(chip('รายการไม่สำเร็จ '+pv.bad.length,'#b42318','#fef3f2'));
+        out.fcPvChips=chips;
+        const warns=[];
+        if(pv.notTruck.length){const ps=[...new Set(pv.notTruck.map(x=>x.ptPlate))];
+          warns.push({text:'⚠ ไม่พบทะเบียนเหล่านี้ในทะเบียนรถ: '+ps.join(', ')+' — เพิ่มรถก่อนแล้วนำเข้าไฟล์เดิมซ้ำได้ ระบบไม่นับซ้ำ'});}
+        if(pv.notSub.length){const ps=[...new Set(pv.notSub.map(x=>x.truckPlate))];
+          warns.push({text:'⚠ ทะเบียนเหล่านี้อยู่แผนก “รถบริษัท” จึงไม่ลงลูกหนี้: '+ps.join(', ')+' — ถ้าเป็นรถร่วมจริง แก้แผนกที่หน้าทะเบียนรถก่อน'});}
+        if(pv.bad.length)warns.push({text:'⚠ ข้ามรายการที่สถานะไม่ใช่ “สำเร็จ” '+pv.bad.length+' รายการ'});
+        out.fcPvWarns=warns;out.fcPvWarnHas=warns.length>0;
+        const byPlate={};pv.ok.forEach(x=>{const k=x.truckPlate;if(!byPlate[k])byPlate[k]={n:0,lit:0,amt:0,pt:x.ptPlate};const g=byPlate[k];g.n++;g.lit+=(parseFloat(x.litre)||0);g.amt+=(parseFloat(x.amount)||0);});
+        out.fcPvRows=Object.keys(byPlate).sort().map(p=>({plate:p,owner:_own(p)||'—',n:byPlate[p].n,
+          litre:_LFB2(byPlate[p].lit),amount:_LFB2(byPlate[p].amt),cust:this._fcCust(byPlate[p].pt||p)}));
+        out.fcPvHasRows=out.fcPvRows.length>0;
+        out.fcConfirmLabel=pv.ok.length?('บันทึก '+pv.ok.length+' รายการ + เติมยอดหัก'):'ไม่มีรายการให้บันทึก';
+        out.fcConfirmStyle='padding:10px 20px;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;'
+          +(pv.ok.length?'background:#067647;color:#fff;cursor:pointer;':'background:#eaecf0;color:#98a2b3;cursor:not-allowed;');
+      }else{out.fcPvChips=[];out.fcPvRows=[];out.fcPvWarns=[];out.fcPvWarnHas=false;out.fcPvHasRows=false;out.fcPvHead='';out.fcConfirmLabel='';out.fcConfirmStyle='display:none;';}
+      out.onFcPickFile=this.onFcPickFile;out.onFcCancel=this.fcCancelPreview;
+      out.onFcConfirm=()=>{if(S.fcPreview&&S.fcPreview.ok.length)this.fcConfirmImport();};
+      // ---- ทะเบียนรายการ + ส่งออก ----
+      out.fcFrom=S.fcFrom||'';out.fcTo=S.fcTo||'';
+      out.onFcFrom=(e)=>this.setState({fcFrom:e.target.value});
+      out.onFcTo=(e)=>this.setState({fcTo:e.target.value});
+      out.fcPostDate=S.fcPostDate||'';
+      out.onFcPostDate=(e)=>this.setState({fcPostDate:e.target.value});
+      out.fcAcct=String((S.company||{}).ecFuelAcct||'');
+      out.onFcAcct=(e)=>this.setEcCfg('ecFuelAcct',e.target.value);
+      out.fcIncPosted=!!S.fcIncPosted;
+      out.onFcIncPosted=(e)=>this.setState({fcIncPosted:e.target.checked});
+      out.onFcExport=this.exportFcAr;out.onFcPrint=this.printFuelReport;
+      out.onFcUnmark=this.fcUnmark;out.onFcResync=this.fcResync;
+      const _fAll=this._fcInRange(S.fcFrom||'',S.fcTo||'');
+      const _fPosted=_fAll.filter(x=>String(x.ecPosted||'').trim()).length;
+      const _fSend=S.fcIncPosted?_fAll:_fAll.filter(x=>!String(x.ecPosted||'').trim());
+      const _fSum=_fSend.reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+      out.fcPreviewText=_fSend.length?(_fSend.length+' บรรทัด · '+_LFB2(_fSum)+' บาท'+((_fPosted&&!S.fcIncPosted)?(' · ส่งแล้ว '+_fPosted+' รายการ (ข้าม)'):''))
+        :(_fAll.length?('ส่งบัญชีไปแล้วทั้งหมด '+_fAll.length+' รายการ'):'ไม่มีรายการในช่วงนี้');
+      const _fg={};_fAll.forEach(x=>{const k=x.truckPlate||x.ptPlate;if(!_fg[k])_fg[k]={rows:[],lit:0,amt:0};_fg[k].rows.push(x);_fg[k].lit+=(parseFloat(x.litre)||0);_fg[k].amt+=(parseFloat(x.amount)||0);});
+      const _fp=Object.keys(_fg).sort();
+      out.fcListEmpty=_fAll.length===0;
+      out.fcListText=_fAll.length?('ทะเบียนรายการ '+_fp.length+' คัน · '+_fAll.length+' ครั้ง · '+_LFB2(_fAll.reduce((s,x)=>s+(parseFloat(x.amount)||0),0))+' บาท'):'';
+      out.fcGroups=_fp.map(p=>({plate:p,owner:_own(p)||'—',
+        total:_fg[p].rows.length+' ครั้ง · '+_LFB2(_fg[p].lit)+' ลิตร · '+_LFB2(_fg[p].amt)+' บาท',
+        rows:_fg[p].rows.map(r=>({id:r.id,dateText:_fTh(r.date)+(r.time?(' '+r.time):''),
+          station:r.station||'',litreText:_LFB2(r.litre)+' ลิตร',amountText:_LFB2(r.amount),
+          chipText:String(r.ecPosted||'').trim()?'ส่งแล้ว':'ยังไม่ส่ง',
+          chipStyle:String(r.ecPosted||'').trim()?this.chip('#067647','#ecfdf3'):this.chip('#b54708','#fffaeb'),
+          onDelete:()=>this.fcDeleteRow(r.id)}))}));}
     // ---- หนังสือออก ----
     {const _lCan=this._ltCan();const _ld=S.ltDraft||{};const _lco=S.company||{};
       out.canLetters=_lCan;out.isLetters=S.section==='letters'&&_lCan;
