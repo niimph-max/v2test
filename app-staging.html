@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4677,6 +4677,21 @@
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">บัญชีแยกประเภท (ลูกหนี้ค่าน้ำมัน)</label>
             <input value="{{ fcAcct }}" onInput="{{ onFcAcct }}" placeholder="เช่น 207" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
           </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">คลัง <span style="color:#98a2b3;font-weight:400;">(ว่างได้)</span></label>
+            <input value="{{ ecStore }}" onInput="{{ onEcStore }}" placeholder="เช่น 001" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:20px;margin-bottom:12px;flex-wrap:wrap;padding:11px 14px;background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px;">
+          <label style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#475467;font-weight:600;cursor:pointer;"><input type="checkbox" checked="{{ ecHeader }}" onChange="{{ onEcHeader }}" style="width:15px;height:15px;cursor:pointer;" />ใส่แถวหัวคอลัมน์ในไฟล์ (ปิดไว้ถ้า ecimport32 ไม่รับ)</label>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12.5px;color:#475467;font-weight:600;">รหัสอักขระ</span>
+            <select value="{{ ecEnc }}" onChange="{{ onEcEnc }}" style="padding:7px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:12.5px;color:#1d2b3a;font-family:inherit;background:#fff;">
+              <option value="tis620">TIS-620 (ANSI ไทย) — แนะนำสำหรับ ecimport32</option>
+              <option value="utf8">UTF-8 (BOM) — สำหรับเปิดใน Excel</option>
+            </select>
+          </div>
+          <span style="font-size:11.5px;color:#98a2b3;">ค่าเดียวกับหน้าส่งออกเข้า EASY-ACC · แก้ที่ไหนก็มีผลทั้งสองหน้า</span>
         </div>
         <div style="font-size:11.5px;color:#98a2b3;line-height:1.7;margin-bottom:10px;">1 บรรทัด = 1 ครั้งที่เติม · เลขที่ใบกำกับ = Transaction ID · รหัสลูกค้า = ทะเบียนแบบไม่มีขีด · จำนวนเงินเป็นยอดเต็มรวม VAT (ไม่แยกภาษีขาย) · ครบกำหนด = วันเดียวกับวันที่บันทึก · หมายเหตุ = วันที่เติมน้ำมัน</div>
         <label style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#475467;font-weight:600;cursor:pointer;margin-bottom:12px;"><input type="checkbox" checked="{{ fcIncPosted }}" onChange="{{ onFcIncPosted }}" style="width:15px;height:15px;cursor:pointer;" />รวมรายการที่ส่งแล้ว (ส่งซ้ำ) — ปกติไม่ต้องติ๊ก</label>
@@ -11774,7 +11789,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   _ecDownload(name,rows){
     const lines=rows.map(r=>r.map(v=>this._ecCell(v)).join(','));
     const txt=lines.join('\r\n')+'\r\n';
-    const tis=(this.state.ecEnc||'tis620')==='tis620';
+    const tis=this._ecEncCode()==='tis620';
     const blob=tis?new Blob([this._ecTis620(txt)],{type:'text/csv'})
                   :new Blob(['\ufeff'+txt],{type:'text/csv;charset=utf-8;'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;
@@ -11797,6 +11812,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+(Number(n)||0));
     return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
   _ecTxt(s){return String(s==null?'':s).replace(/[",\r\n]+/g,' ').replace(/\s+/g,' ').trim();}
+  // v.2026-10-07c: ย้าย 2 ค่านี้มาเก็บที่ค่าบริษัท เดิมอยู่ใน state อย่างเดียว เปิดแอปใหม่ก็รีเซ็ตเองโดยไม่มีใครรู้
+  // ไม่เคยตั้งค่า = เปิดไว้ เพราะ ecimport32 ต้องการแถวหัวคอลัมน์ (ไฟล์ที่นำเข้าสำเร็จของผู้ใช้มีแถวหัวทุกไฟล์)
+  _ecHeaderOn(){const c=this.state.company||{};if(c.ecHeaderOn===undefined||c.ecHeaderOn===null)return this.state.ecHeader===undefined?true:!!this.state.ecHeader;return c.ecHeaderOn===true||c.ecHeaderOn==='1';}
+  _ecEncCode(){const c=this.state.company||{};return String(c.ecEncCode||this.state.ecEnc||'tis620');}
   _ecCfg(){const c=this.state.company||{};
     return {ar:String(c.ecArAcct||'').trim(),ar2:String(c.ecArAcct2||'').trim(),
       arName:String(c.ecArName||'').trim(),arName2:String(c.ecArName2||'').trim(),
@@ -11850,7 +11869,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(jobs.some(j=>this._ecIsSub(j))&&!cfg.ar2){window.alert('ช่วงนี้มีเที่ยวรถร่วม แต่ยังไม่ได้กรอก "รหัสบัญชีรายได้ 2 (รถร่วม)"\n\nกรอกก่อน ไม่งั้นรายได้รถร่วมจะไปลงบัญชีรถบริษัท');return;}
     const done=[];
     const rows=[];const bad=[];let n=0,sum=0;
-    if(S.ecHeader)rows.push(['วันที่','CD','เลขที่ใบกำกับ','คลัง','รหัสลูกค้า','รหัสบัญชี','จำนวนเงิน','ส่วนลดจ่าย','ภาษีขาย','ครบกำหนด','พนักงานขาย','หมายเหตุ','ชื่อธนาคาร','เลขที่เช็ค','ลงวันที่','บัตรเครดิต','เลขที่บัตร','หมดอายุ','รายละเอียดอื่นๆ','รหัสบัญชีอื่นๆ','วันที่รับเงิน','จำนวนเงินยกเว้นภาษี']);
+    if(this._ecHeaderOn())rows.push(['วันที่','CD','เลขที่ใบกำกับ','คลัง','รหัสลูกค้า','รหัสบัญชี','จำนวนเงิน','ส่วนลดจ่าย','ภาษีขาย','ครบกำหนด','พนักงานขาย','หมายเหตุ','ชื่อธนาคาร','เลขที่เช็ค','ลงวันที่','บัตรเครดิต','เลขที่บัตร','หมดอายุ','รายละเอียดอื่นๆ','รหัสบัญชีอื่นๆ','วันที่รับเงิน','จำนวนเงินยกเว้นภาษี']);
     jobs.forEach(j=>{
       const jc=String(j.customerCode||'').trim()||((String(j.customer||'').match(/^(\d{2}-\d{3})/)||[])[1]||'');
       // รหัสบัญชีรายได้ derive จากประเภทรถ ไม่ให้คนเลือก (กฎใน docs/TODO_ECACC_EXPORT.md)
@@ -11977,7 +11996,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     // โหมดสุทธิ: รายการหักเป็นยอดรายคัน/เดือน กระจายตามสัดส่วนเงินของแต่ละบิล ยอดรวมทั้งเดือนจึงเท่าเดิม
     const keep={};list.forEach(r=>{keep[r.plate]=(useNet&&r.gross)?((r.gross-r.ded)/r.gross):1;});
     const rows=[];const bad=[];const seen={};let n=0,sum=0;
-    if(S.ecHeader)rows.push(['วันที่','CD','รหัสเจ้าหนี้','เลขที่ใบกำกับ','คลัง','รหัสบัญชี','จำนวนเงิน','ส่วนลดรับ','ภาษีซื้อ','หมายเหตุ','ครบกำหนด','เลขที่จัดลำดับภาษี','วันที่ยื่นภาษี','รหัสบัญชีธนาคาร','เลขที่เช็ค','ลงวันที่','รหัสบัญชีอื่นๆ','อ้างอิง#','วันที่จ่ายเงิน','จำนวนเงินยกเว้นภาษี']);
+    if(this._ecHeaderOn())rows.push(['วันที่','CD','รหัสเจ้าหนี้','เลขที่ใบกำกับ','คลัง','รหัสบัญชี','จำนวนเงิน','ส่วนลดรับ','ภาษีซื้อ','หมายเหตุ','ครบกำหนด','เลขที่จัดลำดับภาษี','วันที่ยื่นภาษี','รหัสบัญชีธนาคาร','เลขที่เช็ค','ลงวันที่','รหัสบัญชีอื่นๆ','อ้างอิง#','วันที่จ่ายเงิน','จำนวนเงินยกเว้นภาษี']);
     jobs.forEach(j=>{
       const r=vmap[j.truckPlate]||{};
       const tag=(j.date||'')+' '+(j.truckPlate||'');
@@ -12342,7 +12361,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!items.length){window.alert('ช่วงนี้ส่งบัญชีไปแล้วทั้งหมด '+all.length+' รายการ\n\nถ้าต้องการส่งซ้ำ ให้ติ๊ก "รวมรายการที่ส่งแล้ว"');return;}
     const post=String(S.fcPostDate||'').slice(0,10)||items[items.length-1].date;
     const rows=[];
-    if(S.ecHeader)rows.push(['วันที่','CD','เลขที่ใบกำกับ','คลัง','รหัสลูกค้า','รหัสบัญชี','จำนวนเงิน','ส่วนลดจ่าย','ภาษีขาย','ครบกำหนด','พนักงานขาย','หมายเหตุ','ชื่อธนาคาร','เลขที่เช็ค','ลงวันที่','บัตรเครดิต','เลขที่บัตร','หมดอายุ','รายละเอียดอื่นๆ','รหัสบัญชีอื่นๆ','วันที่รับเงิน','จำนวนเงินยกเว้นภาษี']);
+    if(this._ecHeaderOn())rows.push(['วันที่','CD','เลขที่ใบกำกับ','คลัง','รหัสลูกค้า','รหัสบัญชี','จำนวนเงิน','ส่วนลดจ่าย','ภาษีขาย','ครบกำหนด','พนักงานขาย','หมายเหตุ','ชื่อธนาคาร','เลขที่เช็ค','ลงวันที่','บัตรเครดิต','เลขที่บัตร','หมดอายุ','รายละเอียดอื่นๆ','รหัสบัญชีอื่นๆ','วันที่รับเงิน','จำนวนเงินยกเว้นภาษี']);
     let sum=0;
     items.forEach(x=>{
       const amt=Math.round((parseFloat(x.amount)||0)*100)/100;sum+=amt;
@@ -16048,8 +16067,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         out.ecApAcct=cfg.ap;out.onEcApAcct=(e)=>this.setEcCfg('ecApAcct',e.target.value);
         out.ecStore=cfg.store;out.onEcStore=(e)=>this.setEcCfg('ecStore',e.target.value);
         out.ecTerms=String(cfg.terms);out.onEcTerms=(e)=>this.setEcCfg('ecTerms',e.target.value);
-        out.ecHeader=!!S.ecHeader;out.onEcHeader=(e)=>this.setState({ecHeader:e.target.checked});
-        out.ecEnc=S.ecEnc||'tis620';out.onEcEnc=(e)=>this.setState({ecEnc:e.target.value});
+        out.ecHeader=this._ecHeaderOn();out.onEcHeader=(e)=>this.setEcCfg('ecHeaderOn',e.target.checked);
+        out.ecEnc=this._ecEncCode();out.onEcEnc=(e)=>this.setEcCfg('ecEncCode',e.target.value);
         out.ecFrom=S.ecFrom||'';out.onEcFrom=(e)=>this.setState({ecFrom:e.target.value});
         out.ecTo=S.ecTo||'';out.onEcTo=(e)=>this.setState({ecTo:e.target.value});
         out.ecCust=S.ecCust||'';out.onEcCust=(e)=>this.setState({ecCust:e.target.value});
