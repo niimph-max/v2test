@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-07f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-07f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6945,15 +6945,25 @@
           <div style="padding:10px 14px;font-size:11.5px;font-weight:600;color:#667085;text-align:right;">ส่วนต่าง</div>
           <div style="padding:10px 14px;font-size:11.5px;font-weight:600;color:#667085;text-align:right;">% ส่วนต่าง</div>
         </div>
-        <sc-for list="{{ ovSubRows }}" as="r" hint-placeholder-count="5">
-          <div style="display:grid;grid-template-columns:1.4fr .6fr 1fr 1fr 1fr .8fr;border-bottom:1px solid #f4f6f8;align-items:center;">
-            <div style="padding:11px 14px;"><div style="font-size:13px;font-weight:600;color:#1d2b3a;">{{ r.name }}</div><div style="font-size:11px;color:#98a2b3;">{{ r.owner }}</div></div>
-            <div style="padding:11px 14px;font-size:13px;color:#475467;text-align:right;">{{ r.trips }}</div>
-            <div style="padding:11px 14px;font-size:13px;color:#0f9d6b;font-weight:600;text-align:right;">{{ r.revenue }}</div>
-            <div style="padding:11px 14px;font-size:13px;color:#b54708;text-align:right;">{{ r.pay }}</div>
-            <div style="padding:11px 14px;font-size:13px;text-align:right;{{ r.marginStyle }}">{{ r.margin }}</div>
-            <div style="padding:11px 14px;font-size:13px;color:#475467;text-align:right;">{{ r.pct }}</div>
+        <sc-for list="{{ ovSubFleets }}" as="g" hint-placeholder-count="2">
+          <div style="display:grid;grid-template-columns:1.4fr .6fr 1fr 1fr 1fr .8fr;background:#eef4fb;border-bottom:1px solid #dbe7f5;align-items:center;">
+            <div style="padding:9px 14px;"><div style="font-size:12.5px;font-weight:800;color:#16263a;">{{ g.fleet }}</div><div style="font-size:11px;color:#667085;">{{ g.sub }}</div></div>
+            <div style="padding:9px 14px;"></div>
+            <div style="padding:9px 14px;font-size:12.5px;color:#0f9d6b;font-weight:700;text-align:right;">{{ g.revenue }}</div>
+            <div style="padding:9px 14px;font-size:12.5px;color:#b54708;font-weight:700;text-align:right;">{{ g.pay }}</div>
+            <div style="padding:9px 14px;font-size:12.5px;text-align:right;{{ g.marginStyle }}">{{ g.margin }}</div>
+            <div style="padding:9px 14px;font-size:12.5px;color:#475467;font-weight:700;text-align:right;">{{ g.pct }}</div>
           </div>
+          <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:1.4fr .6fr 1fr 1fr 1fr .8fr;border-bottom:1px solid #f4f6f8;align-items:center;">
+              <div style="padding:11px 14px 11px 26px;"><div style="font-size:13px;font-weight:600;color:#1d2b3a;">{{ r.name }}</div><div style="font-size:11px;color:#98a2b3;">{{ r.owner }}</div></div>
+              <div style="padding:11px 14px;font-size:13px;color:#475467;text-align:right;">{{ r.trips }}</div>
+              <div style="padding:11px 14px;font-size:13px;color:#0f9d6b;font-weight:600;text-align:right;">{{ r.revenue }}</div>
+              <div style="padding:11px 14px;font-size:13px;color:#b54708;text-align:right;">{{ r.pay }}</div>
+              <div style="padding:11px 14px;font-size:13px;text-align:right;{{ r.marginStyle }}">{{ r.margin }}</div>
+              <div style="padding:11px 14px;font-size:13px;color:#475467;text-align:right;">{{ r.pct }}</div>
+            </div>
+          </sc-for>
         </sc-for>
       </div>
       </sc-if>
@@ -11950,6 +11960,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   // ★ v.2026-09-30b: ผู้ใช้ส่ง AP แบบค่าจ้างเต็ม 100% → เลือกช่วงวันที่ได้เหมือน AR
   //   ตัดแบบ "สุทธิหลังหักรายการ" ออก (ผู้ใช้สั่ง 30 ก.ย. 2569) — รายการหักรถร่วมบัญชีหักแยกเอง
+  // ฟลีตของรถร่วมหนึ่งคัน = ฟลีตที่พบบ่อยที่สุดจากเที่ยวของเดือนนั้น (กฎรายเที่ยวใช้ _jobFleetOf)
+  // ไม่มีเที่ยวที่ระบุฟลีตได้เลย → ใช้ฟลีตของ พขร. ประจำรถ → ไม่มีอีกก็ __none__  (v.2026-10-07f)
+  _subFleetOf(plate,jobs){
+    const cnt={};(jobs||[]).forEach(j=>{const f=this._jobFleetOf(j);if(f&&f!=='__none__')cnt[f]=(cnt[f]||0)+1;});
+    const ks=Object.keys(cnt);
+    if(ks.length)return ks.sort((a,b)=>cnt[b]-cnt[a]||String(a).localeCompare(String(b),'th'))[0];
+    return this._jobFleetOf({truckPlate:plate});
+  }
   _jobFleetOf(j){
     const S=this.state;const dv=(S.drivers||[]);
     const d=dv.find(x=>String(x.code)===String((j&&j.driverCode)||''));
@@ -14321,13 +14339,24 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         out.ovEmpty=_ovList.length===0;
         // ---- รถร่วม: รายได้ vs ค่าจ้างรถร่วม (สูตรเดียวกับหน้าส่งออก AP → _ecSubCalc) ----
         {const _sub=new Map(S.trucks.filter(t=>/ร่วม/.test(String(t.dept||''))).map(t=>[t.plate,t]));
-          const _sm={};S.jobs.filter(j=>_sub.has(j.truckPlate)&&j.date&&j.date.startsWith(_ovM)&&!j.deleted&&!j._deleted).forEach(j=>{const k=j.truckPlate;if(!_sm[k])_sm[k]={plate:k,trips:0,rev:0,pay:0};const d=_sm[k];d.trips++;d.rev+=parseFloat(j.revenue)||0;d.pay+=this._ecSubCalc(j).gross||0;});
+          const _sm={};S.jobs.filter(j=>_sub.has(j.truckPlate)&&j.date&&j.date.startsWith(_ovM)&&!j.deleted&&!j._deleted).forEach(j=>{const k=j.truckPlate;if(!_sm[k])_sm[k]={plate:k,trips:0,rev:0,pay:0,jobs:[]};const d=_sm[k];d.jobs.push(j);d.trips++;d.rev+=parseFloat(j.revenue)||0;d.pay+=this._ecSubCalc(j).gross||0;});
           const _sl=Object.values(_sm).sort((a,b)=>b.rev-a.rev);const _pct=(m,r)=>r>0?((m/r*100).toFixed(1)+'%'):'—';
           const _tr=_sl.reduce((a,d)=>a+d.rev,0),_tp=_sl.reduce((a,d)=>a+d.pay,0),_mx=Math.max(1,..._sl.map(d=>d.rev));
           out.ovSubHas=_sl.length>0;out.ovSubKpiRev=_ovFmt(_tr);out.ovSubKpiTrips=_sl.reduce((a,d)=>a+d.trips,0);out.ovSubKpiTrucks=_sl.length+' คัน';
           out.ovSubKpiPay=_ovFmt(_tp);out.ovSubKpiMargin=_ovFmt(_tr-_tp);out.ovSubKpiMarginPct=_pct(_tr-_tp,_tr)+' ของรายได้';
           out.ovSubRevBars=_sl.map(d=>({name:d.plate,val:_ovFmt(d.rev),trips:d.trips+' เที่ยว',h:Math.round(d.rev/_mx*100)}));
-          out.ovSubRows=_sl.map(d=>{const m=d.rev-d.pay;const t=_sub.get(d.plate)||{};return {name:d.plate,owner:String(t.owner||'').trim()||'—',trips:d.trips,revenue:_ovFmt(d.rev),pay:_ovFmt(d.pay),margin:_ovFmt(m),marginStyle:'font-weight:700;color:'+(m>=0?'#067647':'#b42318')+';',pct:_pct(m,d.rev)};});}}
+          const _subRow=(d)=>{const m=d.rev-d.pay;const t=_sub.get(d.plate)||{};return {name:d.plate,owner:String(t.owner||'').trim()||'—',trips:d.trips,revenue:_ovFmt(d.rev),pay:_ovFmt(d.pay),margin:_ovFmt(m),marginStyle:'font-weight:700;color:'+(m>=0?'#067647':'#b42318')+';',pct:_pct(m,d.rev)};};
+          out.ovSubRows=_sl.map(_subRow);
+          // ---- แบ่งตามฟลีต (ขอเพิ่ม 7 ต.ค. 2569) ----
+          const _fg={};_sl.forEach(d=>{const f=this._subFleetOf(d.plate,d.jobs||[]);if(!_fg[f])_fg[f]={fleet:f,list:[],rev:0,pay:0,trips:0};const g=_fg[f];g.list.push(d);g.rev+=d.rev;g.pay+=d.pay;g.trips+=d.trips;});
+          const _fk=Object.keys(_fg).sort((a,b)=>{if(a==='__none__')return 1;if(b==='__none__')return -1;return _fg[b].rev-_fg[a].rev;});
+          out.ovSubFleetHas=_fk.length>1;
+          out.ovSubFleets=_fk.map(f=>{const g=_fg[f];const m=g.rev-g.pay;
+            return {fleet:(f==='__none__'?'ไม่ระบุฟลีต':('ฟลีต'+f)),
+              sub:g.list.length+' คัน · '+g.trips+' เที่ยว',
+              revenue:_ovFmt(g.rev),pay:_ovFmt(g.pay),margin:_ovFmt(m),
+              marginStyle:'font-weight:700;color:'+(m>=0?'#067647':'#b42318')+';',pct:_pct(m,g.rev),
+              rows:g.list.map(_subRow)};});}}
       const _isTrailer=(t)=>/หางพ่วง/.test(t.truckType||'')||String(t.truckType||'').startsWith('21');
       const _isTractor=(t)=>/หัวลาก/.test(t.truckType||'')||String(t.truckType||'').startsWith('18');
       const companyTrailers=S.trucks.filter(t=>t.dept==='รถบริษัท'&&!t.retired&&_isTrailer(t));
