@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-15a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-15b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-15a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-15b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2498,7 +2498,10 @@
           <div style="font-size:13.5px;font-weight:800;color:#b42318;margin-bottom:6px;">⚠ {{ ecStaleHead }}</div>
           <div style="font-size:12.5px;color:#912018;line-height:1.75;margin-bottom:9px;">ใบเหล่านี้ถูกปักว่า “ส่งบัญชีแล้ว” ไปก่อน แล้วค่อยมีการแก้ค่าขนส่งทีหลัง · ยอดที่อยู่ใน EASY-ACC จึงอาจไม่ตรงกับยอดจริง หรืออาจยังไม่เคยเข้าเลย — ตรวจใน EASY-ACC แล้วคีย์/แก้ด้วยมือตามจริง</div>
           <sc-for list="{{ ecStaleRows }}" as="r" hint-placeholder-count="1">
-            <div style="font-size:12.5px;color:#7a271a;line-height:1.8;">• {{ r.text }}</div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0;">
+              <div style="flex:1;min-width:260px;font-size:12.5px;color:#7a271a;line-height:1.8;">• {{ r.text }}</div>
+              <button onClick="{{ r.onAck }}" style="flex:none;padding:6px 13px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">✓ รับทราบ คีย์ EASY-ACC แล้ว</button>
+            </div>
           </sc-for>
         </div>
       </sc-if>
@@ -11968,11 +11971,29 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const ap=String(j.acctPosted||'').trim();if(!ap)return;
       const t=Number((j._ft||{}).revenue||0);if(!t)return;
       const stamp=Date.parse(ap+':00+07:00');if(!stamp)return;
-      if(t>stamp+60000)out.push({id:j.id,no:String(j.deliveryNo||j.jobNo||''),date:String(j.date||''),
+      if(t<=stamp+60000)return;
+      // กด "รับทราบ คีย์ EASY-ACC แล้ว" ไว้ = ซ่อน · แต่ถ้าราคาถูกแก้อีกหลังจากนั้น ให้เตือนใหม่
+      const ack=String(j.acctAck||'').trim();
+      if(ack){const am=Date.parse(ack+':00+07:00');if(am&&am+60000>=t)return;}
+      out.push({id:j.id,no:String(j.deliveryNo||j.jobNo||''),date:String(j.date||''),
         cust:String(j.customerCode||''),rev:parseFloat(j.revenue)||0,posted:ap,changed:t});
     });
     return out.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   }
+  // รับทราบว่าใบนี้จัดการใน EASY-ACC ด้วยมือแล้ว — ไม่ปลดป้าย ไม่แก้ยอด แค่ซ่อนออกจากแถบเตือน
+  ecAckStale=(id)=>{
+    const j=(this.state.jobs||[]).find(x=>String(x.id)===String(id));if(!j)return;
+    const NL=String.fromCharCode(10);
+    if(!window.confirm('รับทราบบิล '+(j.deliveryNo||j.jobNo||'')+' ?'+NL+NL
+      +'ยืนยันว่าจัดการใน EASY-ACC ด้วยมือเรียบร้อยแล้ว'+NL
+      +'ใบนี้จะถูกซ่อนออกจากแถบเตือน · ไม่มีการแก้ยอดหรือปลดป้ายใดๆ'+NL
+      +'ถ้ามีการแก้ค่าขนส่งอีกครั้ง จะเด้งเตือนขึ้นมาใหม่เอง'))return;
+    const a=this.state.auth||{};const who=a.name||a.u||'—';
+    const now=this._ecNow();
+    const jobs=this.state.jobs.map(x=>String(x.id)===String(id)?{...x,acctAck:now,acctAckBy:who}:x);
+    this.setState({jobs});
+    this.persistJobs(jobs,id,['acctAck','acctAckBy']);
+  };
   _ecNow(){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(new Date()).replace(' ','T');}
   // ยกเลิกเครื่องหมายอย่างเดียว — ไม่มีปุ่ม "ปัก" โดยตั้งใจ
   // การปักเกิดตอนกดดาวน์โหลดเท่านั้น ป้ายจึงแปลตรงตัวว่า "ออกไฟล์ไปแล้ว" ไม่ต้องตีความ
@@ -16237,7 +16258,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          const _fT=(ms)=>new Intl.DateTimeFormat('th-TH',{timeZone:'Asia/Bangkok',dateStyle:'short',timeStyle:'short'}).format(new Date(Number(ms)));
          out.ecStaleHas=_st.length>0;
          out.ecStaleHead='มี '+_st.length+' ใบ ที่ราคาเปลี่ยนหลังส่งบัญชีไปแล้ว';
-         out.ecStaleRows=_st.map(x=>({text:x.no+'  ·  '+this._blShortDate(x.date)+(x.cust?('  ·  '+x.cust):'')+'  ·  ยอดตอนนี้ '+_LFB2(x.rev)+' บาท  ·  ปักว่าส่งเมื่อ '+x.posted.replace('T',' ')+'  ·  แก้ราคาเมื่อ '+_fT(x.changed)}));}
+         out.ecStaleRows=_st.map(x=>({text:x.no+'  ·  '+this._blShortDate(x.date)+(x.cust?('  ·  '+x.cust):'')+'  ·  ยอดตอนนี้ '+_LFB2(x.rev)+' บาท  ·  ปักว่าส่งเมื่อ '+x.posted.replace('T',' ')+'  ·  แก้ราคาเมื่อ '+_fT(x.changed),
+           onAck:()=>this.ecAckStale(x.id)}));}
         out.ecArAcct=cfg.ar;out.onEcArAcct=(e)=>this.setEcCfg('ecArAcct',e.target.value);
         out.ecArAcct2=cfg.ar2;out.onEcArAcct2=(e)=>this.setEcCfg('ecArAcct2',e.target.value);
         out.ecArName=cfg.arName;out.onEcArName=(e)=>this.setEcCfg('ecArName',e.target.value);
