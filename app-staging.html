@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-15b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-16a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-15b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-16a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4946,6 +4946,17 @@
             <button onClick="{{ onNewsPublish }}" style="padding:9px 20px;background:#067647;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;">เผยแพร่</button>
           </div>
         </div>
+        <sc-if value="{{ ndToDriver }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#f8fafc;border:1px solid #e4e7ec;border-radius:10px;padding:12px 15px;margin-top:12px;">
+            <div style="font-size:12.5px;font-weight:700;color:#475467;margin-bottom:8px;">ส่งให้เฉพาะฟลีต <span style="font-weight:400;color:#98a2b3;">(ไม่เลือกเลย = ส่งทุกฟลีต)</span></div>
+            <div style="display:flex;gap:14px;flex-wrap:wrap;">
+              <sc-for list="{{ ndFleetOpts }}" as="f" hint-placeholder-count="3">
+                <label style="display:inline-flex;align-items:center;gap:7px;font-size:13px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ f.checked }}" onChange="{{ f.onToggle }}" style="width:15px;height:15px;cursor:pointer;" />{{ f.name }}</label>
+              </sc-for>
+            </div>
+            <div style="font-size:11.5px;color:#98a2b3;margin-top:8px;line-height:1.6;">{{ ndFleetHint }}</div>
+          </div>
+        </sc-if>
         <sc-if value="{{ newsErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:10px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:9px 13px;font-size:13px;">{{ newsErr }}</div></sc-if>
       </div>
       </sc-if>
@@ -4958,7 +4969,7 @@
         <div style="{{ n.cardStyle }}">
           <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:6px;">
             <span style="{{ n.chipStyle }}">{{ n.chipLabel }}</span>
-            <sc-if value="{{ n.toDriver }}" hint-placeholder-val="{{ false }}"><span style="{{ n.drvChipStyle }}">📱 ถึง พขร.</span></sc-if>
+            <sc-if value="{{ n.toDriver }}" hint-placeholder-val="{{ false }}"><span style="{{ n.drvChipStyle }}">{{ n.drvChipText }}</span></sc-if>
             <span style="font-size:12.5px;color:#98a2b3;">{{ n.dateText }} · โดย {{ n.by }}</span>
             <span style="font-size:12px;color:#98a2b3;">{{ n.untilText }}</span>
             <sc-if value="{{ n.canEdit }}" hint-placeholder-val="{{ false }}">
@@ -12802,8 +12813,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     }catch(e){try{console.warn('[LionFlow] news push failed',e&&e.message);}catch(_){}}
   }
   setNewsDraft=(k,v)=>this.setState(s=>({newsDraft:{...(s.newsDraft||{}),[k]:v}}));
+  // เลือกฟลีตปลายทางของประกาศที่ส่งถึง พขร. — ไม่เลือกเลย = ทุกฟลีต
+  toggleNewsFleet=(name)=>this.setState(s=>{const d=s.newsDraft||{};const cur=Array.isArray(d.fleets)?d.fleets.slice():[];
+    const i=cur.indexOf(name);if(i>=0)cur.splice(i,1);else cur.push(name);
+    return {newsDraft:{...d,fleets:cur}};});
   newsNew=()=>{const d=new Date(Date.now()+30*864e5);const until=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(d);
-    this.setState({newsDraft:{id:'',title:'',body:'',level:'normal',until:until,popup:true,pin:true,toDriver:false},newsFormOpen:true,newsErr:''});};
+    this.setState({newsDraft:{id:'',title:'',body:'',level:'normal',until:until,popup:true,pin:true,toDriver:false,fleets:[]},newsFormOpen:true,newsErr:''});};
   newsEdit=(id)=>{const n=this._newsAll().find(x=>String(x.id)===String(id));if(!n)return;this.setState({newsDraft:{...n},newsFormOpen:true,newsErr:''});};
   newsCancel=()=>this.setState({newsFormOpen:false,newsErr:''});
   newsPublish=()=>{
@@ -12814,7 +12829,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const a=this.state.auth||{};const who=a.name||a.u||a.username||'—';
     const rec={id:d.id||('NW'+Date.now()),title:String(d.title).trim(),body:String(d.body).trim(),
       level:(d.level==='important'?'important':'normal'),until:String(d.until||'').slice(0,10),
-      popup:d.popup!==false,pin:d.pin!==false,toDriver:d.toDriver===true,by:who,at:new Date().toISOString(),deleted:false};
+      popup:d.popup!==false,pin:d.pin!==false,toDriver:d.toDriver===true,
+      fleets:(d.toDriver===true&&Array.isArray(d.fleets))?d.fleets.map(x=>String(x||'').trim()).filter(Boolean):[],
+      by:who,at:new Date().toISOString(),deleted:false};
     const list=this._newsAll().filter(x=>String(x.id)!==String(rec.id)).concat([rec]);
     this._newsPush(list);
     this.setState({newsFormOpen:false,newsErr:''});
@@ -15597,6 +15614,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         untilText:n.until?('แสดงถึง '+_nThD(n.until)):'ไม่กำหนดวันสิ้นสุด',
         chipLabel:(n.level==='important'?'สำคัญ':'ทั่วไป'),chipStyle:_nChip(n.level),
         toDriver:n.toDriver===true,drvChipStyle:this.chip('#067647','#ecfdf3'),
+        drvChipText:'📱 ถึง พขร.'+((Array.isArray(n.fleets)&&n.fleets.length)?(' · '+n.fleets.join(', ')):' · ทุกฟลีต'),
         cardStyle:'background:#fff;border:1px solid '+(n.level==='important'?'#fecdca':'#e4e7ec')+';border-left:4px solid '+(n.level==='important'?'#d92d20':'#2f6fb0')+';border-radius:0 12px 12px 0;padding:16px 18px;margin-bottom:12px;',
         canEdit:_nCan,onEdit:()=>this.newsEdit(n.id),onDelete:()=>this.newsDelete(n.id)});
       const _nLive=this._newsLive();const _nPast=this._newsPast();
@@ -15608,6 +15626,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.newsPastRows=_nPast.map(_nRow);out.newsPastHas=_nPast.length>0;
       out.ndTitle=_nd.title||'';out.ndBody=_nd.body||'';out.ndLevel=_nd.level||'normal';out.ndUntil=_nd.until||'';
       out.ndPopup=_nd.popup!==false;out.ndPin=_nd.pin!==false;out.ndToDriver=_nd.toDriver===true;
+      {const _sel=Array.isArray(_nd.fleets)?_nd.fleets:[];const _fl=this._fleetList();
+       out.ndFleetOpts=_fl.map(f=>({name:f,checked:_sel.indexOf(f)>=0,onToggle:()=>this.toggleNewsFleet(f)}));
+       out.ndFleetHint=!_fl.length?'ยังไม่มีฟลีตในระบบ — ตั้งได้ที่หน้าทะเบียนรถ'
+         :(_sel.length?('ขึ้นเฉพาะใบงานที่รถอยู่ฟลีต '+_sel.join(' · ')+' · รถที่ยังไม่ได้ตั้งฟลีตในทะเบียนรถจะไม่เห็นประกาศนี้')
+                      :'ตอนนี้จะส่งถึง พขร. ทุกฟลีต');}
       out.onNdTitle=(e)=>this.setNewsDraft('title',e.target.value);
       out.onNdBody=(e)=>this.setNewsDraft('body',e.target.value);
       out.onNdLevel=(e)=>this.setNewsDraft('level',e.target.value);
