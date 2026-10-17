@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-16a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-16a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7551,6 +7551,7 @@
                     <button onClick="{{ d.onRemove }}" title="ลบ" style="width:30px;height:30px;flex:none;background:#fff;border:1px solid #f0c9c4;border-radius:8px;color:#b42318;font-size:14px;cursor:pointer;">×</button>
                   </div>
                 </sc-for>
+                <div style="font-size:11.5px;color:#98a2b3;line-height:1.7;margin-top:2px;">ภาษีหัก ณ ที่จ่าย คิดอัตโนมัติ 1% ของค่าขนส่งจ่ายรถร่วม · พิมพ์ทับได้ ถ้าลบให้ว่างจะกลับไปคิดอัตโนมัติ · ค่าโอนตั้งต้น 15 บาท ลบออกได้</div>
                 <div style="display:flex;align-items:center;justify-content:flex-end;gap:24px;margin-top:12px;padding-top:12px;border-top:1px dashed #e4e7ec;">
                   <div style="font-size:12.5px;color:#667085;">รวมหัก <span style="font-weight:700;color:#b54708;">{{ mo.dedSumText }}</span></div>
                   <div style="font-size:14px;font-weight:700;color:#16263a;">ยอดจ่ายจริง <span style="font-size:18px;font-weight:800;color:#067647;">{{ mo.netPayText }}</span></div>
@@ -8419,6 +8420,10 @@ function _tirePosRaw(p){return String(p||'').replace(/^\(\d+\)\s*/,'');}
 function _tirePosLabel(p){const r=_tirePosRaw(p);if(!r)return '';const n=_TIRE_POS_NO[r];return n?('('+n+') '+r):r;}
 const DISPATCHERS=['ปกรณ์ ลิ้นทอง','วารี ภักดีวาณิช','นันทนา สุขศิลา','สมศักดิ์ ชนะวงษ์','จารพรรณ ขาวสุข','คศิมาภรณ์ ชนะวงศ์','อื่นๆ'];
 const SUB_DED_DEFAULTS=['หักภาษี ณ ที่จ่าย','ค่าน้ำมัน','ค่าประกันสินค้า','ค่า GPS','ค่าโอน'];
+const SUB_WHT_LABEL='หักภาษี ณ ที่จ่าย';   // คิดอัตโนมัติ 1% ของค่าขนส่งจ่ายรถร่วม
+const SUB_WHT_PCT=1;
+const SUB_TRANSFER_FEE=15;                  // ค่าโอน ตั้งต้น 15 บาท ลบออกได้
+const SUB_DED_FROM='2026-10';               // เริ่มใช้ค่าตั้งต้นนี้ตั้งแต่ ต.ค. 2569 เดือนก่อนหน้าไม่แตะ (ผู้ใช้กำหนด 17 ต.ค. 2569)
 const ORDER_CHANNELS=['อีเมล','ไลน์','โทรศัพท์','เว็บไซต์','อื่นๆ'];
 const ORDER_TRUCK_TYPES=['รถปิคอัพ','รถหกล้อ','รถสิบล้อ','รถพ่วง','รถหัวลาก/เทรลเลอร์','อื่นๆ'];
 // ★ v.2026-09-27g: ใบเสนอราคางานจากเว็บ — สถานะก่อน "รอจัดรถ" + ทางออกที่ไม่ได้งาน
@@ -11414,9 +11419,35 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   closeLightbox=()=>this.setState({lightboxUrl:''});
   setFixedOverride=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.fixedOverrides||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('fixedOverrides_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('fixedOverrides',k,cur);this.setState({fixedOverrides:cur});};
   clearFixedOverride=(plate,month)=>{const k=plate+'|'+month;const cur={...(this.state.fixedOverrides||{})};delete cur[k];try{localStorage.setItem('fixedOverrides_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('fixedOverrides',k,cur);this.setState({fixedOverrides:cur});};
-  _subDedList(plate,month){const k=plate+'|'+month;const saved=(this.state.subMonthDeducts||{})[k];if(Array.isArray(saved))return saved;return SUB_DED_DEFAULTS.map(l=>({label:l,amount:''}));}
+  _subGrossOf(plate,month){
+    if(!plate||!month)return 0;
+    return (this.state.jobs||[]).filter(j=>j&&!j.deleted&&!j._deleted&&j.truckPlate===plate&&String(j.date||'').slice(0,7)===month)
+      .reduce((a,j)=>a+(this._ecSubCalc(j).gross||0),0);
+  }
+  // ภาษีหัก ณ ที่จ่าย 1% ของค่าขนส่งจ่ายรถร่วมทั้งเดือน ปัดทศนิยม 2 ตำแหน่ง
+  _subWhtAmount(plate,month){const g=this._subGrossOf(plate,month);return g>0?String(Math.round(g*SUB_WHT_PCT)/100):'';}
+  _subDedList(plate,month){
+    const k=plate+'|'+month;const saved=(this.state.subMonthDeducts||{})[k];
+    // เดือนที่จ่ายเงินไปแล้ว ไม่ยัดค่าตั้งต้นย้อนหลัง ยอดเดิมจะได้ไม่ขยับ
+    const paid=!!(((this.state.subMonthMeta||{})[k]||{}).paid);
+    const old=String(month||'')<SUB_DED_FROM;   // เดือนเก่ากว่าที่เริ่มใช้ = พฤติกรรมเดิมทุกอย่าง
+    const skip=paid||old;
+    if(Array.isArray(saved)){
+      if(skip)return saved;
+      // แถวภาษีที่ยังเป็นโหมดอัตโนมัติ ให้คิดใหม่ตามค่าขนส่งล่าสุดเสมอ (เพิ่มเที่ยวทีหลังยอดก็ตาม)
+      return saved.map(d=>(d&&d.auto&&String(d.label||'').trim()===SUB_WHT_LABEL)?{...d,amount:this._subWhtAmount(plate,month)}:d);
+    }
+    if(skip)return SUB_DED_DEFAULTS.map(l=>({label:l,amount:''}));
+    return SUB_DED_DEFAULTS.map(l=>{
+      if(l===SUB_WHT_LABEL)return {label:l,amount:this._subWhtAmount(plate,month),auto:true};
+      if(l==='ค่าโอน')return {label:l,amount:String(SUB_TRANSFER_FEE)};
+      return {label:l,amount:''};
+    });
+  }
   _saveSubDeds(k,list){const cur={...(this.state.subMonthDeducts||{})};cur[k]=list;try{localStorage.setItem('subMonthDeducts_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('subMonthDeducts',k,cur);this.setState({subMonthDeducts:cur});}
-  setSubMonthDeduct=(plate,month,i,field,val)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));if(!list[i])list[i]={label:'',amount:''};list[i][field]=val;this._saveSubDeds(k,list);};
+  setSubMonthDeduct=(plate,month,i,field,val)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));if(!list[i])list[i]={label:'',amount:''};list[i][field]=val;
+    if(field==='amount'&&String(list[i].label||'').trim()===SUB_WHT_LABEL)list[i].auto=(String(val==null?'':val).trim()==='');
+    this._saveSubDeds(k,list);};
   addSubMonthDeduct=(plate,month)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));list.push({label:'',amount:''});this._saveSubDeds(k,list);};
   removeSubMonthDeduct=(plate,month,i)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));list.splice(i,1);this._saveSubDeds(k,list);};
   setSubMonthMeta=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.subMonthMeta||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('subMonthMeta_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('subMonthMeta',k,cur);this.setState({subMonthMeta:cur});};
