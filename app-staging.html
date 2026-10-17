@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17l · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17l</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7298,6 +7298,129 @@
     </div>
     </sc-if>
 
+    <!-- ===== EFFICIENCY: SUB-CONTRACT PAYMENT SUMMARY (สรุปจ่ายเงินรถร่วม) ===== -->
+    <sc-if value="{{ isEffSubPay }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:26px 30px 60px;">
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-bottom:20px;">
+        <div>
+          <h1 style="margin:0;font-size:22px;font-weight:700;color:#16263a;">💸 สรุปจ่ายเงินรถร่วม</h1>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">เรียงตามวันนัดจ่าย → ฟลีต → รถแต่ละคัน · ตัวเลขชุดเดียวกับใบสรุปรับ-จ่ายค่าขนส่ง</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-left:auto;flex-wrap:wrap;">
+          <span style="font-size:12.5px;color:#667085;">นัดจ่าย</span>
+          <input type="date" value="{{ spFrom }}" onInput="{{ onSpFrom }}" style="padding:7px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;">
+          <span style="font-size:13px;color:#98a2b3;">ถึง</span>
+          <input type="date" value="{{ spTo }}" onInput="{{ onSpTo }}" style="padding:7px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;">
+          <select value="{{ spFleet }}" onChange="{{ onSpFleet }}" style="padding:8px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;background:#fff;font-weight:600;">
+            <sc-for list="{{ spFleetOptions }}" as="f" hint-placeholder-count="3">
+              <option value="{{ f.value }}">{{ f.label }}</option>
+            </sc-for>
+          </select>
+          <select value="{{ spStatus }}" onChange="{{ onSpStatus }}" style="padding:8px 12px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;background:#fff;">
+            <sc-for list="{{ spStatusOptions }}" as="o" hint-placeholder-count="3">
+              <option value="{{ o.value }}">{{ o.label }}</option>
+            </sc-for>
+          </select>
+          <button onClick="{{ onSpPrint }}" style="padding:7px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #cfe0f2;background:#fff;color:#2f6fb0;white-space:nowrap;">🖨️ พิมพ์ / PDF</button>
+          <button onClick="{{ onSpExport }}" style="padding:7px 15px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #b7e2c8;background:#fff;color:#067647;white-space:nowrap;">⬇ Excel</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px;">
+        <div style="flex:1 1 170px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:14px 17px;">
+          <div style="font-size:11.5px;color:#98a2b3;margin-bottom:5px;">ค่าขนส่งรวม</div>
+          <div style="font-size:23px;font-weight:800;color:#16263a;line-height:1;">{{ spTotGross }}</div>
+        </div>
+        <div style="flex:1 1 150px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:14px 17px;">
+          <div style="font-size:11.5px;color:#98a2b3;margin-bottom:5px;">รวมรายการหัก</div>
+          <div style="font-size:23px;font-weight:800;color:#b54708;line-height:1;">{{ spTotDed }}</div>
+        </div>
+        <div style="flex:1 1 170px;background:#fff;border:1px solid #c6ebd4;border-radius:12px;padding:14px 17px;">
+          <div style="font-size:11.5px;color:#98a2b3;margin-bottom:5px;">เงินที่ต้องจ่ายรวม</div>
+          <div style="font-size:23px;font-weight:800;color:#067647;line-height:1;">{{ spTotNet }}</div>
+        </div>
+        <div style="flex:1 1 150px;background:#fff;border:1px solid #f0d5a8;border-radius:12px;padding:14px 17px;">
+          <div style="font-size:11.5px;color:#98a2b3;margin-bottom:5px;">ยังไม่จ่าย</div>
+          <div style="font-size:23px;font-weight:800;color:#b54708;line-height:1;">{{ spTotUnpaid }}</div>
+        </div>
+        <div style="flex:1 1 120px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:14px 17px;">
+          <div style="font-size:11.5px;color:#98a2b3;margin-bottom:5px;">จำนวนงวด</div>
+          <div style="font-size:23px;font-weight:800;color:#16263a;line-height:1;">{{ spCount }}</div>
+        </div>
+      </div>
+
+      <sc-if value="{{ spEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:46px 30px;text-align:center;color:#98a2b3;font-size:14px;line-height:1.8;">ช่วงที่เลือกยังไม่มีงวดที่นัดวันจ่ายไว้<br><span style="font-size:12.5px;">รายงานนี้แสดงเฉพาะรถร่วมที่กรอก "นัดวันจ่าย" ไว้แล้วในหน้ารายงานรายเที่ยว</span></div>
+      </sc-if>
+
+      <sc-for list="{{ spDays }}" as="d" hint-placeholder-count="2">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;overflow:hidden;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:13px;flex-wrap:wrap;padding:13px 18px;background:#16263a;color:#fff;">
+            <span style="flex:none;padding:4px 11px;border-radius:7px;background:#2f6fb0;color:#fff;font-size:13.5px;font-weight:800;">{{ d.dateLabel }}</span>
+            <div style="font-size:12px;color:#9fb2c4;">{{ d.count }} คัน</div>
+            <div style="{{ d.unpaidStyle }}">{{ d.unpaidText }}</div>
+            <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px;">
+              <div style="font-size:12px;color:#9fb2c4;">ค่าขนส่ง {{ d.gross }}</div>
+              <div style="font-size:12px;color:#9fb2c4;">หัก {{ d.ded }}</div>
+              <div style="font-size:12.5px;color:#9fb2c4;">ต้องจ่าย <span style="font-size:17px;font-weight:800;color:#7cf0b0;">{{ d.net }}</span></div>
+            </div>
+          </div>
+          <sc-for list="{{ d.fleets }}" as="f" hint-placeholder-count="2">
+            <div style="border-top:1px solid #eef0f3;">
+              <div style="display:flex;align-items:center;gap:10px;padding:9px 18px;background:#f8fafc;border-bottom:1px solid #eef0f3;">
+                <div style="font-size:13px;font-weight:700;color:#16263a;">ฟลีต {{ f.fleet }}</div>
+                <div style="font-size:11.5px;color:#98a2b3;">{{ f.count }} คัน</div>
+                <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px;">
+                  <div style="font-size:11.5px;color:#98a2b3;">ค่าขนส่ง <span style="font-weight:700;color:#475467;">{{ f.gross }}</span></div>
+                  <div style="font-size:11.5px;color:#98a2b3;">หัก <span style="font-weight:700;color:#b54708;">{{ f.ded }}</span></div>
+                  <div style="font-size:13.5px;font-weight:800;color:#067647;">{{ f.net }}</div>
+                </div>
+              </div>
+              <div style="overflow-x:auto;">
+                <div style="min-width:1480px;">
+                  <div style="{{ spRowHead }}">
+                    <div style="padding:7px 16px;">ทะเบียนรถ</div>
+                    <div style="padding:7px 8px;">เจ้าของรถ</div>
+                    <div style="padding:7px 8px;">งวดเดือน</div>
+                    <div style="padding:7px 8px;">เลขที่เอกสาร</div>
+                    <div style="padding:7px 8px;text-align:right;">เที่ยว</div>
+                    <div style="padding:7px 8px;text-align:right;">ค่าขนส่ง</div>
+                    <sc-for list="{{ spDedHeads }}" as="h" hint-placeholder-count="5">
+                      <div style="padding:7px 8px;text-align:right;">{{ h.label }}</div>
+                    </sc-for>
+                    <div style="padding:7px 8px;text-align:right;">หักอื่นๆ</div>
+                    <div style="padding:7px 8px;text-align:right;">รวมหัก</div>
+                    <div style="padding:7px 8px;text-align:right;">เงินรับสุทธิ</div>
+                    <div style="padding:7px 16px;">สถานะ</div>
+                  </div>
+                  <sc-for list="{{ f.rows }}" as="r" hint-placeholder-count="3">
+                    <div onClick="{{ r.onOpen }}" title="เปิดรายงานรายเที่ยวของรถคันนี้" style="{{ r.rowStyle }}">
+                      <div style="padding:9px 16px;font-weight:700;color:#2f6fb0;">{{ r.plate }}</div>
+                      <div style="padding:9px 8px;color:#344054;">{{ r.owner }}</div>
+                      <div style="padding:9px 8px;color:#667085;">{{ r.monthLabel }}</div>
+                      <div style="padding:9px 8px;color:#667085;">{{ r.docNo }}</div>
+                      <div style="padding:9px 8px;text-align:right;color:#667085;">{{ r.trips }}</div>
+                      <div style="padding:9px 8px;text-align:right;font-weight:700;color:#16263a;">{{ r.gross }}</div>
+                      <div style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.d0 }}</div>
+                      <div style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.d1 }}</div>
+                      <div style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.d2 }}</div>
+                      <div style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.d3 }}</div>
+                      <div style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.d4 }}</div>
+                      <div title="{{ r.dOtherTitle }}" style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.dOther }}</div>
+                      <div style="padding:9px 8px;text-align:right;font-weight:600;color:#b54708;">{{ r.ded }}</div>
+                      <div style="padding:9px 8px;text-align:right;font-weight:800;color:#067647;">{{ r.net }}</div>
+                      <div style="{{ r.statusStyle }}">{{ r.statusText }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
     <!-- ===== EFFICIENCY: TRIP REPORT (รายงานรายเที่ยว) ===== -->
     <sc-if value="{{ isEffTrip }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;">
@@ -11872,6 +11995,139 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'</body></html>';
     this._printHtml(html);
   };
+  // ===== รายงานสรุปจ่ายเงินรถร่วม (วันนัดจ่าย → ฟลีต → รถ) =====
+  // ยึดตัวเลขชุดเดียวกับใบสรุปรับ-จ่ายค่าขนส่งที่พิมพ์ให้เจ้าของรถ
+  _spDedSplit(plate,month){
+    const v=[0,0,0,0,0,0];const ol=[];
+    (this._subDedList(plate,month)||[]).forEach(d=>{
+      const a=parseFloat(d.amount)||0;if(!a)return;
+      const i=SUB_DED_DEFAULTS.indexOf(String(d.label||'').trim());
+      if(i>=0&&i<5)v[i]+=a;else{v[5]+=a;ol.push(String(d.label||'').trim()||'ไม่ระบุชื่อ');}
+    });
+    return {v:v,sum:v.reduce((x,y)=>x+y,0),otherLabels:ol.join(', ')};
+  }
+  _spRange(){
+    const S=this.state;
+    const t=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+    const y=parseInt(t.slice(0,4),10),m=parseInt(t.slice(5,7),10);
+    const iso=(d)=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    return {from:(S.spFrom!==undefined?S.spFrom:iso(new Date(y,m-1,1))),
+            to:(S.spTo!==undefined?S.spTo:iso(new Date(y,m+1,0)))};
+  }
+  _spData(){
+    const S=this.state;const R=this._spRange();
+    const fleetSel=S.spFleet||'all';const stSel=S.spStatus||'all';
+    const meta=S.subMonthMeta||{};const trucks=S.trucks||[];
+    const rows=[];
+    Object.keys(meta).forEach(k=>{
+      const mt=meta[k]||{};const pd=String(mt.payDate||'').slice(0,10);
+      if(!pd)return;
+      if((R.from&&pd<R.from)||(R.to&&pd>R.to))return;
+      const i=k.lastIndexOf('|');if(i<0)return;
+      const plate=k.slice(0,i),month=k.slice(i+1);
+      if(!/^[0-9]{4}-[0-9]{2}$/.test(month))return;
+      const tk=trucks.find(x=>x.plate===plate);
+      if(!tk||!/ร่วม/.test(tk.dept||''))return;
+      // นับเฉพาะเที่ยวที่ส่งเอกสารแล้ว เหมือนตอนออกใบสรุปรับ-จ่าย
+      const jobs=(S.jobs||[]).filter(j=>j&&!j.deleted&&!j._deleted&&j.truckPlate===plate
+        &&String(j.date||'').slice(0,7)===month&&(j.documentTime||j.docsClosed));
+      const gross=jobs.reduce((a,j)=>a+(this._ecSubCalc(j).gross||0),0);
+      const dd=this._spDedSplit(plate,month);
+      if(!gross&&!dd.sum)return;
+      const paid=!!mt.paid;
+      if(stSel==='unpaid'&&paid)return;
+      if(stSel==='paid'&&!paid)return;
+      const fleet=this._subFleetOf(plate,jobs)||'ไม่ระบุฟลีต';
+      if(fleetSel!=='all'&&fleet!==fleetSel)return;
+      const no=String(mt.rcNo||'').trim();
+      rows.push({payDate:pd,fleet:fleet,plate:plate,owner:tk.owner||'',account:tk.account||'',month:month,
+        docNo:(no?('PA'+no):''),trips:jobs.length,gross:gross,d:dd.v,other:dd.v[5],otherLabels:dd.otherLabels,
+        ded:dd.sum,net:gross-dd.sum,paid:paid});
+    });
+    rows.sort((a,b)=>a.payDate.localeCompare(b.payDate)
+      ||String(a.fleet).localeCompare(String(b.fleet),'th')
+      ||String(a.plate).localeCompare(String(b.plate),'th',{numeric:true}));
+    const days=[];const dIdx={};
+    rows.forEach(r=>{
+      let d=dIdx[r.payDate];
+      if(!d){d={payDate:r.payDate,fleets:[],_fi:{},gross:0,ded:0,net:0,count:0,unpaid:0};dIdx[r.payDate]=d;days.push(d);}
+      let f=d._fi[r.fleet];
+      if(!f){f={fleet:r.fleet,rows:[],gross:0,ded:0,net:0,d:[0,0,0,0,0,0]};d._fi[r.fleet]=f;d.fleets.push(f);}
+      f.rows.push(r);f.gross+=r.gross;f.ded+=r.ded;f.net+=r.net;r.d.forEach((v,i)=>{f.d[i]+=v;});
+      d.gross+=r.gross;d.ded+=r.ded;d.net+=r.net;d.count++;if(!r.paid)d.unpaid+=r.net;
+    });
+    const tot=rows.reduce((a,r)=>{a.gross+=r.gross;a.ded+=r.ded;a.net+=r.net;if(!r.paid)a.unpaid+=r.net;return a;},
+      {gross:0,ded:0,net:0,unpaid:0});
+    return {from:R.from,to:R.to,fleetSel:fleetSel,stSel:stSel,rows:rows,days:days,tot:tot};
+  }
+  _spTitle(){
+    const D=this._capSp||this._spData();
+    const r=(D.from||D.to)?('นัดจ่าย '+(D.from?this.thaiDate(D.from):'เริ่มต้น')+' ถึง '+(D.to?this.thaiDate(D.to):'ล่าสุด')):'ทุกวันนัดจ่าย';
+    const f=(D.fleetSel&&D.fleetSel!=='all')?(' · ฟลีต'+D.fleetSel):'';
+    const st=D.stSel==='unpaid'?' · เฉพาะที่ยังไม่จ่าย':(D.stSel==='paid'?' · เฉพาะที่จ่ายแล้ว':'');
+    return r+f+st;
+  }
+  exportSubPaySummary=()=>{
+    const D=this._capSp||this._spData();
+    const n2=(v)=>(Math.round((v||0)*100)/100).toFixed(2);
+    const cols=[{label:'วันนัดจ่าย',get:r=>this.thaiDate(r.payDate)},{label:'ฟลีต',get:r=>r.fleet},
+      {label:'ทะเบียนรถ',get:r=>r.plate},{label:'เจ้าของรถ',get:r=>r.owner},
+      {label:'งวดเดือน',get:r=>this._thMonthLabel(r.month)},{label:'เลขที่เอกสาร',get:r=>r.docNo},
+      {label:'เที่ยว',get:r=>r.trips},{label:'ค่าขนส่ง',get:r=>n2(r.gross)}]
+      .concat(SUB_DED_DEFAULTS.map((l,i)=>({label:l,get:r=>n2(r.d[i])})))
+      .concat([{label:'หักอื่นๆ',get:r=>n2(r.other)},{label:'รวมหัก',get:r=>n2(r.ded)},
+        {label:'เงินรับสุทธิ',get:r=>n2(r.net)},{label:'สถานะ',get:r=>r.paid?'จ่ายแล้ว':'รอจ่าย'},
+        {label:'บัญชีรับโอน',get:r=>r.account}]);
+    this._exportCsv('สรุปจ่ายเงินรถร่วม_'+this._todayStr()+'.csv',cols,D.rows);
+  };
+  printSubPaySummary=()=>{
+    const D=this._capSp||this._spData();
+    if(!D.rows.length){alert('ช่วงที่เลือกยังไม่มีงวดที่นัดวันจ่ายไว้');return;}
+    const esc=(x)=>String(x==null?'':x).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+    const B=(n)=>_LFB2(n);const Bz=(n)=>n?_LFB2(n):'—';
+    const co=(this.state.company&&this.state.company.name)||'';
+    const now=new Date();
+    const ts=this.thaiDate(now.toISOString().slice(0,10))+' เวลา '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    const head='<tr><th>ทะเบียนรถ</th><th>เจ้าของรถ</th><th>งวด</th><th>เลขที่</th><th class="n">เที่ยว</th><th class="n">ค่าขนส่ง</th>'
+      +SUB_DED_DEFAULTS.map(l=>'<th class="n">'+esc(l)+'</th>').join('')
+      +'<th class="n">อื่นๆ</th><th class="n">รวมหัก</th><th class="n">เงินรับสุทธิ</th><th>สถานะ</th></tr>';
+    const body=D.days.map(d=>{
+      const inner=d.fleets.map(f=>{
+        const trs=f.rows.map(r=>'<tr><td class="b">'+esc(r.plate)+'</td><td>'+esc(r.owner||'—')+'</td>'
+          +'<td>'+esc(this._thMonthLabel(r.month))+'</td><td>'+esc(r.docNo||'—')+'</td>'
+          +'<td class="n">'+r.trips+'</td><td class="n">'+B(r.gross)+'</td>'
+          +r.d.slice(0,5).map(v=>'<td class="n">'+Bz(v)+'</td>').join('')
+          +'<td class="n">'+Bz(r.other)+'</td><td class="n">'+Bz(r.ded)+'</td>'
+          +'<td class="n b">'+B(r.net)+'</td><td>'+(r.paid?'จ่ายแล้ว':'รอจ่าย')+'</td></tr>').join('');
+        return '<tr class="fl"><td colspan="14">ฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n">'+B(f.net)+'</td></tr>'+trs;
+      }).join('');
+      return '<tr class="dy"><td colspan="14">นัดจ่าย '+esc(this.thaiDate(d.payDate))+' · '+d.count+' คัน</td><td class="n">'+B(d.net)+'</td></tr>'+inner;
+    }).join('');
+    const css='@page{size:A4 landscape;margin:10mm;}*{box-sizing:border-box;}'
+      +'body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;}'
+      +'h1{font-size:17px;margin:0 0 2px;color:#16263a;}'
+      +'.sub{font-size:11.5px;color:#667085;margin-bottom:10px;}'
+      +'table{width:100%;border-collapse:collapse;font-size:10.5px;}'
+      +'th,td{border:1px solid #c9ced6;padding:4px 6px;text-align:left;}'
+      +'thead th{background:#16263a;color:#fff;font-weight:600;}'
+      +'td.n,th.n{text-align:right;white-space:nowrap;}td.b{font-weight:700;}'
+      +'tr.dy td{background:#e8edf3;font-weight:800;font-size:11.5px;}'
+      +'tr.fl td{background:#f4f6f9;font-weight:700;}'
+      +'tfoot td{background:#16263a;color:#fff;font-weight:800;font-size:11.5px;}'
+      +'.ft{margin-top:8px;font-size:9.5px;color:#98a2b3;display:flex;justify-content:space-between;}';
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>สรุปจ่ายเงินรถร่วม</title>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">'
+      +'<style>'+css+'</style></head><body>'
+      +'<h1>สรุปจ่ายเงินรถร่วม — ตามวันนัดจ่าย</h1>'
+      +'<div class="sub">'+esc(co)+' · '+esc(this._spTitle())+' · พิมพ์เมื่อ '+esc(ts)+'</div>'
+      +'<table><thead>'+head+'</thead><tbody>'+body+'</tbody>'
+      +'<tfoot><tr><td colspan="5">รวมทั้งสิ้น '+D.rows.length+' คัน</td><td class="n">'+B(D.tot.gross)+'</td>'
+      +'<td class="n" colspan="7">หักรวม '+B(D.tot.ded)+'</td><td class="n">'+B(D.tot.net)+'</td>'
+      +'<td>ยังไม่จ่าย '+B(D.tot.unpaid)+'</td></tr></tfoot></table>'
+      +'<div class="ft"><span>รายงานจากระบบ LionFlow · lionflowapp.com</span><span>ตัวเลขชุดเดียวกับใบสรุปรับ-จ่ายค่าขนส่ง</span></div>'
+      +'</body></html>';
+    this._printHtml(html);
+  };
   printSubMonthPay=(plate,monthArg)=>{
     plate=plate||this._capSubPlate||this.state.effTruckFilter||'';
     if(!plate){alert('กรุณาเลือกรถร่วมก่อนออกเอกสาร');return;}
@@ -14638,7 +14894,49 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
               weightText:r.weight?r.weight.toLocaleString()+' ตัน':'—',rateText:r.rate?_fB(r.rate):'—',rev:_fB(r.rev),onOpen:()=>this.openSettle(r.id),
               rowStyle:'display:grid;grid-template-columns:96px 118px 108px minmax(190px,1fr) 82px 92px 112px;font-size:12.5px;align-items:center;'+(i>0?'border-top:1px solid #f4f6f8;':'')}))}))};});
     }
-    const _effSubDefs=[{key:'overview',label:'ภาพรวม',color:'#5b9bd5'},{key:'driverpay',label:'จ่ายเบี้ยเลี้ยง พขร. (15 วัน)',color:'#e0a87f'},{key:'tripreport',label:'รายงานรายเที่ยว',color:'#e0a87f'},{key:'truck',label:'รายรถ',color:'#5fc08a'},{key:'monthly',label:'รายเดือน',color:'#5b9bd5'}];
+    out.isEffSubPay=isEffSection&&S.effView==='subpay';
+    if(out.isEffSubPay){
+      const D=this._spData();this._capSp=D;
+      const B=(n)=>'฿'+_LFB2(n);const Bz=(n)=>n?('฿'+_LFB2(n)):'—';
+      out.spFrom=D.from;out.spTo=D.to;
+      out.onSpFrom=(e)=>this.setState({spFrom:e.target.value});
+      out.onSpTo=(e)=>this.setState({spTo:e.target.value});
+      out.spFleet=D.fleetSel;out.onSpFleet=(e)=>this.setState({spFleet:e.target.value});
+      out.spFleetOptions=[{value:'all',label:'ทุกฟลีต'}]
+        .concat(this._fleetList().map(f=>({value:f,label:'ฟลีต'+f})))
+        .concat([{value:'ไม่ระบุฟลีต',label:'ไม่ระบุฟลีต'}]);
+      out.spStatus=D.stSel;out.onSpStatus=(e)=>this.setState({spStatus:e.target.value});
+      out.spStatusOptions=[{value:'all',label:'ทุกสถานะ'},{value:'unpaid',label:'เฉพาะที่ยังไม่จ่าย'},{value:'paid',label:'เฉพาะที่จ่ายแล้ว'}];
+      out.spEmpty=D.rows.length===0;
+      out.spCount=D.rows.length;out.spDayCount=D.days.length;
+      out.spTotGross=B(D.tot.gross);out.spTotDed=B(D.tot.ded);out.spTotNet=B(D.tot.net);out.spTotUnpaid=B(D.tot.unpaid);
+      out.spDedHeads=SUB_DED_DEFAULTS.map(l=>({label:l}));
+      out.onSpPrint=this.printSubPaySummary;out.onSpExport=this.exportSubPaySummary;
+      const _rowGrid='display:grid;grid-template-columns:130px minmax(140px,1fr) 92px 92px 52px 100px 92px 92px 92px 78px 84px 78px 92px 104px 78px;font-size:12px;align-items:center;';
+      out.spRowHead=_rowGrid+'background:#fbfcfe;border-bottom:1px solid #eef0f3;font-weight:600;color:#667085;font-size:11px;';
+      out.spDays=D.days.map(d=>({
+        dateLabel:this.thaiDate(d.payDate),count:d.count,
+        gross:B(d.gross),ded:B(d.ded),net:B(d.net),
+        unpaidText:d.unpaid?('ยังไม่จ่าย '+B(d.unpaid)):'จ่ายครบแล้ว',
+        unpaidStyle:'font-size:11.5px;font-weight:700;color:'+(d.unpaid?'#ffd59e':'#7cf0b0')+';',
+        fleets:d.fleets.map(f=>({
+          fleet:f.fleet,count:f.rows.length,gross:B(f.gross),ded:B(f.ded),net:B(f.net),
+          rows:f.rows.map((r,i)=>({
+            plate:r.plate,owner:r.owner||'—',monthLabel:this._thMonthLabel(r.month),docNo:r.docNo||'—',
+            trips:r.trips,gross:B(r.gross),
+            d0:Bz(r.d[0]),d1:Bz(r.d[1]),d2:Bz(r.d[2]),d3:Bz(r.d[3]),d4:Bz(r.d[4]),
+            dOther:Bz(r.other),dOtherTitle:r.otherLabels,ded:Bz(r.ded),net:B(r.net),
+            statusText:r.paid?'จ่ายแล้ว':'รอจ่าย',
+            statusStyle:'padding:9px 10px;font-size:11.5px;font-weight:700;color:'+(r.paid?'#067647':'#b54708')+';',
+            rowStyle:_rowGrid+'cursor:pointer;'+(i>0?'border-top:1px solid #f4f6f8;':''),
+            onOpen:()=>{const q=r.month.split('-');const last=new Date(parseInt(q[0],10),parseInt(q[1],10),0).getDate();
+              this.setState({section:'efficiency',effView:'tripreport',effTripDept:'sub',effTruckFilter:r.plate,
+                effTripFrom:r.month+'-01',effTripTo:r.month+'-'+String(last).padStart(2,'0')});this.scrollMain();}
+          }))
+        }))
+      }));
+    }
+    const _effSubDefs=[{key:'overview',label:'ภาพรวม',color:'#5b9bd5'},{key:'driverpay',label:'จ่ายเบี้ยเลี้ยง พขร. (15 วัน)',color:'#e0a87f'},{key:'tripreport',label:'รายงานรายเที่ยว',color:'#e0a87f'},{key:'subpay',label:'สรุปจ่ายเงินรถร่วม',color:'#c98bd0'},{key:'truck',label:'รายรถ',color:'#5fc08a'},{key:'monthly',label:'รายเดือน',color:'#5b9bd5'}];
     out.navEffItems=_effSubDefs.map(d=>{const active=isEffSection&&S.effView===d.key;return{label:d.label,onClick:()=>this.setState({section:'efficiency',effView:d.key}),btnStyle:'width:100%;display:flex;align-items:center;justify-content:space-between;padding:7px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:12.5px;font-weight:600;text-align:left;cursor:pointer;'+(active?'background:rgba(47,111,176,.3);color:#fff;':'background:transparent;color:#9fb2c4;'),dotStyle:'width:6px;height:6px;border-radius:50%;flex:none;background:'+d.color+';',badgeStyle:'display:none;',count:''};});
     out.isEff=isEffSection&&S.effView!=='settle';
     // ★ v.2026-09-27c: เมนู รายได้ & ค่าใช้จ่าย แยกหมวด + ตามฟลีต
