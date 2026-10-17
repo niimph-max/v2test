@@ -11888,14 +11888,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const now=new Date();const printTs=sd(now.toISOString())+' เวลา '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     const docNo='RJ-'+plate.replace(/[^0-9A-Za-z]/g,'')+'-'+(months[0]||'').replace('-','');
     let grandNet=0,grandGross=0,grandDed=0,grandTrips=0;let anyDate='',anyStatus=false,statusSet=false;
-    let grandTon=0;const grandDedMap={};   // ใช้ทำใบรับเงินหน้า 2
+    let grandTon=0;   // น้ำหนักรวม ใช้ในใบรับเงินหน้า 2
     const sections=months.map(mk=>{
       const jobs=this.state.jobs.filter(j=>j.truckPlate===plate&&j.date&&String(j.date).slice(0,7)===mk&&(j.documentTime||j.docsClosed)&&!j.deleted&&!j._deleted).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
       jobs.forEach(j=>{grandTon+=(parseFloat(j.weight)||0);});
       let grossT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(sd(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc((j.origin||'—')+' → '+(j.destination||'—'))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+fmt(g)+'</td></tr>';}).join('');
       const deds=this._subDedList(plate,mk).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
       let dedSum=0;const dedHtml=deds.map(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
-        const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;
         return '<tr class="ded"><td class="c"></td><td colspan="5" style="text-align:right;">หัก — '+esc(d.label||'รายการหัก')+'</td><td class="n">−'+fmt(a)+'</td></tr>';}).join('');
       const net=grossT-dedSum;grandNet+=net;grandGross+=grossT;grandDed+=dedSum;grandTrips+=jobs.length;
       const meta=(this.state.subMonthMeta||{})[plate+'|'+mk]||{};if(meta.payDate&&!anyDate)anyDate=meta.payDate;if(!statusSet){anyStatus=!!meta.paid;statusSet=true;}else anyStatus=anyStatus&&!!meta.paid;
@@ -11956,8 +11955,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'@media print{.page{margin:0;}}';
     // ===== ใบรับเงิน (หน้า 2) — ให้เจ้าของรถ/พขร. เซ็นรับทราบรายได้ =====
     const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
-    const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):''),grandGross,false]]
-      .concat(Object.keys(grandDedMap).filter(k=>grandDedMap[k]).map(k=>['หัก — '+k,'',grandDedMap[k],true]));
+    const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):''),grandNet,false]];
     const rcBlank=Math.max(0,8-rcRows.length);
     const rcTbody=rcRows.map(r=>'<tr><td>'+esc(r[0])+'</td><td class="n">'+esc(r[1])+'</td><td class="n"'+(r[3]?' style="color:#b42318;"':'')+'>'+(r[3]?'−':'')+_LFB2(r[2])+'</td></tr>').join('')
       +Array.from({length:rcBlank}).map(()=>'<tr><td>&nbsp;</td><td></td><td></td></tr>').join('');
