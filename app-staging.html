@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5649,6 +5649,10 @@
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">เลขบัตรประชาชนเจ้าของรถ</label>
             <input value="{{ draft.ownerIdCard }}" onInput="{{ onOwnerIdCard }}" placeholder="เลข 13 หลัก" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
           </div>
+          <div style="grid-column:1 / -1;">
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ที่อยู่เจ้าของรถ <span style="color:#98a2b3;font-weight:400;">(ใช้พิมพ์ในใบรับเงิน)</span></label>
+            <input value="{{ draft.ownerAddress }}" onInput="{{ onOwnerAddress }}" placeholder="เช่น 22/3 หมู่ 2 ต.วัดสุวรรณ อ.บ่อทอง จ.ชลบุรี" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">เลขที่บัญชีธนาคาร</label>
             <input value="{{ draft.account }}" onInput="{{ onAccount }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;color:#1d2b3a;background:#fff;">
@@ -8410,7 +8414,7 @@ function normTruck(t){
   const boolParse=(v)=>v===true||v==='true'||v==='TRUE';
   // normalize date fields: ตัด timestamp ออก เหลือแค่ YYYY-MM-DD
   const normDate=(v)=>toBkkDate(v);
-  const r={plate:'',truckType:'',fuel:'',dept:'',fleet:'',maker:'',model:'',year:'',color:'',chassis:'',engine:'',weight:'',loadWeight:'',bedHFront:'',bedHMid:'',bedHRear:'',bedWidth:'',bedLength:'',totalLength:'',gps:'',gpsDeviceId:'',phoneTrack:false,owner:'',ecaccVendor:'',ownerIdCard:'',ownerPhone:'',ownerLine:'',account:'',trailerPlate:'',remark:'',maintenance:[],photo:null,contractDate:'',regExpiry:'',hasRegFile:false,insuranceExpiry:'',hasInsuranceFile:false,ownerIdExpiry:'',hasOwnerIdFile:false,cargoInsExpiry:'',hasCargoInsFile:false,hasContractFile:false,salary:'',installment:'',socialSecurity:'',fuelRateLoaded:'',fuelRateEmpty:'',makerOther:'',regFee:'',regRenew:'',actRenew:'',insRenew:'',cargoRenew:'',regNoRenew:false,actNoRenew:false,insNoRenew:false,cargoNoRenew:false,...t,maintenance:maint,hasRegFile:boolParse(t.hasRegFile),hasInsuranceFile:boolParse(t.hasInsuranceFile),hasOwnerIdFile:boolParse(t.hasOwnerIdFile),hasCargoInsFile:boolParse(t.hasCargoInsFile),hasContractFile:boolParse(t.hasContractFile),regExpiry:normDate(t.regExpiry),insuranceExpiry:normDate(t.insuranceExpiry),ownerIdExpiry:normDate(t.ownerIdExpiry),cargoInsExpiry:normDate(t.cargoInsExpiry),contractDate:normDate(t.contractDate),regRenew:normDate(t.regRenew),actRenew:normDate(t.actRenew),insRenew:normDate(t.insRenew),cargoRenew:normDate(t.cargoRenew)};if(r.dept&&r.dept.startsWith('01'))r.dept='รถบริษัท';else if(r.dept&&!['รถบริษัท','รถร่วม','รถผู้บริหาร',''].includes(r.dept))r.dept='รถร่วม';if(!Array.isArray(r.maintenance)){try{const p=JSON.parse(r.maintenance);r.maintenance=Array.isArray(p)?p:[];}catch(e){r.maintenance=[];}}return r;}
+  const r={plate:'',truckType:'',fuel:'',dept:'',fleet:'',maker:'',model:'',year:'',color:'',chassis:'',engine:'',weight:'',loadWeight:'',bedHFront:'',bedHMid:'',bedHRear:'',bedWidth:'',bedLength:'',totalLength:'',gps:'',gpsDeviceId:'',phoneTrack:false,owner:'',ecaccVendor:'',ownerIdCard:'',ownerAddress:'',ownerPhone:'',ownerLine:'',account:'',trailerPlate:'',remark:'',maintenance:[],photo:null,contractDate:'',regExpiry:'',hasRegFile:false,insuranceExpiry:'',hasInsuranceFile:false,ownerIdExpiry:'',hasOwnerIdFile:false,cargoInsExpiry:'',hasCargoInsFile:false,hasContractFile:false,salary:'',installment:'',socialSecurity:'',fuelRateLoaded:'',fuelRateEmpty:'',makerOther:'',regFee:'',regRenew:'',actRenew:'',insRenew:'',cargoRenew:'',regNoRenew:false,actNoRenew:false,insNoRenew:false,cargoNoRenew:false,...t,maintenance:maint,hasRegFile:boolParse(t.hasRegFile),hasInsuranceFile:boolParse(t.hasInsuranceFile),hasOwnerIdFile:boolParse(t.hasOwnerIdFile),hasCargoInsFile:boolParse(t.hasCargoInsFile),hasContractFile:boolParse(t.hasContractFile),regExpiry:normDate(t.regExpiry),insuranceExpiry:normDate(t.insuranceExpiry),ownerIdExpiry:normDate(t.ownerIdExpiry),cargoInsExpiry:normDate(t.cargoInsExpiry),contractDate:normDate(t.contractDate),regRenew:normDate(t.regRenew),actRenew:normDate(t.actRenew),insRenew:normDate(t.insRenew),cargoRenew:normDate(t.cargoRenew)};if(r.dept&&r.dept.startsWith('01'))r.dept='รถบริษัท';else if(r.dept&&!['รถบริษัท','รถร่วม','รถผู้บริหาร',''].includes(r.dept))r.dept='รถร่วม';if(!Array.isArray(r.maintenance)){try{const p=JSON.parse(r.maintenance);r.maintenance=Array.isArray(p)?p:[];}catch(e){r.maintenance=[];}}return r;}
 function toBkkDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);if(isNaN(d))return s.slice(0,10);try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}catch(e){return s.slice(0,10);}}
 function _LFB2(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function normJob(j){const o=_normJob0(j);if(Array.isArray(o.miscItems)&&o.miscItems.length){const ms=o.miscItems.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);o.misc=ms?String(Math.round(ms*100)/100):'';}if(Array.isArray(o.fuelRefills)&&o.fuelRefills.length){const s=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.baht)||0),0);const l=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.liters)||0),0);if(s)o.fuelBaht=String(Math.round(s*100)/100);if(l)o.fuelLiters=String(Math.round(l*100)/100);}return o;}
@@ -11884,11 +11888,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const now=new Date();const printTs=sd(now.toISOString())+' เวลา '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     const docNo='RJ-'+plate.replace(/[^0-9A-Za-z]/g,'')+'-'+(months[0]||'').replace('-','');
     let grandNet=0,grandGross=0,grandDed=0,grandTrips=0;let anyDate='',anyStatus=false,statusSet=false;
+    let grandTon=0;const grandDedMap={};   // ใช้ทำใบรับเงินหน้า 2
     const sections=months.map(mk=>{
       const jobs=this.state.jobs.filter(j=>j.truckPlate===plate&&j.date&&String(j.date).slice(0,7)===mk&&(j.documentTime||j.docsClosed)&&!j.deleted&&!j._deleted).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
+      jobs.forEach(j=>{grandTon+=(parseFloat(j.weight)||0);});
       let grossT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(sd(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc((j.origin||'—')+' → '+(j.destination||'—'))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+fmt(g)+'</td></tr>';}).join('');
       const deds=this._subDedList(plate,mk).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
-      let dedSum=0;const dedHtml=deds.map(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;return '<tr class="ded"><td class="c"></td><td colspan="5" style="text-align:right;">หัก — '+esc(d.label||'รายการหัก')+'</td><td class="n">−'+fmt(a)+'</td></tr>';}).join('');
+      let dedSum=0;const dedHtml=deds.map(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
+        const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;
+        return '<tr class="ded"><td class="c"></td><td colspan="5" style="text-align:right;">หัก — '+esc(d.label||'รายการหัก')+'</td><td class="n">−'+fmt(a)+'</td></tr>';}).join('');
       const net=grossT-dedSum;grandNet+=net;grandGross+=grossT;grandDed+=dedSum;grandTrips+=jobs.length;
       const meta=(this.state.subMonthMeta||{})[plate+'|'+mk]||{};if(meta.payDate&&!anyDate)anyDate=meta.payDate;if(!statusSet){anyStatus=!!meta.paid;statusSet=true;}else anyStatus=anyStatus&&!!meta.paid;
       return '<div class="sec"><div class="sech">ประจำเดือน '+esc(mLabel(mk))+' <span>'+jobs.length+' เที่ยว</span></div>'+
@@ -11924,7 +11932,56 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.sign{margin-top:30px;display:flex;justify-content:space-between;gap:20px;}'
       +'.sign .s{flex:1;text-align:center;font-size:11.5px;color:#475467;}.sign .ln{margin:34px 12px 6px;border-top:1px dotted #98a2b3;}.sign .r{font-size:10.5px;color:#98a2b3;margin-top:3px;}'
       +'.foot{margin-top:20px;border-top:1px solid #eaedf0;padding-top:8px;font-size:10px;color:#98a2b3;display:flex;justify-content:space-between;}'
+      +'.rc{page-break-before:always;}'
+      +'.rct{flex:1;text-align:center;font-size:20px;font-weight:800;color:#16263a;}'
+      +'.rchd{display:flex;align-items:center;justify-content:space-between;gap:10px;}'
+      +'.rchd .sp{width:120px;}'
+      +'.rcfor{width:120px;text-align:center;border:1px solid #16263a;border-radius:4px;padding:3px 8px;font-size:11px;}'
+      +'.rcid{font-size:12.5px;line-height:2.1;margin:10px 0 12px;}'
+      +'.rcid b{font-weight:700;color:#475467;}'
+      +'.rcwrap{display:flex;gap:10px;align-items:flex-start;}'
+      +'.rctb{flex:1;border-collapse:collapse;}'
+      +'.rctb th,.rctb td{border:1px solid #16263a;padding:6px 9px;font-size:12px;}'
+      +'.rctb thead th{background:#f1f5f9;font-weight:700;color:#16263a;text-align:left;}'
+      +'.rctb thead th.n{text-align:right;}'
+      +'.rctb tfoot td{font-size:12.5px;}'
+      +'.rcdt{flex:none;width:118px;border:1px solid #16263a;}'
+      +'.rcdt .k{border-bottom:1px solid #16263a;background:#f1f5f9;padding:6px 9px;font-size:12px;font-weight:700;text-align:center;}'
+      +'.rcdt .v{padding:6px 9px;font-size:12px;text-align:center;}'
+      +'.rcwords{margin-top:9px;font-size:12.5px;}'
+      +'.rcmeta{margin-top:10px;border:1px solid #16263a;padding:8px 10px;font-size:12px;line-height:2;}'
+      +'.rcsign{display:flex;gap:10px;margin-top:20mm;}'
+      +'.rcsign .sg{flex:1;border:1px solid #16263a;padding:10px;height:30mm;display:flex;flex-direction:column;justify-content:space-between;text-align:center;font-size:12px;}'
+      +'.rcsign .sl{font-weight:700;}.rcsign .sd{color:#475467;}'
       +'@media print{.page{margin:0;}}';
+    // ===== ใบรับเงิน (หน้า 2) — ให้เจ้าของรถ/พขร. เซ็นรับทราบรายได้ =====
+    const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
+    const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):''),grandGross,false]]
+      .concat(Object.keys(grandDedMap).filter(k=>grandDedMap[k]).map(k=>['หัก — '+k,'',grandDedMap[k],true]));
+    const rcBlank=Math.max(0,8-rcRows.length);
+    const rcTbody=rcRows.map(r=>'<tr><td>'+esc(r[0])+'</td><td class="n">'+esc(r[1])+'</td><td class="n"'+(r[3]?' style="color:#b42318;"':'')+'>'+(r[3]?'−':'')+_LFB2(r[2])+'</td></tr>').join('')
+      +Array.from({length:rcBlank}).map(()=>'<tr><td>&nbsp;</td><td></td><td></td></tr>').join('');
+    const rcSign=(t)=>'<div class="sg"><div class="sl">'+t+'</div><div class="sd">วันที่ ......../......../........</div></div>';
+    const receipt='<div class="page rc">'
+      +'<div class="rchd"><div class="sp"></div><div class="rct">ใบรับเงิน</div><div class="rcfor">- สำหรับกิจการ -</div></div>'
+      +'<div class="rcid">'
+        +'<div><b>ข้าพเจ้า</b> '+esc(owner||'.................................................')
+        +'  <b>ทะเบียนรถ</b> '+esc(plate)
+        +'  <b>เลขที่บัตรประชาชน</b> '+esc(ownerTax||'.............................................')+'</div>'
+        +'<div><b>ที่อยู่</b> '+esc(tk.ownerAddress||'...........................................................................................................................')+'</div>'
+        +'<div><b>ได้รับเงินจาก</b> '+esc(co||'บริษัทขนส่ง')+' ดังต่อไปนี้</div>'
+      +'</div>'
+      +'<div class="rcwrap">'
+      +'<table class="rctb"><thead><tr><th>รายการ</th><th class="n" style="width:90px;">จำนวน</th><th class="n" style="width:130px;">จำนวนเงิน</th></tr></thead>'
+      +'<tbody>'+rcTbody+'</tbody>'
+      +'<tfoot><tr><td class="n" colspan="2"><b>รวมเงิน</b></td><td class="n"><b>'+_LFB2(grandNet)+'</b></td></tr></tfoot></table>'
+      +'<div class="rcdt"><div class="k">วันที่</div><div class="v">'+esc(sd(rcDate))+'</div></div>'
+      +'</div>'
+      +'<div class="rcwords">จำนวนเงินสุทธิ: <b>('+esc(this._bahtText(grandNet))+')</b></div>'
+      +'<div class="rcmeta"><div><b>งวดเดือน/ปี</b> &nbsp;'+esc(months.map(mLabel).join(', ')||'—')+'</div>'
+        +'<div><b>หมายเหตุ</b> &nbsp;'+esc(acct?('โอนเข้าบัญชี '+acct):'')+'</div></div>'
+      +'<div class="rcsign">'+rcSign('ลงชื่อผู้ตรวจสอบ')+rcSign('ลงชื่อผู้จ่ายเงิน')+rcSign('ลงชื่อผู้รับเงิน')+'</div>'
+      +'</div>';
     const html=('<!doctype html><html><head><meta charset="utf-8"><title>ใบสรุปจ่ายเงินรถร่วม '+esc(plate)+'</title>'
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page">'
       +'<div class="top"><div class="brand"><div class="cn">'+esc(co||'บริษัทขนส่ง')+'</div><div class="ci">'+(coAddr?esc(coAddr)+'<br>':'')+(coTax?('เลขประจำตัวผู้เสียภาษี '+esc(coTax)):'')+'</div></div>'
@@ -11949,7 +12006,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="s"><div class="ln"></div>ผู้อนุมัติจ่าย<div class="r">วันที่ ......../......../........</div></div>'
       +'<div class="s"><div class="ln"></div>ผู้รับเงิน (เจ้าของรถ)<div class="r">วันที่ ......../......../........</div></div></div>'
       +'<div class="foot"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(docNo)+'</span></div>'
-      +'</div></body></html>');
+      +'</div>'+receipt+'</body></html>');
     this._printHtml(html);
   };
   // ===== ส่งออกเข้าโปรแกรมบัญชี (Ecacc) =====
@@ -14422,6 +14479,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onPhoneTrack=(e)=>this.setT('phoneTrack',!!e.target.checked);   // v.2026-08-28d: ติดตามผ่านมือถือ พขร. เฉพาะคันที่ติ๊ก
     out.onOwner=(e)=>this.setT('owner',e.target.value);
     out.onOwnerIdCard=(e)=>this.setT('ownerIdCard',e.target.value);
+    out.onOwnerAddress=(e)=>this.setT('ownerAddress',e.target.value);
     out.truckIsSub=String((this.state.truckDraft||{}).dept||'')==='รถร่วม';
     out.onEcaccVendor=(e)=>this.setT('ecaccVendor',e.target.value);
     out.ecaccVendorHint=String((this.state.truckDraft||{}).plate||'').replace(/\D/g,'');
