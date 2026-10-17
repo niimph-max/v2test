@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17h · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17h</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11901,7 +11901,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     else if(monthArg)months=[monthArg];
     else{const from=this.state.effTripFrom||'',to=this.state.effTripTo||'';const set={};this.state.jobs.forEach(j=>{if(j.truckPlate!==plate||!j.date||!(j.documentTime||j.docsClosed)||j.deleted||j._deleted)return;if((from&&j.date<from)||(to&&j.date>to))return;set[String(j.date).slice(0,7)]=1;});months=Object.keys(set).sort();}
     const now=new Date();const printTs=sd(now.toISOString())+' เวลา '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-    const docNo='RJ-'+plate.replace(/[^0-9A-Za-z]/g,'')+'-'+(months[0]||'').replace('-','');
+
     let grandNet=0,grandGross=0,grandDed=0,grandTrips=0;let anyDate='',anyStatus=false,statusSet=false;
     let grandTon=0;const grandDedMap={};   // น้ำหนักรวม + ยอดหักแยกตามชื่อรายการ ใช้ในแผ่นใบรับเงิน
     const sections=months.map(mk=>{
@@ -12042,7 +12042,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const html=('<!doctype html><html><head><meta charset="utf-8"><title>ใบสรุปจ่ายเงินรถร่วม '+esc(plate)+'</title>'
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page">'
       +'<div class="top"><div class="brand"><div class="cn">'+esc(co||'บริษัทขนส่ง')+'</div><div class="ci">'+(coAddr?esc(coAddr)+'<br>':'')+(coTax?('เลขประจำตัวผู้เสียภาษี '+esc(coTax)):'')+'</div></div>'
-      +'<div class="doc"><div class="t">ใบสรุปจ่ายเงินรถร่วม</div><div class="d">เลขที่ '+esc(docNo)+'<br>พิมพ์เมื่อ '+esc(printTs)+'</div></div></div>'
+      +'<div class="doc"><div class="t">ใบสรุปจ่ายเงินรถร่วม</div><div class="d">เลขที่ '+esc(rcNo)+'<br>พิมพ์เมื่อ '+esc(printTs)+'</div></div></div>'
       +'<div class="info">'
       +'<div class="cell"><div class="k">ทะเบียนรถ</div><div class="v">'+esc(plate)+(tk.truckType?(' · '+esc(tk.truckType)):'')+'</div></div>'
       +'<div class="cell"><div class="k">เจ้าของรถ / ผู้รับเงิน</div><div class="v">'+esc(owner||'—')+'</div></div>'
@@ -12062,7 +12062,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="sign"><div class="s"><div class="ln"></div>ผู้จัดทำ<div class="r">วันที่ ......../......../........</div></div>'
       +'<div class="s"><div class="ln"></div>ผู้อนุมัติจ่าย<div class="r">วันที่ ......../......../........</div></div>'
       +'<div class="s"><div class="ln"></div>ผู้รับเงิน (เจ้าของรถ)<div class="r">วันที่ ......../......../........</div></div></div>'
-      +'<div class="foot"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(docNo)+'</span></div>'
+      +'<div class="foot"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(rcNo)+'</span></div>'
       +'</div>'+receipt+'</body></html>');
     this._printHtml(html);
   };
