@@ -11955,7 +11955,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'@media print{.page{margin:0;}}';
     // ===== ใบรับเงิน (หน้า 2) — ให้เจ้าของรถ/พขร. เซ็นรับทราบรายได้ =====
     const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
-    const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):''),grandNet,false]];
+    const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):''),grandGross,false]];
     const rcBlank=Math.max(0,8-rcRows.length);
     const rcTbody=rcRows.map(r=>'<tr><td>'+esc(r[0])+'</td><td class="n">'+esc(r[1])+'</td><td class="n"'+(r[3]?' style="color:#b42318;"':'')+'>'+(r[3]?'−':'')+_LFB2(r[2])+'</td></tr>').join('')
       +Array.from({length:rcBlank}).map(()=>'<tr><td>&nbsp;</td><td></td><td></td></tr>').join('');
@@ -11972,10 +11972,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="rcwrap">'
       +'<table class="rctb"><thead><tr><th>รายการ</th><th class="n" style="width:90px;">จำนวน</th><th class="n" style="width:130px;">จำนวนเงิน</th></tr></thead>'
       +'<tbody>'+rcTbody+'</tbody>'
-      +'<tfoot><tr><td class="n" colspan="2"><b>รวมเงิน</b></td><td class="n"><b>'+_LFB2(grandNet)+'</b></td></tr></tfoot></table>'
+      +'<tfoot><tr><td class="n" colspan="2"><b>รวมเงิน</b></td><td class="n"><b>'+_LFB2(grandGross)+'</b></td></tr></tfoot></table>'
       +'<div class="rcdt"><div class="k">วันที่</div><div class="v">'+esc(sd(rcDate))+'</div></div>'
       +'</div>'
-      +'<div class="rcwords">จำนวนเงินสุทธิ: <b>('+esc(this._bahtText(grandNet))+')</b></div>'
+      +'<div class="rcwords">จำนวนเงิน: <b>('+esc(this._bahtText(grandGross))+')</b></div>'
       +'<div class="rcmeta"><div><b>งวดเดือน/ปี</b> &nbsp;'+esc(months.map(mLabel).join(', ')||'—')+'</div>'
         +'<div><b>หมายเหตุ</b> &nbsp;'+esc(acct?('โอนเข้าบัญชี '+acct):'')+'</div></div>'
       +'<div class="rcsign">'+rcSign('ลงชื่อผู้ตรวจสอบ')+rcSign('ลงชื่อผู้จ่ายเงิน')+rcSign('ลงชื่อผู้รับเงิน')+'</div>'
