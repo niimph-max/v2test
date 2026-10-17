@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11932,10 +11932,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.sign .s{flex:1;text-align:center;font-size:11.5px;color:#475467;}.sign .ln{margin:34px 12px 6px;border-top:1px dotted #98a2b3;}.sign .r{font-size:10.5px;color:#98a2b3;margin-top:3px;}'
       +'.foot{margin-top:20px;border-top:1px solid #eaedf0;padding-top:8px;font-size:10px;color:#98a2b3;display:flex;justify-content:space-between;}'
       +'.rc{page-break-before:always;display:flex;flex-direction:column;}'
-      +'.rcbadge{text-align:right;}'
-      +'.rcbadge .t{font-size:18px;font-weight:800;color:#16263a;background:#f1f5f9;border:1px solid #d7dee6;border-radius:8px;padding:7px 20px;display:inline-block;letter-spacing:.06em;}'
-      +'.rcbadge .sub{font-size:10px;color:#8a95a3;margin-top:6px;letter-spacing:.08em;}'
-      +'.rcbadge .d{font-size:11px;color:#667085;margin-top:5px;line-height:1.6;}'
+      +'.rchead{display:flex;align-items:flex-start;border-bottom:3px solid #16263a;padding-bottom:12px;}'
+      +'.rchead .sp{width:50mm;}'
+      +'.rchead .mid{flex:1;text-align:center;padding-top:2px;}'
+      +'.rchead .mid .t{font-size:23px;font-weight:800;color:#16263a;letter-spacing:.12em;}'
+      +'.rchead .mid .sub{display:inline-block;margin-top:7px;border:1px solid #c7ced6;border-radius:999px;padding:2px 14px;font-size:10px;color:#667085;letter-spacing:.08em;}'
+      +'.rchead .meta{width:50mm;text-align:right;font-size:11px;color:#475467;line-height:1.8;}'
+      +'.rchead .meta b{color:#16263a;}'
       +'.rcwho{border:1px solid #dfe3e8;border-radius:10px;overflow:hidden;margin:16px 0 14px;}'
       +'.rcwho .hd{background:#f8fafc;border-bottom:1px solid #eef1f4;padding:7px 14px;font-size:10.5px;font-weight:700;color:#8a95a3;letter-spacing:.06em;}'
       +'.rcwho .gr{display:grid;grid-template-columns:1fr 1fr;}'
@@ -11952,16 +11955,16 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.rctb tbody tr:nth-child(even){background:#fafbfc;}.rctb tbody tr.bl{background:#fff;}'
       +'.rctb td.b{font-weight:700;color:#16263a;}.rctb td.e{height:26px;}'
       +'.rcsum{margin-top:8px;display:flex;justify-content:flex-end;}'
-      +'.rcsum .box{width:88mm;border:1px solid #c6ebd4;border-radius:10px;overflow:hidden;}'
-      +'.rcsum .row{display:flex;justify-content:space-between;padding:8px 16px;font-size:12px;color:#475467;border-bottom:1px solid #eef4ef;}'
-      +'.rcsum .row.tot{background:#0b3d2e;color:#fff;padding:12px 16px;border-bottom:none;}.rcsum .row.tot .a{font-size:19px;font-weight:800;}'
+      +'.rcsum .box{width:88mm;border:1px solid #16263a;border-radius:10px;overflow:hidden;}'
+      +'.rcsum .row{display:flex;justify-content:space-between;padding:8px 16px;font-size:12px;color:#475467;border-bottom:1px solid #e3e7ec;}'
+      +'.rcsum .row.tot{background:#16263a;color:#fff;padding:12px 16px;border-bottom:none;}.rcsum .row.tot .a{font-size:19px;font-weight:800;}'
       +'.rcwords{margin-top:10px;font-size:11.5px;color:#475467;background:#f8fafc;border:1px dashed #dfe3e8;border-radius:8px;padding:9px 14px;}'
       +'.rcwords b{color:#16263a;}'
       +'.rcnote{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}'
       +'.rcnote .c{border:1px solid #eaedf0;border-radius:8px;padding:8px 12px;}'
       +'.rcnote .k{color:#8a95a3;font-size:10.5px;}.rcnote .v{color:#16263a;font-weight:700;margin-top:2px;font-size:12px;}'
       +'.rcbot{margin-top:auto;padding-top:16px;}'
-      +'.rcack{background:#fffdf5;border:1px solid #f3e4c0;border-radius:8px;padding:9px 14px;font-size:11px;color:#7a5b16;line-height:1.7;}'
+      +'.rcack{background:#f8fafc;border:1px solid #dfe3e8;border-left:3px solid #16263a;border-radius:8px;padding:9px 14px;font-size:11px;color:#344054;line-height:1.7;}'
       +'.rcsign{margin-top:14px;display:flex;gap:12px;}'
       +'.rcsign .sg{flex:1;border:1px solid #e3e7ec;border-radius:10px;padding:10px 12px 12px;text-align:center;}'
       +'.rcsign .sl{font-size:10.5px;color:#8a95a3;letter-spacing:.04em;}'
@@ -11978,8 +11981,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +Array.from({length:rcBlank}).map(()=>'<tr class="bl"><td class="e">&nbsp;</td><td></td><td></td></tr>').join('');
     const rcSign=(label,name)=>'<div class="sg"><div class="sl">'+label+'</div><div class="ln"></div><div class="nm">'+esc(name||'')+'</div><div class="dt">วันที่ ......../......../........</div></div>';
     const receipt='<div class="page rc">'
-      +'<div class="top"><div class="brand"><div class="cn">'+esc(co||'บริษัทขนส่ง')+'</div><div class="ci">'+(coAddr?esc(coAddr)+'<br>':'')+(coTax?('เลขประจำตัวผู้เสียภาษี '+esc(coTax)):'')+'</div></div>'
-      +'<div class="rcbadge"><div class="t">ใบรับเงิน</div><div class="sub">สำหรับกิจการ</div><div class="d">เลขที่ '+esc(rcNo)+'<br>วันที่ '+esc(sd(rcDate))+'</div></div></div>'
+      +'<div class="rchead"><div class="sp"></div>'
+      +'<div class="mid"><div class="t">ใบรับเงิน</div><div class="sub">สำหรับกิจการ</div></div>'
+      +'<div class="meta">เลขที่ <b>'+esc(rcNo)+'</b><br>วันที่ <b>'+esc(sd(rcDate))+'</b></div></div>'
       +'<div class="rcwho"><div class="hd">ผู้รับเงิน</div><div class="gr">'
         +'<div class="cell"><div class="k">ข้าพเจ้า</div><div class="v">'+esc(owner||'—')+'</div></div>'
         +'<div class="cell"><div class="k">ทะเบียนรถ</div><div class="v">'+esc(plate)+(tk.truckType?(' · '+esc(tk.truckType)):'')+'</div></div>'
