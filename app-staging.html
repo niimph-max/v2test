@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17j · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17k · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17j</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17k</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7563,6 +7563,13 @@
               </div>
               <div style="padding:16px;background:#fdfaf4;border-top:1px solid #f0e6d6;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
                 <div style="display:flex;align-items:center;gap:8px;">
+                  <label style="font-size:12.5px;color:#475467;">เลขที่เอกสาร</label>
+                  <div style="display:flex;align-items:center;border:1px solid #d0d5dd;border-radius:8px;overflow:hidden;background:#fff;">
+                    <span style="padding:8px 9px;background:#f1f5f9;border-right:1px solid #d0d5dd;font-size:13px;font-weight:700;color:#16263a;">PA</span>
+                    <input value="{{ mo.subDocNo }}" onInput="{{ mo.onSubDocNo }}" placeholder="69/197" style="width:104px;padding:8px 10px;border:none;outline:none;font-size:13px;color:#16263a;">
+                  </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
                   <label style="font-size:12.5px;color:#475467;">นัดวันจ่าย</label>
                   <input type="date" value="{{ mo.subPayDate }}" onInput="{{ mo.onSubPayDate }}" style="padding:8px 10px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#16263a;">
                 </div>
@@ -11963,7 +11970,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     // ===== แผ่นใบรับเงิน (หน้า 2) — ตัดครึ่ง: บนเก็บที่เจ้าของรถ ล่างเก็บเข้าบริษัท =====
     const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
     const sd2=(iso)=>{const q=String(iso).slice(0,10).split('-');return q[2]+'/'+q[1]+'/'+((+q[0])+543);};
-    const rcBlankNo='..............................';   // ช่องเลขที่ เขียนมือจากเล่มจริง
+    const _rcTyped=String((((this.state.subMonthMeta||{})[plate+'|'+(months[0]||'')])||{}).rcNo||'').trim();
+    const rcBlankNo='PA'+(_rcTyped||' ....................');   // เลขที่ที่กรอกไว้ ถ้าไม่กรอกเว้นช่องเขียนมือ
     const mNum=months.map(mk=>{const q=mk.split('-');return q[1]+'/'+((+q[0])+543);}).join(', ')||'—';
     const incLabel='ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):'');
     const incQty=grandTon>0?grandTon.toFixed(3):'';
@@ -14872,7 +14880,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         const netT=grossT-_dedSum;
         this._capSubTripRows=rows;
         const _meta=(S.subMonthMeta||{})[selPlate+'|'+m]||{};
-        return{key:m,monthLabel:_thMonsFull[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,tripsText:(jobs.length?(jobs.length+' เที่ยว'):'ไม่มีเที่ยววิ่ง · มีเฉพาะค่าใช้จ่าย'),rows:rows,subPayTotal:fmt(grossT),dedRows:dedRows,dedSumText:fmt(_dedSum),netPayText:fmt(netT),onAddDed:()=>this.addSubMonthDeduct(selPlate,m),subPayDate:_meta.payDate||'',onSubPayDate:(e)=>this.setSubMonthMeta(selPlate,m,'payDate',e.target.value),subPaid:!!_meta.paid,onSubPaid:(e)=>this.setSubMonthMeta(selPlate,m,'paid',e.target.checked),subDone:!!_meta.done,onSubDone:(e)=>this.setSubMonthMeta(selPlate,m,'done',e.target.checked),onSubPayDoc:()=>this.printSubMonthPay(selPlate,m)};
+        return{key:m,monthLabel:_thMonsFull[parseInt(mo)]+' '+(parseInt(yr)+543),trips:jobs.length,tripsText:(jobs.length?(jobs.length+' เที่ยว'):'ไม่มีเที่ยววิ่ง · มีเฉพาะค่าใช้จ่าย'),rows:rows,subPayTotal:fmt(grossT),dedRows:dedRows,dedSumText:fmt(_dedSum),netPayText:fmt(netT),onAddDed:()=>this.addSubMonthDeduct(selPlate,m),subDocNo:_meta.rcNo||'',onSubDocNo:(e)=>this.setSubMonthMeta(selPlate,m,'rcNo',String(e.target.value||'').replace(/^s*[Pp][Aa]s*/,'')),subPayDate:_meta.payDate||'',onSubPayDate:(e)=>this.setSubMonthMeta(selPlate,m,'payDate',e.target.value),subPaid:!!_meta.paid,onSubPaid:(e)=>this.setSubMonthMeta(selPlate,m,'paid',e.target.checked),subDone:!!_meta.done,onSubDone:(e)=>this.setSubMonthMeta(selPlate,m,'done',e.target.checked),onSubPayDoc:()=>this.printSubMonthPay(selPlate,m)};
       });
       // ---- DRIVER PAY (จ่ายเบี้ยเลี้ยง/ค่าใช้จ่าย พขร. ทุก 15 วัน) ----
       {const _dpMonth=S.effPayMonth||S.effMonth;const _dpMode=S.effPayMode||'1';
