@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17h · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17i · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17h</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17i</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11909,16 +11909,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       jobs.forEach(j=>{grandTon+=(parseFloat(j.weight)||0);});
       let grossT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(sd(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc((j.origin||'—')+' → '+(j.destination||'—'))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+fmt(g)+'</td></tr>';}).join('');
       const deds=this._subDedList(plate,mk).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
-      let dedSum=0;const dedHtml=deds.map(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
-        const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;
-        return '<tr class="ded"><td class="c"></td><td colspan="5" style="text-align:right;">หัก — '+esc(d.label||'รายการหัก')+'</td><td class="n">−'+fmt(a)+'</td></tr>';}).join('');
+      let dedSum=0;deds.forEach(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
+        const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;});
       const net=grossT-dedSum;grandNet+=net;grandGross+=grossT;grandDed+=dedSum;grandTrips+=jobs.length;
       const meta=(this.state.subMonthMeta||{})[plate+'|'+mk]||{};if(meta.payDate&&!anyDate)anyDate=meta.payDate;if(!statusSet){anyStatus=!!meta.paid;statusSet=true;}else anyStatus=anyStatus&&!!meta.paid;
       return '<div class="sec"><div class="sech">ประจำเดือน '+esc(mLabel(mk))+' <span>'+jobs.length+' เที่ยว</span></div>'+
         '<table><thead><tr><th class="c">#</th><th>วันที่</th><th>เลขที่บิล</th><th>เส้นทาง</th><th class="n">ระยะทาง (กม.)</th><th class="n">น้ำหนัก (ตัน)</th><th class="n">ค่าขนส่งจ่ายรถร่วม</th></tr></thead>'+
         '<tbody>'+(trs||'<tr><td colspan="7" class="empty">ไม่มีรายการ</td></tr>')+'</tbody>'+
-        '<tfoot><tr class="sub"><td class="c"></td><td colspan="5" style="text-align:right;">รวมค่าขนส่งจ่ายรถร่วม</td><td class="n b">'+fmt(grossT)+'</td></tr>'+dedHtml+
-        (deds.length?('<tr class="net"><td class="c"></td><td colspan="5" style="text-align:right;">ยอดจ่ายสุทธิเดือนนี้</td><td class="n b">'+fmt(net)+'</td></tr>'):'')+'</tfoot></table></div>';
+        '<tfoot><tr class="sub"><td class="c"></td><td colspan="5" style="text-align:right;">รวมค่าขนส่งจ่ายรถร่วม</td><td class="n b">'+fmt(grossT)+'</td></tr></tfoot></table></div>';
     }).join('');
     const multi=months.length>1;
     const netForText=multi?grandNet:grandNet;
