@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9223,10 +9223,24 @@ class Component extends DCLogic {
       .then(()=>{this.setState({syncStatus:'ok'});})
       .catch(()=>this.setState({syncStatus:'error'}));
   }
+  // ชุดข้อมูลทั้งหมดที่ต้องมีในไฟล์สำรอง — ใช้ร่วมกันทั้งปุ่ม Export และ autoBackup
+  // v.2026-10-17b: ของเดิมสำรองแค่ตารางหลัก 13 ชุด ชุดที่เก็บในตาราง events ตกหล่นหมด
+  // (ค่าน้ำมัน PT · รายการหักรถร่วม · ปิดงวดบัญชี · หนังสือออก · ประกาศ · ตรวจประวัติ พขร. · ค่าตั้งต้นบริษัท)
+  _backupPayload(){
+    const S=this.state;
+    return {version:3,exportedAt:new Date().toISOString(),
+      drivers:S.drivers,trucks:S.trucks,jobs:S.jobs,office:S.office,officeDepts:S.officeDepts,
+      customers:S.customers,orders:S.orders,origins:S.origins,tirePatches:S.tirePatches,
+      tireMoves:S.tireMoves,inspections:S.inspections,
+      workOrders:(S.workOrders!==undefined?S.workOrders:this._getWO()),
+      company:S.company,fleets:S.fleets,dispatchers:S.dispatchers,dpoints:S.dpoints,
+      news:S.news,letters:S.letters,drvChk:S.drvChk,fuelCr:S.fuelCr,periodLock:S.periodLock,
+      kv:Object.keys(this._kvKeys()).reduce((o,k)=>{o[k]=S[k]||{};return o;},{})};
+  }
   autoBackup(){
     try{
       const S=this.state;
-      const payload={version:2,exportedAt:new Date().toISOString(),drivers:S.drivers,trucks:S.trucks,jobs:S.jobs,office:S.office,officeDepts:S.officeDepts,customers:S.customers,orders:S.orders,origins:S.origins,tirePatches:S.tirePatches,tireMoves:S.tireMoves,inspections:S.inspections,workOrders:(S.workOrders!==undefined?S.workOrders:this._getWO())};
+      const payload=this._backupPayload();
       const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');
@@ -14200,7 +14214,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onTruckBack=this.onTruckBack;
     out.onExportData=()=>{
       const S=this.state;
-      const payload={version:2,exportedAt:new Date().toISOString(),drivers:S.drivers,trucks:S.trucks,jobs:S.jobs,office:S.office,officeDepts:S.officeDepts,customers:S.customers,orders:S.orders,origins:S.origins,tirePatches:S.tirePatches,tireMoves:S.tireMoves,inspections:S.inspections,workOrders:(S.workOrders!==undefined?S.workOrders:this._getWO())};
+      const payload=this._backupPayload();
       const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
       const url=URL.createObjectURL(blob);
       const a=document.createElement('a');
@@ -14259,9 +14273,37 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           try{sbUpsertColl('inspections',inspections);}catch(e){}
           try{localStorage.setItem('lf_wo_v1',JSON.stringify(workOrders));}catch(e){}
           try{sbUpsertColl('work_orders',workOrders);}catch(e){}
+          // ---- ชุดข้อมูลในตาราง events (v.2026-10-17b) ----
+          [['news','news_v1','__news__'],['letters','letters_v1','__letters__'],
+           ['drvChk','drvChk_v1','__drvchk__'],['fuelCr','fuelCr_v1','__fuelcr__']].forEach(pair=>{
+            const sk=pair[0],ls=pair[1],mid=pair[2];
+            if(!Array.isArray(data[sk]))return;
+            try{localStorage.setItem(ls,JSON.stringify(data[sk]));}catch(e){}
+            this.setState({[sk]:data[sk]});
+            try{sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:mid,data:{items:data[sk]}}]).catch(function(){});}catch(e){}
+          });
+          if(data.periodLock&&typeof data.periodLock==='object'){
+            try{localStorage.setItem('periodLock_v1',JSON.stringify(data.periodLock));}catch(e){}
+            this.setState({periodLock:data.periodLock});
+            try{sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__periodlock__',data:data.periodLock}]).catch(function(){});}catch(e){}
+          }
+          // รายการหักรถร่วม / จ่ายเบี้ยเลี้ยง / ค่าคงที่รายเดือน — ตีตราเวลาใหม่ ของจากไฟล์จะได้ชนะบนเครื่องอื่น
+          if(data.kv&&typeof data.kv==='object'){
+            const _kk=this._kvKeys();
+            Object.keys(_kk).forEach(sk=>{const m=data.kv[sk];if(!m||typeof m!=='object')return;
+              try{localStorage.setItem(_kk[sk],JSON.stringify(m));}catch(e){}
+              this.setState({[sk]:m});
+              try{Object.keys(m).forEach(k2=>this._kvTouch(sk,k2,m));}catch(e){}
+            });
+          }
+          if(Array.isArray(data.fleets)&&data.fleets.length){try{this._saveNameList('__fleets__','fleetReg_v1',data.fleets);this.setState({fleets:data.fleets});}catch(e){}}
+          if(Array.isArray(data.dpoints)&&data.dpoints.length){try{this._saveNameList('__dpoints__','dpointReg_v1',data.dpoints);this.setState({dpoints:data.dpoints});}catch(e){}}
+          if(Array.isArray(data.dispatchers)&&data.dispatchers.length){try{localStorage.setItem('dispatcherReg_v1',JSON.stringify(data.dispatchers));}catch(e){}this.setState({dispatchers:data.dispatchers});}
+          const _coRestore=(data.company&&typeof data.company==='object'&&String(data.company.name||'').trim())?{...(this.state.company||{}),...data.company}:null;
+          if(_coRestore){try{localStorage.setItem('companyProfile_v1',JSON.stringify({..._coRestore,_cid:COMPANY_ID}));}catch(e){}this.setState({company:_coRestore});}
           const _keep={drivers:new Set(drivers.map(d=>String(d.code))),trucks:new Set(trucks.map(t=>String(t.plate))),office:new Set(office.map(o=>String(o.code))),customers:new Set(customers.map(c=>String(c.id))),orders:new Set(orders.map(o=>String(o.id))),origins:new Set(origins.map(o=>String(o.id))),tirePatches:new Set(tirePatches.map(r=>String(r.id))),tireMoves:new Set(tireMoves.map(r=>String(r.id))),inspections:new Set(inspections.map(r=>String(r.id))),workOrders:new Set(workOrders.map(r=>String(r.id))),jobs:new Set(jobs.map(j=>String(j.id)))};
           const _bl=Date.now();try{localStorage.setItem('fleet_baseline',String(_bl));}catch(e){}
-          this._importPushProgress(jobs).then(()=>this._replaceCloudSurplus(_keep)).then(res=>{try{sbSaveCompany({...(this.state.company||{}),_baseline:_bl});}catch(e){}let msg;if(res&&res.noSession){msg='⚠️ Import ลงเครื่องนี้แล้ว แต่ cloud ยังไม่ถูกล้างส่วนเกิน!\n\n'+res.err+'\n\nขั้นตอน: ออกจากระบบ → login ใหม่ → Import ไฟล์เดิมอีกครั้ง';}else if(res&&res.ok===false&&res.err){msg='❌ ล้าง cloud ล้มเหลว: '+res.err;}else{const r=res.report||{};const tried=r.tried||{};const fail=r.fail||{};const triedStr=Object.keys(tried).filter(k=>tried[k]>0).map(k=>k+':'+tried[k]).join(', ')||'(ไม่มีส่วนเกิน)';const failStr=Object.keys(fail).filter(k=>fail[k]>0).map(k=>k+':'+fail[k]).join(', ');const bf=r.before||{};const af=r.after||{};msg=(res.noEffect?'⚠️ ลบไม่สำเร็จ (ยอดไม่ลด = สิทธิ์/session มีปัญหา)\n':'🧹 ล้างส่วนเกินบน cloud\n')+'พยายามลบ → '+triedStr+'\nลบไม่ผ่าน → '+(failStr||'ไม่มี ✅')+(r.status?(' (HTTP '+r.status+')'):'')+'\nรถ cloud: '+bf.trucks+' → '+af.trucks+' | พขร.: '+bf.drivers+' → '+af.drivers;}alert(msg);});
+          this._importPushProgress(jobs).then(()=>this._replaceCloudSurplus(_keep)).then(res=>{try{sbSaveCompany({...(_coRestore||this.state.company||{}),_baseline:_bl});}catch(e){}let msg;if(res&&res.noSession){msg='⚠️ Import ลงเครื่องนี้แล้ว แต่ cloud ยังไม่ถูกล้างส่วนเกิน!\n\n'+res.err+'\n\nขั้นตอน: ออกจากระบบ → login ใหม่ → Import ไฟล์เดิมอีกครั้ง';}else if(res&&res.ok===false&&res.err){msg='❌ ล้าง cloud ล้มเหลว: '+res.err;}else{const r=res.report||{};const tried=r.tried||{};const fail=r.fail||{};const triedStr=Object.keys(tried).filter(k=>tried[k]>0).map(k=>k+':'+tried[k]).join(', ')||'(ไม่มีส่วนเกิน)';const failStr=Object.keys(fail).filter(k=>fail[k]>0).map(k=>k+':'+fail[k]).join(', ');const bf=r.before||{};const af=r.after||{};msg=(res.noEffect?'⚠️ ลบไม่สำเร็จ (ยอดไม่ลด = สิทธิ์/session มีปัญหา)\n':'🧹 ล้างส่วนเกินบน cloud\n')+'พยายามลบ → '+triedStr+'\nลบไม่ผ่าน → '+(failStr||'ไม่มี ✅')+(r.status?(' (HTTP '+r.status+')'):'')+'\nรถ cloud: '+bf.trucks+' → '+af.trucks+' | พขร.: '+bf.drivers+' → '+af.drivers;}alert(msg);});
           this.setState({drivers,trucks,jobs,office,officeDepts,customers,orders,origins,tirePatches,tireMoves,inspections,workOrders,view:'list',section:'jobs',jobView:'list'});
           alert('✅ นำเข้าข้อมูลสำเร็จ! (replace)\nพนักงาน '+drivers.length+' คน | รถ '+trucks.length+' คัน | ใบงาน '+jobs.length+' ใบ\nรับงาน '+orders.length+' | ลูกค้า '+customers.length+' | ตรวจสภาพ '+inspections.length+' | ยาง '+(tirePatches.length+tireMoves.length)+' | ใบสั่งซ่อม '+workOrders.length+'\n\nกำลังลบข้อมูลส่วนเกินบน cloud… (เสร็จใน ~1 นาที)');
         }catch(err){alert('เกิดข้อผิดพลาด: '+err.message);}
