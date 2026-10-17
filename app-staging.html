@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11903,13 +11903,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const now=new Date();const printTs=sd(now.toISOString())+' เวลา '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
     const docNo='RJ-'+plate.replace(/[^0-9A-Za-z]/g,'')+'-'+(months[0]||'').replace('-','');
     let grandNet=0,grandGross=0,grandDed=0,grandTrips=0;let anyDate='',anyStatus=false,statusSet=false;
-    let grandTon=0;   // น้ำหนักรวม ใช้ในใบรับเงินหน้า 2
+    let grandTon=0;const grandDedMap={};   // น้ำหนักรวม + ยอดหักแยกตามชื่อรายการ ใช้ในแผ่นใบรับเงิน
     const sections=months.map(mk=>{
       const jobs=this.state.jobs.filter(j=>j.truckPlate===plate&&j.date&&String(j.date).slice(0,7)===mk&&(j.documentTime||j.docsClosed)&&!j.deleted&&!j._deleted).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
       jobs.forEach(j=>{grandTon+=(parseFloat(j.weight)||0);});
       let grossT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(sd(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc((j.origin||'—')+' → '+(j.destination||'—'))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+fmt(g)+'</td></tr>';}).join('');
       const deds=this._subDedList(plate,mk).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
       let dedSum=0;const dedHtml=deds.map(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
+        const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;
         return '<tr class="ded"><td class="c"></td><td colspan="5" style="text-align:right;">หัก — '+esc(d.label||'รายการหัก')+'</td><td class="n">−'+fmt(a)+'</td></tr>';}).join('');
       const net=grossT-dedSum;grandNet+=net;grandGross+=grossT;grandDed+=dedSum;grandTrips+=jobs.length;
       const meta=(this.state.subMonthMeta||{})[plate+'|'+mk]||{};if(meta.payDate&&!anyDate)anyDate=meta.payDate;if(!statusSet){anyStatus=!!meta.paid;statusSet=true;}else anyStatus=anyStatus&&!!meta.paid;
@@ -11946,86 +11947,96 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.sign{margin-top:30px;display:flex;justify-content:space-between;gap:20px;}'
       +'.sign .s{flex:1;text-align:center;font-size:11.5px;color:#475467;}.sign .ln{margin:34px 12px 6px;border-top:1px dotted #98a2b3;}.sign .r{font-size:10.5px;color:#98a2b3;margin-top:3px;}'
       +'.foot{margin-top:20px;border-top:1px solid #eaedf0;padding-top:8px;font-size:10px;color:#98a2b3;display:flex;justify-content:space-between;}'
-      +'.rc{page-break-before:always;display:flex;flex-direction:column;}'
-      +'.rchead{display:flex;align-items:flex-start;border-bottom:3px solid #16263a;padding-bottom:12px;}'
-      +'.rchead .sp{width:50mm;}'
-      +'.rchead .mid{flex:1;text-align:center;padding-top:2px;}'
-      +'.rchead .mid .t{font-size:23px;font-weight:800;color:#16263a;letter-spacing:.12em;}'
-      +'.rchead .mid .sub{display:inline-block;margin-top:7px;border:1px solid #c7ced6;border-radius:999px;padding:2px 14px;font-size:10px;color:#667085;letter-spacing:.08em;}'
-      +'.rchead .meta{width:50mm;text-align:right;font-size:11px;color:#475467;line-height:1.8;}'
-      +'.rchead .meta b{color:#16263a;}'
-      +'.rcwho{border:1px solid #dfe3e8;border-radius:10px;overflow:hidden;margin:16px 0 14px;}'
-      +'.rcwho .hd{background:#f8fafc;border-bottom:1px solid #eef1f4;padding:7px 14px;font-size:10.5px;font-weight:700;color:#8a95a3;letter-spacing:.06em;}'
-      +'.rcwho .gr{display:grid;grid-template-columns:1fr 1fr;}'
-      +'.rcwho .cell{padding:9px 14px;border-bottom:1px solid #eef1f4;}'
-      +'.rcwho .cell:nth-child(odd){border-right:1px solid #eef1f4;}'
-      +'.rcwho .cell.f{grid-column:1 / -1;border-right:none;border-bottom:none;}'
-      +'.rcwho .k{color:#8a95a3;font-size:10.5px;}'
-      +'.rcwho .v{color:#16263a;font-weight:700;margin-top:2px;font-size:12.5px;}'
-      +'.rcintro{font-size:12px;color:#475467;margin:0 0 7px;}.rcintro b{color:#16263a;}'
-      +'.rctb{width:100%;border-collapse:collapse;font-size:12px;}'
-      +'.rctb th,.rctb td{padding:8px 12px;text-align:left;border-bottom:1px solid #eaedf0;}'
-      +'.rctb thead th{background:#16263a;color:#fff;font-weight:600;font-size:11px;border-bottom:none;}'
-      +'.rctb th.n,.rctb td.n{text-align:right;white-space:nowrap;}'
-      +'.rctb tbody tr:nth-child(even){background:#fafbfc;}.rctb tbody tr.bl{background:#fff;}'
-      +'.rctb td.b{font-weight:700;color:#16263a;}.rctb td.e{height:26px;}'
-      +'.rcsum{margin-top:8px;display:flex;justify-content:flex-end;}'
-      +'.rcsum .box{width:88mm;border:1px solid #16263a;border-radius:10px;overflow:hidden;}'
-      +'.rcsum .row{display:flex;justify-content:space-between;padding:8px 16px;font-size:12px;color:#475467;border-bottom:1px solid #e3e7ec;}'
-      +'.rcsum .row.tot{background:#16263a;color:#fff;padding:12px 16px;border-bottom:none;}.rcsum .row.tot .a{font-size:19px;font-weight:800;}'
-      +'.rcwords{margin-top:10px;font-size:11.5px;color:#475467;background:#f8fafc;border:1px dashed #dfe3e8;border-radius:8px;padding:9px 14px;}'
-      +'.rcwords b{color:#16263a;}'
-      +'.rcnote{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:10px;}'
-      +'.rcnote .c{border:1px solid #eaedf0;border-radius:8px;padding:8px 12px;}'
-      +'.rcnote .k{color:#8a95a3;font-size:10.5px;}.rcnote .v{color:#16263a;font-weight:700;margin-top:2px;font-size:12px;}'
-      +'.rcbot{margin-top:auto;padding-top:16px;}'
-      +'.rcack{background:#f8fafc;border:1px solid #dfe3e8;border-left:3px solid #16263a;border-radius:8px;padding:9px 14px;font-size:11px;color:#344054;line-height:1.7;}'
-      +'.rcsign{margin-top:14px;display:flex;gap:12px;}'
-      +'.rcsign .sg{flex:1;border:1px solid #e3e7ec;border-radius:10px;padding:10px 12px 12px;text-align:center;}'
-      +'.rcsign .sl{font-size:10.5px;color:#8a95a3;letter-spacing:.04em;}'
-      +'.rcsign .ln{margin:24px 6px 7px;border-top:1px dotted #98a2b3;}'
-      +'.rcsign .nm{font-size:11.5px;color:#16263a;font-weight:700;min-height:16px;}'
-      +'.rcsign .dt{font-size:10.5px;color:#98a2b3;margin-top:4px;}'
+      +'.cs{page-break-before:always;display:flex;flex-direction:column;color:#000;}'
+      +'.cs .hf{flex:1;display:flex;flex-direction:column;}'
+      +'.cs .cut{border-top:1px dashed #000;margin:4mm 0;position:relative;}'
+      +'.cs .cut i{position:absolute;left:0;top:-7px;background:#fff;padding-right:8px;font-size:9px;font-style:normal;color:#667085;}'
+      +'.cs .ttl{position:relative;text-align:center;margin-bottom:7px;min-height:22px;}'
+      +'.cs .ttl .t{font-size:15.5px;font-weight:800;}'
+      +'.cs .ttl .for{position:absolute;right:0;top:0;border:1px solid #000;padding:2px 10px;font-size:10.5px;}'
+      +'.cs .ttl .no{position:absolute;left:0;top:3px;font-size:10.5px;}'
+      +'.cs .ln{font-size:11px;line-height:1.9;}'
+      +'.cs .ln b{font-weight:700;}'
+      +'.cs .ln u{display:inline-block;width:16px;text-decoration:none;}'
+      +'.cs .r3{display:flex;gap:4px;align-items:stretch;margin-top:5px;}'
+      +'.cs table{border-collapse:collapse;font-size:11px;width:100%;}'
+      +'.cs th,.cs td{border:1px solid #000;padding:4px 7px;vertical-align:top;}'
+      +'.cs th{text-align:center;font-weight:700;background:#fff;color:#000;font-size:11px;}'
+      +'.cs td.n,.cs th.n{text-align:right;white-space:nowrap;}'
+      +'.cs td.fl{height:26mm;}'
+      +'.cs .tA{flex:1.3;}.cs .tB{flex:1;}'
+      +'.cs .tC{flex:none;width:30mm;display:flex;flex-direction:column;}'
+      +'.cs .tC .sp{flex:1;}'
+      +'.cs .tC .bx{border:1px solid #000;}'
+      +'.cs .tC .bx .h{border-bottom:1px solid #000;text-align:center;font-weight:700;font-size:11px;padding:4px;}'
+      +'.cs .tC .bx .v{text-align:center;font-size:11px;padding:5px 4px;}'
+      +'.cs .tC .bx .v.big{font-size:13px;font-weight:800;}'
+      +'.cs .ftb{margin-top:-1px;}'
+      +'.cs .ftb td{font-size:11px;}'
+      +'.cs .warn{font-size:10px;line-height:1.75;margin-top:5px;}'
+      +'.cs .sgn{display:flex;gap:4px;margin-top:auto;}'
+      +'.cs .sgn .g{flex:1;border:1px solid #000;padding:7px 8px 9px;text-align:center;font-size:11px;}'
+      +'.cs .sgn .g .l{font-weight:700;}'
+      +'.cs .sgn .g .d{margin-top:13mm;font-size:10.5px;}'
       +'@media print{.page{margin:0;}}';
-    // ===== ใบรับเงิน (หน้า 2)    // ===== ใบรับเงิน (หน้า 2) — ให้เจ้าของรถ/พขร. เซ็นรับทราบรายได้ =====
+    // ===== แผ่นใบรับเงิน (หน้า 2) — ตัดครึ่ง: บนเก็บที่เจ้าของรถ ล่างเก็บเข้าบริษัท =====
     const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
+    const sd2=(iso)=>{const q=String(iso).slice(0,10).split('-');return q[2]+'/'+q[1]+'/'+((+q[0])+543);};
     const rcKey=plate+'|'+(months[0]||'');
     let rcNo=String((((this.state.subMonthMeta||{})[rcKey])||{}).rcNo||'');
     if(!rcNo&&months.length){rcNo=this._rcNextNo(rcDate);this.setSubMonthMeta(plate,months[0],'rcNo',rcNo);}
     if(!rcNo)rcNo='—';
-    const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):'—'),grandGross]];
-    const rcBlank=Math.max(0,4-rcRows.length);
-    const rcTbody=rcRows.map(r=>'<tr><td class="b">'+esc(r[0])+'</td><td class="n">'+esc(r[1])+'</td><td class="n b">'+fmt(r[2])+'</td></tr>').join('')
-      +Array.from({length:rcBlank}).map(()=>'<tr class="bl"><td class="e">&nbsp;</td><td></td><td></td></tr>').join('');
-    const rcSign=(label,name)=>'<div class="sg"><div class="sl">'+label+'</div><div class="ln"></div><div class="nm">'+esc(name||'')+'</div><div class="dt">วันที่ ......../......../........</div></div>';
-    const receipt='<div class="page rc">'
-      +'<div class="rchead"><div class="sp"></div>'
-      +'<div class="mid"><div class="t">ใบรับเงิน</div><div class="sub">สำหรับกิจการ</div></div>'
-      +'<div class="meta">เลขที่ <b>'+esc(rcNo)+'</b><br>วันที่ <b>'+esc(sd(rcDate))+'</b></div></div>'
-      +'<div class="rcwho"><div class="hd">ผู้รับเงิน</div><div class="gr">'
-        +'<div class="cell"><div class="k">ข้าพเจ้า</div><div class="v">'+esc(owner||'—')+'</div></div>'
-        +'<div class="cell"><div class="k">ทะเบียนรถ</div><div class="v">'+esc(plate)+(tk.truckType?(' · '+esc(tk.truckType)):'')+'</div></div>'
-        +'<div class="cell"><div class="k">เลขที่บัตรประชาชน</div><div class="v">'+esc(ownerTax||'—')+'</div></div>'
-        +'<div class="cell"><div class="k">งวดเดือน</div><div class="v">'+esc(months.map(mLabel).join(', ')||'—')+'</div></div>'
-        +'<div class="cell f"><div class="k">ที่อยู่</div><div class="v">'+esc(tk.ownerAddress||'—')+'</div></div>'
-      +'</div></div>'
-      +'<div class="rcintro">ได้รับเงินจาก <b>'+esc(co||'บริษัทขนส่ง')+'</b> ดังรายการต่อไปนี้</div>'
-      +'<table class="rctb"><thead><tr><th>รายการ</th><th class="n" style="width:30mm;">จำนวน (ตัน)</th><th class="n" style="width:36mm;">จำนวนเงิน</th></tr></thead>'
-      +'<tbody>'+rcTbody+'</tbody></table>'
-      +'<div class="rcsum"><div class="box">'
-        +'<div class="row"><span>จำนวนเที่ยว</span><span>'+grandTrips+' เที่ยว</span></div>'
-        +(grandTon>0?('<div class="row"><span>น้ำหนักรวม</span><span>'+grandTon.toFixed(3)+' ตัน</span></div>'):'')
-        +'<div class="row tot"><span>รวมเงินที่ได้รับ</span><span class="a">'+fmt(grandGross)+'</span></div>'
-      +'</div></div>'
-      +'<div class="rcwords">จำนวนเงิน (ตัวอักษร) &nbsp; <b>'+esc(this._bahtText(grandGross))+'</b></div>'
-      +'<div class="rcnote">'
-        +'<div class="c"><div class="k">เอกสารอ้างอิง</div><div class="v">ใบสรุปจ่ายเงินรถร่วม เลขที่ '+esc(docNo)+'</div></div>'
-        +'<div class="c"><div class="k">วิธีรับเงิน</div><div class="v">'+esc(acct?('โอนเข้าบัญชี '+acct):'—')+'</div></div>'
+    const mNum=months.map(mk=>{const q=mk.split('-');return q[1]+'/'+((+q[0])+543);}).join(', ')||'—';
+    const incLabel='ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):'');
+    const incQty=grandTon>0?grandTon.toFixed(3):'';
+    const dedKeys=Object.keys(grandDedMap).filter(k=>grandDedMap[k]);
+    const dedRows=dedKeys.map(k=>'<tr><td>'+esc(k)+'</td><td class="n">'+_LFB2(grandDedMap[k])+'</td></tr>').join('')
+      ||'<tr><td>—</td><td class="n">0.00</td></tr>';
+    const rcHead=(title,forWho,no)=>'<div class="ttl">'+(no?('<div class="no">เลขที่ '+esc(no)+'</div>'):'')
+      +'<div class="t">'+title+'</div><div class="for">- '+forWho+' -</div></div>';
+    const dateBox=(label,val,big)=>'<div class="bx"><div class="h">'+label+'</div><div class="v'+(big?' big':'')+'">'+esc(val)+'</div></div>';
+    const sgn=(t)=>'<div class="g"><div class="l">'+t+'</div><div class="d">วันที่ ........./........./.........</div></div>';
+    const receipt='<div class="page cs">'
+      // ---- ครึ่งบน: ใบสรุปรับ-จ่าย เก็บไว้ที่เจ้าของรถ ----
+      +'<div class="hf">'
+      +rcHead('ใบสรุปรับ-จ่ายค่าขนส่ง','สำหรับเจ้าของรถ','')
+      +'<div class="ln">'+esc(co||'บริษัทขนส่ง')+'</div>'
+      +'<div class="ln">ทะเบียนรถ <b>'+esc(plate)+'</b><u></u>เจ้าของรถ <b>'+esc(owner||'—')+'</b><u></u>'
+        +(tk.truckType?('ประเภท <b>'+esc(tk.truckType)+'</b><u></u>'):'')+'งวดเดือน/ปี <b>'+esc(mNum)+'</b></div>'
+      +'<div class="r3">'
+      +'<table class="tA"><thead><tr><th>รายได้</th><th style="width:21mm;">จำนวน (ตัน)</th><th style="width:26mm;">จำนวนเงิน</th></tr></thead>'
+        +'<tbody><tr><td>'+esc(incLabel)+'</td><td class="n">'+esc(incQty)+'</td><td class="n">'+_LFB2(grandGross)+'</td></tr>'
+        +'<tr><td class="fl"></td><td></td><td></td></tr></tbody>'
+        +'<tfoot><tr><td class="n" colspan="2"><b>รวมรายได้</b></td><td class="n"><b>'+_LFB2(grandGross)+'</b></td></tr></tfoot></table>'
+      +'<table class="tB"><thead><tr><th>รายการหัก</th><th style="width:26mm;">จำนวนเงิน</th></tr></thead>'
+        +'<tbody>'+dedRows+'<tr><td class="fl"></td><td></td></tr></tbody>'
+        +'<tfoot><tr><td class="n"><b>รวมรายการหัก</b></td><td class="n"><b>'+_LFB2(grandDed)+'</b></td></tr></tfoot></table>'
+      +'<div class="tC">'+dateBox('วันที่',sd2(rcDate),false)+'<div class="sp"></div>'+dateBox('เงินรับสุทธิ',_LFB2(grandNet),true)+'</div>'
       +'</div>'
-      +'<div class="rcbot">'
-      +'<div class="rcack">ข้าพเจ้าได้ตรวจสอบรายการข้างต้นแล้วว่าถูกต้องตรงตามงานที่ได้วิ่งจริง และได้รับเงินจำนวนดังกล่าวไว้ครบถ้วนแล้ว จึงลงลายมือชื่อไว้เป็นหลักฐาน</div>'
-      +'<div class="rcsign">'+rcSign('ผู้ตรวจสอบ','')+rcSign('ผู้จ่ายเงิน','')+rcSign('ผู้รับเงิน',owner)+'</div>'
-      +'<div class="foot"><span>เอกสารจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(rcNo)+'</span></div>'
+      +'<table class="ftb"><tr><td style="width:42mm;">งวดเดือน/ปี &nbsp;<b>'+esc(mNum)+'</b></td>'
+        +'<td>'+(acct?('บริษัทฯ จะนำเงินจำนวนดังกล่าวเข้าบัญชี '+esc(acct)):'&nbsp;')+'</td></tr></table>'
+      +'<div class="warn">หากรายการไม่ถูกต้อง กรุณาแจ้งฝ่ายบัญชีก่อนครบกำหนดจ่ายงวดถัดไป มิฉะนั้นจะถือว่ารายการถูกต้อง<br>'
+        +'โปรดตรวจสอบวันหมดอายุ ใบขับขี่ · ทะเบียนรถ · พ.ร.บ./ประกันรถ · ประกันสินค้า เพื่อให้พร้อมทำงานตามระเบียบของบริษัทคู่ค้า</div>'
+      +'</div>'
+      +'<div class="cut"><i>✂ ตัดตามรอยประ</i></div>'
+      // ---- ครึ่งล่าง: ใบรับเงิน เก็บเข้าบริษัท ----
+      +'<div class="hf">'
+      +rcHead('ใบรับเงิน','สำหรับกิจการ',rcNo)
+      +'<div class="ln">ข้าพเจ้า <b>'+esc(owner||'.....................................')+'</b><u></u>ทะเบียนรถ <b>'+esc(plate)+'</b><u></u>'
+        +'เลขที่บัตรประชาชน <b>'+esc(ownerTax||'.............................')+'</b></div>'
+      +'<div class="ln">ที่อยู่ <b>'+esc(tk.ownerAddress||'.............................................................................')+'</b></div>'
+      +'<div class="ln">ได้รับเงินจาก <b>'+esc(co||'บริษัทขนส่ง')+'</b> ดังต่อไปนี้</div>'
+      +'<div class="r3">'
+      +'<table class="tA"><thead><tr><th>รายการ</th><th style="width:21mm;">จำนวน (ตัน)</th><th style="width:26mm;">จำนวนเงิน</th></tr></thead>'
+        +'<tbody><tr><td>'+esc(incLabel)+'</td><td class="n">'+esc(incQty)+'</td><td class="n">'+_LFB2(grandGross)+'</td></tr>'
+        +'<tr><td class="fl"></td><td></td><td></td></tr></tbody>'
+        +'<tfoot><tr><td class="n" colspan="2"><b>รวมเงิน</b></td><td class="n"><b>'+_LFB2(grandGross)+'</b></td></tr></tfoot></table>'
+      +'<div class="tC">'+dateBox('วันที่',sd2(rcDate),false)+'<div class="sp"></div></div>'
+      +'</div>'
+      +'<table class="ftb"><tr><td style="width:42mm;">งวดเดือน/ปี &nbsp;<b>'+esc(mNum)+'</b></td>'
+        +'<td>จำนวนเงิน (ตัวอักษร) &nbsp;<b>'+esc(this._bahtText(grandGross))+'</b></td></tr>'
+        +'<tr><td>หมายเหตุ</td><td>'+(acct?('โอนเข้าบัญชี '+esc(acct)):'&nbsp;')+'</td></tr></table>'
+      +'<div class="sgn">'+sgn('ลงชื่อผู้ตรวจสอบ')+sgn('ลงชื่อผู้จ่ายเงิน')+sgn('ลงชื่อผู้รับเงิน')+'</div>'
       +'</div>'
       +'</div>';
     const html=('<!doctype html><html><head><meta charset="utf-8"><title>ใบสรุปจ่ายเงินรถร่วม '+esc(plate)+'</title>'
