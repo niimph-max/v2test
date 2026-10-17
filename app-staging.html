@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-17f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-17f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -8428,6 +8428,9 @@ const SUB_WHT_LABEL='หักภาษี ณ ที่จ่าย';   // ค�
 const SUB_WHT_PCT=1;
 const SUB_TRANSFER_FEE=15;                  // ค่าโอน ตั้งต้น 15 บาท ลบออกได้
 const SUB_DED_FROM='2026-10';               // เริ่มใช้ค่าตั้งต้นนี้ตั้งแต่ ต.ค. 2569 เดือนก่อนหน้าไม่แตะ (ผู้ใช้กำหนด 17 ต.ค. 2569)
+// เลขที่ใบรับเงิน PA<พ.ศ. 2 หลัก>/NNN — ต่อจากเล่มกระดาษเดิม ปี 2569 เริ่มที่ 197 ปีถัดไปเริ่มใหม่ที่ 1
+const RC_NO_PREFIX='PA';
+const RC_NO_START={'69':197};
 const ORDER_CHANNELS=['อีเมล','ไลน์','โทรศัพท์','เว็บไซต์','อื่นๆ'];
 const ORDER_TRUCK_TYPES=['รถปิคอัพ','รถหกล้อ','รถสิบล้อ','รถพ่วง','รถหัวลาก/เทรลเลอร์','อื่นๆ'];
 // ★ v.2026-09-27g: ใบเสนอราคางานจากเว็บ — สถานะก่อน "รอจัดรถ" + ทางออกที่ไม่ได้งาน
@@ -11468,6 +11471,18 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this._saveSubDeds(k,list);};
   addSubMonthDeduct=(plate,month)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));list.push({label:'',amount:''});this._saveSubDeds(k,list);};
   removeSubMonthDeduct=(plate,month,i)=>{const k=plate+'|'+month;const list=this._subDedList(plate,month).map(x=>({...x}));list.splice(i,1);this._saveSubDeds(k,list);};
+  // เลขที่ใบรับเงินถัดไปของปีนั้น (เลขที่ออกแล้วเก็บไว้ที่ subMonthMeta[plate|month].rcNo)
+  _rcNextNo(iso){
+    const be=(parseInt(String(iso).slice(0,4),10)||(new Date()).getFullYear())+543;
+    const yy=String(be).slice(-2);const pre=RC_NO_PREFIX+yy+'/';
+    let mx=0;const meta=this.state.subMonthMeta||{};
+    Object.keys(meta).forEach(k=>{
+      const n=String((meta[k]||{}).rcNo||'');if(n.indexOf(pre)!==0)return;
+      const v=parseInt(n.slice(pre.length),10)||0;if(v>mx)mx=v;
+    });
+    const next=Math.max(mx+1,(RC_NO_START[yy]||1));
+    return pre+String(next).padStart(3,'0');
+  }
   setSubMonthMeta=(plate,month,field,val)=>{const k=plate+'|'+month;const cur={...(this.state.subMonthMeta||{})};cur[k]={...(cur[k]||{}),[field]:val};try{localStorage.setItem('subMonthMeta_v1',JSON.stringify(cur));}catch(e){}this._kvTouch('subMonthMeta',k,cur);this.setState({subMonthMeta:cur});};
   _bahtText(n){const _a=Math.abs(Number(n)||0);const _b=Math.floor(_a+1e-9);const _st=Math.round((_a-_b)*100);if(_st>0){const _bt=this._bahtTextInt(_b).replace(/บาทถ้วน$/,'บาท');const _sg=this._bahtTextInt(_st).replace(/บาทถ้วน$/,'สตางค์');return _bt+_sg;}return this._bahtTextInt(_b);}
   _bahtTextInt(n){n=Math.round(Math.abs(n));if(n===0)return 'ศูนย์บาทถ้วน';const t=['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];const p=['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];const conv=(num)=>{let s='';const str=String(num);const len=str.length;for(let i=0;i<len;i++){const d=parseInt(str[i]);const pos=len-i-1;if(d===0)continue;if(pos===1&&d===1)s+='สิบ';else if(pos===1&&d===2)s+='ยี่สิบ';else if(pos===0&&d===1&&len>1)s+='เอ็ด';else s+=t[d]+p[pos];}return s;};let baht=Math.floor(n);let out='';if(baht>=1000000){out+=conv(Math.floor(baht/1000000))+'ล้าน';baht=baht%1000000;}out+=conv(baht);return (out||'ศูนย์')+'บาทถ้วน';}
@@ -11974,7 +11989,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'@media print{.page{margin:0;}}';
     // ===== ใบรับเงิน (หน้า 2)    // ===== ใบรับเงิน (หน้า 2) — ให้เจ้าของรถ/พขร. เซ็นรับทราบรายได้ =====
     const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
-    const rcNo=docNo+'-R';
+    const rcKey=plate+'|'+(months[0]||'');
+    let rcNo=String((((this.state.subMonthMeta||{})[rcKey])||{}).rcNo||'');
+    if(!rcNo&&months.length){rcNo=this._rcNextNo(rcDate);this.setSubMonthMeta(plate,months[0],'rcNo',rcNo);}
+    if(!rcNo)rcNo='—';
     const rcRows=[['ค่าขนส่ง'+(grandTrips?(' ('+grandTrips+' เที่ยว)'):''),(grandTon>0?grandTon.toFixed(3):'—'),grandGross]];
     const rcBlank=Math.max(0,4-rcRows.length);
     const rcTbody=rcRows.map(r=>'<tr><td class="b">'+esc(r[0])+'</td><td class="n">'+esc(r[1])+'</td><td class="n b">'+fmt(r[2])+'</td></tr>').join('')
