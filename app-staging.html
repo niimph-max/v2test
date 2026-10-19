@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -9788,7 +9788,7 @@ class Component extends DCLogic {
     const list=dups.slice(0,10).map(j=>'• '+(j.date||'')+' · '+(j.truckPlate||'')+' · '+(j.deliveryNo||'')+((parseFloat(j.allowance)||parseFloat(j.fuelBaht)||parseFloat(j.toll))?' ⚠ มีค่าใช้จ่ายติดมา':'')).join('\n');
     if(!window.confirm('พบใบซ้ำ '+dups.length+' ใบ (วันที่+ทะเบียน+เลขบิลซ้ำกับใบที่มีค่าขนส่งแล้ว แต่ใบนี้ไม่มี)\n\n'+list+(dups.length>10?'\n…':'')+'\n\nลบใบเหล่านี้ทิ้ง? (กู้คืนได้จากถังงานที่ลบ)'))return;
     let n=0;
-    const ids=dups.map(j=>String(j.id));
+    const ids=dups.filter(j=>!this._jobEcPosted(j)).map(j=>String(j.id));   // ส่งบัญชีแล้วห้ามลบ
     const jobs=(this.state.jobs||[]).filter(x=>ids.indexOf(String(x.id))<0);
     try{localStorage.setItem('jobReg_v1',JSON.stringify(jobs));}catch(e){}
     try{this.pushDelete('jobs',ids);n=ids.length;}catch(e){}
@@ -13690,10 +13690,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const _NL=String.fromCharCode(10);
       const _cs=[...new Set(_dupe.map(d=>d.cust).filter(Boolean))].join(', ');
       const _ex=_dupe.slice(0,6).map(d=>'• '+(d.bill||'—')+(d.date?(' · '+this._blShortDate(d.date)):'')).join(_NL);
-      if(!window.confirm('⚠ เลขที่ใบแจ้งหนี้ '+inv+' ถูกใช้ไปแล้ว '+_dupe.length+' บิล'+(_cs?(' (ลูกค้า '+_cs+')'):'')+_NL+_NL
+      window.alert('⛔ ใช้เลขนี้ไม่ได้ — เลขที่ใบแจ้งหนี้ '+inv+' ถูกใช้ไปแล้ว '+_dupe.length+' บิล'+(_cs?(' (ลูกค้า '+_cs+')'):'')+_NL+_NL
         +_ex+(_dupe.length>6?(_NL+'• …'):'')+_NL+_NL
-        +'ถ้าเป็นใบแจ้งหนี้ใบเดียวกันที่เพิ่มบิลเข้าไป กด OK'+_NL
-        +'ถ้าคีย์เลขผิด กด Cancel แล้วแก้เลขก่อน'))return;
+        +'เลขที่ใบแจ้งหนี้ห้ามซ้ำ — กรุณาแก้เป็นเลขใหม่'+_NL
+        +'ถ้าต้องการรวมบิลเพิ่มเข้าใบเดิม ให้กด "↩ ยกเลิกเครื่องหมายวางบิล" ของบิลชุดเดิมก่อน แล้วค่อยปักใหม่พร้อมกันทั้งหมด');
+      return;
     }
     const nJob=new Set(items.map(it=>String(it.j.id))).size;
     if(!window.confirm('ทำเครื่องหมายว่าวางบิลแล้ว '+items.length+' บิล ('+nJob+' เที่ยว)\nเลขที่ใบแจ้งหนี้ '+inv+'\n\nบิลเหล่านี้จะถูกซ่อนจากรายการ กันวางบิลซ้ำ'))return;
@@ -14225,7 +14226,30 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           if(!window.confirm('⚠ บิล / Shipment No. "'+_bn+'" มีใบงานอื่นใช้อยู่แล้ว '+_dupes.length+' ใบ\n\n'+_l+(_dupes.length>4?'\n• …':'')+'\n\nถ้าเป็นบิลเดียวที่แยกหลายคัน/หลายเที่ยว กด OK เพื่อบันทึกต่อ\nถ้าคีย์ผิด กด Cancel แล้วแก้เลขบิลก่อน')){this.setState({jobFormError:'เลขบิล "'+_bn+'" ซ้ำกับใบงานอื่น — ตรวจแล้วแก้ก่อนบันทึก'});return;}}}}let _newId=this.editingJobId;if(!_newId){_newId=Date.now();while(this.state.jobs.some(x=>String(x.id)===String(_newId)))_newId++;}let nj;let _jChKeys=null;if(this.state.jobIsNew){nj=normJob({...j,id:_newId});}else{const orig=this._jobOrig||{};const cur=this.state.jobs.find(x=>x.id===this.editingJobId)||orig;const changed={};Object.keys(j).forEach(k=>{if(JSON.stringify(j[k])!==JSON.stringify(orig[k]))changed[k]=j[k];});nj=normJob({...cur,...changed,id:_newId});_jChKeys=Object.keys(changed).filter(k=>k!=='_ft'&&k!=='_editedAt');}let jobs;if(this.state.jobIsNew){jobs=[nj,...this.state.jobs];}else{jobs=this.state.jobs.map(x=>x.id===this.editingJobId?nj:x);}this.persistJobs(jobs,nj.id,_jChKeys);if(this.dispatchingOrderId){const _ids=(this.dispatchingTripIds&&this.dispatchingTripIds.length?this.dispatchingTripIds:[this.dispatchingOrderId]).map(String);this.dispatchingOrderId=null;this.dispatchingTripIds=null;const _orders=this.state.orders.map(x=>_ids.includes(String(x.id))?normOrder({...x,status:'จ่ายงานแล้ว',jobId:nj.id}):x);this.setState({orders:_orders});this.persistOrders(_orders,_ids,['status','jobId']);}const drv=this.state.drivers.find(x=>String(x.code)===String(nj.driverCode));const data={id:nj.id,jobNo:nj.jobNo,date:nj.date,time:nj.time,driverCode:nj.driverCode,driverName:drv?drv.name:'',truckPlate:nj.truckPlate,origin:nj.origin,destination:nj.destination,customer:nj.customer,deliveryNo:nj.deliveryNo,dispatchPoint:nj.dispatchPoint,dispatchTime:nj.dispatchTime,driverNote:nj.driverNote,fuelAdvance:nj.fuelAdvance,fuelAdvanceNote:nj.fuelAdvanceNote};const _dNm=drv?drv.name:'';
     if(!nj.trackJob){this.setState({jobs,jobView:'list',jobFormError:''});this.scrollMain();return;}
     const url='⏳ กำลังสร้างลิงก์…';const img='';this._issueDriverLink(nj,_dNm,'saved');this.setState({jobs,jobView:'list',jobFormError:'',savedJobQrVisible:true,savedJobQrImgUrl:img,savedJobQrText:url,savedJobNo:(nj.jobNo||'ใบงาน')+(nj.deliveryNo?(' · บิล '+nj.deliveryNo):''),savedJobDriver:(drv?drv.name:''),savedLinkCopied:false});};
-  deleteJob=(id)=>{{const _j=(this.state.jobs||[]).find(x=>String(x.id)===String(id))||{};if(!this._plGuard(_j.date,'job',id,'ลบใบงาน '+(_j.deliveryNo||_j.jobNo||id)))return;}if(!window.confirm('ยืนยันการลบใบงานนี้? (งานรับเข้าที่ผูกไว้จะกลับไปสถานะ "รอจัดรถ")'))return;const jobs=this.state.jobs.filter(x=>x.id!==id);try{localStorage.setItem('jobReg_v1',JSON.stringify(jobs));}catch(e){}this.pushDelete('jobs',[String(id)]);
+  // ★ 19 ต.ค. 2569: ใบงานที่ส่งเข้า EASY-ACC แล้ว ห้ามลบ — แก้ราคาในใบเดิมได้อย่างเดียว
+  // เหตุจริง: บิล 250552315 ถูกลบแล้วคีย์ใหม่หลังส่งออกไป 1 ชม. เครื่องหมาย AR/AP หายไปพร้อมใบเดิม
+  // ระบบจึงนับว่า "ยังไม่ส่ง" ทั้งที่ยอดเก่าค้างอยู่ใน EASY-ACC แล้ว
+  _jobEcPosted(j){
+    if(!j)return null;
+    const ar=String(j.acctPosted||'').trim(),ap=String(j.acctApPosted||'').trim();
+    if(!ar&&!ap)return null;
+    return {ar:ar,ap:ap};
+  }
+  _ecLockedAlert(j){
+    const e=this._jobEcPosted(j);if(!e)return false;
+    const NL=String.fromCharCode(10);
+    const d=(v)=>{const q=String(v||'').replace('T',' ');return q?this.thaiDate(q.slice(0,10))+' '+q.slice(11,16)+' น.':'—';};
+    window.alert('⛔ ลบไม่ได้ — ใบงานนี้ส่งเข้า EASY-ACC ไปแล้ว'+NL+NL
+      +'บิล '+(j.deliveryNo||j.jobNo||j.id)+' · '+this.thaiDate(j.date)+' · '+(j.truckPlate||'')+NL
+      +(e.ar?('ส่งรายได้ (AR) เมื่อ '+d(e.ar)+NL):'')
+      +(e.ap?('ส่งค่าขนส่งรถร่วม (AP) เมื่อ '+d(e.ap)+NL):'')
+      +NL
+      +'ถ้าตัวเลขผิด → แก้ราคาในใบงานนี้ได้เลย ระบบจะขึ้นแถบเตือนให้ไปแก้ใน EASY-ACC ตาม'+NL
+      +'ถ้าจำเป็นต้องลบจริงๆ → ไปหน้า "ส่งออกเข้า EASY-ACC" กด "↩ ยกเลิกเครื่องหมาย" ของช่วงวันนั้นก่อน แล้วค่อยลบ'+NL
+      +'(อย่าลืมลบ/แก้รายการใน EASY-ACC ด้วย ไม่งั้นยอดเก่าจะค้างอยู่ที่นั่น)');
+    return true;
+  }
+  deleteJob=(id)=>{{const _j=(this.state.jobs||[]).find(x=>String(x.id)===String(id))||{};if(this._ecLockedAlert(_j))return;if(!this._plGuard(_j.date,'job',id,'ลบใบงาน '+(_j.deliveryNo||_j.jobNo||id)))return;}if(!window.confirm('ยืนยันการลบใบงานนี้? (งานรับเข้าที่ผูกไว้จะกลับไปสถานะ "รอจัดรถ")'))return;const jobs=this.state.jobs.filter(x=>x.id!==id);try{localStorage.setItem('jobReg_v1',JSON.stringify(jobs));}catch(e){}this.pushDelete('jobs',[String(id)]);
     const linked=this.state.orders.filter(o=>o.jobId&&String(o.jobId)===String(id));
     if(linked.length){const orders=this.state.orders.map(o=>(o.jobId&&String(o.jobId)===String(id))?normOrder({...o,status:'รอจัดรถ',jobId:''}):o);const _cids=linked.map(l=>l.id);this.setState({jobs,orders});this.persistOrders(orders,_cids,['status','jobId']);}
     else{this.setState({jobs});}};
