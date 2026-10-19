@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -14532,7 +14532,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const tst=this.truckDocStatus(tsel);
       out.truckSel={plate:tsel.plate,truckType:tsel.truckType||'—',maker:tsel.maker||'—',model:tsel.model||'',modelSuffix:tsel.model?' '+tsel.model:'',dept:tsel.dept||'—',deptStyle:this.deptChip(tsel.dept),statusLabel:tst.label,statusStyle:this.chip(tst.fg,tst.bg),retired:!!tsel.retired,retiredDate:tsel.retiredDate||''};out.truckActive=!tsel.retired;
       out.truckInfoRows=[{label:'ทะเบียนรถ',value:tsel.plate},{label:'ชนิดรถ',value:tsel.truckType||'—'},{label:'รุ่น',value:tsel.model||'—'},{label:'เชื้อเพลิง',value:tsel.fuel||'—'},{label:'แผนก',value:tsel.dept||'—'},{label:'ผู้ผลิต',value:tsel.maker||'—'},{label:'ปีที่ผลิต',value:tsel.year||'—'},{label:'สีรถ',value:tsel.color||'—'},{label:'เลขตัวถัง',value:tsel.chassis||'—'},{label:'เลขเครื่อง',value:tsel.engine||'—'},{label:'⛽ เรทน้ำมัน บรรทุก',value:tsel.fuelRateLoaded?(tsel.fuelRateLoaded+' กม./ลิตร'):'—'},{label:'⛽ เรทน้ำมัน วิ่งเปล่า',value:tsel.fuelRateEmpty?(tsel.fuelRateEmpty+' กม./ลิตร'):'—'},{label:'📐 ขนาดกระบะ (ซม.)',value:(()=>{const p=[['กว้าง',tsel.bedWidth],['ยาว',tsel.bedLength],['ยาวรวมหัว',tsel.totalLength],['สูงหัว',tsel.bedHFront],['สูงกลาง',tsel.bedHMid],['สูงท้าย',tsel.bedHRear]].filter(x=>x[1]).map(x=>x[0]+' '+x[1]);return p.length?p.join(' · '):'—';})()},{label:'ค่าผ่อน/ค่าเสื่อม',value:tsel.installment?('฿'+_LFB2(parseFloat(tsel.installment)||0)+' /เดือน'):'—'},{label:'หมายเหตุ',value:tsel.remark||'—'}];
-      out.truckOwnerRows=[{label:'เจ้าของรถ',value:tsel.owner||'—'},{label:'เลขบัตร ปชช.',value:tsel.ownerIdCard||'—'},{label:'เบอร์โทร',value:tsel.ownerPhone||'—'},{label:'ไลน์ ID',value:tsel.ownerLine||'—'},{label:'เลขที่บัญชี',value:tsel.account||'—'},{label:'น้ำหนักรถ',value:tsel.weight?(tsel.weight+' กก.'):'—'},{label:'น้ำหนักบรรทุก',value:tsel.loadWeight?(tsel.loadWeight+' กก.'):'—'},{label:'บริษัท GPS',value:tsel.gps||'—'},{label:'วันทำสัญญา',value:this.thaiDate(tsel.contractDate)}];
+      out.truckOwnerRows=[{label:'เจ้าของรถ',value:tsel.owner||'—'},{label:'เลขบัตร ปชช.',value:tsel.ownerIdCard||'—'},{label:'ที่อยู่',value:tsel.ownerAddress||'—'},{label:'เบอร์โทร',value:tsel.ownerPhone||'—'},{label:'ไลน์ ID',value:tsel.ownerLine||'—'},{label:'เลขที่บัญชี',value:tsel.account||'—'},{label:'น้ำหนักรถ',value:tsel.weight?(tsel.weight+' กก.'):'—'},{label:'น้ำหนักบรรทุก',value:tsel.loadWeight?(tsel.loadWeight+' กก.'):'—'},{label:'บริษัท GPS',value:tsel.gps||'—'},{label:'วันทำสัญญา',value:this.thaiDate(tsel.contractDate)}];
       out.truckHasPhoto=!!tsel.photo;out.truckNoPhoto=!tsel.photo;
       out.truckPhotoNode=tsel.photo?React.createElement('img',{src:tsel.photo,style:{width:'100%',height:'100%',objectFit:'cover'}}):null;
       out.truckPhotoLabel=tsel.photo?'เปลี่ยนรูป':'+ เพิ่มรูป';
