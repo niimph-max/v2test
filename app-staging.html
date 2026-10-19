@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2778,6 +2778,9 @@
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">เลขที่ใบแจ้งหนี้</label>
             <input value="{{ blInvNo }}" onInput="{{ onBlInvNo }}" placeholder="เช่น INV-6909-001" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:14px;font-weight:700;color:#1d2b3a;font-family:inherit;">
+            <sc-if value="{{ blInvDupe }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:5px;font-size:11.5px;line-height:1.6;color:#b42318;">{{ blInvDupeText }}</div>
+            </sc-if>
           </div>
           <div>
             <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">เลขที่ใบเสร็จ</label>
@@ -13656,10 +13659,42 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     this.setState({jobs,billSel:{}});
     Object.keys(byJob).forEach(id=>this.persistJobs(jobs,id,['billLines','billInvNo','billRecNo','billedAt']));
   }
+  // เลขที่ใบแจ้งหนี้ซ้ำ — ไล่ดูทุกเที่ยวทุกบิลในระบบ (ข้ามบิลชุดที่กำลังจะปักเอง)
+  // ใบแจ้งหนี้ใบเดียวครอบหลายบิลได้ตามปกติ จึงเตือนให้ยืนยัน ไม่ได้ห้ามเด็ดขาด
+  _blInvUsage(inv,skipKeys){
+    const v=String(inv||'').trim().toUpperCase();if(!v)return [];
+    const skip=(skipKeys instanceof Set)?skipKeys:new Set(skipKeys||[]);
+    const out=[];
+    (this.state.jobs||[]).forEach(j=>{
+      if(!j||j.deleted||j._deleted)return;
+      (this._blLines(j)||[]).forEach(l=>{
+        if(skip.has(this._blKey(j,l)))return;
+        if(String(this._blLineInv(j,l)||'').trim().toUpperCase()!==v)return;
+        out.push({bill:String((l&&l.bill)||''),cust:String(j.customerCode||''),date:String(j.date||'')});
+      });
+    });
+    return out;
+  }
+  _blInvDupeText(list){
+    if(!list.length)return '';
+    const cs=[...new Set(list.map(d=>d.cust).filter(Boolean))].join(', ');
+    return 'เลขนี้ถูกใช้ไปแล้ว '+list.length+' บิล'+(cs?(' · ลูกค้า '+cs):'')
+      +' · '+list.slice(0,4).map(d=>d.bill||'—').join(', ')+(list.length>4?' …':'');
+  }
   blMark=()=>{
     const items=this._blSelectedLines();if(!items.length){window.alert('ยังไม่ได้เลือกบิล');return;}
     const inv=String(this.state.billInvNo||'').trim();
     if(!inv){window.alert('กรุณากรอกเลขที่ใบแจ้งหนี้ก่อน');return;}
+    const _dupe=this._blInvUsage(inv,new Set(items.map(it=>this._blKey(it.j,it.l))));
+    if(_dupe.length){
+      const _NL=String.fromCharCode(10);
+      const _cs=[...new Set(_dupe.map(d=>d.cust).filter(Boolean))].join(', ');
+      const _ex=_dupe.slice(0,6).map(d=>'• '+(d.bill||'—')+(d.date?(' · '+this._blShortDate(d.date)):'')).join(_NL);
+      if(!window.confirm('⚠ เลขที่ใบแจ้งหนี้ '+inv+' ถูกใช้ไปแล้ว '+_dupe.length+' บิล'+(_cs?(' (ลูกค้า '+_cs+')'):'')+_NL+_NL
+        +_ex+(_dupe.length>6?(_NL+'• …'):'')+_NL+_NL
+        +'ถ้าเป็นใบแจ้งหนี้ใบเดียวกันที่เพิ่มบิลเข้าไป กด OK'+_NL
+        +'ถ้าคีย์เลขผิด กด Cancel แล้วแก้เลขก่อน'))return;
+    }
     const nJob=new Set(items.map(it=>String(it.j.id))).size;
     if(!window.confirm('ทำเครื่องหมายว่าวางบิลแล้ว '+items.length+' บิล ('+nJob+' เที่ยว)\nเลขที่ใบแจ้งหนี้ '+inv+'\n\nบิลเหล่านี้จะถูกซ่อนจากรายการ กันวางบิลซ้ำ'))return;
     this._blStampLines(items,inv,String(this.state.billRecNo||'').trim());
@@ -16871,6 +16906,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.blSearch=S.billSearch||'';out.onBlSearch=(e)=>this.setState({billSearch:e.target.value});
       out.blShowBilled=!!S.billShowBilled;out.onBlShowBilled=(e)=>this.setState({billShowBilled:e.target.checked});
       out.blInvNo=S.billInvNo==null?'':S.billInvNo;out.onBlInvNo=(e)=>this.setState({billInvNo:e.target.value});
+      {const _sel=this._blSelectedLines?this._blSelectedLines():[];
+       const _dp=this._blInvUsage(S.billInvNo,new Set(_sel.map(it=>this._blKey(it.j,it.l))));
+       out.blInvDupe=_dp.length>0;out.blInvDupeText='⚠ '+this._blInvDupeText(_dp);}
       out.blRecNo=S.billRecNo||'';out.onBlRecNo=(e)=>this.setState({billRecNo:e.target.value});
       out.blDocDate=S.billDocDate||this._blToday();out.onBlDocDate=(e)=>this.setState({billDocDate:e.target.value});
       out.blProdCode=S.billProdCode==null?'':S.billProdCode;out.onBlProdCode=(e)=>this.setState({billProdCode:e.target.value});
