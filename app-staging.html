@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20i · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20j · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20i</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20j</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2853,6 +2853,10 @@
             <div style="flex:1;min-width:240px;">📄 รูปแบบการ์เดียน: พิมพ์ได้ <b>ใบปะหน้า (ใบแจ้งหนี้ หัก ณ ที่จ่าย 1%)</b> + <b>ใบวางบิลรายละเอียด</b> (ค่าขนส่งปกติ · OW = บวกน้ำหนัก · OT = บวกอื่นๆ) — ออก 1 ใบต่อ 1 ประเภทรถ</div>
             <div style="display:flex;gap:8px;flex-wrap:wrap;width:100%;">
               <input value="{{ blGirPeriod }}" onInput="{{ onBlGirPeriod }}" placeholder="วันที่ขนส่ง (ว่าง = คิดจากวันที่วิ่งจริง)" style="flex:1;min-width:200px;width:100%;padding:8px 10px;border:1px solid #c9dcf5;border-radius:8px;font-size:13px;color:#1d2b3a;font-family:inherit;background:#fff;">
+              <div style="flex:none;display:flex;align-items:center;gap:7px;padding:4px 10px;background:#fff;border:1px solid #c9dcf5;border-radius:8px;">
+                <span style="font-size:12.5px;color:#1e4f86;white-space:nowrap;">วันที่ชำระเงิน (ใบสรุป)</span>
+                <input type="date" value="{{ blGirPayDate }}" onInput="{{ onBlGirPayDate }}" title="ว่าง = ใช้วันที่เอกสาร" style="padding:4px 6px;border:1px solid #c9dcf5;border-radius:6px;font-size:13px;color:#1d2b3a;font-family:inherit;">
+              </div>
               <input value="{{ blGirTo }}" onInput="{{ onBlGirTo }}" placeholder="ส่ง (ใบสรุป) เช่น ชื่อผู้รับ/แผนก" style="flex:1;min-width:200px;width:100%;padding:8px 10px;border:1px solid #c9dcf5;border-radius:8px;font-size:13px;color:#1d2b3a;font-family:inherit;background:#fff;">
             </div>
             <button onClick="{{ onBlGirSummary }}" style="padding:8px 14px;background:#fff;border:1px solid #2f6fb0;border-radius:8px;color:#2f6fb0;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;white-space:nowrap;">🧾 ใบสรุปวางบิลรวม (ทุกใบในช่วงวันที่)</button>
@@ -14179,7 +14183,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const custName=this._custDocName(cust);
     const _allFrom=list.map(g=>String(g.from||'')).filter(Boolean).sort()[0]||'';
     const _allTo=list.map(g=>String(g.to||'')).filter(Boolean).sort().slice(-1)[0]||'';
-    const payDate=this._girDate(S.billDocDate||this._blToday());
+    // วันที่ชำระเงิน = ของใบสรุปโดยเฉพาะ · วันที่เอกสาร (billDocDate) ยังคุมหัวกระดาษของแต่ละบิลเหมือนเดิม
+    const payDate=this._girDate(S.billGirPayDate||S.billDocDate||this._blToday());
     const to=this._girPref('billGirTo','');
     // ปี พ.ศ. 2 หลัก ตามที่ลูกค้าเขียนกันมา (28/9/69)
     const _d2=(iso)=>{const m=String(iso||'').slice(0,10).match(/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/);
@@ -17082,6 +17087,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.blStdLayout=S.billStdLayout||'';out.onBlStdLayout=(e)=>this.setState({billStdLayout:e.target.value});
       {const _cu=_cust.find(c=>String(c.code||'').trim()===String(S.billCustCode||'').trim())||{};out.blStdAutoText=_cu.rateBasis==='ton'?'อัตโนมัติ (ลูกค้ารายนี้คิดต่อตัน)':(_cu.rateBasis==='trip'?'อัตโนมัติ (ลูกค้ารายนี้คิดต่อเที่ยว)':'อัตโนมัติ (ดูจากใบงานที่เลือก)');}
       out.blGirPeriod=this._girPref('billGirPeriod','');out.onBlGirPeriod=(e)=>{const v=e.target.value;try{localStorage.setItem('lf_billGirPeriod',v);}catch(_){}this.setState({billGirPeriod:v});};
+      out.blGirPayDate=S.billGirPayDate||'';
+      out.onBlGirPayDate=(e)=>this.setState({billGirPayDate:e.target.value});
       out.blGirTo=this._girPref('billGirTo','');out.onBlGirTo=(e)=>{const v=e.target.value;try{localStorage.setItem('lf_billGirTo',v);}catch(_){}this.setState({billGirTo:v});};
       const _bc=_cust.find(c=>String(c.code||'').trim()===String(S.billCustCode||'').trim());
       out.blCustAddr=(_bc&&_bc.address)||'';
