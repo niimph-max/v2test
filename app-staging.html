@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2882,7 +2882,7 @@
             <div style="padding:10px 8px;display:flex;justify-content:center;"><input type="checkbox" checked="{{ r.selected }}" onChange="{{ r.onToggle }}" style="width:15px;height:15px;cursor:pointer;"></div>
             <div style="padding:10px;font-size:12.5px;color:#475467;">{{ r.date }}</div>
             <div style="padding:10px;font-weight:700;"><span onClick="{{ r.onOpenJob }}" title="คลิกเพื่อเปิดดู/แก้ไขใบงาน" style="color:#2f6fb0;cursor:pointer;text-decoration:underline;text-underline-offset:2px;">{{ r.bill }}</span></div>
-            <div style="padding:10px;font-size:12.5px;">{{ r.plate }}</div>
+            <div style="padding:10px;font-size:12.5px;line-height:1.5;">{{ r.plate }}<div style="font-size:11px;color:#98a2b3;">{{ r.plateType }}</div></div>
             <div style="padding:10px;font-size:12.5px;color:#475467;line-height:1.5;">
               {{ r.route }}
               <sc-if value="{{ r.split }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;font-weight:700;color:#b54708;margin-top:2px;">{{ r.splitText }}</div></sc-if>
@@ -13604,6 +13604,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // เที่ยวเดียวที่ผูก 2 บิล บางครั้งต้องออกใบวางบิลแยกกัน จึงต้องติ๊กและปักสถานะแยกได้
   // เก็บสถานะรายบิลไว้ที่ j.billLines[เลขบิล] = {inv,rec,at} · ถ้าไม่มีก็ใช้ค่าระดับเที่ยวเดิม
   // (ใช้เลขบิลเป็นกุญแจ ไม่ใช่ลำดับแถว เพราะลำดับเลื่อนได้ถ้ามีการแก้ใบส่งของ)
+  _truckTypeShort(plate){const t=(this.state.trucks||[]).find(x=>x.plate===plate);return t?String(t.truckType||'').replace(/^s*[0-9]+s*-s*/,'').trim():'';}
   _blKey(j,l){return String(j&&j.id)+'|'+String((l&&l.bill)||'');}
   _blLineInv(j,l){
     const k=String((l&&l.bill)||'').trim();
@@ -17014,6 +17015,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           id:this._blKey(j,l),selected:!!_sel[this._blKey(j,l)],onToggle:()=>this.blToggle(this._blKey(j,l)),
           onOpenJob:()=>this.openSettle(j.id),
           date:li===0?this._dpThaiDate(j.date):'',bill:l.bill||'—',plate:li===0?(j.truckPlate||'—'):'',
+          plateType:li===0?this._truckTypeShort(j.truckPlate):'',
           route:[l.origin||'—',l.dest||'—'].join(' → '),
           split:lines.length>1,splitText:'🔗 บิลที่ '+(li+1)+'/'+lines.length+' ของเที่ยวเดียวกัน',
           weight:l.w?_n3(l.w):'—',rate:(l.rate?_b2(l.rate):'—')+(l.note?(' '+l.note):''),amt:_b2(l.rev),
