@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7967,7 +7967,12 @@
               <div style="font-size:17px;font-weight:700;color:#16263a;">{{ sdTitle }}</div>
               <div style="font-size:12.5px;color:#667085;margin-top:3px;">{{ sdCustomer }} · {{ sdRoute }}{{ sdJobNoText }}</div>
             </div>
-            <button onClick="{{ onSettleClose }}" style="background:none;border:none;font-size:22px;color:#98a2b3;cursor:pointer;line-height:1;padding:0;">×</button>
+            <div style="display:flex;align-items:center;gap:10px;flex:none;">
+              <sc-if value="{{ canJobs }}" hint-placeholder-val="{{ true }}">
+                <button onClick="{{ onSettleOpenJob }}" title="เปิดใบงานเต็มในหน้าจ่ายงาน (แก้ทะเบียน พขร. เลขบิล แนบไฟล์ ฯลฯ)" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #cfe0f2;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">↗ เปิดใบงานเต็ม</button>
+              </sc-if>
+              <button onClick="{{ onSettleClose }}" style="background:none;border:none;font-size:22px;color:#98a2b3;cursor:pointer;line-height:1;padding:0;">×</button>
+            </div>
           </div>
           <sc-if value="{{ sdMultiBill }}" hint-placeholder-val="{{ false }}">
             <div style="background:#fffaeb;border:1px solid #fedf89;border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:12.5px;color:#93370d;line-height:1.6;">🔗 {{ sdMultiBillText }}</div>
@@ -14347,6 +14352,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
 
   openSettle=(jobId)=>{const j=this.state.jobs.find(x=>String(x.id)===String(jobId));if(!j)return;this._settleOrig={...j};const _mi=Array.isArray(j.miscItems)&&j.miscItems.length?j.miscItems.map(m=>({...m})):((parseFloat(j.misc)||0)?[{label:'เบ็ดเตล็ด / ค่าปรับ',amount:String(j.misc)}]:[]);this.setState({settleModalOpen:true,settleDraft:{...j,miscItems:_mi}});};
   closeSettle=()=>this.setState({settleModalOpen:false,settleDraft:null});
+  // เปิดใบงานเต็มในหน้าจ่ายงาน — ของที่แก้ค้างไว้ในหน้านี้ยังไม่ถูกบันทึก ต้องถามก่อน
+  settleOpenJob=()=>{
+    const d=this.state.settleDraft;if(!d)return;
+    const o=this._settleOrig||{};
+    const dirty=Object.keys(d).some(k=>k!=='_ft'&&k!=='_editedAt'&&JSON.stringify(d[k])!==JSON.stringify(o[k]));
+    const NL=String.fromCharCode(10);
+    if(dirty&&!window.confirm('ไปที่ใบงานเต็ม (หน้าจ่ายงาน) ?'+NL+NL
+      +'หน้านี้มีการแก้ไขที่ยังไม่ได้กดบันทึก — ถ้าไปตอนนี้ของที่แก้จะหาย'+NL
+      +'กด Cancel เพื่อกลับไปกดบันทึกก่อน'))return;
+    const id=d.id;
+    this.closeSettle();
+    this.openJobEdit(id);
+  };
   setSettle=(field,val)=>this.setState(s=>({settleDraft:{...s.settleDraft,[field]:val}}));
   custRateBasis(code){const c=(this.state.customers||[]).find(x=>String(x.code||'').trim()===String(code||'').trim());const b=String((c&&c.rateBasis)||'');return (b==='trip'||b==='ton')?b:'';}
   jobRateBasis(j){const b=String((j&&j.rateBasis)||'');if(b==='trip'||b==='ton')return b;return this.custRateBasis(j&&j.customerCode)||'ton';}
@@ -15441,6 +15459,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       if(sd){
         out.sd=sd;out.sdTitle=(String(sd.deliveryNo||'').trim()||sd.jobNo||'ใบงาน')+' · '+(sd.truckPlate||'');
         out.sdJobNoText=(String(sd.deliveryNo||'').trim()&&sd.jobNo)?(' · ใบงาน '+sd.jobNo):'';
+        out.onSettleOpenJob=this.settleOpenJob;
         // เที่ยวที่ผูกหลายบิล: เตือนว่าตัวเลขในหน้านี้เป็นยอดรวมทั้งเที่ยว ไม่ใช่ของบิลใดบิลหนึ่ง
         {const _bls=this._blLines(sd);
          out.sdMultiBill=_bls.length>1;
