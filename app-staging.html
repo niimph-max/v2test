@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-19d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-20a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -504,7 +504,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-19d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-20a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2493,6 +2493,18 @@
     <!-- ===== EXPORT TO EASY-ACC ===== -->
     <sc-if value="{{ isAcctExport }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:1080px;">
+      <sc-if value="{{ ecStaleApHas }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fffaeb;border:1px solid #f5d9a8;border-radius:12px;padding:14px 17px;margin-bottom:18px;">
+          <div style="font-size:13.5px;font-weight:800;color:#b54708;margin-bottom:6px;">⚠ {{ ecStaleApHead }}</div>
+          <div style="font-size:12.5px;color:#7a5a1e;line-height:1.75;margin-bottom:9px;">ใบเหล่านี้ถูกปักว่าส่ง “เจ้าหนี้รถร่วม (AP)” ไปก่อน แล้วค่อยมีการแก้ค่าขนส่ง / วิธีจ่าย / เปอร์เซ็นต์หัก ทีหลัง · ยอดเจ้าหนี้ที่อยู่ใน EASY-ACC จึงอาจไม่ตรงกับยอดจ่ายจริง — ตรวจใน EASY-ACC แล้วแก้ด้วยมือตามจริง</div>
+          <sc-for list="{{ ecStaleApRows }}" as="r" hint-placeholder-count="1">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:4px 0;">
+              <div style="flex:1;min-width:260px;font-size:12.5px;color:#7a5a1e;line-height:1.8;">• {{ r.text }}</div>
+              <button onClick="{{ r.onAck }}" style="flex:none;padding:6px 13px;background:#fff;color:#b54708;border:1px solid #f5d9a8;border-radius:8px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">✓ รับทราบ คีย์ EASY-ACC แล้ว</button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
       <sc-if value="{{ ecStaleHas }}" hint-placeholder-val="{{ false }}">
         <div style="background:#fef3f2;border:1px solid #fecdca;border-radius:12px;padding:14px 17px;margin-bottom:18px;">
           <div style="font-size:13.5px;font-weight:800;color:#b42318;margin-bottom:6px;">⚠ {{ ecStaleHead }}</div>
@@ -8551,11 +8563,12 @@ function normTruck(t){
 function toBkkDate(v){if(!v)return '';const s=String(v);if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;const d=new Date(s);if(isNaN(d))return s.slice(0,10);try{return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);}catch(e){return s.slice(0,10);}}
 function _LFB2(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
 function normJob(j){const o=_normJob0(j);if(Array.isArray(o.miscItems)&&o.miscItems.length){const ms=o.miscItems.reduce((a,m)=>a+(parseFloat(m.amount)||0),0);o.misc=ms?String(Math.round(ms*100)/100):'';}if(Array.isArray(o.fuelRefills)&&o.fuelRefills.length){const s=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.baht)||0),0);const l=o.fuelRefills.reduce((a,r)=>a+(parseFloat(r.liters)||0),0);if(s)o.fuelBaht=String(Math.round(s*100)/100);if(l)o.fuelLiters=String(Math.round(l*100)/100);}return o;}
-function _normJob0(j){return{rateBasis:(j.rateBasis==='trip'?'trip':(j.rateBasis==='ton'?'ton':'')),customerCode:String(j.customerCode||'').trim(),acctPosted:j.acctPosted||'',acctApPosted:j.acctApPosted||'',acctAck:j.acctAck||'',acctAckBy:String(j.acctAckBy||''),billInvNo:String(j.billInvNo||''),billRecNo:String(j.billRecNo||''),billedAt:j.billedAt||'',billLines:(j.billLines&&typeof j.billLines==='object'&&!Array.isArray(j.billLines))?j.billLines:{},destDistrict:String(j.destDistrict||''),destProvince:_provShort(j.destProvince),allowanceExtra:j.allowanceExtra==null?'':String(j.allowanceExtra),fuelRefills:(function(v){if(Array.isArray(v))return v.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));if(typeof v==='string'&&v.trim()){try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));}catch(e){}}return undefined;})(j.fuelRefills),id:j.id||0,jobNo:j.jobNo||'',date:toBkkDate(j.date),time:j.time||'',driverCode:String(j.driverCode||''),truckPlate:j.truckPlate||'',origin:j.origin||'',destination:j.destination||'',customer:j.customer||'',deliveryNo:j.deliveryNo||'',weight:j.weight||'',revenue:j.revenue||'',distance:j.distance||'',extraDistance:j.extraDistance||'',trackJob:!!j.trackJob,emptyDistance:j.emptyDistance||'',ratePerTon:j.ratePerTon||'',rateAddWeight:j.rateAddWeight||'',rateAddOther:j.rateAddOther||'',rateAddTrip:j.rateAddTrip||'',dispatchPoint:j.dispatchPoint||'',status:j.status||'รับงาน',fuelLiters:j.fuelLiters||'',fuelPricePerL:j.fuelPricePerL||'',fuelBaht:j.fuelBaht||'',toll:j.toll||'',allowance:j.allowance||'',tire:j.tire||'',tireDate:j.tireDate||'',tirePay:j.tirePay||'',repair:j.repair||'',repairDate:j.repairDate||'',repairPay:j.repairPay||'',police:j.police||'',misc:j.misc||'',miscItems:(Array.isArray(j.miscItems)?j.miscItems.map(m=>({label:String(m.label||''),amount:(m.amount==null?'':String(m.amount))})):[]),remark:j.remark||'',driverNote:j.driverNote||'',driverRequest:j.driverRequest||'',attachment:j.attachment||'',attachments:Array.isArray(j.attachments)?j.attachments:[],shipments:Array.isArray(j.shipments)?j.shipments:[],fuelAdvance:j.fuelAdvance||'',fuelAdvanceNote:j.fuelAdvanceNote||'',docsClosed:!!j.docsClosed,docsClosedTime:j.docsClosedTime||'',docsTarget:j.docsTarget||'',expenseDone:!!j.expenseDone,subPayMethod:j.subPayMethod||'pct',subPct:(j.subPct!=null?j.subPct:''),subFlat:j.subFlat||'',subWht:(j.subWht!=null?j.subWht:''),subDeductions:Array.isArray(j.subDeductions)?j.subDeductions:[],subPayDate:j.subPayDate||'',subPayStatus:j.subPayStatus||'รอจ่าย',subDone:!!j.subDone,createdAt:j.createdAt||'',dispatchTime:j.dispatchTime||'',pickupTime:j.pickupTime||'',pickupLat:j.pickupLat||'',pickupLng:j.pickupLng||'',arrivalTime:j.arrivalTime||'',arrivalLat:j.arrivalLat||'',arrivalLng:j.arrivalLng||'',completionTime:j.completionTime||'',completionLat:j.completionLat||'',completionLng:j.completionLng||'',documentTime:j.documentTime||'',dispatcher:j.dispatcher||'',dispatcherOther:j.dispatcherOther||'',_ft:(j._ft&&typeof j._ft==='object')?j._ft:{},_editedAt:j._editedAt};}
+function _normJob0(j){return{rateBasis:(j.rateBasis==='trip'?'trip':(j.rateBasis==='ton'?'ton':'')),customerCode:String(j.customerCode||'').trim(),acctPosted:j.acctPosted||'',acctApPosted:j.acctApPosted||'',acctAck:j.acctAck||'',acctAckBy:String(j.acctAckBy||''),acctApAck:j.acctApAck||'',acctApAckBy:String(j.acctApAckBy||''),billInvNo:String(j.billInvNo||''),billRecNo:String(j.billRecNo||''),billedAt:j.billedAt||'',billLines:(j.billLines&&typeof j.billLines==='object'&&!Array.isArray(j.billLines))?j.billLines:{},destDistrict:String(j.destDistrict||''),destProvince:_provShort(j.destProvince),allowanceExtra:j.allowanceExtra==null?'':String(j.allowanceExtra),fuelRefills:(function(v){if(Array.isArray(v))return v.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));if(typeof v==='string'&&v.trim()){try{const a=JSON.parse(v);if(Array.isArray(a))return a.map(r=>({date:r.date||'',liters:r.liters==null?'':String(r.liters),price:r.price==null?'':String(r.price),baht:r.baht==null?'':String(r.baht)}));}catch(e){}}return undefined;})(j.fuelRefills),id:j.id||0,jobNo:j.jobNo||'',date:toBkkDate(j.date),time:j.time||'',driverCode:String(j.driverCode||''),truckPlate:j.truckPlate||'',origin:j.origin||'',destination:j.destination||'',customer:j.customer||'',deliveryNo:j.deliveryNo||'',weight:j.weight||'',revenue:j.revenue||'',distance:j.distance||'',extraDistance:j.extraDistance||'',trackJob:!!j.trackJob,emptyDistance:j.emptyDistance||'',ratePerTon:j.ratePerTon||'',rateAddWeight:j.rateAddWeight||'',rateAddOther:j.rateAddOther||'',rateAddTrip:j.rateAddTrip||'',dispatchPoint:j.dispatchPoint||'',status:j.status||'รับงาน',fuelLiters:j.fuelLiters||'',fuelPricePerL:j.fuelPricePerL||'',fuelBaht:j.fuelBaht||'',toll:j.toll||'',allowance:j.allowance||'',tire:j.tire||'',tireDate:j.tireDate||'',tirePay:j.tirePay||'',repair:j.repair||'',repairDate:j.repairDate||'',repairPay:j.repairPay||'',police:j.police||'',misc:j.misc||'',miscItems:(Array.isArray(j.miscItems)?j.miscItems.map(m=>({label:String(m.label||''),amount:(m.amount==null?'':String(m.amount))})):[]),remark:j.remark||'',driverNote:j.driverNote||'',driverRequest:j.driverRequest||'',attachment:j.attachment||'',attachments:Array.isArray(j.attachments)?j.attachments:[],shipments:Array.isArray(j.shipments)?j.shipments:[],fuelAdvance:j.fuelAdvance||'',fuelAdvanceNote:j.fuelAdvanceNote||'',docsClosed:!!j.docsClosed,docsClosedTime:j.docsClosedTime||'',docsTarget:j.docsTarget||'',expenseDone:!!j.expenseDone,subPayMethod:j.subPayMethod||'pct',subPct:(j.subPct!=null?j.subPct:''),subFlat:j.subFlat||'',subWht:(j.subWht!=null?j.subWht:''),subDeductions:Array.isArray(j.subDeductions)?j.subDeductions:[],subPayDate:j.subPayDate||'',subPayStatus:j.subPayStatus||'รอจ่าย',subDone:!!j.subDone,createdAt:j.createdAt||'',dispatchTime:j.dispatchTime||'',pickupTime:j.pickupTime||'',pickupLat:j.pickupLat||'',pickupLng:j.pickupLng||'',arrivalTime:j.arrivalTime||'',arrivalLat:j.arrivalLat||'',arrivalLng:j.arrivalLng||'',completionTime:j.completionTime||'',completionLat:j.completionLat||'',completionLng:j.completionLng||'',documentTime:j.documentTime||'',dispatcher:j.dispatcher||'',dispatcherOther:j.dispatcherOther||'',_ft:(j._ft&&typeof j._ft==='object')?j._ft:{},_editedAt:j._editedAt};}
 const _TIRE_POS_NO={'หน้า ซ.':1,'หน้า ข.':2,'ขับ1 ซ.นอก':3,'ขับ1 ซ.ใน':4,'ขับ1 ข.ใน':5,'ขับ1 ข.นอก':6,'ขับ2 ซ.นอก':7,'ขับ2 ซ.ใน':8,'ขับ2 ข.ใน':9,'ขับ2 ข.นอก':10,'เพลา1 ซ.นอก':11,'เพลา1 ซ.ใน':12,'เพลา1 ข.ใน':13,'เพลา1 ข.นอก':14,'เพลา2 ซ.นอก':15,'เพลา2 ซ.ใน':16,'เพลา2 ข.ใน':17,'เพลา2 ข.นอก':18,'เพลา3 ซ.นอก':19,'เพลา3 ซ.ใน':20,'เพลา3 ข.ใน':21,'เพลา3 ข.นอก':22};
 function _tirePosRaw(p){return String(p||'').replace(/^\(\d+\)\s*/,'');}
 function _tirePosLabel(p){const r=_tirePosRaw(p);if(!r)return '';const n=_TIRE_POS_NO[r];return n?('('+n+') '+r):r;}
 const DISPATCHERS=['ปกรณ์ ลิ้นทอง','วารี ภักดีวาณิช','นันทนา สุขศิลา','สมศักดิ์ ชนะวงษ์','จารพรรณ ขาวสุข','คศิมาภรณ์ ชนะวงศ์','อื่นๆ'];
+const SUB_PAY_FIELDS=['revenue','subPayMethod','subPct','subFlat'];   // ช่องที่ทำให้ยอดจ่ายรถร่วมขยับ
 const SUB_DED_DEFAULTS=['หักภาษี ณ ที่จ่าย','ค่าน้ำมัน','ค่าประกันสินค้า','ค่า GPS','ค่าโอน'];
 const SUB_WHT_LABEL='หักภาษี ณ ที่จ่าย';   // คิดอัตโนมัติ 1% ของค่าขนส่งจ่ายรถร่วม
 const SUB_WHT_PCT=1;
@@ -12403,6 +12416,38 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     });
     return out.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   }
+  // ฝั่ง AP (ค่าขนส่งจ่ายรถร่วม) — ยอดขยับได้จากค่าขนส่ง หรือจากวิธีจ่าย/เปอร์เซ็นต์/ค่าเหมา
+  _ecStaleAp(){
+    const out=[];
+    (this.state.jobs||[]).forEach(j=>{
+      if(j.deleted||j._deleted)return;
+      const ap=String(j.acctApPosted||'').trim();if(!ap)return;
+      const stamp=Date.parse(ap+':00+07:00');if(!stamp)return;
+      const ft=j._ft||{};
+      let t=0,which='';
+      SUB_PAY_FIELDS.forEach(f=>{const v=Number(ft[f]||0);if(v>t){t=v;which=f;}});
+      if(!t||t<=stamp+60000)return;
+      const ack=String(j.acctApAck||'').trim();
+      if(ack){const am=Date.parse(ack+':00+07:00');if(am&&am+60000>=t)return;}
+      out.push({id:j.id,no:String(j.deliveryNo||j.jobNo||''),date:String(j.date||''),
+        plate:String(j.truckPlate||''),pay:this._ecSubCalc(j).gross||0,posted:ap,changed:t,
+        field:({revenue:'ค่าขนส่ง',subPayMethod:'วิธีจ่าย',subPct:'เปอร์เซ็นต์หัก',subFlat:'ค่าเหมาจ่าย'}[which]||'ยอด')});
+    });
+    return out.sort((a,b)=>String(a.date).localeCompare(String(b.date)));
+  }
+  ecAckStaleAp=(id)=>{
+    const j=(this.state.jobs||[]).find(x=>String(x.id)===String(id));if(!j)return;
+    const NL=String.fromCharCode(10);
+    if(!window.confirm('รับทราบบิล '+(j.deliveryNo||j.jobNo||'')+' (ฝั่งเจ้าหนี้รถร่วม) ?'+NL+NL
+      +'ยืนยันว่าจัดการใน EASY-ACC ด้วยมือเรียบร้อยแล้ว'+NL
+      +'ใบนี้จะถูกซ่อนออกจากแถบเตือน · ไม่มีการแก้ยอดหรือปลดป้ายใดๆ'+NL
+      +'ถ้ามีการแก้ยอดจ่ายรถร่วมอีกครั้ง จะเด้งเตือนขึ้นมาใหม่เอง'))return;
+    const a=this.state.auth||{};const who=a.name||a.u||'—';
+    const now=this._ecNow();
+    const jobs=this.state.jobs.map(x=>String(x.id)===String(id)?{...x,acctApAck:now,acctApAckBy:who}:x);
+    this.setState({jobs});
+    this.persistJobs(jobs,id,['acctApAck','acctApAckBy']);
+  };
   // รับทราบว่าใบนี้จัดการใน EASY-ACC ด้วยมือแล้ว — ไม่ปลดป้าย ไม่แก้ยอด แค่ซ่อนออกจากแถบเตือน
   ecAckStale=(id)=>{
     const j=(this.state.jobs||[]).find(x=>String(x.id)===String(id));if(!j)return;
@@ -16822,7 +16867,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          out.ecStaleHas=_st.length>0;
          out.ecStaleHead='มี '+_st.length+' ใบ ที่ราคาเปลี่ยนหลังส่งบัญชีไปแล้ว';
          out.ecStaleRows=_st.map(x=>({text:x.no+'  ·  '+this._blShortDate(x.date)+(x.cust?('  ·  '+x.cust):'')+'  ·  ยอดตอนนี้ '+_LFB2(x.rev)+' บาท  ·  ปักว่าส่งเมื่อ '+x.posted.replace('T',' ')+'  ·  แก้ราคาเมื่อ '+_fT(x.changed),
-           onAck:()=>this.ecAckStale(x.id)}));}
+           onAck:()=>this.ecAckStale(x.id)}));
+         const _sp=this._ecStaleAp();
+         out.ecStaleApHas=_sp.length>0;
+         out.ecStaleApHead='มี '+_sp.length+' ใบรถร่วม ที่ยอดจ่ายเปลี่ยนหลังส่งบัญชี (AP) ไปแล้ว';
+         out.ecStaleApRows=_sp.map(x=>({text:x.no+'  ·  '+this._blShortDate(x.date)+(x.plate?('  ·  '+x.plate):'')+'  ·  ยอดจ่ายตอนนี้ '+_LFB2(x.pay)+' บาท  ·  ปักว่าส่งเมื่อ '+x.posted.replace('T',' ')+'  ·  แก้'+x.field+'เมื่อ '+_fT(x.changed),
+           onAck:()=>this.ecAckStaleAp(x.id)}));}
         out.ecArAcct=cfg.ar;out.onEcArAcct=(e)=>this.setEcCfg('ecArAcct',e.target.value);
         out.ecArAcct2=cfg.ar2;out.onEcArAcct2=(e)=>this.setEcCfg('ecArAcct2',e.target.value);
         out.ecArName=cfg.arName;out.onEcArName=(e)=>this.setEcCfg('ecArName',e.target.value);
