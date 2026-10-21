@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21l · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21l</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12349,21 +12349,23 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       '4. (1) ค่าดอกเบี้ย ฯลฯ ตามมาตรา 40 (4) (ก)',
       '&nbsp;&nbsp;&nbsp;&nbsp;(2) เงินปันผล เงินส่วนแบ่งกำไร ฯลฯ ตามมาตรา 40 (4) (ข)',
       '5. การจ่ายเงินได้ที่ต้องหักภาษี ณ ที่จ่าย ตามคำสั่งกรมสรรพากรที่ออกตาม มาตรา 3 เตรส เช่น ค่าเช่า ค่าโฆษณา ค่าขนส่ง ฯลฯ'];
-    return '<div class="half"><div class="wm">'+(copyNo===1?'ต้นฉบับ':'สำเนา')+'</div>'
+    return '<div class="half">'
+      +'<div class="box"><div class="wm">'+(copyNo===1?'ต้นฉบับ':'สำเนา')+'</div>'
       +'<div class="hd">หนังสือรับรองการหักภาษี ณ ที่จ่าย ตามมาตรา 50 ทวิ แห่งประมวลรัษฎากร</div>'
       +'<div class="sub"><span>ฉบับที่ '+copyNo+' ('+(copyNo===1?'สำหรับผู้ถูกหักภาษี ณ ที่จ่าย ใช้แนบพร้อมกับแบบแสดงรายการภาษี':'สำหรับผู้ถูกหักภาษี ณ ที่จ่าย เก็บไว้เป็นหลักฐาน')+')</span>'
         +'<span class="no">เลขที่ <u>&nbsp;'+esc(r.no)+'&nbsp;</u></span></div>'
       +'<table class="t"><tr>'
       +'<td class="c1"><div class="ti">1. ชื่อ ที่อยู่ และ เลขประจำตัวผู้เสียภาษีอากร<br>ของผู้มีหน้าที่หักภาษี ณ ที่จ่าย</div>'
         +'<div class="pv">'+esc(co.name)+'<br>'+esc(co.addr)+'<br>เลขประจำตัวผู้เสียภาษี '+esc(co.tax)+'</div>'
-        +'<div class="ti" style="margin-top:7px;">2. ชื่อ ที่อยู่ และ เลขประจำตัวผู้เสียภาษีอากร<br>ของผู้ถูกหักภาษี ณ ที่จ่าย</div>'
+        +'<div class="ti" style="margin-top:9px;">2. ชื่อ ที่อยู่ และ เลขประจำตัวผู้เสียภาษีอากร<br>ของผู้ถูกหักภาษี ณ ที่จ่าย</div>'
         +'<div class="pv">'+esc(payee)+'<br>'+esc(r.addr)+'<br>เลขประจำตัวผู้เสียภาษี '+esc(r.idCard)+'</div></td>'
-      +'<td class="c2"><div class="ch">เงินได้ที่จ่าย</div>'
+      +'<td class="c2"><div class="cw"><div class="ch">เงินได้ที่จ่าย</div><div class="bd">'
         +LINES.map(x=>'<div class="ln">'+(x.indexOf('&nbsp;')===0?x:esc(x))+'</div>').join('')
-        +'<div class="ln f">6. <u>&nbsp;ค่าขนส่ง&nbsp;</u></div><div class="ln f">7. <u>&nbsp;&nbsp;</u></div><div class="ln f">8. <u>&nbsp;&nbsp;</u></div></td>'
-      +'<td class="c3"><div class="ch">วัน เดือน ปี<br>ที่จ่ายเงินได้</div><div class="vv">'+esc(d2(r.pay))+'</div></td>'
-      +'<td class="c4"><div class="ch">จำนวนเงินที่จ่าย</div><div class="vv n">'+B(r.gross)+'</div></td>'
-      +'<td class="c5"><div class="ch">จำนวนเงินภาษีที่หักไว้</div><div class="vv n">'+B(r.tax)+'</div></td>'
+        +'<div class="ln f">6. <u>&nbsp;ค่าขนส่ง&nbsp;</u></div><div class="ln f">7. <u>&nbsp;&nbsp;</u></div><div class="ln f">8. <u>&nbsp;&nbsp;</u></div>'
+        +'</div></div></td>'
+      +'<td class="c3"><div class="cw"><div class="ch">วัน เดือน ปี<br>ที่จ่ายเงินได้</div><div class="bd v">'+esc(d2(r.pay))+'</div></div></td>'
+      +'<td class="c4"><div class="cw"><div class="ch">จำนวนเงินที่จ่าย</div><div class="bd v n">'+B(r.gross)+'</div></div></td>'
+      +'<td class="c5"><div class="cw"><div class="ch">จำนวนเงินภาษีที่หักไว้</div><div class="bd v n">'+B(r.tax)+'</div></div></td>'
       +'</tr><tr>'
       +'<td colspan="3" class="wd">'+esc(this._bahtText(r.tax))+'</td>'
       +'<td class="wl">รวมเงินภาษีที่หักไว้</td><td class="wn">'+B(r.tax)+'</td>'
@@ -12373,46 +12375,49 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="cf">ขอรับรองว่าข้อความและตัวเลขดังกล่าวข้างต้นถูกต้องตรงกับความเป็นจริงทุกประการ</div>'
       +'<div class="sg"><div class="l">ลงชื่อ ..................................................... ผู้มีหน้าที่หักภาษี ณ ที่จ่าย</div>'
         +'<div class="l">'+esc(d2(r.pay))+'</div><div class="l s">วัน เดือน ปี ที่ออกหนังสือรับรอง</div></div>'
+      +'</div>'
+      +'<div class="fn">หมายเหตุ : ช่องเงินได้ที่จ่าย ให้กรอกรายการและระบุเรียงลำดับประเภทเงินได้ เงินได้ประเภทใดที่มิได้จ่ายจะไม่ระบุรายการนั้นไว้ในแบบก็ได้</div>'
       +'</div>';
   }
   _whtCss(){
     return '@page{size:A4;margin:6mm;}*{box-sizing:border-box;}'
       +'body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#000;font-size:10px;}'
       +'.pg{page-break-after:always;}.pg:last-child{page-break-after:auto;}'
-      +'.half{border:1px solid #000;padding:4px 6px 6px;margin-bottom:4mm;position:relative;overflow:hidden;}'
-      +'.wm{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%) rotate(-18deg);font-size:46px;font-weight:700;color:#e6e6e6;letter-spacing:.15em;pointer-events:none;white-space:nowrap;}'
-      +'.half:last-child{margin-bottom:0;}'
-      +'.cut{border-top:1px dashed #000;margin:0 0 4mm;}'
-      +'.hd{text-align:center;font-weight:700;font-size:11.5px;}'
-      +'.sub{display:flex;justify-content:space-between;font-size:9px;margin:1px 0 4px;}'
-      +'.sub .no{font-size:10px;}.sub u{text-decoration:underline;}'
-      +'.t{width:100%;border-collapse:collapse;}'
-      +'.t td{border:1px solid #000;vertical-align:top;padding:3px 4px;}'
-      +'.c1{width:27%;}.c2{width:41%;}.c3{width:11%;}.c4{width:11%;}.c5{width:10%;}'
-      +'.ti{font-size:9px;line-height:1.35;}'
-      +'.pv{font-size:9.5px;line-height:1.5;margin-top:3px;}'
-      +'.ch{text-align:center;font-size:9px;line-height:1.3;}'
-      +'.ln{font-size:9px;line-height:1.45;}'
-      +'.ln.f u{display:inline-block;min-width:60%;border-bottom:1px solid #000;text-decoration:none;}'
-      +'.vv{text-align:center;font-size:10px;margin-top:22mm;}'
-      +'.vv.n{text-align:right;}'
+      +'.half{height:139mm;display:flex;flex-direction:column;}'
+      +'.box{border:1px solid #000;padding:5px 7px 7px;flex:1;display:flex;flex-direction:column;position:relative;overflow:hidden;}'
+      +'.fn{font-size:8px;margin-top:2px;flex:none;}'
+      +'.cut{border-top:1px dashed #000;margin:1mm 0 2mm;}'
+      +'.wm{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-20deg);font-size:58px;font-weight:700;color:#ededed;letter-spacing:.2em;pointer-events:none;white-space:nowrap;}'
+      +'.hd{text-align:center;font-weight:700;font-size:12px;position:relative;}'
+      +'.sub{display:flex;justify-content:space-between;align-items:flex-end;font-size:9px;margin:1px 0 5px;position:relative;}'
+      +'.sub .no{font-size:10.5px;}.sub u{text-decoration:underline;}'
+      +'.t{width:100%;border-collapse:collapse;flex:1;position:relative;}'
+      +'.t td{border:1px solid #000;vertical-align:top;padding:3px 4px;height:1px;}'
+      +'.c1{width:26%;}.c2{width:40%;}.c3{width:11.5%;}.c4{width:12%;}.c5{width:10.5%;}'
+      +'.ti{font-size:9px;line-height:1.4;}'
+      +'.pv{font-size:9.5px;line-height:1.55;margin-top:3px;}'
+      +'.cw{height:100%;display:flex;flex-direction:column;}'
+      +'.ch{text-align:center;font-size:9px;line-height:1.3;flex:none;}'
+      +'.bd{flex:1;padding-top:3px;}'
+      +'.bd.v{display:flex;align-items:flex-start;justify-content:center;font-size:10.5px;padding-top:23mm;}'
+      +'.bd.v.n{justify-content:flex-end;padding-right:2px;}'
+      +'.ln{font-size:9px;line-height:1.5;}'
+      +'.ln.f u{display:inline-block;min-width:62%;border-bottom:1px solid #000;text-decoration:none;}'
       +'.wd{text-align:center;font-size:10px;}'
       +'.wl{text-align:center;font-size:9.5px;}'
-      +'.wn{text-align:right;font-weight:700;font-size:10.5px;}'
-      +'.bt{display:flex;flex-wrap:wrap;gap:7px;align-items:center;font-size:9px;margin-top:3px;}'
-      +'.bt .k{min-width:95px;}.bx{margin-right:2px;}'
-      +'.cf{text-align:center;font-size:9px;margin-top:4px;}'
-      +'.sg{text-align:center;font-size:9px;line-height:1.7;margin-top:2px;}'
-      +'.sg .s{font-size:8.5px;}'
-      +'.ft{font-size:8px;margin-top:3px;}';
+      +'.wn{text-align:right;font-weight:700;font-size:11px;}'
+      +'.bt{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:9px;margin-top:4px;}'
+      +'.bt .k{min-width:100px;}.bx{margin-right:2px;}'
+      +'.cf{text-align:center;font-size:9px;margin-top:6px;}'
+      +'.sg{text-align:center;font-size:9px;line-height:1.75;margin-top:2px;}'
+      +'.sg .s{font-size:8.5px;}';
   }
   // พิมพ์ 50 ทวิ หลายใบในชุดเดียว (เรียงตามลำดับที่ส่งมา)
   printWhtBatch(recs){
     if(!recs||!recs.length){window.alert('ไม่มีใบหักภาษี ณ ที่จ่าย ที่จะพิมพ์');return;}
     const S=this.state;const c=S.company||{};
     const co={name:String(c.name||''),addr:String(c.address||c.addr||''),tax:String(c.taxId||c.taxid||'')};
-    const pages=recs.map(r=>'<div class="pg">'+this._whtHalf(r,1,co)+'<div class="cut"></div>'+this._whtHalf(r,2,co)
-      +'<div class="ft">หมายเหตุ : ช่องเงินได้ที่จ่าย ให้กรอกรายการและระบุเรียงลำดับประเภทเงินได้ เงินได้ประเภทใดในมิได้จ่ายจะไม่ระบุรายการนั้นไว้ในแบบก็ได้</div></div>').join('');
+    const pages=recs.map(r=>'<div class="pg">'+this._whtHalf(r,1,co)+'<div class="cut"></div>'+this._whtHalf(r,2,co)+'</div>').join('');
     this._printHtml('<!doctype html><html><head><meta charset="utf-8"><title>หนังสือรับรองการหักภาษี ณ ที่จ่าย</title>'
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">'
       +'<style>'+this._whtCss()+'</style></head><body>'+pages+'</body></html>');
