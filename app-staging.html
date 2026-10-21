@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2864,6 +2864,7 @@
               </div>
               <input value="{{ blGirTo }}" onInput="{{ onBlGirTo }}" placeholder="ส่ง (ใบสรุป) เช่น ชื่อผู้รับ/แผนก" style="flex:1;min-width:200px;width:100%;padding:8px 10px;border:1px solid #c9dcf5;border-radius:8px;font-size:13px;color:#1d2b3a;font-family:inherit;background:#fff;">
             </div>
+            <button onClick="{{ onBlSendAllForm }}" style="padding:8px 14px;background:#2f6fb0;border:1px solid #2f6fb0;border-radius:8px;color:#fff;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;white-space:nowrap;">📤 ส่งทุกใบในช่วงวันที่ เข้าฟอร์มพิเศษ</button>
             <button onClick="{{ onBlGirSummary }}" style="padding:8px 14px;background:#fff;border:1px solid #2f6fb0;border-radius:8px;color:#2f6fb0;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;white-space:nowrap;">🧾 ใบสรุปวางบิลรวม (ทุกใบในช่วงวันที่)</button>
           </div>
         </sc-if>
@@ -11238,6 +11239,36 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ===== ระบบออกใบวางบิลพิเศษ (v.2026-10-21b) =====
   // ฟอร์มของลูกค้า GIR/TATA เป็นหน้าแยกบนเว็บเดียวกัน (เหมือน driver.html) — เปิดจากเมนูได้เลย
   // ไม่ต้องส่งไฟล์โปรแกรมไปให้พนักงานต่างจังหวัดอีก และได้เวอร์ชันล่าสุดเสมอ
+  // แถวของฟอร์ม GIR: [ทะเบียน, วันที่, เลขที่บิล, สถานที่ส่ง, จังหวัด, ค่าขนส่งปกติ, OW, OT]
+  _girFormRows(items,ty){
+    const std=this._blFmt()!=='gir';
+    return items.slice().sort((a,b)=>String(a.j.date).localeCompare(String(b.j.date))
+        ||String((a.l&&a.l.bill)||'').localeCompare(String((b.l&&b.l.bill)||''),'en',{numeric:true}))
+      .map(it=>{const j=it.j,l=it.l;const q=this._girParts(j,l,this._blLines(j).length);
+        return [String(j.truckPlate||''),this._girDate(j.date),String((l&&l.bill)||''),
+          String(this._girPlace(j,l,q,ty==='40',std)||''),String(j.destProvince||'').trim(),
+          Number(q.normal)||0,Number(q.ow)||0,Number(q.ot)||0];});
+  }
+  // ทุกใบแจ้งหนี้ที่ออกแล้วของลูกค้านี้ในช่วงวันที่ → ลิงก์เดียว ได้ครบทุกประเภทรถ
+  _billFormPayloadAll(){
+    const S=this.state;const code=String(S.billCustCode||'').trim();
+    const f=S.billFrom||'',t=S.billTo||'';
+    const list=this._blInvRegister().filter(g=>String(g.code||'').trim()===code&&(!f||g.to>=f)&&(!t||g.from<=t))
+      .sort((a,b)=>String(a.inv).localeCompare(String(b.inv),'en',{numeric:true}));
+    if(!list.length){window.alert('ยังไม่มีใบแจ้งหนี้ที่ออกแล้วของลูกค้านี้ในช่วงวันที่ที่เลือก'+String.fromCharCode(10)+String.fromCharCode(10)+'ออกเลขใบแจ้งหนี้และกด "ทำเครื่องหมายวางบิลแล้ว" ให้ครบทุกประเภทรถก่อน');return null;}
+    const gir=this._blFmt()==='gir';
+    const sets=list.map(g=>{
+      const ty=String(g.tt||'').trim();
+      if(gir)return {typeKey:(GIR_BILL_TYPES[ty]?ty:'6'),invNo:g.inv,invDate:(g.d?this._girDate(g.d):''),
+        receiptNo:g.rec||'',coverDesc:String(g.pc||'')||undefined,rows:this._girFormRows(g.items,ty)};
+      return {invNo:g.inv,invDate:(g.d?this._girDate(g.d):''),receiptNo:g.rec||'',
+        rows:(this._blDocData(g.items)||{rows:[]}).rows.map(r=>({bol:String(r.bill||''),desc:String(r.detail||''),
+          qty:Number(r.w)||0,amount:Number(r.rev)||0,price:Number(r.rate)||0,date:String(r.date||''),note:String(r.note||'')}))};
+    }).filter(x=>x.rows.length);
+    if(!sets.length)return null;
+    return {v:1,fmt:gir?'gir':'tata',file:gir?'GIR.html':'TATA.html',sets:sets,
+      rows:sets[0].rows,invNo:sets[0].invNo};
+  }
   // ข้อมูลใบวางบิลในรูปที่ฟอร์มพิเศษรับได้ (ชุดเดียวกับที่ใช้พิมพ์ ตัวเลขจึงตรงกันเสมอ)
   _billFormPayload(){
     const D=this._blDocData();if(!D)return null;
@@ -11257,8 +11288,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       rows:(D.rows||[]).map(r=>({bol:String(r.bill||''),desc:String(r.detail||''),qty:Number(r.w)||0,
         amount:Number(r.rev)||0,price:Number(r.rate)||0,date:String(r.date||''),note:String(r.note||'')}))};
   }
-  async _billFormLink(){
-    const pl=this._billFormPayload();if(!pl)return null;
+  async _billFormLink(plArg){
+    const pl=plArg||this._billFormPayload();if(!pl)return null;
     if(!pl.rows.length){window.alert('ยังไม่ได้เลือกบิลที่จะส่งเข้าฟอร์ม');return null;}
     const bytes=new TextEncoder().encode(JSON.stringify(pl));
     let out=bytes,gz='0';
@@ -11274,16 +11305,30 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     return base+pl.file+'#lf='+gz+b64;
   }
   // ส่งเข้าฟอร์มพิเศษ — ข้อมูลเดินทางไปในลิงก์เอง ไม่ต้องผ่านไฟล์ Excel
+  async _billFormShare(pl,what){
+    const link=await this._billFormLink(pl);if(!link)return;
+    const NL=String.fromCharCode(10);
+    let copied=false;try{await navigator.clipboard.writeText(link);copied=true;}catch(e){}
+    const msg='📋 '+what+NL+NL
+      +(copied?('คัดลอก "ลิงก์เปิดฟอร์ม" ไว้ในคลิปบอร์ดแล้ว'+NL+'→ ไปที่ไลน์/อีเมลของพนักงาน แล้วกดวาง (Ctrl+V) ส่งไปได้เลย')
+             :('คัดลอกลิงก์นี้ส่งให้พนักงาน:'+NL+link))+NL+NL
+      +'พนักงานกดลิงก์ → ฟอร์มเปิดขึ้นมาพร้อมข้อมูลครบ → ตรวจ/แก้ไข → สั่งพิมพ์ส่งลูกค้า'+NL
+      +'(ไม่ต้องส่งไฟล์ Excel อีกแล้ว)'+NL+NL
+      +'กด OK ถ้าอยากเปิดฟอร์มดูเองตอนนี้ · กด Cancel ถ้าจะส่งลิงก์อย่างเดียว';
+    if(window.confirm(msg))window.open(link,'_blank','noopener');
+  }
+  // ส่งเฉพาะบิลที่ติ๊กไว้ตอนนี้ (1 ชุด)
   billSendToForm=async()=>{
-    try{
-      const link=await this._billFormLink();if(!link)return;
-      const NL=String.fromCharCode(10);
-      let copied=false;try{await navigator.clipboard.writeText(link);copied=true;}catch(e){}
-      const msg='เตรียมใบวางบิลเข้าฟอร์มพิเศษเรียบร้อย'+NL+NL
-        +(copied?'✓ คัดลอกลิงก์ไว้แล้ว — วางในไลน์ส่งให้พนักงานได้เลย':('ลิงก์:'+NL+link))+NL+NL
-        +'พนักงานเปิดลิงก์แล้วจะเห็นใบวางบิลพร้อมข้อมูลครบ แก้ไขและสั่งพิมพ์ได้ทันที'+NL+NL
-        +'กด OK เพื่อเปิดฟอร์มดูตอนนี้';
-      if(window.confirm(msg))window.open(link,'_blank','noopener');
+    try{const pl=this._billFormPayload();if(!pl)return;
+      await this._billFormShare(pl,'เตรียมใบวางบิล 1 ใบ · '+pl.rows.length+' รายการ');
+    }catch(e){window.alert('ส่งเข้าฟอร์มไม่สำเร็จ: '+((e&&e.message)||e));}
+  };
+  // ส่งทุกใบที่ออกแล้วในช่วงวันที่ (ครบทุกประเภทรถในลิงก์เดียว)
+  billSendAllToForm=async()=>{
+    try{const pl=this._billFormPayloadAll();if(!pl)return;
+      const n=pl.sets.reduce((a,x)=>a+x.rows.length,0);
+      await this._billFormShare(pl,'เตรียมใบวางบิล '+pl.sets.length+' ใบ · '+n+' รายการ'+String.fromCharCode(10)
+        +'('+pl.sets.map(x=>x.invNo||'—').join(' · ')+')');
     }catch(e){window.alert('ส่งเข้าฟอร์มไม่สำเร็จ: '+((e&&e.message)||e));}
   };
   openBillForm=(file)=>{
@@ -17223,7 +17268,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
          lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
       out.onBlPrint=()=>this.printBillingDoc();out.onBlXlsx=()=>this.exportBillingXlsx();
-      out.onBlSendForm=this.billSendToForm;
+      out.onBlSendForm=this.billSendToForm;out.onBlSendAllForm=this.billSendAllToForm;
       out.onBlMark=()=>this.blMark();
       out.onBlUnmark=()=>this.blUnmark();
     }
