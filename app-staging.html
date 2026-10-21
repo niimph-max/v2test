@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2864,7 +2864,6 @@
               </div>
               <input value="{{ blGirTo }}" onInput="{{ onBlGirTo }}" placeholder="ส่ง (ใบสรุป) เช่น ชื่อผู้รับ/แผนก" style="flex:1;min-width:200px;width:100%;padding:8px 10px;border:1px solid #c9dcf5;border-radius:8px;font-size:13px;color:#1d2b3a;font-family:inherit;background:#fff;">
             </div>
-            <button onClick="{{ onBlSendAllForm }}" style="padding:8px 14px;background:#2f6fb0;border:1px solid #2f6fb0;border-radius:8px;color:#fff;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;white-space:nowrap;">📤 ส่งทุกใบในช่วงวันที่ เข้าฟอร์มพิเศษ</button>
             <button onClick="{{ onBlGirSummary }}" style="padding:8px 14px;background:#fff;border:1px solid #2f6fb0;border-radius:8px;color:#2f6fb0;font-weight:700;font-size:12.5px;font-family:inherit;cursor:pointer;white-space:nowrap;">🧾 ใบสรุปวางบิลรวม (ทุกใบในช่วงวันที่)</button>
           </div>
         </sc-if>
@@ -2936,7 +2935,6 @@
           <button onClick="{{ onBlUnmark }}" style="padding:10px 15px;background:transparent;color:#cdd7e1;border:1px solid #3d5570;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมายวางบิล</button>
           <button onClick="{{ onBlMark }}" style="padding:10px 15px;background:transparent;color:#fff;border:1px solid #6b8299;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">✓ ทำเครื่องหมายวางบิลแล้ว</button>
           <button onClick="{{ onBlXlsx }}" style="padding:10px 16px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⬇ Excel</button>
-          <button onClick="{{ onBlSendForm }}" style="padding:10px 18px;background:#fff;border:1px solid #2f6fb0;border-radius:9px;color:#2f6fb0;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;white-space:nowrap;">📤 ส่งเข้าฟอร์มพิเศษ</button>
           <button onClick="{{ onBlPrint }}" style="padding:10px 20px;background:#E8A33D;color:#16263a;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">🖨 พิมพ์ใบวางบิล</button>
         </div>
       </div>
@@ -2946,10 +2944,17 @@
         <div style="padding:13px 17px;background:#fbfcfe;border-bottom:1px solid #eef1f4;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;position:sticky;left:0;">
           <div style="font-size:13.5px;font-weight:800;color:#16263a;">ทะเบียนใบวางบิลที่ออกแล้ว</div>
           <div style="font-size:11.5px;color:#98a2b3;">{{ blRegCount }} ใบ · เรียงจากใหม่ไปเก่า</div>
+          <div style="flex:1;min-width:8px;"></div>
+          <sc-if value="{{ blRegHasSel }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size:12.5px;font-weight:700;color:#2f6fb0;">เลือกไว้ {{ blRegSelCount }} ใบ</div>
+            <button onClick="{{ onBlRegClear }}" style="padding:5px 11px;background:#fff;color:#667085;border:1px solid #e4e7ec;border-radius:7px;font-family:inherit;font-size:12px;cursor:pointer;">ล้างที่เลือก</button>
+          </sc-if>
+          <button onClick="{{ onBlSendAllForm }}" style="padding:6px 14px;background:#2f6fb0;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">📤 ส่งใบที่เลือก เข้าฟอร์มพิเศษ</button>
         </div>
         <sc-for list="{{ blRegRows }}" as="r" hint-placeholder-count="0">
-          <div style="display:grid;grid-template-columns:minmax(100px,1fr) minmax(150px,1.4fr) 132px 84px 112px 176px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:840px;font-size:12.5px;color:#475467;">
-            <div style="padding:12px 17px;font-size:13.5px;font-weight:700;color:#16263a;">{{ r.inv }}</div>
+          <div style="display:grid;grid-template-columns:38px minmax(100px,1fr) minmax(150px,1.4fr) 132px 84px 112px 176px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:880px;font-size:12.5px;color:#475467;">
+            <div style="padding:12px 0 12px 15px;"><input type="checkbox" checked="{{ r.sel }}" onChange="{{ r.onSel }}" title="เลือกเพื่อส่งเข้าฟอร์มพิเศษ" style="width:15px;height:15px;cursor:pointer;"></div>
+            <div style="padding:12px 8px;font-size:13.5px;font-weight:700;color:#16263a;">{{ r.inv }}</div>
             <div style="padding:12px 10px;">{{ r.cust }}</div>
             <div style="padding:12px 10px;font-size:12px;">{{ r.range }}</div>
             <div style="padding:12px 10px;text-align:right;">{{ r.lines }} บรรทัด</div>
@@ -11249,13 +11254,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           String(this._girPlace(j,l,q,ty==='40',std)||''),String(j.destProvince||'').trim(),
           Number(q.normal)||0,Number(q.ow)||0,Number(q.ot)||0];});
   }
-  // ทุกใบแจ้งหนี้ที่ออกแล้วของลูกค้านี้ในช่วงวันที่ → ลิงก์เดียว ได้ครบทุกประเภทรถ
+  // ใบที่ติ๊กเลือกไว้ในทะเบียนใบวางบิล → ลิงก์เดียว เรียงตามเลขที่ใบวางบิล
   _billFormPayloadAll(){
-    const S=this.state;const code=String(S.billCustCode||'').trim();
-    const f=S.billFrom||'',t=S.billTo||'';
-    const list=this._blInvRegister().filter(g=>String(g.code||'').trim()===code&&(!f||g.to>=f)&&(!t||g.from<=t))
+    const S=this.state;const sel=S.blRegSel||{};
+    const list=this._blInvRegister().filter(g=>sel[g.inv])
       .sort((a,b)=>String(a.inv).localeCompare(String(b.inv),'en',{numeric:true}));
-    if(!list.length){window.alert('ยังไม่มีใบแจ้งหนี้ที่ออกแล้วของลูกค้านี้ในช่วงวันที่ที่เลือก'+String.fromCharCode(10)+String.fromCharCode(10)+'ออกเลขใบแจ้งหนี้และกด "ทำเครื่องหมายวางบิลแล้ว" ให้ครบทุกประเภทรถก่อน');return null;}
+    if(!list.length){window.alert('ยังไม่ได้เลือกใบวางบิล'+String.fromCharCode(10)+String.fromCharCode(10)+'ติ๊กช่องหน้าเลขที่ใบวางบิลในตาราง "ทะเบียนใบวางบิลที่ออกแล้ว" ที่ต้องการส่ง แล้วกดปุ่มนี้อีกครั้ง');return null;}
     const gir=this._blFmt()==='gir';
     const sets=list.map(g=>{
       const ty=String(g.tt||'').trim();
@@ -11317,6 +11321,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'กด OK ถ้าอยากเปิดฟอร์มดูเองตอนนี้ · กด Cancel ถ้าจะส่งลิงก์อย่างเดียว';
     if(window.confirm(msg))window.open(link,'_blank','noopener');
   }
+  blRegToggle=(inv)=>this.setState(s=>{const m={...(s.blRegSel||{})};if(m[inv])delete m[inv];else m[inv]=1;return {blRegSel:m};});
+  blRegClear=()=>this.setState({blRegSel:{}});
   // ส่งเฉพาะบิลที่ติ๊กไว้ตอนนี้ (1 ชุด)
   billSendToForm=async()=>{
     try{const pl=this._billFormPayload();if(!pl)return;
@@ -17264,7 +17270,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
        out.blSelCount=Object.keys(_jset).length;out.blSumWeight=_n3(_sw)+' ตัน';out.blSumAmt='฿'+_b2(_sa);out.blSelLineCount=_ln;}
       {const _reg=this._blInvRegister();
        out.blRegCount=_reg.length;out.blHasReg=_reg.length>0;
-       out.blRegRows=_reg.slice(0,40).map(g=>({inv:g.inv,cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
+       const _rsel=S.blRegSel||{};
+       out.blRegSelCount=_reg.filter(g=>_rsel[g.inv]).length;out.blRegHasSel=out.blRegSelCount>0;
+       out.onBlRegClear=this.blRegClear;
+       out.blRegRows=_reg.slice(0,40).map(g=>({inv:g.inv,sel:!!_rsel[g.inv],onSel:()=>this.blRegToggle(g.inv),cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
          lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
       out.onBlPrint=()=>this.printBillingDoc();out.onBlXlsx=()=>this.exportBillingXlsx();
