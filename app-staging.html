@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11262,8 +11262,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!list.length){window.alert('ยังไม่ได้เลือกใบวางบิล'+String.fromCharCode(10)+String.fromCharCode(10)+'ติ๊กช่องหน้าเลขที่ใบวางบิลในตาราง "ทะเบียนใบวางบิลที่ออกแล้ว" ที่ต้องการส่ง แล้วกดปุ่มนี้อีกครั้ง');return null;}
     const gir=this._blFmt()==='gir';
     const sets=list.map(g=>{
-      const ty=String(g.tt||'').trim();
-      if(gir)return {typeKey:(GIR_BILL_TYPES[ty]?ty:'6'),invNo:g.inv,invDate:(g.d?this._girDate(g.d):''),
+      // ประเภทรถของใบนั้น: ใช้ค่าที่ล็อกไว้ตอนออกใบก่อน ใบเก่าที่ยังไม่มีค่าล็อก ดูจากทะเบียนรถในใบแทน
+      const ty=(()=>{
+        const t0=String(g.tt||'').trim();if(GIR_BILL_TYPES[t0])return t0;
+        const cnt={};(g.items||[]).forEach(it=>{const c=this._girCat(it.j);if(c)cnt[c]=(cnt[c]||0)+1;});
+        const ks=Object.keys(cnt);
+        return ks.length?ks.sort((a,b)=>cnt[b]-cnt[a]||String(a).localeCompare(String(b)))[0]:'6';
+      })();
+      if(gir)return {typeKey:ty,invNo:g.inv,invDate:(g.d?this._girDate(g.d):''),
         receiptNo:g.rec||'',coverDesc:String(g.pc||'')||undefined,rows:this._girFormRows(g.items,ty)};
       return {invNo:g.inv,invDate:(g.d?this._girDate(g.d):''),receiptNo:g.rec||'',
         rows:(this._blDocData(g.items)||{rows:[]}).rows.map(r=>({bol:String(r.bill||''),desc:String(r.detail||''),
