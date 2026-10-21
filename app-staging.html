@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21i · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21j · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21i</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21j</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11742,7 +11742,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       .reduce((a,j)=>a+(this._ecSubCalc(j).gross||0),0);
   }
   // ภาษีหัก ณ ที่จ่าย 1% ของค่าขนส่งจ่ายรถร่วมทั้งเดือน ปัดทศนิยม 2 ตำแหน่ง
-  _subWhtAmount(plate,month){const g=this._subGrossOf(plate,month);return g>0?String(Math.round(g*SUB_WHT_PCT)/100):'';}
+  // ปัดเศษแบบที่บริษัทใช้มาตลอด: เศษ 5 ลงมาปัดลง มากกว่า 5 ปัดขึ้น (654.435 → 654.43)
+  _round5down(n){const t=(Number(n)||0);const f=t-Math.floor(t);return (f<=0.5+1e-9?Math.floor(t):Math.ceil(t));}
+  _subWhtAmount(plate,month){const g=this._subGrossOf(plate,month);return g>0?String(this._round5down(g*SUB_WHT_PCT)/100):'';}
   // ยังไม่มีค่าขนส่ง = ยังไม่มีเงินให้โอน จึงไม่ตั้งค่าโอนไว้
   _subFeeAmount(plate,month){return this._subGrossOf(plate,month)>0?String(SUB_TRANSFER_FEE):'';}
   _subDedList(plate,month){
@@ -12324,7 +12326,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const pay=String(meta.payDate||'').slice(0,10)||this._blToday();
     const gross=Math.round(this._subGrossOf(plate,month)*100)/100;
     const dw=(this._subDedList(plate,month)||[]).find(d=>String(d.label||'').trim()===SUB_WHT_LABEL);
-    const tax=Math.round(((dw?parseFloat(dw.amount):0)||(gross*SUB_WHT_PCT/100))*100)/100;
+    const tax=this._round5down((((dw?parseFloat(dw.amount):0)||(gross*SUB_WHT_PCT/100))*100))/100;
     const no=String(meta.whtNo||'').trim()||this._whtNoFor(pay,seq||1);
     return {plate:plate,month:month,no:no,pay:pay,gross:gross,tax:tax,
       owner:String(tk.owner||''),vendor:String(tk.ecaccVendor||''),
