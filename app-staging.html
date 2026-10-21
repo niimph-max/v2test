@@ -17277,7 +17277,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
          lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
       out.onBlPrint=()=>this.printBillingDoc();out.onBlXlsx=()=>this.exportBillingXlsx();
-      out.onBlSendForm=this.billSendToForm;out.onBlSendAllForm=this.billSendAllToForm;
+      out.onBlSendAllForm=this.billSendAllToForm;   // ปุ่มส่งมีปุ่มเดียว: ติ๊กเลือกในทะเบียนใบวางบิล
       out.onBlMark=()=>this.blMark();
       out.onBlUnmark=()=>this.blUnmark();
     }
