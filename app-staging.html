@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2935,6 +2935,7 @@
           <button onClick="{{ onBlUnmark }}" style="padding:10px 15px;background:transparent;color:#cdd7e1;border:1px solid #3d5570;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมายวางบิล</button>
           <button onClick="{{ onBlMark }}" style="padding:10px 15px;background:transparent;color:#fff;border:1px solid #6b8299;border-radius:9px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;">✓ ทำเครื่องหมายวางบิลแล้ว</button>
           <button onClick="{{ onBlXlsx }}" style="padding:10px 16px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⬇ Excel</button>
+          <button onClick="{{ onBlSendForm }}" style="padding:10px 18px;background:#fff;border:1px solid #2f6fb0;border-radius:9px;color:#2f6fb0;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;white-space:nowrap;">📤 ส่งเข้าฟอร์มพิเศษ</button>
           <button onClick="{{ onBlPrint }}" style="padding:10px 20px;background:#E8A33D;color:#16263a;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">🖨 พิมพ์ใบวางบิล</button>
         </div>
       </div>
@@ -11237,6 +11238,54 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ===== ระบบออกใบวางบิลพิเศษ (v.2026-10-21b) =====
   // ฟอร์มของลูกค้า GIR/TATA เป็นหน้าแยกบนเว็บเดียวกัน (เหมือน driver.html) — เปิดจากเมนูได้เลย
   // ไม่ต้องส่งไฟล์โปรแกรมไปให้พนักงานต่างจังหวัดอีก และได้เวอร์ชันล่าสุดเสมอ
+  // ข้อมูลใบวางบิลในรูปที่ฟอร์มพิเศษรับได้ (ชุดเดียวกับที่ใช้พิมพ์ ตัวเลขจึงตรงกันเสมอ)
+  _billFormPayload(){
+    const D=this._blDocData();if(!D)return null;
+    const S=this.state;const inv=String(S.billInvNo||'').trim();
+    const invDate=this._girDate(S.billDocDate||this._blToday());
+    if(this._blFmt()==='gir'){
+      const G=this._girData(D);
+      const ty=String(S.billGirType||'').trim();
+      // ฟอร์ม GIR คิดแบบ 1 ใบ = 1 ประเภทรถ ถ้าเลือก 'ทุกประเภท' ไว้ จะได้ใบที่ติดป้ายผิด
+      if(!GIR_BILL_TYPES[ty]){window.alert('เลือก "ประเภทรถ" ก่อนส่งเข้าฟอร์ม'+String.fromCharCode(10)+String.fromCharCode(10)+'ฟอร์มการ์เดียนออกใบละ 1 ประเภทรถ (6 ล้อ · 10 ล้อ · เทรเลอร์ · 40 GP)');return null;}
+      return {v:1,fmt:'gir',file:'GIR.html',typeKey:(GIR_BILL_TYPES[ty]?ty:'6'),invNo:inv,invDate:invDate,
+        coverDesc:String(G.desc||''),receiptNo:String(S.billRecNo||'').trim(),
+        rows:G.rows.map(r=>[String(r.plate||''),String(r.date||''),String(r.bol||''),String(r.place||''),
+          String(r.prov||''),Number(r.normal)||0,Number(r.ow)||0,Number(r.ot)||0])};
+    }
+    return {v:1,fmt:'tata',file:'TATA.html',invNo:inv,invDate:invDate,receiptNo:String(S.billRecNo||'').trim(),
+      rows:(D.rows||[]).map(r=>({bol:String(r.bill||''),desc:String(r.detail||''),qty:Number(r.w)||0,
+        amount:Number(r.rev)||0,price:Number(r.rate)||0,date:String(r.date||''),note:String(r.note||'')}))};
+  }
+  async _billFormLink(){
+    const pl=this._billFormPayload();if(!pl)return null;
+    if(!pl.rows.length){window.alert('ยังไม่ได้เลือกบิลที่จะส่งเข้าฟอร์ม');return null;}
+    const bytes=new TextEncoder().encode(JSON.stringify(pl));
+    let out=bytes,gz='0';
+    if(typeof CompressionStream!=='undefined'){
+      try{
+        const cs=new CompressionStream('gzip');const w=cs.writable.getWriter();w.write(bytes);w.close();
+        out=new Uint8Array(await new Response(cs.readable).arrayBuffer());gz='1';
+      }catch(e){out=bytes;gz='0';}
+    }
+    let bin='';for(let i=0;i<out.length;i++)bin+=String.fromCharCode(out[i]);
+    const b64=btoa(bin).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    const base=String(location.href).replace(/[?#].*$/,'').replace(/[^\/]*$/,'');
+    return base+pl.file+'#lf='+gz+b64;
+  }
+  // ส่งเข้าฟอร์มพิเศษ — ข้อมูลเดินทางไปในลิงก์เอง ไม่ต้องผ่านไฟล์ Excel
+  billSendToForm=async()=>{
+    try{
+      const link=await this._billFormLink();if(!link)return;
+      const NL=String.fromCharCode(10);
+      let copied=false;try{await navigator.clipboard.writeText(link);copied=true;}catch(e){}
+      const msg='เตรียมใบวางบิลเข้าฟอร์มพิเศษเรียบร้อย'+NL+NL
+        +(copied?'✓ คัดลอกลิงก์ไว้แล้ว — วางในไลน์ส่งให้พนักงานได้เลย':('ลิงก์:'+NL+link))+NL+NL
+        +'พนักงานเปิดลิงก์แล้วจะเห็นใบวางบิลพร้อมข้อมูลครบ แก้ไขและสั่งพิมพ์ได้ทันที'+NL+NL
+        +'กด OK เพื่อเปิดฟอร์มดูตอนนี้';
+      if(window.confirm(msg))window.open(link,'_blank','noopener');
+    }catch(e){window.alert('ส่งเข้าฟอร์มไม่สำเร็จ: '+((e&&e.message)||e));}
+  };
   openBillForm=(file)=>{
     try{
       const base=String(location.href).replace(/[^\/]*$/,'');
@@ -17174,6 +17223,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
          lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
       out.onBlPrint=()=>this.printBillingDoc();out.onBlXlsx=()=>this.exportBillingXlsx();
+      out.onBlSendForm=this.billSendToForm;
       out.onBlMark=()=>this.blMark();
       out.onBlUnmark=()=>this.blUnmark();
     }
