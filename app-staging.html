@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -456,6 +456,11 @@
       </button>
       <button onClick="{{ onGoCustSales }}" style="{{ navCustSalesStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📊</span>ยอดขายรายลูกค้า</span></button>
       </sc-if>
+      <sc-if value="{{ showBillForm }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบออกใบวางบิลพิเศษ</div>
+      <button onClick="{{ onGoBillGir }}" style="{{ navBillFormStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🟠</span>ฟอร์ม GIR · การ์เดียน</span><span style="font-size:11px;color:#6f8499;">↗</span></button>
+      <button onClick="{{ onGoBillTata }}" style="{{ navBillFormStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🔵</span>ฟอร์ม TATA · ทาทา สตีล</span><span style="font-size:11px;color:#6f8499;">↗</span></button>
+      </sc-if>
       <sc-if value="{{ showEcacc }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบ ECACC</div>
       <button onClick="{{ onGoBilling }}" style="{{ navBillingStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🧾</span>ใบวางบิล/ใบแจ้งหนี้</span></button>
@@ -504,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -11229,6 +11234,15 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     (S.orders||[]).forEach(x=>see(x.billNo));(S.jobs||[]).forEach(x=>{if(x.deleted)return;see(x.deliveryNo);(x.shipments||[]).forEach(sp=>see(sp&&sp.bill));});
     return _pfx+String(_mx+1).padStart(2,'0');}
   openJobNew=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());this.editingJobId=null;const S=this.state;const _ymd=today.replace(/-/g,'').slice(2);const _prefix='JB-'+_ymd+'-';const _seq=S.jobs.filter(x=>String(x.jobNo||'').startsWith(_prefix)).reduce((mx,x)=>{const n=parseInt(String(x.jobNo).slice(_prefix.length),10);return isNaN(n)?mx:Math.max(mx,n);},0)+1;this.setState({jobDraft:{id:null,jobNo:_prefix+String(_seq).padStart(3,'0'),date:today,deliveryNo:this._nextNbNo(today),time:'',driverCode:'',truckPlate:'',origin:'',destination:'',customer:'',weight:'',revenue:'',dispatchPoint:S.jobDpFilter==='all'?'':S.jobDpFilter,status:'รับงาน',fuelLiters:'',fuelBaht:'',toll:'',allowance:'',tire:'',repair:'',police:'',misc:'',remark:'',driverFleet:'',truckDept:'',_originPreset:''},jobIsNew:true,jobView:'form',jobFormError:'',section:'jobs'});this.scrollMain();};
+  // ===== ระบบออกใบวางบิลพิเศษ (v.2026-10-21b) =====
+  // ฟอร์มของลูกค้า GIR/TATA เป็นหน้าแยกบนเว็บเดียวกัน (เหมือน driver.html) — เปิดจากเมนูได้เลย
+  // ไม่ต้องส่งไฟล์โปรแกรมไปให้พนักงานต่างจังหวัดอีก และได้เวอร์ชันล่าสุดเสมอ
+  openBillForm=(file)=>{
+    try{
+      const base=String(location.href).replace(/[^\/]*$/,'');
+      window.open(base+file,'_blank','noopener');
+    }catch(e){window.alert('เปิดฟอร์มไม่สำเร็จ — ลองเปิดจาก '+file+' โดยตรง');}
+  };
   openJobEdit=(id)=>{const j=this.state.jobs.find(x=>x.id===id);if(!j)return;this.editingJobId=id;this._jobOrig={...j};this.setState({jobDraft:{...j},jobIsNew:false,jobView:'form',jobFormError:'',section:'jobs',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false});this.scrollMain();};
   cancelJobForm=()=>this.setState({jobView:'list',jobFormError:''});
   // ★ v.2026-09-26b: ⚡ จ่ายงานเร็ว (มือถือ) — jobView 'qlist' | 'qform' ใต้ section jobs
@@ -16431,7 +16445,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.jobTrashRows=(S.trashJobs||[]).map(j=>{const d=(S.drivers||[]).find(x=>String(x.code)===String(j.driverCode));return{id:j.id,dateFmt:(j.date||'—'),title:((j.jobNo||'ใบงาน')+(j.deliveryNo?(' · บิล '+j.deliveryNo):'')),driver:(d?d.name:(j.driverCode||'—')),plate:(j.truckPlate||'—'),onRestore:()=>this.restoreJobFromTrash(j.id),onPurge:()=>this.purgeJobFromTrash(j.id)};});
     {const _rim=((S.company||{}).regInsMode)||'full';out.regInsFull=(_rim==='full');out.regInsSpread=(_rim==='spread');out.onRegInsFull=()=>this.setRegInsMode('full');out.onRegInsSpread=()=>this.setRegInsMode('spread');const _ba='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #2f6fb0;background:#2f6fb0;color:#fff;';const _bi='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #d0d5dd;background:#fff;color:#475467;';out.regInsFullStyle=(_rim==='full')?_ba:_bi;out.regInsSpreadStyle=(_rim==='spread')?_ba:_bi;}out.onPushAllLocal=this.pushAllLocalToCloud;out.onResetLocal=this.resetLocalAndPull;out.onDedupeTrucks=this.dedupeTrucks;out.onImportTruckXlsx=this.onImportTruckXlsx;out.onGoIssue=this.onGoIssue;out.isIssue=S.section==='issue';out.navIssueStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='issue'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
     out.navSettingsStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='settings'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
-    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'},{k:'hr',l:'ตรวจสอบประวัติ พขร.'}];
+    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'},{k:'hr',l:'ตรวจสอบประวัติ พขร.'},{k:'billform',l:'ระบบออกใบวางบิลพิเศษ (ฟอร์ม GIR / TATA)'}];
       out.settingsUserRows=(S.profileUsers||[]).map(u=>({name:u.display_name||u.username,uname:u.username,isAdmin:!!u.is_admin,notAdmin:!u.is_admin,secText:u.is_admin?'ทุกเมนู (ผู้ดูแลระบบ)':((Array.isArray(u.sections)?u.sections:[]).map(k=>(_SECOPTS.find(o=>o.k===k)||{}).l).filter(Boolean).join(', ')||'—'),onEdit:()=>this.openUserEdit(u.id)}));
       out.settingsUsersEmpty=(S.profileUsers||[]).length===0;out.onOpenUser=this.openUserNew;
       const _ud=S.userDraft;out.userFormOpen=!!_ud;
@@ -16963,6 +16977,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.navCustBadge='font-size:12px;font-weight:700;padding:1px 8px;border-radius:11px;'+(out.isCustomers?'background:rgba(255,255,255,.18);color:#fff;':'background:rgba(255,255,255,.07);color:#9fb2c4;');
     out.custTotalCount=_cust.length;
     out.onGoCustomers=()=>this.setState({section:'customers',customerEditId:null});
+    {out.showBillForm=_can('billform');
+     out.navBillFormStyle=_navBase+'background:transparent;color:#cdd7e1;';
+     out.onGoBillGir=()=>this.openBillForm('GIR.html');
+     out.onGoBillTata=()=>this.openBillForm('TATA.html');}
     {const _csAct=(S.section==='efficiency'&&S.effView==='custsales');
       out.navCustSalesStyle=_navBase+(_csAct?'background:rgba(47,111,176,.28);color:#fff;':'background:transparent;color:#cdd7e1;');
       out.onGoCustSales=()=>{this.setState({section:'efficiency',effView:'custsales'});this.scrollMain();};}
