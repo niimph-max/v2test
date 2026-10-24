@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-21n · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-24a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-21n</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-24a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -8646,17 +8646,30 @@ function lfSlimJSON(v){try{const a=JSON.parse(v);if(!Array.isArray(a))return v;r
 //   (หรือแก้ไขภายใน 90 วัน / ออร์เดอร์ที่ยังไม่จัดรถ) ของเก่ายังอยู่บน cloud ครบ และดึงมาแสดงทุกครั้งที่เปิดแอป
 //   ส่วนที่ตัดเก็บในหน่วยความจำ (LF_TRIM) แล้วต่อกลับตอน getItem → ทุกจุดที่อ่านสำเนาในรอบเปิดแอปนี้
 //   (prev ของ _stampFields / fullSync merge) เห็นครบเหมือนเดิม — ไม่เปลี่ยนตรรกะ _ft
-const LF_TRIM={},LF_TRIM_DAYS=90;
+// ★ v.2026-10-24a: prod ยังเต็ม 5.24M (jobReg 3.2M แม้ตัด 90 วันแล้ว) → เต็มเมื่อไหร่ ลดช่วงเก็บในเครื่องเป็น 60/30/14/7 วันแล้วลองบันทึกซ้ำ
+//   ช่วงที่ลดแล้วจำไว้ใน lf_trim_days (เครื่องนั้นเครื่องเดียว) · ใบงาน/ออร์เดอร์ที่ยังรอส่ง (jobPendingIds/orderPendingIds) เก็บไว้เสมอ
+//   ช่วงที่ลดแล้วไม่ดู _ft/_editedAt (ทดสอบแล้ว: ถ้าทุกใบมี _ft ใหม่ ตัดไม่ลงเลยสักใบ) — ของที่ยังไม่ขึ้น cloud คุมด้วยรายการรอส่งแทน
+//   ใบที่ถูกตัดไม่อยู่ใน state จนกว่า sync จะดึงจาก cloud และ sync เขียนสำเนาใหม่ (เติม LF_TRIM) → prev ของ _stampFields ยังครบ
+const LF_TRIM={},LF_TRIM_STEPS=[60,30,14,7];
+let LF_TRIM_DAYS=(()=>{try{const n=Number(localStorage.getItem('lf_trim_days'));return LF_TRIM_STEPS.indexOf(n)>=0?n:90;}catch(e){return 90;}})();
 function lfTrimSplit(k,a){const cutMs=Date.now()-LF_TRIM_DAYS*864e5;const cut=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date(cutMs));const keep=[],old=[];
-  a.forEach(r=>{if(!r||typeof r!=='object'){keep.push(r);return;}const d=String((k==='jobReg_v1'?r.date:(r.receivedDate||r.requiredDate))||'').slice(0,10);let rc=!d||d>=cut||Number(r._editedAt||0)>cutMs;
-    if(!rc&&r._ft&&typeof r._ft==='object'){for(const x in r._ft){if(Number(r._ft[x]||0)>cutMs){rc=true;break;}}}
+  let pend={};try{(JSON.parse(localStorage.getItem(k==='jobReg_v1'?'jobPendingIds':'orderPendingIds')||'[]')||[]).forEach(id=>{pend[String(id)]=1;});}catch(e){}
+  a.forEach(r=>{if(!r||typeof r!=='object'){keep.push(r);return;}if(pend[String(r.id)]){keep.push(r);return;}const d=String((k==='jobReg_v1'?r.date:(r.receivedDate||r.requiredDate))||'').slice(0,10);let rc=!d||d>=cut||(LF_TRIM_DAYS>=90&&Number(r._editedAt||0)>cutMs);
+    if(!rc&&LF_TRIM_DAYS>=90&&r._ft&&typeof r._ft==='object'){for(const x in r._ft){if(Number(r._ft[x]||0)>cutMs){rc=true;break;}}}
     if(!rc&&k==='orderReg_v1'&&!r.jobId&&!r.canceledAt&&r.status!=='ยกเลิก')rc=true;(rc?keep:old).push(r);});return [keep,old];}
 function lfSlimTrim(k,v){try{const a=JSON.parse(lfSlimJSON(v));if(!Array.isArray(a))return {v:lfSlimJSON(v),t:null};const p=lfTrimSplit(k,a);return {v:JSON.stringify(p[0]),t:p[1].length?JSON.stringify(p[1]):null};}catch(e){return {v:v,t:null};}}
 (function(){try{const _o=Storage.prototype.setItem,_g=Storage.prototype.getItem,_r=Storage.prototype.removeItem;
   Storage.prototype.__lfRawGet=_g;   // ขนาดจริงในเครื่อง (ไม่รวมส่วนที่ต่อกลับจากหน่วยความจำ)
   Storage.prototype.getItem=function(k){const v=_g.call(this,k);const t=(LF_SLIM_KEYS[k]&&this===window.localStorage)?LF_TRIM[k]:null;if(!t||typeof v!=='string'||v.charAt(0)!=='[')return v;return v.length<=2?t:(v.slice(0,-1)+','+t.slice(1));};
   Storage.prototype.removeItem=function(k){if(LF_SLIM_KEYS[k]&&this===window.localStorage)delete LF_TRIM[k];return _r.call(this,k);};
-  Storage.prototype.setItem=function(k,v){let _t;if(LF_SLIM_KEYS[k]&&typeof v==='string'&&v.length>2000){if(this===window.localStorage){const z=lfSlimTrim(k,v);v=z.v;_t=z.t;}else v=lfSlimJSON(v);}try{const res=_o.call(this,k,v);if(_t!==undefined){if(_t)LF_TRIM[k]=_t;else delete LF_TRIM[k];}return res;}catch(e){if(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014)){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
+  const isQ=e=>!!(e&&(e.name==='QuotaExceededError'||e.name==='NS_ERROR_DOM_QUOTA_REACHED'||e.code===22||e.code===1014));let _rec=0;
+  // เต็ม → ลดช่วงเก็บใบงาน/ออร์เดอร์ทีละขั้น เขียนสำเนาสองก้อนนี้ใหม่ให้เล็กลง แล้วลองบันทึกค่าเดิมซ้ำ
+  const shrinkRetry=(st,k,v)=>{for(const d of LF_TRIM_STEPS){if(d>=LF_TRIM_DAYS)continue;LF_TRIM_DAYS=d;
+      for(const sk in LF_SLIM_KEYS){if(sk===k)continue;const cur=st.getItem(sk);if(cur&&cur.length>2){try{st.setItem(sk,cur);}catch(_){}}}
+      try{_o.call(st,'lf_trim_days',String(d));}catch(_){}
+      try{st.setItem(k,v);return true;}catch(e){if(!isQ(e))throw e;}}
+    return false;};
+  Storage.prototype.setItem=function(k,v){const v0=v;let _t;if(LF_SLIM_KEYS[k]&&typeof v==='string'&&v.length>2000){if(this===window.localStorage){const z=lfSlimTrim(k,v);v=z.v;_t=z.t;}else v=lfSlimJSON(v);}try{const res=_o.call(this,k,v);if(_t!==undefined){if(_t)LF_TRIM[k]=_t;else delete LF_TRIM[k];}return res;}catch(e){if(isQ(e)&&!_rec&&this===window.localStorage){_rec=1;let ok=false;try{ok=shrinkRetry(this,k,v0);}catch(_){}finally{_rec=0;}if(ok)return;}if(isQ(e)&&!_rec){window.__lfQuotaFull=Date.now();try{window.dispatchEvent(new Event('lf-quota'));}catch(_){}}throw e;}};}catch(e){}})();
 // ===== Supabase backend (FleetTruck) =====
 // ===== v2 (multi-tenant + Supabase Auth) — ENV AUTO-SWITCH =====
 // default = PRODUCTION (lionflowapp.com). ใช้ staging เมื่อ hostname มี staging/localhost หรือใส่ ?env=staging
@@ -11365,7 +11378,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ★ v.2026-09-26b: ⚡ จ่ายงานเร็ว (มือถือ) — jobView 'qlist' | 'qform' ใต้ section jobs
   //   ใช้ openJobNew / dispatchOrder / saveJob เดิมทั้งหมด (เลขใบงาน · ล็อกงวด · อัปเดตสถานะออร์เดอร์ · QR) แค่เปลี่ยนหน้าจอ
   // ★ v.2026-09-26c: แถบเตือนพื้นที่ในเครื่องเต็ม / รูปใหญ่เกิน (ปุ่มย่อรูปเห็นเฉพาะแอดมิน)
-  _lsBannerVals(S){const _adm=!!(S.auth&&S.auth.role==='admin');const L=_adm?this._bigPhotoList():{d:[],t:[],o:[]};const nBig=L.d.length+L.t.length+L.o.length;const show=!S.lsBannerHidden&&(!!S.lsFull||nBig>0||!!S.shrinkMsg);return {lsBannerShow:show,lsBannerText:S.lsFull?'⚠️ พื้นที่เก็บข้อมูลในเครื่องนี้เต็ม — แอปบันทึกสำเนาในเครื่องไม่ได้ ถ้าเน็ตหลุดระหว่างบันทึก ข้อมูลอาจหาย':(nBig?('มีรูปขนาดใหญ่เกิน '+nBig+' รูป กินพื้นที่ในเครื่องจนแอปเปิดช้า'):''),lsBannerMsg:(S.shrinkMsg||'')+(S.lsFull&&S.lsUsage?((S.shrinkMsg?' · ':'')+S.lsUsage):''),lsCanShrink:_adm&&nBig>0,lsAskAdmin:!_adm&&!!S.lsFull,onShrinkPhotos:this.shrinkBigPhotos,onHideLsBanner:()=>this.setState({lsBannerHidden:true})};}
+  _lsBannerVals(S){const _adm=!!(S.auth&&S.auth.role==='admin');const L=(_adm||S.lsFull)?this._bigPhotoList():{d:[],t:[],o:[]};const nBig=L.d.length+L.t.length+L.o.length;const show=!S.lsBannerHidden&&(!!S.lsFull||(_adm&&nBig>0)||!!S.shrinkMsg);return {lsBannerShow:show,lsBannerText:S.lsFull?'⚠️ พื้นที่เก็บข้อมูลในเครื่องนี้เต็ม — แอปบันทึกสำเนาในเครื่องไม่ได้ ถ้าเน็ตหลุดระหว่างบันทึก ข้อมูลอาจหาย':((_adm&&nBig)?('มีรูปขนาดใหญ่เกิน '+nBig+' รูป กินพื้นที่ในเครื่องจนแอปเปิดช้า'):''),lsBannerMsg:(S.shrinkMsg||'')+(S.lsFull&&S.lsUsage?((S.shrinkMsg?' · ':'')+S.lsUsage):''),lsCanShrink:_adm&&nBig>0,lsAskAdmin:!_adm&&!!S.lsFull&&nBig>0,onShrinkPhotos:this.shrinkBigPhotos,onHideLsBanner:()=>this.setState({lsBannerHidden:true})};}
   // plate → {ฟลีต:จำนวนเที่ยว} จากใบงาน 60 วันล่าสุด (แคชตาม jobs array เดิม ไม่วนทุก render)
   _qdRecentFleets(jobs,dFleet){const c=this._qdRecentCache;if(c&&c.jobs===jobs)return c.map;const map={};let cut='';try{cut=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok'}).format(new Date(Date.now()-60*86400000));}catch(e){}(jobs||[]).forEach(j=>{if(j.deleted||j._deleted||!j.truckPlate||!j.driverCode)return;if(cut&&String(j.date||'')<cut)return;const fl=dFleet[String(j.driverCode)];if(!fl)return;const m=map[j.truckPlate]||(map[j.truckPlate]={});m[fl]=(m[fl]||0)+1;});this._qdRecentCache={jobs,map};return map;}
   // 26h: สรุปการใช้ localStorage ของโดเมนนี้ (รวมเว็บอื่นบน github.io เดียวกัน) — โชว์ในแถบเตือน
