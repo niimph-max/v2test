@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7444,6 +7444,21 @@
                       <div style="{{ r.statusStyle }}">{{ r.statusText }}</div>
                     </div>
                   </sc-for>
+                  <div style="{{ f.totRowStyle }}">
+                    <div style="padding:9px 16px;font-weight:800;color:#16263a;">รวม {{ f.count }} คัน</div>
+                    <div></div><div></div><div></div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#344054;">{{ f.tTrips }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:800;color:#16263a;">{{ f.gross }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tD0 }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tD1 }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tD2 }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tD3 }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tD4 }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tOther }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:800;color:#b54708;">{{ f.ded }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:800;color:#067647;">{{ f.net }}</div>
+                    <div></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -15413,6 +15428,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         unpaidStyle:'font-size:11.5px;font-weight:700;color:'+(d.unpaid?'#ffd59e':'#7cf0b0')+';',
         fleets:d.fleets.map(f=>({
           fleet:f.fleet,count:f.rows.length,gross:B(f.gross),ded:B(f.ded),net:B(f.net),
+          // ★ v.2026-10-31f: แถวรวมท้ายตารางแต่ละฟลีต (ขอเพิ่ม 31 ต.ค.) — คอลัมน์หัก d[0..4] + หักอื่นๆ d[5] รวมไว้แล้วใน _spData
+          tTrips:f.rows.reduce((a,r)=>a+(r.trips||0),0),tD0:Bz(f.d[0]),tD1:Bz(f.d[1]),tD2:Bz(f.d[2]),tD3:Bz(f.d[3]),tD4:Bz(f.d[4]),tOther:Bz(f.d[5]),
+          totRowStyle:_rowGrid+'background:#f8fafc;border-top:2px solid #e4e7ec;',
           onPrintWht:()=>this.printWhtBatch(f.rows.map((r,i)=>this._whtRec(r.plate,r.month,i+1))),
           rows:f.rows.map((r,i)=>({
             plate:r.plate,owner:r.owner||'—',monthLabel:this._thMonthLabel(r.month),docNo:r.docNo||'—',
