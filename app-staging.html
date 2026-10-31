@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-24a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-24a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5829,7 +5829,7 @@
 
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:stretch;">
         <sc-for list="{{ jobStatusCards }}" as="s" hint-placeholder-count="4">
-          <div style="{{ s.cardStyle }}">
+          <div onClick="{{ s.onClick }}" title="{{ s.tip }}" style="{{ s.cardStyle }}">
             <div style="font-size:11px;color:#667085;font-weight:600;margin-bottom:8px;letter-spacing:.03em;">{{ s.label }}</div>
             <div style="{{ s.numStyle }}">{{ s.count }}</div>
             <div style="font-size:11.5px;color:#98a2b3;margin-top:4px;">เที่ยว</div>
@@ -15889,7 +15889,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(S.section==='jobs'){
       const jobs=S.jobs;
       const jq=S.jobSearch.trim().toLowerCase();
-      const jobList=jobs.filter(j=>{
+      let jobList=jobs.filter(j=>{
         if(S.jobDpFilter!=='all'&&j.dispatchPoint!==S.jobDpFilter)return false;
         if(j.deleted||j._deleted)return false;
         if(S.jobDateFrom&&j.date<S.jobDateFrom)return false;
@@ -15902,6 +15902,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       // ★ v.2026-09-28i: สถานะที่โชว์ = เสร็จสิ้น เมื่อส่งเอกสารแล้ว — ใบที่ส่งเอกสารทางลิงก์ พขร./ช่องเวลาในฟอร์ม/ปรับใบเก่า ไม่เคยเปลี่ยน status (ผู้ใช้งง 28 ก.ย.) · แสดงผลอย่างเดียว ไม่แก้ข้อมูล
       const _jSt=(j)=>(j.documentTime&&j.status!=='ยกเลิก')?'เสร็จสิ้น':j.status;
       const jobStatusChip=(s)=>{if(s==='เสร็จสิ้น')return this.chip('#067647','#ecfdf3');if(s==='จ่ายงาน')return this.chip('#b54708','#fffaeb');return this.chip('#175cd3','#eff4ff');};
+      // ★ v.2026-10-31a: กดการ์ดสถานะด้านบน → ตารางกรองเฉพาะสถานะนั้น (กดซ้ำ = ดูทั้งหมด) · ตัวเลขบนการ์ด/ชิปสถานะ Driver ยังนับจากทุกใบในช่วงวันที่/คำค้น
+      const _jStF=S.jobStFilter||'all';
+      const _jStOk=(j)=>_jStF==='pending'?_jSt(j)!=='เสร็จสิ้น':(_jStF==='disp'?_jSt(j)==='จ่ายงาน':(_jStF==='done'?_jSt(j)==='เสร็จสิ้น':true));
+      const jobListAll=jobList;jobList=jobListAll.filter(_jStOk);
       const jobRows=jobList.map(j=>{const dn=driverName(j.driverCode);const totalExp=[j.fuelBaht,j.toll,j.allowance,j.tire,j.repair,j.police,j.misc].reduce((s,v)=>s+(parseFloat(v)||0),0);const rev=parseFloat(j.revenue)||0;const profit=rev-totalExp;const ds=drvSt(j);return{...j,canSendDoc:(!j.trackJob&&!j.documentTime),onSendDoc:()=>this.markJobDocSent(j.id),dateFmt:this.thaiDate(j.date),driverName:dn||'—',statusText:(_jSt(j)==='รับงาน'?'จ่ายงาน':_jSt(j)),statusStyle:jobStatusChip(_jSt(j)),driverStatusLabel:ds.label,driverStatusStyle:ds.style,deliveryNoText:j.deliveryNo||'—',attachCount:((j.attachments||[]).filter(a=>(a.status||'done')==='done').length)+(j.attachment?1:0),hasAttach:((j.attachments||[]).some(a=>(a.status||'done')==='done'))||!!j.attachment,weightText:j.weight?(parseFloat(j.weight)||0).toLocaleString('en-US',{maximumFractionDigits:4})+' ตัน':'—',revenueText:rev?'฿'+_LFB2(rev):'—',distanceText:j.distance?((parseFloat(j.distance)||0).toLocaleString('en-US',{maximumFractionDigits:1})+' กม.'):'—',distanceVal:(j.distance!=null&&j.distance!=='')?String(j.distance):'',onDistanceInput:(e)=>this.setJobDistanceLocal(j.id,e.target.value),onDistanceCommit:(e)=>this.commitJobDistance(j.id,e&&e.target?e.target.value:undefined),expText:totalExp?'฿'+_LFB2(totalExp):'—',profitText:profit!==0?'฿'+_LFB2(Math.abs(profit)):'—',profitStyle:profit>=0?'color:#067647;font-weight:600;':'color:#b42318;font-weight:600;',dpChip:this.fleetChip(j.dispatchPoint),onEdit:()=>this.openJobEdit(j.id),onDelete:()=>this.deleteJob(j.id),custCodeText:(String(j.customerCode||'').trim()||'—'),custNameText:String(j.customer||'').trim()?String(j.customer).replace(/^\d{2}-\d{3}\s*/,''):'—',custChipStyle:'display:inline-block;padding:2px 7px;border-radius:5px;font-size:11.5px;font-weight:800;'+(String(j.customerCode||'').trim()?'background:#eef4fb;color:#2f6fb0;':'background:#fef3f2;color:#b42318;')};});
       // ★ v.2026-09-10: บรรทัดเส้นทางในตาราง — ต่ออำเภอ/จังหวัดท้ายปลายทางด้วย
       jobRows.forEach((r,i)=>{const j=jobList[i]||{};
@@ -15915,12 +15919,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const jobExpTotal=jobList.reduce((s,j)=>s+[j.fuelBaht,j.toll,j.allowance,j.tire,j.repair,j.police,j.misc].reduce((ss,v)=>ss+(parseFloat(v)||0),0),0);
       const jobProfit=jobRevTotal-jobExpTotal;
       out.jobRows=jobRows;out.jobRowCount=jobRows.length;out.jobTotalCount=jobs.length;out.jobEmpty=jobRows.length===0;out.jobEmptyByDate=jobRows.length===0&&jobs.length>0;out.jobEmptyNoData=jobRows.length===0&&jobs.length===0;out.onClearJobDateFilter=()=>this.setState({jobDateFrom:'',jobDateTo:''});
-      const _sc=(label,count,fg,bg)=>({label,count,cardStyle:'flex:1;min-width:110px;background:'+bg+';border:1px solid #e4e7ec;border-radius:12px;padding:14px 18px;',numStyle:'font-size:30px;font-weight:700;color:'+fg+';line-height:1;'});
-      const _cDone=jobList.filter(j=>_jSt(j)==='เสร็จสิ้น').length;
-      const _cDisp=jobList.filter(j=>_jSt(j)==='จ่ายงาน').length;
-      const _cPending=jobList.length-_cDone;
-      out.jobStatusCards=[_sc('งานทั้งหมด',jobList.length,'#16263a','#f8fafc'),_sc('ยังไม่เสร็จ',_cPending,'#b54708','#fff'),_sc('จ่ายงานแล้ว',_cDisp,'#175cd3','#fff'),_sc('เสร็จสิ้น',_cDone,'#067647','#fff')];
-      out.driverStatusChips=([{icon:'🚀',label:'รอรับสินค้า',count:jobList.filter(j=>j.dispatchTime&&!j.pickupTime).length},{icon:'📦',label:'รับสินค้าแล้ว',count:jobList.filter(j=>!!j.pickupTime&&!j.arrivalTime).length},{icon:'📍',label:'ถึงลูกค้า',count:jobList.filter(j=>!!j.arrivalTime&&!j.completionTime).length},{icon:'✅',label:'ส่งสำเร็จ',count:jobList.filter(j=>!!j.completionTime&&!j.documentTime).length},{icon:'📄',label:'ส่งเอกสาร',count:jobList.filter(j=>!!j.documentTime).length}]).filter(s=>s.count>0);
+      const _sc=(key,label,count,fg,bg)=>{const on=_jStF===key;return {label,count,tip:on&&key!=='all'?'กดอีกครั้งเพื่อดูทั้งหมด':'กดเพื่อดูเฉพาะรายการนี้',onClick:()=>this.setState({jobStFilter:(on||key==='all')?'all':key}),cardStyle:'flex:1;min-width:110px;background:'+bg+';border:'+(on?('2px solid '+fg):'1px solid #e4e7ec')+';border-radius:12px;padding:'+(on?'13px 17px':'14px 18px')+';cursor:pointer;'+(on?'box-shadow:0 2px 8px rgba(16,24,40,.10);':''),numStyle:'font-size:30px;font-weight:700;color:'+fg+';line-height:1;'};};
+      const _cDone=jobListAll.filter(j=>_jSt(j)==='เสร็จสิ้น').length;
+      const _cDisp=jobListAll.filter(j=>_jSt(j)==='จ่ายงาน').length;
+      const _cPending=jobListAll.length-_cDone;
+      out.jobStatusCards=[_sc('all','งานทั้งหมด',jobListAll.length,'#16263a','#f8fafc'),_sc('pending','ยังไม่เสร็จ',_cPending,'#b54708','#fff'),_sc('disp','จ่ายงานแล้ว',_cDisp,'#175cd3','#fff'),_sc('done','เสร็จสิ้น',_cDone,'#067647','#fff')];
+      out.driverStatusChips=([{icon:'🚀',label:'รอรับสินค้า',count:jobListAll.filter(j=>j.dispatchTime&&!j.pickupTime).length},{icon:'📦',label:'รับสินค้าแล้ว',count:jobListAll.filter(j=>!!j.pickupTime&&!j.arrivalTime).length},{icon:'📍',label:'ถึงลูกค้า',count:jobListAll.filter(j=>!!j.arrivalTime&&!j.completionTime).length},{icon:'✅',label:'ส่งสำเร็จ',count:jobListAll.filter(j=>!!j.completionTime&&!j.documentTime).length},{icon:'📄',label:'ส่งเอกสาร',count:jobListAll.filter(j=>!!j.documentTime).length}]).filter(s=>s.count>0);
       out.hasDriverChips=out.driverStatusChips.length>0;
       const pinOk=S.pinUnlocked;
       out.jobRevTotal=pinOk?'฿'+_LFB2(jobRevTotal):'฿ ••••••';
