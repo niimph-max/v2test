@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31f · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31f</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12264,8 +12264,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         docNo:(no?('PA'+no):''),trips:jobs.length,gross:gross,d:dd.v,other:dd.v[5],otherLabels:dd.otherLabels,
         ded:dd.sum,net:gross-dd.sum,paid:paid});
     });
-    // ★ v.2026-10-31g: วันนัดจ่ายใหม่สุดอยู่บน (ผู้ใช้ขอ 31 ต.ค.) · ในวันเดียวกันยังเรียง ฟลีต → ทะเบียน เหมือนเดิม
-    rows.sort((a,b)=>b.payDate.localeCompare(a.payDate)
+    rows.sort((a,b)=>a.payDate.localeCompare(b.payDate)
       ||String(a.fleet).localeCompare(String(b.fleet),'th')
       ||String(a.plate).localeCompare(String(b.plate),'th',{numeric:true}));
     const days=[];const dIdx={};
