@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31h · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31h</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12280,6 +12280,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       {gross:0,ded:0,net:0,unpaid:0});
     return {from:R.from,to:R.to,fleetSel:fleetSel,stSel:stSel,rows:rows,days:days,tot:tot};
   }
+  // ★ v.2026-10-31h: ยอดรวมของชุดแถว (ใช้กับแถวรวมฟลีต/รวมทั้งสิ้น ในใบพิมพ์และ Excel)
+  _spSum(list){const t={trips:0,gross:0,d:[0,0,0,0,0,0],ded:0,net:0,unpaid:0};(list||[]).forEach(r=>{t.trips+=r.trips||0;t.gross+=r.gross||0;(r.d||[]).forEach((v,i)=>{t.d[i]+=v||0;});t.ded+=r.ded||0;t.net+=r.net||0;if(!r.paid)t.unpaid+=r.net||0;});return t;}
   _spTitle(){
     const D=this._capSp||this._spData();
     const r=(D.from||D.to)?('นัดจ่าย '+(D.from?this.thaiDate(D.from):'เริ่มต้น')+' ถึง '+(D.to?this.thaiDate(D.to):'ล่าสุด')):'ทุกวันนัดจ่าย';
@@ -12290,15 +12292,19 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   exportSubPaySummary=()=>{
     const D=this._capSp||this._spData();
     const n2=(v)=>(Math.round((v||0)*100)/100).toFixed(2);
-    const cols=[{label:'วันนัดจ่าย',get:r=>this.thaiDate(r.payDate)},{label:'ฟลีต',get:r=>r.fleet},
-      {label:'ทะเบียนรถ',get:r=>r.plate},{label:'เจ้าของรถ',get:r=>r.owner},
-      {label:'งวดเดือน',get:r=>this._thMonthLabel(r.month)},{label:'เลขที่เอกสาร',get:r=>r.docNo},
+    const cols=[{label:'วันนัดจ่าย',get:r=>r.payDate?this.thaiDate(r.payDate):''},{label:'ฟลีต',get:r=>r.fleet||''},
+      {label:'ทะเบียนรถ',get:r=>r._tot?r.label:r.plate},{label:'เจ้าของรถ',get:r=>r._tot?'':r.owner},
+      {label:'งวดเดือน',get:r=>r._tot?'':this._thMonthLabel(r.month)},{label:'เลขที่เอกสาร',get:r=>r._tot?'':r.docNo},
       {label:'เที่ยว',get:r=>r.trips},{label:'ค่าขนส่ง',get:r=>n2(r.gross)}]
       .concat(SUB_DED_DEFAULTS.map((l,i)=>({label:l,get:r=>n2(r.d[i])})))
-      .concat([{label:'หักอื่นๆ',get:r=>n2(r.other)},{label:'รวมหัก',get:r=>n2(r.ded)},
-        {label:'เงินรับสุทธิ',get:r=>n2(r.net)},{label:'สถานะ',get:r=>r.paid?'จ่ายแล้ว':'รอจ่าย'},
-        {label:'บัญชีรับโอน',get:r=>r.account}]);
-    this._exportCsv('สรุปจ่ายเงินรถร่วม_'+this._todayStr()+'.csv',cols,D.rows);
+      .concat([{label:'หักอื่นๆ',get:r=>n2(r._tot?r.d[5]:r.other)},{label:'รวมหัก',get:r=>n2(r.ded)},
+        {label:'เงินรับสุทธิ',get:r=>n2(r.net)},{label:'สถานะ',get:r=>r._tot?(r.unpaid?('ยังไม่จ่าย '+n2(r.unpaid)):'จ่ายครบ'):(r.paid?'จ่ายแล้ว':'รอจ่าย')},
+        {label:'บัญชีรับโอน',get:r=>r._tot?'':r.account}]);
+    // ★ v.2026-10-31h: แถว "รวมฟลีต" ท้ายแต่ละฟลีต + "รวมทั้งสิ้น" บรรทัดสุดท้าย
+    const out=[];D.days.forEach(d=>d.fleets.forEach(f=>{f.rows.forEach(r=>out.push(r));
+      out.push(Object.assign(this._spSum(f.rows),{_tot:true,label:'รวมฟลีต '+f.fleet+' ('+f.rows.length+' คัน)',payDate:d.payDate,fleet:f.fleet}));}));
+    out.push(Object.assign(this._spSum(D.rows),{_tot:true,label:'รวมทั้งสิ้น ('+D.rows.length+' คัน)',payDate:'',fleet:''}));
+    this._exportCsv('สรุปจ่ายเงินรถร่วม_'+this._todayStr()+'.csv',cols,out);
   };
   printSubPaySummary=()=>{
     const D=this._capSp||this._spData();
@@ -12319,7 +12325,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           +r.d.slice(0,5).map(v=>'<td class="n">'+Bz(v)+'</td>').join('')
           +'<td class="n">'+Bz(r.other)+'</td><td class="n">'+Bz(r.ded)+'</td>'
           +'<td class="n b">'+B(r.net)+'</td><td>'+(r.paid?'จ่ายแล้ว':'รอจ่าย')+'</td></tr>').join('');
-        return '<tr class="fl"><td colspan="14">ฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n">'+B(f.net)+'</td></tr>'+trs;
+        const t=this._spSum(f.rows);
+        const st='<tr class="st"><td colspan="4">รวมฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n">'+t.trips+'</td><td class="n">'+B(t.gross)+'</td>'
+          +t.d.slice(0,5).map(v=>'<td class="n">'+Bz(v)+'</td>').join('')
+          +'<td class="n">'+Bz(t.d[5])+'</td><td class="n">'+Bz(t.ded)+'</td><td class="n">'+B(t.net)+'</td><td></td></tr>';
+        return '<tr class="fl"><td colspan="14">ฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n">'+B(f.net)+'</td></tr>'+trs+st;
       }).join('');
       return '<tr class="dy"><td colspan="14">นัดจ่าย '+esc(this.thaiDate(d.payDate))+' · '+d.count+' คัน</td><td class="n">'+B(d.net)+'</td></tr>'+inner;
     }).join('');
@@ -12333,6 +12343,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'td.n,th.n{text-align:right;white-space:nowrap;}td.b{font-weight:700;}'
       +'tr.dy td{background:#e8edf3;font-weight:800;font-size:11.5px;}'
       +'tr.fl td{background:#f4f6f9;font-weight:700;}'
+      +'tr.st td{background:#fafbfc;font-weight:800;border-top:2px solid #98a2b3;}'
       +'tfoot td{background:#16263a;color:#fff;font-weight:800;font-size:11.5px;}'
       +'.ft{margin-top:8px;font-size:9.5px;color:#98a2b3;display:flex;justify-content:space-between;}';
     const html='<!doctype html><html><head><meta charset="utf-8"><title>สรุปจ่ายเงินรถร่วม</title>'
@@ -12341,9 +12352,10 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<h1>สรุปจ่ายเงินรถร่วม — ตามวันนัดจ่าย</h1>'
       +'<div class="sub">'+esc(co)+' · '+esc(this._spTitle())+' · พิมพ์เมื่อ '+esc(ts)+'</div>'
       +'<table><thead>'+head+'</thead><tbody>'+body+'</tbody>'
-      +'<tfoot><tr><td colspan="5">รวมทั้งสิ้น '+D.rows.length+' คัน</td><td class="n">'+B(D.tot.gross)+'</td>'
-      +'<td class="n" colspan="7">หักรวม '+B(D.tot.ded)+'</td><td class="n">'+B(D.tot.net)+'</td>'
-      +'<td>ยังไม่จ่าย '+B(D.tot.unpaid)+'</td></tr></tfoot></table>'
+      +(()=>{const T=this._spSum(D.rows);return '<tfoot><tr><td colspan="4">รวมทั้งสิ้น '+D.rows.length+' คัน</td><td class="n">'+T.trips+'</td><td class="n">'+B(T.gross)+'</td>'
+        +T.d.slice(0,5).map(v=>'<td class="n">'+Bz(v)+'</td>').join('')
+        +'<td class="n">'+Bz(T.d[5])+'</td><td class="n">'+Bz(T.ded)+'</td><td class="n">'+B(T.net)+'</td>'
+        +'<td>ยังไม่จ่าย '+B(T.unpaid)+'</td></tr></tfoot>';})()+'</table>'
       +'<div class="ft"><span>รายงานจากระบบ LionFlow · lionflowapp.com</span><span>ตัวเลขชุดเดียวกับใบสรุปรับ-จ่ายค่าขนส่ง</span></div>'
       +'</body></html>';
     this._printHtml(html);
