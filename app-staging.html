@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31k · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31l · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31k</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31l</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12503,17 +12503,18 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const sections=months.map(mk=>{
       const jobs=this.state.jobs.filter(j=>j.truckPlate===plate&&j.date&&String(j.date).slice(0,7)===mk&&(j.documentTime||j.docsClosed)&&!j.deleted&&!j._deleted).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
       jobs.forEach(j=>{grandTon+=(parseFloat(j.weight)||0);});
+      // ★ v.2026-10-31l: ตัดคอลัมน์ระยะทาง/น้ำหนักออกจากหน้าแรก (ผู้ใช้ขอ 31 ต.ค.) — น้ำหนักรวมยังอยู่ในแผ่นใบรับเงิน
       // ★ v.2026-10-31i: หน้าแรกกระชับแบบใบรับวางบิล — วันที่ 01/10/2569 บรรทัดเดียว · เส้นทางใช้ _routeFull (แก้ชื่อจังหวัดซ้ำ/เมือง แล้ว)
-      let grossT=0;let tonT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;tonT+=(parseFloat(j.weight)||0);return '<tr><td class="c">'+(i+1)+'</td><td class="dt">'+esc(sd2(j.date))+'</td><td class="dt">'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc(this._routeFull(j))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+_LFB2(g)+'</td></tr>';}).join('');
+      let grossT=0;let tonT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;tonT+=(parseFloat(j.weight)||0);return '<tr><td class="c">'+(i+1)+'</td><td class="dt">'+esc(sd2(j.date))+'</td><td class="dt">'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc(this._routeFull(j))+'</td><td class="n b">'+_LFB2(g)+'</td></tr>';}).join('');
       const deds=this._subDedList(plate,mk).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
       let dedSum=0;deds.forEach(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
         const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;});
       const net=grossT-dedSum;grandNet+=net;grandGross+=grossT;grandDed+=dedSum;grandTrips+=jobs.length;
       const meta=(this.state.subMonthMeta||{})[plate+'|'+mk]||{};if(meta.payDate&&!anyDate)anyDate=meta.payDate;if(!statusSet){anyStatus=!!meta.paid;statusSet=true;}else anyStatus=anyStatus&&!!meta.paid;
       // ★ v.2026-10-31j: ทุกเดือนอยู่ในตารางเดียว — หัวกระดาษ+หัวตารางอยู่ใน thead จึงพิมพ์ซ้ำทุกหน้าที่ต่อ
-      return (months.length>1?('<tr class="mh"><td colspan="7">ประจำเดือน '+esc(mLabel(mk))+' <span>'+jobs.length+' เที่ยว</span></td></tr>'):'')+
-        (trs||'<tr><td colspan="7" class="empty">ไม่มีรายการ</td></tr>')+
-        '<tr class="mt"><td colspan="5" class="r">รวม'+(months.length>1?(' '+esc(mLabel(mk))):'')+' '+jobs.length+' เที่ยว</td><td class="n">'+(tonT?tonT.toFixed(3):'—')+'</td><td class="n b">'+_LFB2(grossT)+'</td></tr>';
+      return (months.length>1?('<tr class="mh"><td colspan="5">ประจำเดือน '+esc(mLabel(mk))+' <span>'+jobs.length+' เที่ยว</span></td></tr>'):'')+
+        (trs||'<tr><td colspan="5" class="empty">ไม่มีรายการ</td></tr>')+
+        '<tr class="mt"><td colspan="4" class="r">รวม'+(months.length>1?(' '+esc(mLabel(mk))):'')+' '+jobs.length+' เที่ยว</td><td class="n b">'+_LFB2(grossT)+'</td></tr>';
     }).join('');
     const css='@page{size:A4;margin:0;}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;background:#fff;}'
       +'.page{width:210mm;min-height:297mm;margin:0 auto;padding:16mm 15mm 14mm;}'
@@ -12667,7 +12668,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'</div>';
     const html=('<!doctype html><html><head><meta charset="utf-8"><title>ใบสรุปจ่ายเงินรถร่วม '+esc(plate)+'</title>'
       +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page p1">'
-      +'<table class="lt"><thead><tr><th colspan="7" class="lh">'
+      +'<table class="lt"><thead><tr><th colspan="5" class="lh">'
       +'<div class="hd"><div><div class="cn">'+esc(co||'บริษัทขนส่ง')+'</div><div class="ci">'+(coAddr?esc(coAddr)+'<br>':'')+(coTax?('เลขประจำตัวผู้เสียภาษี '+esc(coTax)):'')+'</div></div>'
       +'<div class="tt"><div class="t">ใบสรุปจ่ายเงินรถร่วม</div><div class="d">พิมพ์เมื่อ '+esc(printTs)+'</div></div></div>'
       +'<div class="ib"><div class="l">'
@@ -12680,13 +12681,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="bx"><div class="h">วันนัดจ่าย<i>Payment Date</i></div><div class="v">'+(anyDate?esc(sd2(anyDate)):'—')+'</div></div>'
       +'<div class="bx"><div class="h">เลขที่<i>Voucher No.</i></div><div class="v">'+esc(rcBlankNo)+'</div></div>'
       +'</div></div>'
-      +'</th></tr><tr><th class="c">ลำดับ<i>No.</i></th><th>วันที่<i>Date</i></th><th>เลขที่บิล<i>Invoice No.</i></th><th>เส้นทาง<i>Route</i></th><th class="n">ระยะทาง (กม.)<i>Distance</i></th><th class="n">น้ำหนัก (ตัน)<i>Weight</i></th><th class="n">ค่าขนส่งจ่ายรถร่วม<i>Amount</i></th></tr></thead>'
+      +'</th></tr><tr><th class="c">ลำดับ<i>No.</i></th><th>วันที่<i>Date</i></th><th>เลขที่บิล<i>Invoice No.</i></th><th>เส้นทาง<i>Route</i></th><th class="n">ค่าขนส่งจ่ายรถร่วม<i>Amount</i></th></tr></thead>'
       +'<tbody>'+sections+'</tbody>'
-      +'<tbody><tr><td colspan="7" class="lh">'
+      +'<tbody><tr><td colspan="5" class="lh">'
       +'<div class="sm"><div class="w"><div class="k">จำนวนเงิน (ตัวอักษร) · Amount in Word</div><b>('+esc(this._bahtText(grandGross))+')</b></div>'
       +'<div class="a"><div><span>จำนวนเที่ยว</span><span>'+grandTrips+' เที่ยว</span></div><div class="tot"><span>รวมค่าขนส่งจ่ายรถร่วม</span><span>'+_LFB2(grandGross)+'</span></div></div></div>'
       +'<div class="ft"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(plate+' · '+mNum)+'</span></div>'
-      +'</td></tr></tbody><tfoot><tr><td colspan="7" class="tf"></td></tr></tfoot></table>'
+      +'</td></tr></tbody><tfoot><tr><td colspan="5" class="tf"></td></tr></tfoot></table>'
       +'</div>'+receipt
       +'<style id="pgno"></style><script>(function(){var calc=function(){try{var t=document.querySelector(".p1 table.lt");if(!t||!t.tHead)return;'
       +'var de=document.documentElement,ow=de.style.width,mm=96/25.4;de.style.width=(186*mm)+"px";'
