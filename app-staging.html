@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31j · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31k · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31j</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31k</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12571,14 +12571,17 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.cs .sgn .g{flex:1;border:1px solid #000;padding:7px 8px 9px;text-align:center;font-size:11px;}'
       +'.cs .sgn .g .l{font-weight:700;}'
       +'.cs .sgn .g .d{margin-top:13mm;font-size:10.5px;}'
-      +'@page sheet{size:A4;margin:9mm 11mm 9mm;}'
+      // ★ v.2026-10-31k: เลขแผ่น "แผ่นที่ X / N" มุมขวาบน (page margin box) · N คำนวณจากความสูงจริงตอนสั่งพิมพ์ (สคริปต์ท้ายเอกสาร)
+      //   counter(pages) ใช้ตรงๆ ไม่ได้ เพราะนับหน้าใบรับเงินท้ายเอกสารด้วย
+      +'@page sheet{size:A4;margin:12mm 11mm 9mm;@top-right{content:"แผ่นที่ " counter(page);font-family:Sarabun,sans-serif;font-size:9pt;color:#000;}}'
       +'.page.p1{page:sheet;width:auto;min-height:0;padding:0;margin:0;color:#000;}'
-      +'.p1 table.lt th.lh,.p1 table.lt td.lh{border:none;background:none;padding:0 0 6px;text-align:left;font-weight:400;font-size:inherit;line-height:normal;}'
+      +'.p1 table.lt th.lh,.p1 table.lt td.lh,.p1 table.lt tr>th.lh:first-child,.p1 table.lt tr>td.lh:first-child{border:none;background:none;padding:0 0 6px;text-align:left;font-weight:400;font-size:inherit;line-height:normal;}'
       +'.p1 table.lt td.lh{padding:6px 0 0;}'
       +'.p1 table.lt tr{break-inside:avoid;page-break-inside:avoid;}'
+      +'.p1 table.lt tr>td.tf{height:0;padding:0;border:none;border-top:1px solid #000;}'
       +'.p1 table.lt tr.mh{break-after:avoid;page-break-after:avoid;}'
-      +'.p1 table.lt tr.mh td{background:#f2f4f7;font-weight:800;border:1px solid #000;padding:3px 6px;}.p1 table.lt tr.mh td span{float:right;font-weight:600;}'
-      +'.p1 table.lt tr.mt td{border:1px solid #000;padding:3px 5px;font-weight:700;background:#f2f4f7;}'
+      +'.p1 table.lt tr.mh td{background:#f2f4f7;font-weight:800;border-top:1px solid #000;border-bottom:1px solid #000;padding:3px 6px;}.p1 table.lt tr.mh td span{float:right;font-weight:600;}'
+      +'.p1 table.lt tr.mt td{border-top:1px solid #000;border-bottom:1px solid #000;padding:3px 5px;font-weight:700;background:#f2f4f7;}'
       +'.p1 .hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}'
       +'.p1 .hd .cn{font-size:17px;font-weight:800;}.p1 .hd .ci{font-size:11px;line-height:1.45;margin-top:2px;max-width:120mm;}'
       +'.p1 .hd .tt{text-align:right;}.p1 .hd .tt .t{font-size:18px;font-weight:800;}.p1 .hd .tt .d{font-size:10.5px;margin-top:2px;}'
@@ -12591,10 +12594,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.p1 .bx .h i{display:block;font-style:normal;font-weight:400;font-size:8.5px;}'
       +'.p1 .bx .v{flex:1;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;padding:3px;}'
       +'.p1 .sec{margin-bottom:6px;}.p1 .sech{font-size:11.5px;font-weight:800;border:1px solid #000;border-bottom:none;background:#f2f4f7;padding:3px 8px;}.p1 .sech span{float:right;font-weight:600;}'
-      +'.p1 table.lt{width:100%;border-collapse:collapse;font-size:11px;}'
-      +'.p1 table.lt th{background:#dbe5f1;color:#000;font-weight:700;border:1px solid #000;padding:2px 5px;text-align:center;line-height:1.25;font-size:10.5px;}'
+      +'.p1 table.lt{width:100%;border-collapse:separate;border-spacing:0;font-size:11px;}'
+      +'.p1 table.lt th{background:#dbe5f1;color:#000;font-weight:700;border:none;border-top:1px solid #000;border-bottom:1px solid #000;border-right:1px solid #000;padding:2px 5px;text-align:center;line-height:1.25;font-size:10.5px;}'
+      +'.p1 table.lt tr>th:first-child,.p1 table.lt tr>td:first-child{border-left:1px solid #000;}'
       +'.p1 table.lt th i{display:block;font-style:normal;font-weight:400;font-size:8.5px;}'
-      +'.p1 table.lt td{border:none;border-left:1px solid #000;border-right:1px solid #000;border-bottom:1px solid #e4e7ec;padding:1.5px 5px;line-height:1.35;vertical-align:top;}'
+      +'.p1 table.lt td{border:none;border-right:1px solid #000;border-bottom:1px solid #e4e7ec;padding:1.5px 5px;line-height:1.35;vertical-align:top;}'
       +'.p1 table.lt tbody tr:nth-child(even){background:none;}'
       +'.p1 table.lt td.c{text-align:center;color:#000;width:11mm;}.p1 table.lt td.dt{white-space:nowrap;}'
       +'.p1 table.lt tfoot td{border:1px solid #000;padding:3px 5px;font-weight:700;background:#f2f4f7;}.p1 table.lt td.r{text-align:right;}'
@@ -12682,8 +12686,17 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'<div class="sm"><div class="w"><div class="k">จำนวนเงิน (ตัวอักษร) · Amount in Word</div><b>('+esc(this._bahtText(grandGross))+')</b></div>'
       +'<div class="a"><div><span>จำนวนเที่ยว</span><span>'+grandTrips+' เที่ยว</span></div><div class="tot"><span>รวมค่าขนส่งจ่ายรถร่วม</span><span>'+_LFB2(grandGross)+'</span></div></div></div>'
       +'<div class="ft"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(plate+' · '+mNum)+'</span></div>'
-      +'</td></tr></tbody></table>'
-      +'</div>'+receipt+'</body></html>');
+      +'</td></tr></tbody><tfoot><tr><td colspan="7" class="tf"></td></tr></tfoot></table>'
+      +'</div>'+receipt
+      +'<style id="pgno"></style><script>(function(){var calc=function(){try{var t=document.querySelector(".p1 table.lt");if(!t||!t.tHead)return;'
+      +'var de=document.documentElement,ow=de.style.width,mm=96/25.4;de.style.width=(186*mm)+"px";'
+      +'var th=t.tHead.getBoundingClientRect().height,H=(297-12-9)*mm-1-(t.tFoot?t.tFoot.getBoundingClientRect().height:0),hs=[];'
+      +'Array.prototype.forEach.call(t.tBodies[0].rows,function(r){hs.push(r.getBoundingClientRect().height);});'
+      +'if(t.tBodies[1])hs.push(t.tBodies[1].getBoundingClientRect().height);'
+      +'var n=1,y=th;hs.forEach(function(h){if(y+h>H){n++;y=th+h;}else y+=h;});de.style.width=ow;'
+      +'document.getElementById("pgno").textContent="@page sheet{@top-right{content:\\"แผ่นที่ \\" counter(page) \\" / "+n+"\\";}}";'
+      +'}catch(e){}};window.addEventListener("load",calc);window.addEventListener("beforeprint",calc);calc();})();<\/script>'
+      +'</body></html>');
     this._printHtml(html);
   };
   // ===== ส่งออกเข้าโปรแกรมบัญชี (Ecacc) =====
