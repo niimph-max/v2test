@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -6937,8 +6937,8 @@
           <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:18px;">รายได้ต่อรถ (เดือนนี้)</div>
           <div style="display:flex;align-items:flex-end;gap:12px;">
             <sc-for list="{{ ovRevBars }}" as="b" hint-placeholder-count="5">
-              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;">
-                <div style="font-size:11px;font-weight:700;color:#16263a;white-space:nowrap;">{{ b.val }}</div>
+              <div title="{{ b.tip }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;">
+                <div style="font-size:11px;font-weight:700;color:#16263a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">{{ b.valShort }}</div>
                 <div style="width:100%;height:150px;display:flex;align-items:flex-end;"><div style="width:100%;background:#0f9d6b;border-radius:5px 5px 0 0;height:{{ b.h }}%;min-height:3px;"></div></div>
                 <div style="font-size:11px;color:#667085;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">{{ b.name }}</div>
               </div>
@@ -7006,8 +7006,8 @@
         <div style="font-size:14px;font-weight:700;color:#16263a;margin-bottom:18px;">รายได้ต่อรถร่วม (เดือนนี้)</div>
         <div style="display:flex;align-items:flex-end;gap:12px;">
           <sc-for list="{{ ovSubRevBars }}" as="b" hint-placeholder-count="5">
-            <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;">
-              <div style="font-size:11px;font-weight:700;color:#16263a;white-space:nowrap;">{{ b.val }}</div>
+            <div title="{{ b.tip }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0;">
+              <div style="font-size:11px;font-weight:700;color:#16263a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">{{ b.valShort }}</div>
               <div style="width:100%;height:120px;display:flex;align-items:flex-end;"><div style="width:100%;background:#7a5af8;border-radius:5px 5px 0 0;height:{{ b.h }}%;min-height:3px;"></div></div>
               <div style="font-size:11px;color:#667085;white-space:nowrap;">{{ b.trips }}</div>
               <div style="font-size:11px;color:#667085;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">{{ b.name }}</div>
@@ -15466,7 +15466,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         out.ovKpiRev=_ovFmt(_ovList.reduce((s,d)=>s+d.rev,0));out.ovKpiTrips=_ovList.reduce((s,d)=>s+d.trips,0);
         const _totDist=_ovList.reduce((s,d)=>s+d.dist,0),_totFuelL=_ovList.reduce((s,d)=>s+d.fuelL,0);
         out.ovKpiEff=(_totFuelL>0?(_totDist/_totFuelL):0).toFixed(1);out.ovTargetText=_ovTarget.toFixed(1);
-        out.ovRevBars=_ovList.map(d=>({name:d.name,val:_ovFmt(d.rev),h:Math.round(d.rev/_maxRev*100)}));
+        // ★ v.2026-10-31c: ตัวเลขบนแท่งกราฟย่อเป็น ฿68.7k (รถเยอะแล้วยอดเต็มซ้อนกัน) · ชี้ที่แท่ง = ทะเบียน + ยอดเต็ม
+        const _ovShort=n=>{const a=Math.abs(n);return '฿'+(a>=1e6?(n/1e6).toFixed(2)+'M':(a>=1e3?(n/1e3).toFixed(1)+'k':String(Math.round(n))));};
+        out.ovRevBars=_ovList.map(d=>({name:d.name,val:_ovFmt(d.rev),valShort:_ovShort(d.rev),tip:d.name+' · '+_ovFmt(d.rev),h:Math.round(d.rev/_maxRev*100)}));
         out.ovTripBars=_ovList.map(d=>({name:d.name,val:String(d.trips),h:Math.round(d.trips/_maxTrips*100)}));
         out.ovEffBars=_ovList.map(d=>({name:d.name,val:d.eff.toFixed(1),w:Math.min(100,Math.round(d.eff/12*100)),barColor:d.eff>=_ovTarget?'#0f9d6b':'#e0922f'}));
         out.ovRows=_ovList.map(d=>({name:d.name,driver:d.driver,trips:d.trips,revenue:_ovFmt(d.rev),dist:Math.round(d.dist).toLocaleString()+' กม.',fuel:_ovFmt(d.fuelB),net:_ovFmt(d.net),netStyle:'font-weight:700;color:'+(d.net>=0?'#067647':'#b42318')+';',effText:(d.eff>=_ovTarget?'ดี ':'พอได้ ')+d.eff.toFixed(1),effChip:_effChip(d.eff)}));
@@ -15478,7 +15480,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           const _tr=_sl.reduce((a,d)=>a+d.rev,0),_tp=_sl.reduce((a,d)=>a+d.pay,0),_mx=Math.max(1,..._sl.map(d=>d.rev));
           out.ovSubHas=_sl.length>0;out.ovSubKpiRev=_ovFmt(_tr);out.ovSubKpiTrips=_sl.reduce((a,d)=>a+d.trips,0);out.ovSubKpiTrucks=_sl.length+' คัน';
           out.ovSubKpiPay=_ovFmt(_tp);out.ovSubKpiMargin=_ovFmt(_tr-_tp);out.ovSubKpiMarginPct=_pct(_tr-_tp,_tr)+' ของรายได้';
-          out.ovSubRevBars=_sl.map(d=>({name:d.plate,val:_ovFmt(d.rev),trips:d.trips+' เที่ยว',h:Math.round(d.rev/_mx*100)}));
+          out.ovSubRevBars=_sl.map(d=>({name:d.plate,val:_ovFmt(d.rev),valShort:_ovShort(d.rev),tip:d.plate+' · '+_ovFmt(d.rev)+' · '+d.trips+' เที่ยว',trips:d.trips+' เที่ยว',h:Math.round(d.rev/_mx*100)}));
           const _subRow=(d)=>{const m=d.rev-d.pay;const t=_sub.get(d.plate)||{};return {name:d.plate,owner:String(t.owner||'').trim()||'—',trips:d.trips,revenue:_ovFmt(d.rev),pay:_ovFmt(d.pay),margin:_ovFmt(m),marginStyle:'font-weight:700;color:'+(m>=0?'#067647':'#b42318')+';',pct:_pct(m,d.rev)};};
           out.ovSubRows=_sl.map(_subRow);
           // ---- แบ่งตามฟลีต (ขอเพิ่ม 7 ต.ค. 2569) ----
