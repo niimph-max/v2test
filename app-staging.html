@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31h · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31i · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31h</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31i</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12497,21 +12497,23 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     else{const from=this.state.effTripFrom||'',to=this.state.effTripTo||'';const set={};this.state.jobs.forEach(j=>{if(j.truckPlate!==plate||!j.date||!(j.documentTime||j.docsClosed)||j.deleted||j._deleted)return;if((from&&j.date<from)||(to&&j.date>to))return;set[String(j.date).slice(0,7)]=1;});months=Object.keys(set).sort();}
     const now=new Date();const printTs=sd(now.toISOString())+' เวลา '+String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
 
+    const sd2=(iso)=>{const q=String(iso).slice(0,10).split('-');return q[2]+'/'+q[1]+'/'+((+q[0])+543);};
     let grandNet=0,grandGross=0,grandDed=0,grandTrips=0;let anyDate='',anyStatus=false,statusSet=false;
     let grandTon=0;const grandDedMap={};   // น้ำหนักรวม + ยอดหักแยกตามชื่อรายการ ใช้ในแผ่นใบรับเงิน
     const sections=months.map(mk=>{
       const jobs=this.state.jobs.filter(j=>j.truckPlate===plate&&j.date&&String(j.date).slice(0,7)===mk&&(j.documentTime||j.docsClosed)&&!j.deleted&&!j._deleted).slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
       jobs.forEach(j=>{grandTon+=(parseFloat(j.weight)||0);});
-      let grossT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;return '<tr><td class="c">'+(i+1)+'</td><td>'+esc(sd(j.date))+'</td><td>'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc((j.origin||'—')+' → '+(j.destination||'—'))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+fmt(g)+'</td></tr>';}).join('');
+      // ★ v.2026-10-31i: หน้าแรกกระชับแบบใบรับวางบิล — วันที่ 01/10/2569 บรรทัดเดียว · เส้นทางใช้ _routeFull (แก้ชื่อจังหวัดซ้ำ/เมือง แล้ว)
+      let grossT=0;let tonT=0;const trs=jobs.map((j,i)=>{const g=subCalc(j);grossT+=g;tonT+=(parseFloat(j.weight)||0);return '<tr><td class="c">'+(i+1)+'</td><td class="dt">'+esc(sd2(j.date))+'</td><td class="dt">'+esc(j.deliveryNo||j.jobNo||'—')+'</td><td>'+esc(this._routeFull(j))+'</td><td class="n">'+(j.distance?((parseFloat(j.distance)||0).toLocaleString()+''):'—')+'</td><td class="n">'+(j.weight?((parseFloat(j.weight)||0)+''):'—')+'</td><td class="n b">'+_LFB2(g)+'</td></tr>';}).join('');
       const deds=this._subDedList(plate,mk).filter(d=>(parseFloat(d.amount)||0)!==0||String(d.label||'').trim());
       let dedSum=0;deds.forEach(d=>{const a=parseFloat(d.amount)||0;dedSum+=a;
         const _dl=String(d.label||'รายการหัก').trim();grandDedMap[_dl]=(grandDedMap[_dl]||0)+a;});
       const net=grossT-dedSum;grandNet+=net;grandGross+=grossT;grandDed+=dedSum;grandTrips+=jobs.length;
       const meta=(this.state.subMonthMeta||{})[plate+'|'+mk]||{};if(meta.payDate&&!anyDate)anyDate=meta.payDate;if(!statusSet){anyStatus=!!meta.paid;statusSet=true;}else anyStatus=anyStatus&&!!meta.paid;
-      return '<div class="sec"><div class="sech">ประจำเดือน '+esc(mLabel(mk))+' <span>'+jobs.length+' เที่ยว</span></div>'+
-        '<table><thead><tr><th class="c">#</th><th>วันที่</th><th>เลขที่บิล</th><th>เส้นทาง</th><th class="n">ระยะทาง (กม.)</th><th class="n">น้ำหนัก (ตัน)</th><th class="n">ค่าขนส่งจ่ายรถร่วม</th></tr></thead>'+
+      return '<div class="sec">'+(months.length>1?('<div class="sech">ประจำเดือน '+esc(mLabel(mk))+' <span>'+jobs.length+' เที่ยว</span></div>'):'')+
+        '<table class="lt"><thead><tr><th class="c">ลำดับ<i>No.</i></th><th>วันที่<i>Date</i></th><th>เลขที่บิล<i>Invoice No.</i></th><th>เส้นทาง<i>Route</i></th><th class="n">ระยะทาง (กม.)<i>Distance</i></th><th class="n">น้ำหนัก (ตัน)<i>Weight</i></th><th class="n">ค่าขนส่งจ่ายรถร่วม<i>Amount</i></th></tr></thead>'+
         '<tbody>'+(trs||'<tr><td colspan="7" class="empty">ไม่มีรายการ</td></tr>')+'</tbody>'+
-        '<tfoot><tr class="sub"><td class="c"></td><td colspan="5" style="text-align:right;">รวมค่าขนส่งจ่ายรถร่วม</td><td class="n b">'+fmt(grossT)+'</td></tr></tfoot></table></div>';
+        '<tfoot><tr><td colspan="5" class="r">รวม '+jobs.length+' เที่ยว</td><td class="n">'+(tonT?tonT.toFixed(3):'—')+'</td><td class="n b">'+_LFB2(grossT)+'</td></tr></tfoot></table></div>';
     }).join('');
     const css='@page{size:A4;margin:0;}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;background:#fff;}'
       +'.page{width:210mm;min-height:297mm;margin:0 auto;padding:16mm 15mm 14mm;}'
@@ -12569,10 +12571,34 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'.cs .sgn .g{flex:1;border:1px solid #000;padding:7px 8px 9px;text-align:center;font-size:11px;}'
       +'.cs .sgn .g .l{font-weight:700;}'
       +'.cs .sgn .g .d{margin-top:13mm;font-size:10.5px;}'
+      +'.p1{padding:10mm 12mm 10mm;color:#000;}'
+      +'.p1 .hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}'
+      +'.p1 .hd .cn{font-size:17px;font-weight:800;}.p1 .hd .ci{font-size:11px;line-height:1.45;margin-top:2px;max-width:120mm;}'
+      +'.p1 .hd .tt{text-align:right;}.p1 .hd .tt .t{font-size:18px;font-weight:800;}.p1 .hd .tt .d{font-size:10.5px;margin-top:2px;}'
+      +'.p1 .ib{display:flex;gap:4px;margin-bottom:6px;}'
+      +'.p1 .ib .l{flex:1;border:1px solid #000;padding:5px 9px;font-size:11.5px;line-height:1.6;}'
+      +'.p1 .ib .l .k{display:inline-block;width:32mm;}'
+      +'.p1 .ib .rt{width:44mm;display:flex;flex-direction:column;gap:4px;}'
+      +'.p1 .bx{border:1px solid #000;flex:1;display:flex;flex-direction:column;}'
+      +'.p1 .bx .h{background:#dbe5f1;border-bottom:1px solid #000;text-align:center;font-weight:700;font-size:11.5px;line-height:1.25;padding:2px;}'
+      +'.p1 .bx .h i{display:block;font-style:normal;font-weight:400;font-size:8.5px;}'
+      +'.p1 .bx .v{flex:1;display:flex;align-items:center;justify-content:center;font-size:12.5px;font-weight:700;padding:3px;}'
+      +'.p1 .sec{margin-bottom:6px;}.p1 .sech{font-size:11.5px;font-weight:800;border:1px solid #000;border-bottom:none;background:#f2f4f7;padding:3px 8px;}.p1 .sech span{float:right;font-weight:600;}'
+      +'.p1 table.lt{width:100%;border-collapse:collapse;font-size:11px;border:1px solid #000;}'
+      +'.p1 table.lt th{background:#dbe5f1;color:#000;font-weight:700;border:1px solid #000;padding:2px 5px;text-align:center;line-height:1.25;font-size:10.5px;}'
+      +'.p1 table.lt th i{display:block;font-style:normal;font-weight:400;font-size:8.5px;}'
+      +'.p1 table.lt td{border:none;border-left:1px solid #000;border-right:1px solid #000;padding:1.5px 5px;line-height:1.35;vertical-align:top;}'
+      +'.p1 table.lt tbody tr:nth-child(even){background:none;}'
+      +'.p1 table.lt td.c{text-align:center;color:#000;width:11mm;}.p1 table.lt td.dt{white-space:nowrap;}'
+      +'.p1 table.lt tfoot td{border:1px solid #000;padding:3px 5px;font-weight:700;background:#f2f4f7;}.p1 table.lt td.r{text-align:right;}'
+      +'.p1 .sm{display:flex;border:1px solid #000;margin-top:6px;font-size:11.5px;}'
+      +'.p1 .sm .w{flex:1;padding:5px 9px;border-right:1px solid #000;}.p1 .sm .w .k{font-size:10px;}'
+      +'.p1 .sm .a{width:70mm;display:flex;flex-direction:column;}.p1 .sm .a div{display:flex;justify-content:space-between;padding:3px 9px;}'
+      +'.p1 .sm .a div+div{border-top:1px solid #000;}.p1 .sm .a .tot{font-weight:800;font-size:13px;}'
+      +'.p1 .ft{margin-top:6px;font-size:9.5px;color:#667085;display:flex;justify-content:space-between;}'
       +'@media print{.page{margin:0;}}';
     // ===== แผ่นใบรับเงิน (หน้า 2) — ตัดครึ่ง: บนเก็บที่เจ้าของรถ ล่างเก็บเข้าบริษัท =====
     const rcDate=anyDate||(new Date()).toISOString().slice(0,10);
-    const sd2=(iso)=>{const q=String(iso).slice(0,10).split('-');return q[2]+'/'+q[1]+'/'+((+q[0])+543);};
     const _rcTyped=String((((this.state.subMonthMeta||{})[plate+'|'+(months[0]||'')])||{}).rcNo||'').trim();
     const rcBlankNo='PA'+(_rcTyped||' ....................');   // เลขที่ที่กรอกไว้ ถ้าไม่กรอกเว้นช่องเขียนมือ
     const mNum=months.map(mk=>{const q=mk.split('-');return q[1]+'/'+((+q[0])+543);}).join(', ')||'—';
@@ -12629,24 +12655,23 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'</div>'
       +'</div>';
     const html=('<!doctype html><html><head><meta charset="utf-8"><title>ใบสรุปจ่ายเงินรถร่วม '+esc(plate)+'</title>'
-      +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page">'
-      +'<div class="top"><div class="brand"><div class="cn">'+esc(co||'บริษัทขนส่ง')+'</div><div class="ci">'+(coAddr?esc(coAddr)+'<br>':'')+(coTax?('เลขประจำตัวผู้เสียภาษี '+esc(coTax)):'')+'</div></div>'
-      +'<div class="doc"><div class="t">ใบสรุปจ่ายเงินรถร่วม</div><div class="d">เลขที่ '+esc(rcBlankNo)+'<br>พิมพ์เมื่อ '+esc(printTs)+'</div></div></div>'
-      +'<div class="info">'
-      +'<div class="cell"><div class="k">ทะเบียนรถ</div><div class="v">'+esc(plate)+(tk.truckType?(' · '+esc(tk.truckType)):'')+'</div></div>'
-      +'<div class="cell"><div class="k">เจ้าของรถ / ผู้รับเงิน</div><div class="v">'+esc(owner||'—')+'</div></div>'
-      +'<div class="cell"><div class="k">ประจำเดือน</div><div class="v">'+esc(months.map(mLabel).join(', ')||'—')+'</div></div>'
-      +'<div class="cell"><div class="k">รวมจำนวนเที่ยว</div><div class="v">'+grandTrips+' เที่ยว</div></div>'
-      +'<div class="cell"><div class="k">นัดวันจ่าย</div><div class="v">'+(anyDate?esc(sd(anyDate)):'—')+'</div></div>'
-      +'<div class="cell"><div class="k">สถานะการจ่าย</div><div class="v" style="color:'+(anyStatus?'#067647':'#b54708')+';">'+(anyStatus?'จ่ายเงินแล้ว':'รอจ่าย')+'</div></div>'
-      +(acct?('<div class="cell" style="grid-column:1 / span 2;border-right:none;"><div class="k">บัญชีรับเงิน</div><div class="v">'+esc(acct)+'</div></div>'):'')
-      +'</div>'
-      +sections
-      +'<div class="grand"><div class="box">'
-      +'<div class="row tot"><span>รวมค่าขนส่งจ่ายรถร่วม</span><span class="a">'+fmt(grandGross)+'</span></div>'
+      +'<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet"><style>'+css+'</style></head><body><div class="page p1">'
+      +'<div class="hd"><div><div class="cn">'+esc(co||'บริษัทขนส่ง')+'</div><div class="ci">'+(coAddr?esc(coAddr)+'<br>':'')+(coTax?('เลขประจำตัวผู้เสียภาษี '+esc(coTax)):'')+'</div></div>'
+      +'<div class="tt"><div class="t">ใบสรุปจ่ายเงินรถร่วม</div><div class="d">พิมพ์เมื่อ '+esc(printTs)+'</div></div></div>'
+      +'<div class="ib"><div class="l">'
+      +'<div><span class="k">ทะเบียนรถ</span><b>'+esc(plate)+'</b>'+(tk.truckType?(' · '+esc(tk.truckType)):'')+'</div>'
+      +'<div><span class="k">เจ้าของรถ / ผู้รับเงิน</span><b>'+esc(owner||'—')+'</b></div>'
+      +'<div><span class="k">ประจำเดือน</span>'+esc(months.map(mLabel).join(', ')||'—')+' &nbsp;·&nbsp; '+grandTrips+' เที่ยว</div>'
+      +'<div><span class="k">บัญชีรับเงิน</span>'+(acct?esc(acct):'—')+'</div>'
+      +'<div><span class="k">สถานะการจ่าย</span><b style="color:'+(anyStatus?'#067647':'#b54708')+';">'+(anyStatus?'จ่ายเงินแล้ว':'รอจ่าย')+'</b></div>'
+      +'</div><div class="rt">'
+      +'<div class="bx"><div class="h">วันนัดจ่าย<i>Payment Date</i></div><div class="v">'+(anyDate?esc(sd2(anyDate)):'—')+'</div></div>'
+      +'<div class="bx"><div class="h">เลขที่<i>Voucher No.</i></div><div class="v">'+esc(rcBlankNo)+'</div></div>'
       +'</div></div>'
-      +'<div class="words">จำนวนเงิน (ตัวอักษร): <b>('+esc(this._bahtText(grandGross))+')</b></div>'
-      +'<div class="foot"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(plate+' · '+mNum)+'</span></div>'
+      +sections
+      +'<div class="sm"><div class="w"><div class="k">จำนวนเงิน (ตัวอักษร) · Amount in Word</div><b>('+esc(this._bahtText(grandGross))+')</b></div>'
+      +'<div class="a"><div><span>จำนวนเที่ยว</span><span>'+grandTrips+' เที่ยว</span></div><div class="tot"><span>รวมค่าขนส่งจ่ายรถร่วม</span><span>'+_LFB2(grandGross)+'</span></div></div></div>'
+      +'<div class="ft"><span>เอกสารสรุปจากระบบ LionFlow · lionflowapp.com</span><span>'+esc(plate+' · '+mNum)+'</span></div>'
       +'</div>'+receipt+'</body></html>');
     this._printHtml(html);
   };
