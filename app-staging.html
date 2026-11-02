@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-10-31l · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-02a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -509,7 +509,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-10-31l</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-02a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -7393,7 +7393,7 @@
             <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px;">
               <div style="font-size:12px;color:#9fb2c4;">ค่าขนส่ง {{ d.gross }}</div>
               <div style="font-size:12px;color:#9fb2c4;">หัก {{ d.ded }}</div>
-              <div style="font-size:12.5px;color:#9fb2c4;">ต้องจ่าย <span style="font-size:17px;font-weight:800;color:#7cf0b0;">{{ d.net }}</span></div>
+              <div style="font-size:12.5px;color:#9fb2c4;">ต้องจ่าย <span style="{{ d.netStyle }}">{{ d.net }}</span></div>
             </div>
           </div>
           <sc-for list="{{ d.fleets }}" as="f" hint-placeholder-count="2">
@@ -7404,7 +7404,7 @@
                 <div style="margin-left:auto;display:flex;align-items:baseline;gap:14px;">
                   <div style="font-size:11.5px;color:#98a2b3;">ค่าขนส่ง <span style="font-weight:700;color:#475467;">{{ f.gross }}</span></div>
                   <div style="font-size:11.5px;color:#98a2b3;">หัก <span style="font-weight:700;color:#b54708;">{{ f.ded }}</span></div>
-                  <div style="font-size:13.5px;font-weight:800;color:#067647;">{{ f.net }}</div>
+                  <div style="font-size:13.5px;font-weight:800;color:{{ f.netColor }};">{{ f.net }}</div>
                   <button onClick="{{ f.onPrintWht }}" title="พิมพ์หนังสือรับรองหักภาษี ณ ที่จ่าย ทุกคันในฟลีตนี้ เรียงเป็นชุด" style="padding:5px 12px;background:#fff;color:#16263a;border:1px solid #d0d5dd;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">🧾 50 ทวิ ทั้งฟลีต</button>
                 </div>
               </div>
@@ -7440,7 +7440,7 @@
                       <div style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.d4 }}</div>
                       <div title="{{ r.dOtherTitle }}" style="padding:9px 8px;text-align:right;color:#b54708;">{{ r.dOther }}</div>
                       <div style="padding:9px 8px;text-align:right;font-weight:600;color:#b54708;">{{ r.ded }}</div>
-                      <div style="padding:9px 8px;text-align:right;font-weight:800;color:#067647;">{{ r.net }}</div>
+                      <div style="{{ r.netStyle }}">{{ r.net }}</div>
                       <div style="{{ r.statusStyle }}">{{ r.statusText }}</div>
                     </div>
                   </sc-for>
@@ -7456,7 +7456,7 @@
                     <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tD4 }}</div>
                     <div style="padding:9px 8px;text-align:right;font-weight:700;color:#b54708;">{{ f.tOther }}</div>
                     <div style="padding:9px 8px;text-align:right;font-weight:800;color:#b54708;">{{ f.ded }}</div>
-                    <div style="padding:9px 8px;text-align:right;font-weight:800;color:#067647;">{{ f.net }}</div>
+                    <div style="padding:9px 8px;text-align:right;font-weight:800;color:{{ f.netColor }};">{{ f.net }}</div>
                     <div></div>
                   </div>
                 </div>
@@ -12324,14 +12324,14 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           +'<td class="n">'+r.trips+'</td><td class="n">'+B(r.gross)+'</td>'
           +r.d.slice(0,5).map(v=>'<td class="n">'+Bz(v)+'</td>').join('')
           +'<td class="n">'+Bz(r.other)+'</td><td class="n">'+Bz(r.ded)+'</td>'
-          +'<td class="n b">'+B(r.net)+'</td><td>'+(r.paid?'จ่ายแล้ว':'รอจ่าย')+'</td></tr>').join('');
+          +'<td class="n b'+(r.net<0?' neg':'')+'">'+B(r.net)+'</td><td>'+(r.paid?'จ่ายแล้ว':'รอจ่าย')+'</td></tr>').join('');
         const t=this._spSum(f.rows);
         const st='<tr class="st"><td colspan="4">รวมฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n">'+t.trips+'</td><td class="n">'+B(t.gross)+'</td>'
           +t.d.slice(0,5).map(v=>'<td class="n">'+Bz(v)+'</td>').join('')
-          +'<td class="n">'+Bz(t.d[5])+'</td><td class="n">'+Bz(t.ded)+'</td><td class="n">'+B(t.net)+'</td><td></td></tr>';
-        return '<tr class="fl"><td colspan="14">ฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n">'+B(f.net)+'</td></tr>'+trs+st;
+          +'<td class="n">'+Bz(t.d[5])+'</td><td class="n">'+Bz(t.ded)+'</td><td class="n'+(t.net<0?' neg':'')+'">'+B(t.net)+'</td><td></td></tr>';
+        return '<tr class="fl"><td colspan="14">ฟลีต '+esc(f.fleet)+' · '+f.rows.length+' คัน</td><td class="n'+(f.net<0?' neg':'')+'">'+B(f.net)+'</td></tr>'+trs+st;
       }).join('');
-      return '<tr class="dy"><td colspan="14">นัดจ่าย '+esc(this.thaiDate(d.payDate))+' · '+d.count+' คัน</td><td class="n">'+B(d.net)+'</td></tr>'+inner;
+      return '<tr class="dy"><td colspan="14">นัดจ่าย '+esc(this.thaiDate(d.payDate))+' · '+d.count+' คัน</td><td class="n'+(d.net<0?' neg':'')+'">'+B(d.net)+'</td></tr>'+inner;
     }).join('');
     const css='@page{size:A4 landscape;margin:10mm;}*{box-sizing:border-box;}'
       +'body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;}'
@@ -12340,7 +12340,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'table{width:100%;border-collapse:collapse;font-size:10.5px;}'
       +'th,td{border:1px solid #c9ced6;padding:4px 6px;text-align:left;}'
       +'thead th{background:#16263a;color:#fff;font-weight:600;}'
-      +'td.n,th.n{text-align:right;white-space:nowrap;}td.b{font-weight:700;}'
+      +'td.n,th.n{text-align:right;white-space:nowrap;}td.b{font-weight:700;}td.neg{color:#b42318;}'
       +'tr.dy td{background:#e8edf3;font-weight:800;font-size:11.5px;}'
       +'tr.fl td{background:#f4f6f9;font-weight:700;}'
       +'tr.st td{background:#fafbfc;font-weight:800;border-top:2px solid #98a2b3;}'
@@ -15486,10 +15486,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       out.spDays=D.days.map(d=>({
         dateLabel:this.thaiDate(d.payDate),count:d.count,
         gross:B(d.gross),ded:B(d.ded),net:B(d.net),
+        // ★ v.2026-11-02a: ยอดสุทธิติดลบ = สีแดง (แถวรถ · รวมฟลีต · ต้องจ่ายรายวัน · ใบพิมพ์)
+        netStyle:'font-size:17px;font-weight:800;color:'+(d.net<0?'#ff8a80':'#7cf0b0')+';',
         unpaidText:d.unpaid?('ยังไม่จ่าย '+B(d.unpaid)):'จ่ายครบแล้ว',
         unpaidStyle:'font-size:11.5px;font-weight:700;color:'+(d.unpaid?'#ffd59e':'#7cf0b0')+';',
         fleets:d.fleets.map(f=>({
-          fleet:f.fleet,count:f.rows.length,gross:B(f.gross),ded:B(f.ded),net:B(f.net),
+          fleet:f.fleet,count:f.rows.length,gross:B(f.gross),ded:B(f.ded),net:B(f.net),netColor:f.net<0?'#b42318':'#067647',
           // ★ v.2026-10-31f: แถวรวมท้ายตารางแต่ละฟลีต (ขอเพิ่ม 31 ต.ค.) — คอลัมน์หัก d[0..4] + หักอื่นๆ d[5] รวมไว้แล้วใน _spData
           tTrips:f.rows.reduce((a,r)=>a+(r.trips||0),0),tD0:Bz(f.d[0]),tD1:Bz(f.d[1]),tD2:Bz(f.d[2]),tD3:Bz(f.d[3]),tD4:Bz(f.d[4]),tOther:Bz(f.d[5]),
           totRowStyle:_rowGrid+'background:#f8fafc;border-top:2px solid #e4e7ec;',
@@ -15499,6 +15501,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
             trips:r.trips,gross:B(r.gross),
             d0:Bz(r.d[0]),d1:Bz(r.d[1]),d2:Bz(r.d[2]),d3:Bz(r.d[3]),d4:Bz(r.d[4]),
             dOther:Bz(r.other),dOtherTitle:r.otherLabels,ded:Bz(r.ded),net:B(r.net),
+            netStyle:'padding:9px 8px;text-align:right;font-weight:800;color:'+(r.net<0?'#b42318':'#067647')+';',
             statusText:r.paid?'จ่ายแล้ว':'รอจ่าย',
             statusStyle:'padding:9px 10px;font-size:11.5px;font-weight:700;color:'+(r.paid?'#067647':'#b54708')+';',
             rowStyle:_rowGrid+'cursor:pointer;'+(i>0?'border-top:1px solid #f4f6f8;':''),
