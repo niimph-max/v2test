@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -516,7 +516,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -13842,6 +13842,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       allow:'',bonus:'',adds:rep(old.adds),wht:old.wht||'',sso:'',prov:old.prov||'',deds:rep(old.deds),note:''};
   }
   _prOpenEdit(key){this.setState({prEdit:key});if(key)setTimeout(()=>{const el=document.getElementById('prEditPanel');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60);}
+  _prSorted(rows){const k={office:0,driver:1};return (rows||[]).slice().sort((a,b)=>((k[a.kind]||0)-(k[b.kind]||0))||String(a.code||'').localeCompare(String(b.code||''),'en',{numeric:true})||String(a.name||'').localeCompare(String(b.name||''),'th'));}
   _prPrev(m){return this._prAll().filter(x=>x&&!x.deleted&&x.id<m).sort((a,b)=>String(b.id).localeCompare(String(a.id)))[0]||null;}
   prCreate=()=>{
     const m=this.state.prMonth||this._prDefMonth();if(!this._prCan()||this._prRun(m))return;
@@ -13880,7 +13881,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   prPrintSummary=(m)=>{
     const run=this._prRun(m);if(!run)return;const F=(n)=>this._prF(n);const E=(x)=>this._prEsc(x);const Z=(n)=>n?F(n):'';
     const co=((this.state.company||{}).name)||'';
-    const groups=[['office','พนักงานออฟฟิศ'],['driver','พนักงานขับรถ']].map(g=>({k:g[0],label:g[1],rows:run.rows.filter(r=>r.kind===g[0])})).filter(g=>g.rows.length);
+    const groups=[['office','พนักงานออฟฟิศ'],['driver','พนักงานขับรถ']].map(g=>({k:g[0],label:g[1],rows:this._prSorted(run.rows.filter(r=>r.kind===g[0]))})).filter(g=>g.rows.length);
     const head='<tr><th class="c">ลำดับ</th><th class="c">สาขา</th><th>รหัส</th><th>ชื่อพนักงาน</th><th class="n">เงินเดือน</th><th class="n">เบี้ยเลี้ยง</th><th class="n">โบนัส</th><th class="n">รายการบวก</th><th class="n">ยอดนำส่ง</th><th class="n">ภาษี ณ ที่จ่าย</th><th class="n">ประกันสังคม</th><th class="n">เงินสะสม</th><th class="n">รายการหัก</th><th class="n">คงเหลือจ่าย</th></tr>';
     const line=(t,label,cls)=>'<tr class="'+cls+'"><td colspan="4">'+label+'</td><td class="n">'+F(t.salary)+'</td><td class="n">'+Z(t.allow)+'</td><td class="n">'+Z(t.bonus)+'</td><td class="n">'+Z(t.adds)+'</td><td class="n">'+F(t.gross)+'</td><td class="n">'+Z(t.wht)+'</td><td class="n">'+Z(t.sso)+'</td><td class="n">'+Z(t.prov)+'</td><td class="n">'+Z(t.deds)+'</td><td class="n">'+F(t.net)+'</td></tr>';
     let seq=0;const tot={};
@@ -13922,7 +13923,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   };
   prPrintSlips=(m,onlyKey)=>{
     const run=this._prRun(m);if(!run)return;const F=(n)=>this._prF(n);const E=(x)=>this._prEsc(x);
-    const co=this.state.company||{};const rows=run.rows.filter(r=>!onlyKey||r.key===onlyKey);if(!rows.length)return;
+    const co=this.state.company||{};const rows=this._prSorted(run.rows.filter(r=>!onlyKey||r.key===onlyKey));if(!rows.length)return;
     const slip=(r)=>{const c=this._prCalc(r);
       const inc=[['เงินเดือน',this._prNum(r.salary)],['เบี้ยเลี้ยง',this._prNum(r.allow)],['โบนัส',this._prNum(r.bonus)]].concat((r.adds||[]).map(x=>[x.l||'รายได้อื่น',this._prNum(x.a)])).filter(x=>x[1]);
       const ded=[['ภาษีหัก ณ ที่จ่าย',c.wht],['ประกันสังคม',c.sso],['เงินสะสม',c.prov]].concat((r.deds||[]).map(x=>[x.l||'รายการหัก',this._prNum(x.a)])).filter(x=>x[1]);
@@ -13951,7 +13952,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>this.codeFmt(r.code)},{label:'ชื่อพนักงาน',get:r=>r.name},
       {label:'เงินเดือน',get:r=>N(r.salary)},{label:'เบี้ยเลี้ยง',get:r=>N(r.allow)},{label:'โบนัส',get:r=>N(r.bonus)},{label:'รายการบวก',get:r=>C(r).adds},{label:'รายละเอียดรายการบวก',get:r=>lbl(r.adds)},
       {label:'ยอดนำส่ง',get:r=>C(r).gross},{label:'ภาษีหัก ณ ที่จ่าย',get:r=>C(r).wht},{label:'ประกันสังคม',get:r=>C(r).sso},{label:'เงินสะสม',get:r=>C(r).prov},
-      {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],run.rows);};
+      {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],this._prSorted(run.rows));};
   // ===== ประกาศถึงผู้ใช้งาน (v.2026-10-05a) =====
   // เก็บเป็นแถวพิเศษในตาราง events id = __news__ รูป {items:[{id,title,body,level,until,popup,pin,by,at,deleted}]}
   // (วิธีเดียวกับ __periodlock__ / __kv_* — ไม่ต้องรัน SQL) ทุกเครื่องรับภายใน 60 วิ หรือทันทีตอนเปิดแอป
@@ -17053,7 +17054,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           out.prHeadStyle=_grid+'background:#fbfcfe;border-bottom:1px solid #eef0f3;color:#667085;font-weight:600;font-size:11.5px;';
           out.prInpStyle=_inp;out.prInpLStyle=_inp.replace('text-align:right;','text-align:left;');
           out.prGroups=[['office','พนักงานออฟฟิศ'],['driver','พนักงานขับรถ']].map(g=>{
-            const rows=run.rows.filter(r=>r.kind===g[0]);const t=this._prTotals(rows);
+            const rows=this._prSorted(run.rows.filter(r=>r.kind===g[0]));const t=this._prTotals(rows);
             return {label:g[1],count:rows.length,has:rows.length>0,headStyle:out.prHeadStyle,
               tSalary:F(t.salary),tAllow:F(t.allow),tBonus:F(t.bonus),tAdds:F(t.adds),tGross:F(t.gross),tWht:F(t.wht),tSso:F(t.sso),tProv:F(t.prov),tDeds:F(t.deds),tNet:F(t.net),
               totStyle:_grid+'background:#f8fafc;border-top:2px solid #e4e7ec;font-weight:800;color:#16263a;',
