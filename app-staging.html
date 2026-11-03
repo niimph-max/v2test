@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03b · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -516,7 +516,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03b</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -13887,7 +13887,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const body=groups.map(g=>{const t=this._prTotals(g.rows);tot[g.k]=t;
       const trs=g.rows.map(r=>{const c=this._prCalc(r);seq++;
         const lbl=(l)=>(l||[]).filter(x=>this._prNum(x.a)).map(x=>E(x.l||'—')).join(', ');
-        return '<tr><td class="c">'+seq+'</td><td class="c">'+E(r.branch)+'</td><td>'+E(r.code)+'</td><td>'+E(r.name)+(r.note?'<div class="sm">'+E(r.note)+'</div>':'')+'</td>'
+        return '<tr><td class="c">'+seq+'</td><td class="c">'+E(r.branch)+'</td><td>'+E(this.codeFmt(r.code))+'</td><td>'+E(r.name)+(r.note?'<div class="sm">'+E(r.note)+'</div>':'')+'</td>'
           +'<td class="n">'+Z(this._prNum(r.salary))+'</td><td class="n">'+Z(this._prNum(r.allow))+'</td><td class="n">'+Z(this._prNum(r.bonus))+'</td>'
           +'<td class="n">'+Z(c.adds)+(c.adds?'<div class="sm">'+lbl(r.adds)+'</div>':'')+'</td><td class="n b">'+F(c.gross)+'</td>'
           +'<td class="n">'+Z(c.wht)+'</td><td class="n">'+Z(c.sso)+'</td><td class="n">'+Z(c.prov)+'</td>'
@@ -13930,7 +13930,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       for(let i=0;i<n;i++){const a=inc[i],b=ded[i];trs+='<tr><td>'+(a?E(a[0]):'')+'</td><td class="n">'+(a?F(a[1]):'')+'</td><td>'+(b?E(b[0]):'')+'</td><td class="n">'+(b?F(b[1]):'')+'</td></tr>';}
       return '<div class="slip"><div class="hd"><div><div class="co">'+E(co.name||'')+'</div><div class="ad">'+E(co.address||co.addr||'')+'</div></div>'
         +'<div class="tt">ใบแจ้งเงินเดือน<div class="mo">ประจำเดือน '+E(this._prMonthText(m))+'</div></div></div>'
-        +'<div class="who"><span>ชื่อ <b>'+E(r.name)+'</b></span><span>รหัส <b>'+E(r.code)+'</b></span><span>'+(r.kind==='driver'?'พนักงานขับรถ':'พนักงานออฟฟิศ')+' · สาขา '+E(r.branch||'')+'</span></div>'
+        +'<div class="who"><span>ชื่อ <b>'+E(r.name)+'</b></span><span>รหัส <b>'+E(this.codeFmt(r.code))+'</b></span><span>'+(r.kind==='driver'?'พนักงานขับรถ':'พนักงานออฟฟิศ')+' · สาขา '+E(r.branch||'')+'</span></div>'
         +'<table><tr><th>รายได้</th><th class="n">จำนวนเงิน</th><th>รายการหัก</th><th class="n">จำนวนเงิน</th></tr>'+trs
         +'<tr class="t"><td>รวมรายได้</td><td class="n">'+F(c.gross)+'</td><td>รวมรายการหัก</td><td class="n">'+F(c.gross-c.net)+'</td></tr></table>'
         +'<div class="net"><span>เงินได้สุทธิ</span><b>'+F(c.net)+' บาท</b><span class="bt">('+E(this._bahtText(c.net))+')</span></div>'
@@ -13948,7 +13948,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   prCsv=(m)=>{const run=this._prRun(m);if(!run)return;const C=(r)=>this._prCalc(r);const N=(v)=>this._prNum(v);
     const lbl=(l)=>(l||[]).filter(x=>N(x.a)).map(x=>(x.l||'—')+' '+N(x.a)).join(' / ');
     this._exportCsv('เงินเดือน_'+m+'.csv',[
-      {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>r.code},{label:'ชื่อพนักงาน',get:r=>r.name},
+      {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>this.codeFmt(r.code)},{label:'ชื่อพนักงาน',get:r=>r.name},
       {label:'เงินเดือน',get:r=>N(r.salary)},{label:'เบี้ยเลี้ยง',get:r=>N(r.allow)},{label:'โบนัส',get:r=>N(r.bonus)},{label:'รายการบวก',get:r=>C(r).adds},{label:'รายละเอียดรายการบวก',get:r=>lbl(r.adds)},
       {label:'ยอดนำส่ง',get:r=>C(r).gross},{label:'ภาษีหัก ณ ที่จ่าย',get:r=>C(r).wht},{label:'ประกันสังคม',get:r=>C(r).sso},{label:'เงินสะสม',get:r=>C(r).prov},
       {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],run.rows);};
@@ -17059,7 +17059,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
               totStyle:_grid+'background:#f8fafc;border-top:2px solid #e4e7ec;font-weight:800;color:#16263a;',
               rows:rows.map((r,i)=>{const c=this._prCalc(r);const lv=_leave(r);const set=(f)=>(e)=>this.prSetRow(m,r.key,f,e.target.value);
                 const nA=(r.adds||[]).length,nD=(r.deds||[]).length;const open=S.prEdit===r.key;
-                return {key:r.key,name:r.name,inpStyle:_inp,inpLStyle:_inp.replace('text-align:right;','text-align:left;'),codeText:'รหัส '+(r.code||'—'),leaveText:lv,hasLeave:!!lv,ro,
+                return {key:r.key,name:r.name,inpStyle:_inp,inpLStyle:_inp.replace('text-align:right;','text-align:left;'),codeText:'รหัส '+(this.codeFmt(r.code)||'—'),leaveText:lv,hasLeave:!!lv,ro,
                   rowStyle:_grid+(i>0?'border-top:1px solid #f2f4f7;':'')+(open?'background:#f5f9ff;':''),
                   branch:r.branch||'',onBranch:set('branch'),salary:r.salary||'',onSalary:set('salary'),allow:r.allow||'',onAllow:set('allow'),bonus:r.bonus||'',onBonus:set('bonus'),
                   addsText:(c.adds?F(c.adds):'＋ เพิ่ม')+(nA?(' ('+nA+')'):''),onAdds:()=>this._prOpenEdit(open?'':r.key),
