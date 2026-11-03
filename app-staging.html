@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-02a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -415,9 +415,11 @@
       </sc-if>
       <sc-if value="{{ showOfficeGrp }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบสำนักงาน</div>
+      <sc-if value="{{ showOfficeSys }}" hint-placeholder-val="{{ true }}">
       <button onClick="{{ onGoNews }}" style="{{ navNewsStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📣</span>ประกาศจากบริษัท</span>
       </button>
+      </sc-if>
       <sc-if value="{{ canHr }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ onGoHr }}" style="{{ navHrStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🛡️</span>ตรวจสอบประวัติ พขร.</span>
@@ -426,6 +428,11 @@
       <sc-if value="{{ canLetters }}" hint-placeholder-val="{{ false }}">
       <button onClick="{{ onGoLetters }}" style="{{ navLettersStyle }}">
         <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">📄</span>หนังสือออก</span>
+      </button>
+      </sc-if>
+      <sc-if value="{{ canPayroll }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ onGoPayroll }}" style="{{ navPayrollStyle }}">
+        <span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">💰</span>เงินเดือน</span>
       </button>
       </sc-if>
       <sc-if value="{{ canOfficeStaff }}" hint-placeholder-val="{{ false }}">
@@ -509,7 +516,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-02a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4934,6 +4941,172 @@
       </sc-for>
     </div>
     </sc-if>
+    <!-- ===== เงินเดือน ===== -->
+    <sc-if value="{{ isPayroll }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:26px 30px 60px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+        <div>
+          <div style="font-size:22px;font-weight:800;color:#16263a;">💰 เงินเดือน</div>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">บัญชีเงินเดือนรายเดือน · พนักงานออฟฟิศ + พขร. ที่มีเงินเดือน · พิมพ์สรุป / สลิป / ส่งออก CSV</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:#667085;font-weight:600;">เดือน</span>
+          <input type="month" value="{{ prMonth }}" onChange="{{ onPrMonth }}" style="padding:8px 11px;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:14px;color:#1d2b3a;background:#fff;">
+        </div>
+      </div>
+
+      <sc-if value="{{ prHasErr }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:12px;background:#fef3f2;border:1px solid #fecdca;border-radius:10px;padding:10px 14px;font-size:13px;color:#b42318;margin-bottom:14px;">
+          <span style="flex:1;">⚠ {{ prErr }}</span>
+          <button onClick="{{ onPrRetry }}" style="padding:6px 13px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">ลองใหม่</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ prLoading }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:40px;text-align:center;color:#98a2b3;font-size:14px;">⏳ กำลังโหลดข้อมูลเงินเดือน…</div>
+      </sc-if>
+
+      <sc-if value="{{ prNoRun }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:40px 24px;text-align:center;">
+          <div style="font-size:16px;font-weight:700;color:#16263a;margin-bottom:6px;">ยังไม่มีบัญชีเงินเดือน {{ prMonthText }}</div>
+          <div style="font-size:13px;color:#667085;line-height:1.7;max-width:560px;margin:0 auto 16px;">{{ prCreateHint }}</div>
+          <button onClick="{{ onPrCreate }}" style="padding:11px 22px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;">＋ สร้างบัญชีเงินเดือน {{ prMonthText }} ({{ prPeopleCount }} คน)</button>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ prHasRun }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+          <div style="font-size:16px;font-weight:800;color:#16263a;">{{ prMonthText }}</div>
+          <div style="font-size:12.5px;color:#98a2b3;">{{ prCount }} คน</div>
+          <sc-if value="{{ prClosed }}" hint-placeholder-val="{{ false }}"><span style="padding:3px 11px;border-radius:99px;font-size:12px;font-weight:700;background:#ecfdf3;color:#067647;border:1px solid #abefc6;">🔒 ปิดเดือนแล้ว</span></sc-if>
+          <div style="font-size:12px;color:#98a2b3;">{{ prSaveText }}</div>
+          <div style="flex:1;min-width:8px;"></div>
+          <sc-if value="{{ prHasMissing }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onPrAddMissing }}" style="padding:8px 13px;background:#fffaeb;color:#b54708;border:1px solid #fedf89;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">＋ เพิ่มคนที่ยังไม่มี ({{ prMissingCount }})</button>
+          </sc-if>
+          <button onClick="{{ onPrToggleClosed }}" style="padding:8px 13px;background:#fff;color:#344054;border:1px solid #d0d5dd;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">{{ prCloseLabel }}</button>
+          <button onClick="{{ onPrCsv }}" style="padding:8px 13px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">⬇ CSV</button>
+          <button onClick="{{ onPrPrintSlips }}" style="padding:8px 13px;background:#fff;color:#2f6fb0;border:1px solid #cfe0f2;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">🧾 พิมพ์สลิปทั้งหมด</button>
+          <button onClick="{{ onPrPrintSum }}" style="padding:8px 15px;background:#16263a;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">🖨 พิมพ์บัญชีเงินเดือน</button>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px;">
+          <div style="flex:1 1 150px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:12px 15px;"><div style="font-size:11.5px;color:#98a2b3;margin-bottom:4px;">ยอดนำส่งรวม</div><div style="font-size:20px;font-weight:800;color:#16263a;">{{ prTotGross }}</div></div>
+          <div style="flex:1 1 150px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:12px 15px;"><div style="font-size:11.5px;color:#98a2b3;margin-bottom:4px;">ภาษีหัก ณ ที่จ่าย</div><div style="font-size:20px;font-weight:800;color:#b54708;">{{ prTotWht }}</div></div>
+          <div style="flex:1 1 170px;background:#fff;border:1px solid #e4e7ec;border-radius:12px;padding:12px 15px;"><div style="font-size:11.5px;color:#98a2b3;margin-bottom:4px;">ประกันสังคม (ลูกจ้าง) · นำส่งรวมนายจ้าง</div><div style="font-size:20px;font-weight:800;color:#b54708;">{{ prTotSso }} <span style="font-size:12.5px;font-weight:600;color:#98a2b3;">· {{ prTotSso2 }}</span></div></div>
+          <div style="flex:1 1 150px;background:#fff;border:1px solid #b7e2c8;border-radius:12px;padding:12px 15px;"><div style="font-size:11.5px;color:#98a2b3;margin-bottom:4px;">คงเหลือจ่ายรวม</div><div style="font-size:20px;font-weight:800;color:#067647;">{{ prTotNet }}</div></div>
+        </div>
+
+        <sc-for list="{{ prGroups }}" as="g" hint-placeholder-count="2">
+          <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;overflow:hidden;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;padding:11px 18px;background:#16263a;color:#fff;">
+              <div style="font-size:14px;font-weight:800;">{{ g.label }}</div>
+              <div style="font-size:12px;color:#9fb2c4;">{{ g.count }} คน</div>
+            </div>
+            <div style="overflow-x:auto;">
+              <div style="min-width:1240px;">
+                <div style="{{ g.headStyle }}">
+                  <div style="padding:8px 16px;">ชื่อพนักงาน</div>
+                  <div style="padding:8px 6px;">สาขา</div>
+                  <div style="padding:8px 6px;text-align:right;">เงินเดือน</div>
+                  <div style="padding:8px 6px;text-align:right;">เบี้ยเลี้ยง</div>
+                  <div style="padding:8px 6px;text-align:right;">โบนัส</div>
+                  <div style="padding:8px 6px;text-align:right;">รายการบวก</div>
+                  <div style="padding:8px 8px;text-align:right;">ยอดนำส่ง</div>
+                  <div style="padding:8px 6px;text-align:right;">ภาษี ณ ที่จ่าย</div>
+                  <div style="padding:8px 6px;text-align:right;">ประกันสังคม</div>
+                  <div style="padding:8px 6px;text-align:right;">เงินสะสม</div>
+                  <div style="padding:8px 6px;text-align:right;">รายการหัก</div>
+                  <div style="padding:8px 8px;text-align:right;">คงเหลือจ่าย</div>
+                  <div style="padding:8px 6px;"></div>
+                </div>
+                <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="4">
+                  <div style="{{ r.rowStyle }}">
+                    <div style="padding:8px 16px;">
+                      <div style="font-weight:700;color:#16263a;">{{ r.name }}</div>
+                      <div style="font-size:11px;color:#98a2b3;">{{ r.codeText }}</div>
+                      <sc-if value="{{ r.hasLeave }}" hint-placeholder-val="{{ false }}"><div style="margin-top:3px;display:inline-block;font-size:10.5px;font-weight:700;color:#b54708;background:#fffaeb;border:1px solid #fedf89;border-radius:5px;padding:1px 6px;">{{ r.leaveText }}</div></sc-if>
+                    </div>
+                    <div style="padding:6px 4px;"><input value="{{ r.branch }}" onInput="{{ r.onBranch }}" disabled="{{ r.ro }}" style="{{ r.inpLStyle }}"></div>
+                    <div style="padding:6px 4px;"><input value="{{ r.salary }}" onInput="{{ r.onSalary }}" disabled="{{ r.ro }}" inputmode="decimal" style="{{ r.inpStyle }}"></div>
+                    <div style="padding:6px 4px;"><input value="{{ r.allow }}" onInput="{{ r.onAllow }}" disabled="{{ r.ro }}" inputmode="decimal" style="{{ r.inpStyle }}"></div>
+                    <div style="padding:6px 4px;"><input value="{{ r.bonus }}" onInput="{{ r.onBonus }}" disabled="{{ r.ro }}" inputmode="decimal" style="{{ r.inpStyle }}"></div>
+                    <div style="padding:6px 4px;"><button onClick="{{ r.onAdds }}" title="แก้รายการบวก" style="{{ r.itemBtnStyle }}">{{ r.addsText }}</button></div>
+                    <div style="padding:8px 8px;text-align:right;font-weight:700;color:#16263a;">{{ r.gross }}</div>
+                    <div style="padding:6px 4px;"><input value="{{ r.wht }}" onInput="{{ r.onWht }}" disabled="{{ r.ro }}" inputmode="decimal" style="{{ r.inpStyle }}"></div>
+                    <div style="padding:6px 4px;"><input value="{{ r.sso }}" placeholder="{{ r.ssoPh }}" title="{{ r.ssoTitle }}" onInput="{{ r.onSso }}" disabled="{{ r.ro }}" inputmode="decimal" style="{{ r.inpStyle }}"></div>
+                    <div style="padding:6px 4px;"><input value="{{ r.prov }}" onInput="{{ r.onProv }}" disabled="{{ r.ro }}" inputmode="decimal" style="{{ r.inpStyle }}"></div>
+                    <div style="padding:6px 4px;"><button onClick="{{ r.onDeds }}" title="แก้รายการหัก" style="{{ r.itemBtnStyle }}">{{ r.dedsText }}</button></div>
+                    <div style="{{ r.netStyle }}">{{ r.net }}</div>
+                    <div style="padding:6px 6px;display:flex;gap:4px;justify-content:flex-end;">
+                      <button onClick="{{ r.onSlip }}" title="พิมพ์สลิปคนนี้" style="padding:5px 7px;background:#fff;border:1px solid #d0d5dd;border-radius:6px;font-size:12px;cursor:pointer;">🧾</button>
+                      <sc-if value="{{ r.canRemove }}" hint-placeholder-val="{{ true }}"><button onClick="{{ r.onRemove }}" title="เอาออกจากเดือนนี้" style="padding:5px 7px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:6px;font-size:12px;cursor:pointer;">✕</button></sc-if>
+                    </div>
+                  </div>
+                </sc-for>
+                <div style="{{ g.totStyle }}">
+                  <div style="padding:9px 16px;">รวม{{ g.label }}</div>
+                  <div></div>
+                  <div style="padding:9px 6px;text-align:right;">{{ g.tSalary }}</div>
+                  <div style="padding:9px 6px;text-align:right;">{{ g.tAllow }}</div>
+                  <div style="padding:9px 6px;text-align:right;">{{ g.tBonus }}</div>
+                  <div style="padding:9px 6px;text-align:right;">{{ g.tAdds }}</div>
+                  <div style="padding:9px 8px;text-align:right;">{{ g.tGross }}</div>
+                  <div style="padding:9px 6px;text-align:right;color:#b54708;">{{ g.tWht }}</div>
+                  <div style="padding:9px 6px;text-align:right;color:#b54708;">{{ g.tSso }}</div>
+                  <div style="padding:9px 6px;text-align:right;color:#b54708;">{{ g.tProv }}</div>
+                  <div style="padding:9px 6px;text-align:right;color:#b54708;">{{ g.tDeds }}</div>
+                  <div style="padding:9px 8px;text-align:right;color:#067647;">{{ g.tNet }}</div>
+                  <div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+
+        <sc-if value="{{ prEditOpen }}" hint-placeholder-val="{{ false }}">
+        <div id="prEditPanel" style="background:#fff;border:2px solid #2f6fb0;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+            <div style="font-size:15px;font-weight:800;color:#16263a;">รายการบวก / รายการหัก — {{ prEditName }}</div>
+            <div style="flex:1;"></div>
+            <button onClick="{{ onPrEditClose }}" style="padding:6px 13px;background:#fff;color:#667085;border:1px solid #d0d5dd;border-radius:7px;font-family:inherit;font-size:12.5px;cursor:pointer;">ปิด</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px;">
+            <div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;"><div style="font-size:13px;font-weight:800;color:#067647;">รายการบวก</div><div style="font-size:12px;color:#98a2b3;">รวม {{ prEditAddsSum }}</div></div>
+              <sc-for list="{{ prEditAdds }}" as="it" hint-placeholder-count="1">
+                <div style="display:grid;grid-template-columns:1fr 110px 74px 34px;gap:6px;align-items:center;margin-bottom:6px;">
+                  <input value="{{ it.l }}" onInput="{{ it.onL }}" disabled="{{ it.ro }}" placeholder="เช่น ค่าตำแหน่ง / ค่าโทร / ค่าไมล์" style="{{ it.inpLStyle }}">
+                  <input value="{{ it.a }}" onInput="{{ it.onA }}" disabled="{{ it.ro }}" inputmode="decimal" placeholder="บาท" style="{{ it.inpStyle }}">
+                  <label style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ it.rep }}" onChange="{{ it.onRep }}" disabled="{{ it.ro }}">ทุกเดือน</label>
+                  <sc-if value="{{ it.canDel }}" hint-placeholder-val="{{ true }}"><button onClick="{{ it.onDel }}" style="padding:5px 0;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:6px;font-size:12px;cursor:pointer;">✕</button></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ prEditCanAdd }}" hint-placeholder-val="{{ true }}"><button onClick="{{ onPrAddAdd }}" style="padding:6px 12px;background:#ecfdf3;color:#067647;border:1px solid #abefc6;border-radius:7px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">＋ เพิ่มรายการบวก</button></sc-if>
+            </div>
+            <div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px;"><div style="font-size:13px;font-weight:800;color:#b42318;">รายการหัก</div><div style="font-size:12px;color:#98a2b3;">รวม {{ prEditDedsSum }}</div></div>
+              <sc-for list="{{ prEditDeds }}" as="it" hint-placeholder-count="1">
+                <div style="display:grid;grid-template-columns:1fr 110px 74px 34px;gap:6px;align-items:center;margin-bottom:6px;">
+                  <input value="{{ it.l }}" onInput="{{ it.onL }}" disabled="{{ it.ro }}" placeholder="เช่น เบิกล่วงหน้า / ขาดงาน / ผ่อนชำระ" style="{{ it.inpLStyle }}">
+                  <input value="{{ it.a }}" onInput="{{ it.onA }}" disabled="{{ it.ro }}" inputmode="decimal" placeholder="บาท" style="{{ it.inpStyle }}">
+                  <label style="display:flex;align-items:center;gap:4px;font-size:11.5px;color:#475467;cursor:pointer;"><input type="checkbox" checked="{{ it.rep }}" onChange="{{ it.onRep }}" disabled="{{ it.ro }}">ทุกเดือน</label>
+                  <sc-if value="{{ it.canDel }}" hint-placeholder-val="{{ true }}"><button onClick="{{ it.onDel }}" style="padding:5px 0;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:6px;font-size:12px;cursor:pointer;">✕</button></sc-if>
+                </div>
+              </sc-for>
+              <sc-if value="{{ prEditCanAdd }}" hint-placeholder-val="{{ true }}"><button onClick="{{ onPrAddDed }}" style="padding:6px 12px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">＋ เพิ่มรายการหัก</button></sc-if>
+            </div>
+          </div>
+          <div style="margin-top:14px;">
+            <div style="font-size:12px;color:#667085;font-weight:600;margin-bottom:4px;">หมายเหตุ (พิมพ์ในบัญชีเงินเดือน)</div>
+            <input value="{{ prEditNote }}" onInput="{{ onPrEditNote }}" disabled="{{ prClosed }}" placeholder="เช่น เริ่มงาน 13/8/69 · ได้ 15 วัน" style="width:100%;padding:8px 11px;border:1px solid #d0d5dd;border-radius:8px;font-family:inherit;font-size:13px;color:#1d2b3a;box-sizing:border-box;">
+          </div>
+          <div style="margin-top:10px;font-size:11.5px;color:#98a2b3;line-height:1.6;">ติ๊ก "ทุกเดือน" = ยกรายการนี้ไปเดือนถัดไปให้อัตโนมัติ (เช่น ค่าตำแหน่ง หรือผ่อนชำระรายเดือน) · ภาษี เงินสะสม และสาขา ยกไปเดือนถัดไปเสมอ</div>
+        </div>
+        </sc-if>
+      </sc-if>
+    </div>
+    </sc-if>
     <!-- ===== ประกาศจากบริษัท ===== -->
     <sc-if value="{{ isNews }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:900px;">
@@ -9080,7 +9253,7 @@ const INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พัก�
 const INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
 
 class Component extends DCLogic {
-  state={truckFleetFilter:'all',fuelCr:(()=>{try{const s=localStorage.getItem('fuelCr_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),fcPreview:null,fcErr:'',fcBusy:false,fcFrom:'',fcTo:'',fcPostDate:'',fcIncPosted:false,letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
+  state={truckFleetFilter:'all',fuelCr:(()=>{try{const s=localStorage.getItem('fuelCr_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),fcPreview:null,fcErr:'',fcBusy:false,fcFrom:'',fcTo:'',fcPostDate:'',fcIncPosted:false,letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,payroll:[],prLoaded:false,prMonth:'',prEdit:'',prDirty:false,prErr:'',ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
 
   componentWillUnmount(){if(this._gpsSim)clearInterval(this._gpsSim);window.removeEventListener('beforeunload',this._beforeUnload);if(this._wheelGuard)window.removeEventListener('wheel',this._wheelGuard);if(this._pollTimer)clearInterval(this._pollTimer);if(this._fullTimer)clearInterval(this._fullTimer);if(this._flushTimer)clearInterval(this._flushTimer);if(this._visHandler)document.removeEventListener('visibilitychange',this._visHandler);}
   componentDidMount(){
@@ -9456,7 +9629,7 @@ class Component extends DCLogic {
       tireMoves:S.tireMoves,inspections:S.inspections,
       workOrders:(S.workOrders!==undefined?S.workOrders:this._getWO()),
       company:S.company,fleets:S.fleets,dispatchers:S.dispatchers,dpoints:S.dpoints,
-      news:S.news,letters:S.letters,drvChk:S.drvChk,fuelCr:S.fuelCr,periodLock:S.periodLock,
+      news:S.news,letters:S.letters,payroll:(S.prLoaded&&Array.isArray(S.payroll)&&S.payroll.length)?S.payroll:undefined,drvChk:S.drvChk,fuelCr:S.fuelCr,periodLock:S.periodLock,
       kv:Object.keys(this._kvKeys()).reduce((o,k)=>{o[k]=S[k]||{};return o;},{})};
   }
   autoBackup(){
@@ -10332,7 +10505,7 @@ class Component extends DCLogic {
   _wipeCompanyCache(){const keys=['truckReg_v1','driverReg_v2','officeReg_v1','jobReg_v1','orderReg_v1','customerReg_v1','originReg_v1','customerPending','customerTombstones','originPending','tirePatch_v1','tireMove_v1','inspectReg_v1','truckPendingPlates','driverPendingCodes','jobPendingIds','orderPendingIds','tirePatchPending','tireMovePending','inspectPending','officePending','woPending','truckTombstones','driverTombstones','tirePatchTomb','tireMoveTomb','inspectTomb','officeTomb','woTomb','deletedTruckPlates','deletedDriverCodes','companyProfile_v1','fleet_baseline','fleet_users_v1','lf_wo_v1','transport_autosave','fixedOverrides_v1'];keys.forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});}
   doLogin=async()=>{if(this._loginBusy)return;const lu=String(this.state.loginUser||'').trim();const pw=String(this.state.loginPin||'').trim();const code=String(this.state.companyLoginCode||localStorage.getItem('lf_login_code_v1')||'').trim().toLowerCase();if(!code){this.setState({companyUnlocked:false,loginError:'กรุณากรอกรหัสบริษัทก่อน'});return;}if(!lu){this.setState({loginError:'กรุณากรอกชื่อผู้ใช้'});return;}if(!pw){this.setState({loginError:'กรุณากรอกรหัสผ่าน'});return;}try{sbBreakerReset();}catch(e){}   // v.2026-08-28b: คนกดเข้าระบบเอง = ปลดเบรกเกอร์ค้างทันที (เคส Nantana ต้อง Ctrl+Shift+R)
     this.setState({loginError:'⏳ กำลังเข้าสู่ระบบ…'});this._loginBusy=true;const email=lu.toLowerCase().replace(/\s+/g,'')+'@'+code+'.lionflow';try{await sbSignIn(email,pw);const p=await (async()=>{let _e=null;for(let i=0;i<3;i++){try{return await sbLoadProfile();}catch(er){_e=er;if(i<2)await new Promise(r=>setTimeout(r,700*(i+1)));}}throw _e;})();const auth={u:p.username||lu,name:p.display_name||p.username||lu,role:p.is_admin?'admin':'custom',sections:(p.sections&&p.sections.length)?p.sections:null,company_id:p.company_id};let _coNm=code.toUpperCase();try{const cr=await fetch(SB_REST+'/companies?select=name&id=eq.'+encodeURIComponent(p.company_id),{headers:SB_HEADERS});const ca=await cr.json();if(Array.isArray(ca)&&ca[0]&&ca[0].name)_coNm=ca[0].name;}catch(e){}try{localStorage.setItem('lf_co_name_'+code,_coNm);}catch(e){}const _prevCo=(()=>{try{return localStorage.getItem('lf_active_company')||'';}catch(e){return '';}})();const _switch=_prevCo!==p.company_id;if(_switch){this._wipeCompanyCache();}try{localStorage.setItem('lf_active_company',p.company_id);}catch(e){}try{localStorage.setItem('fleet_auth_v1',JSON.stringify(auth));}catch(e){}this.setState(s=>Object.assign({auth:auth,loginPin:'',loginError:'',company:{...(s.company||{}),name:_coNm,code:code}},_switch?{trucks:[],drivers:[],office:[],jobs:[],orders:[],customers:[],origins:[],tirePatches:[],tireMoves:[],inspections:[],workOrders:undefined,appUsers:[]}:{},this._qdLanding((auth.sections&&auth.sections.length)?auth.sections:(ROLE_SECTIONS[auth.role]||[]),auth.role)));try{this.loadCloudMeta&&this.loadCloudMeta();}catch(e){}try{this.syncFromSheets&&this.syncFromSheets();}catch(e){}}catch(err){const m=String((err&&err.message)||'');const _pwBad=/invalid[ _]?(login|grant|credential)|credential|grant|email|password/i.test(m);const _rate=/rate|429|too many/i.test(m);const _to=/timeout|network|abort|failed to fetch/i.test(m);const _profile=/no_profile_row|โปรไฟล์|profile/i.test(m);if(_pwBad)sbSetSession(null);this.setState({loginError:_pwBad?'ชื่อผู้ใช้ / รหัสผ่าน / รหัสบริษัท ไม่ถูกต้อง':_to?'ต่อเซิร์ฟเวอร์ไม่สำเร็จ (เน็ตช้า/หลุด) — เช็กอินเทอร์เน็ตแล้วกดเข้าสู่ระบบอีกครั้ง (รหัสของคุณไม่ได้ผิด)':_rate?'ระบบจำกัดการเข้าชั่วคราว (กดเข้าระบบถี่เกินไป) — รอ 1-2 นาที แล้วลองอีกครั้ง รหัสของคุณไม่ได้ผิด':_profile?'รหัสผ่านถูกต้อง แต่ไม่มีข้อมูลผู้ใช้นี้ในระบบ (profiles) — แจ้งแอดมินให้สร้างบัญชีใหม่':('เข้าสู่ระบบไม่ได้: '+m)});}finally{this._loginBusy=false;}};
-  doLogout=()=>{if(!window.confirm('ออกจากระบบ?'))return;try{sbSignOut();}catch(e){}try{localStorage.removeItem('fleet_auth_v1');}catch(e){}this.setState({auth:null,loginUser:'',loginPin:'',loginError:''});};
+  doLogout=()=>{if(!window.confirm('ออกจากระบบ?'))return;try{sbSignOut();}catch(e){}try{localStorage.removeItem('fleet_auth_v1');}catch(e){}this.setState({auth:null,loginUser:'',loginPin:'',loginError:'',payroll:[],prLoaded:false,prEdit:'',prErr:''});};
   dismissSessionDead=async()=>{
     // ลองต่ออายุเงียบๆ ก่อน — ถ้าได้ก็ปิดแบนเนอร์แล้วดันข้อมูลค้างขึ้น
     try{const s=await sbRefreshSession();if(s&&s.access_token){this.setState({sessionDead:false});this._lastPushAt=0;try{this.flushPending();}catch(e){}setTimeout(()=>this.syncFromSheets(),300);return;}}catch(e){}
@@ -13604,6 +13777,181 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       +'</div></body></html>';
     this._printHtml(html);
   };
+  // ===== เงินเดือน (v.2026-11-03a) =====
+  // เก็บในตาราง events แถว __payroll__ รูป {items:[{id:'YYYY-MM',month,rows:[...],closed,at,by}]} · 1 เดือน = 1 รายการ รวมตาม at
+  // สิทธิ์ payroll (admin เห็นเสมอ) · ข้อมูลเงินเดือนไม่เก็บใน localStorage และดึงจาก cloud เฉพาะคนที่มีสิทธิ์
+  // คิดเหมือนไฟล์ Excel เดิม: ยอดนำส่ง = เงินเดือน + เบี้ยเลี้ยง + โบนัส + รายการบวก · ประกันสังคม 5% ปัดเศษ สูงสุด 875 (แก้เองได้)
+  // คงเหลือจ่าย = ยอดนำส่ง − ภาษีหัก ณ ที่จ่าย − ประกันสังคม − เงินสะสม − รายการหัก
+  _prCan(){const a=this.state.auth||{};if(a.role==='admin')return true;return (Array.isArray(a.sections)?a.sections:[]).indexOf('payroll')>=0;}
+  _prAll(){const l=this.state.payroll;return Array.isArray(l)?l:[];}
+  _prRun(m){return this._prAll().find(x=>x&&x.id===m&&!x.deleted)||null;}
+  _prDefMonth(){return this._ltToday().slice(0,7);}
+  _prMonthText(m){const p=String(m||'').split('-');const M=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];return p.length===2?(M[+p[1]]+' '+(+p[0]+543)):String(m||'');}
+  _prNum(v){const n=parseFloat(String(v==null?'':v).replace(/,/g,''));return isFinite(n)?n:0;}
+  _prSum(list){return (Array.isArray(list)?list:[]).reduce((a,x)=>a+this._prNum(x&&x.a),0);}
+  _prCalc(r){const N=(v)=>this._prNum(v);const adds=this._prSum(r.adds),deds=this._prSum(r.deds);
+    const gross=N(r.salary)+N(r.allow)+N(r.bonus)+adds;
+    const ssoManual=!(r.sso===''||r.sso==null);const ssoAuto=Math.min(Math.round(gross*0.05),875);
+    const sso=ssoManual?N(r.sso):ssoAuto;
+    return {adds,deds,gross,sso,ssoAuto,ssoManual,wht:N(r.wht),prov:N(r.prov),net:gross-N(r.wht)-sso-N(r.prov)-deds};}
+  _prMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
+  _prApplyCloud(data){
+    const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
+    const merged=this._prMerge(this._prAll(),list);
+    if(JSON.stringify(merged)!==JSON.stringify(this._prAll()))this.setState({payroll:merged});
+  }
+  async _prFetch(){
+    if(!this._prCan()||this._prFetching)return;if(!COMPANY_ID){if(!this.state.prLoaded)this.setState({prLoaded:true});return;}this._prFetching=true;
+    try{
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__payroll__&select=data',{headers:SB_HEADERS});
+      if(!r||!r.ok)throw new Error('HTTP '+(r&&r.status));
+      const j=await r.json();this._prApplyCloud((j&&j[0]&&j[0].data)||{items:[]});
+      this.setState({prLoaded:true,prErr:''});
+    }catch(e){this.setState({prErr:'โหลดข้อมูลเงินเดือนไม่สำเร็จ — กดลองใหม่'});}
+    finally{this._prFetching=false;}
+  }
+  // บันทึกในเครื่องทันที แล้วส่งขึ้น cloud เมื่อหยุดพิมพ์ 1.2 วินาที
+  _prSave(run){
+    const r2={...run,at:new Date().toISOString(),by:(this.state.auth&&this.state.auth.name)||''};
+    this.setState({payroll:this._prAll().filter(x=>x.id!==r2.id).concat([r2]),prDirty:true});
+    clearTimeout(this._prT);this._prT=setTimeout(()=>this._prPush(),1200);
+  }
+  async _prPush(){
+    if(!COMPANY_ID){this.setState({prDirty:false});return;}
+    try{
+      let cloud=[];
+      const r=await fetch(SB_REST+'/events?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=eq.__payroll__&select=data',{headers:SB_HEADERS});
+      if(!r||!r.ok)throw new Error('HTTP '+(r&&r.status));
+      const j=await r.json();if(j&&j[0]&&j[0].data&&Array.isArray(j[0].data.items))cloud=j[0].data.items;
+      const merged=this._prMerge(cloud,this._prAll());
+      await sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__payroll__',data:{items:merged}}]);
+      this.setState({payroll:merged,prDirty:false,prErr:''});
+    }catch(e){this.setState({prErr:'บันทึกขึ้นระบบไม่สำเร็จ — ข้อมูลยังอยู่ในหน้านี้ กดบันทึกอีกครั้ง'});try{console.warn('[LionFlow] payroll push failed',e&&e.message);}catch(_){}}
+  }
+  // รายชื่อ: พนักงานออฟฟิศทุกคน + พขร. ที่มีเงินเดือนในประวัติและยังไม่ลาออก
+  _prPeople(){
+    const out=[];
+    (this.state.office||[]).filter(o=>o&&o.name).forEach(o=>out.push({key:'O|'+o.code,kind:'office',code:String(o.code),name:o.name,salary:o.salary||''}));
+    (this.state.drivers||[]).filter(d=>d&&d.name&&!d.resigned&&this._prNum(d.salary)>0).forEach(d=>out.push({key:'D|'+d.code,kind:'driver',code:String(d.code),name:d.name,salary:d.salary||''}));
+    return out;
+  }
+  // แถวของเดือนใหม่: เงินเดือนจากประวัติ · สาขา/ภาษี/เงินสะสม และรายการที่ติ๊ก "ทุกเดือน" ตามเดือนก่อน
+  _prRowFor(p,old){
+    old=old||{};const rep=(l)=>(Array.isArray(l)?l:[]).filter(x=>x&&x.rep).map(x=>({l:x.l||'',a:x.a||'',rep:true}));
+    return {key:p.key,kind:p.kind,code:p.code,name:p.name,branch:old.branch||'SB',salary:String(p.salary||old.salary||''),
+      allow:'',bonus:'',adds:rep(old.adds),wht:old.wht||'',sso:'',prov:old.prov||'',deds:rep(old.deds),note:''};
+  }
+  _prOpenEdit(key){this.setState({prEdit:key});if(key)setTimeout(()=>{const el=document.getElementById('prEditPanel');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60);}
+  _prPrev(m){return this._prAll().filter(x=>x&&!x.deleted&&x.id<m).sort((a,b)=>String(b.id).localeCompare(String(a.id)))[0]||null;}
+  prCreate=()=>{
+    const m=this.state.prMonth||this._prDefMonth();if(!this._prCan()||this._prRun(m))return;
+    if(!this.state.prLoaded){window.alert('ยังโหลดข้อมูลเงินเดือนไม่เสร็จ ลองอีกครั้งในอีกสักครู่');return;}
+    const prev=this._prPrev(m);const pm={};((prev&&prev.rows)||[]).forEach(r=>{pm[r.key]=r;});
+    const rows=this._prPeople().map(p=>this._prRowFor(p,pm[p.key]));
+    if(!rows.length){window.alert('ยังไม่มีรายชื่อ — เพิ่มพนักงานออฟฟิศ หรือใส่เงินเดือนในประวัติ พขร. ก่อน');return;}
+    this._prSave({id:m,month:m,rows,closed:false});
+  };
+  prAddMissing=()=>{
+    const m=this.state.prMonth||this._prDefMonth();const run=this._prRun(m);if(!run||run.closed)return;
+    const have={};run.rows.forEach(r=>{have[r.key]=1;});
+    const prev=this._prPrev(m);const pm={};((prev&&prev.rows)||[]).forEach(r=>{pm[r.key]=r;});
+    const add=this._prPeople().filter(p=>!have[p.key]).map(p=>this._prRowFor(p,pm[p.key]));
+    if(add.length)this._prSave({...run,rows:run.rows.concat(add)});
+  };
+  prSetRow=(m,key,field,val)=>{const run=this._prRun(m);if(!run||run.closed)return;this._prSave({...run,rows:run.rows.map(r=>r.key===key?{...r,[field]:val}:r)});};
+  prRemoveRow=(m,key)=>{const run=this._prRun(m);if(!run||run.closed)return;const r=run.rows.find(x=>x.key===key);
+    if(!r||!window.confirm('เอา "'+r.name+'" ออกจากบัญชีเงินเดือนเดือนนี้?\n(ไม่กระทบประวัติพนักงาน · เพิ่มกลับได้ด้วยปุ่ม เพิ่มคนที่ยังไม่มี)'))return;
+    this._prSave({...run,rows:run.rows.filter(x=>x.key!==key)});if(this.state.prEdit===key)this.setState({prEdit:''});};
+  prItem=(m,key,list,idx,field,val)=>{const run=this._prRun(m);if(!run||run.closed)return;
+    this._prSave({...run,rows:run.rows.map(r=>{if(r.key!==key)return r;const a=(r[list]||[]).slice();a[idx]={...(a[idx]||{}),[field]:val};return {...r,[list]:a};})});};
+  prItemAdd=(m,key,list)=>{const run=this._prRun(m);if(!run||run.closed)return;
+    this._prSave({...run,rows:run.rows.map(r=>r.key===key?{...r,[list]:(r[list]||[]).concat([{l:'',a:'',rep:false}])}:r)});};
+  prItemDel=(m,key,list,idx)=>{const run=this._prRun(m);if(!run||run.closed)return;
+    this._prSave({...run,rows:run.rows.map(r=>{if(r.key!==key)return r;const a=(r[list]||[]).slice();a.splice(idx,1);return {...r,[list]:a};})});};
+  prToggleClosed=()=>{const m=this.state.prMonth||this._prDefMonth();const run=this._prRun(m);if(!run)return;
+    if(!window.confirm(run.closed?'เปิดให้แก้ไขบัญชีเงินเดือน '+this._prMonthText(m)+' อีกครั้ง?':'ปิดบัญชีเงินเดือน '+this._prMonthText(m)+'?\nหลังปิดจะแก้ตัวเลขไม่ได้ (เปิดกลับได้)'))return;
+    this._prSave({...run,closed:!run.closed});};
+  // ---- พิมพ์ / ส่งออก ----
+  _prF(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+  _prEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+  _prTotals(rows){const t={salary:0,allow:0,bonus:0,adds:0,gross:0,wht:0,sso:0,prov:0,deds:0,net:0};
+    rows.forEach(r=>{const c=this._prCalc(r);t.salary+=this._prNum(r.salary);t.allow+=this._prNum(r.allow);t.bonus+=this._prNum(r.bonus);
+      t.adds+=c.adds;t.gross+=c.gross;t.wht+=c.wht;t.sso+=c.sso;t.prov+=c.prov;t.deds+=c.deds;t.net+=c.net;});return t;}
+  prPrintSummary=(m)=>{
+    const run=this._prRun(m);if(!run)return;const F=(n)=>this._prF(n);const E=(x)=>this._prEsc(x);const Z=(n)=>n?F(n):'';
+    const co=((this.state.company||{}).name)||'';
+    const groups=[['office','พนักงานออฟฟิศ'],['driver','พนักงานขับรถ']].map(g=>({k:g[0],label:g[1],rows:run.rows.filter(r=>r.kind===g[0])})).filter(g=>g.rows.length);
+    const head='<tr><th class="c">ลำดับ</th><th class="c">สาขา</th><th>รหัส</th><th>ชื่อพนักงาน</th><th class="n">เงินเดือน</th><th class="n">เบี้ยเลี้ยง</th><th class="n">โบนัส</th><th class="n">รายการบวก</th><th class="n">ยอดนำส่ง</th><th class="n">ภาษี ณ ที่จ่าย</th><th class="n">ประกันสังคม</th><th class="n">เงินสะสม</th><th class="n">รายการหัก</th><th class="n">คงเหลือจ่าย</th></tr>';
+    const line=(t,label,cls)=>'<tr class="'+cls+'"><td colspan="4">'+label+'</td><td class="n">'+F(t.salary)+'</td><td class="n">'+Z(t.allow)+'</td><td class="n">'+Z(t.bonus)+'</td><td class="n">'+Z(t.adds)+'</td><td class="n">'+F(t.gross)+'</td><td class="n">'+Z(t.wht)+'</td><td class="n">'+Z(t.sso)+'</td><td class="n">'+Z(t.prov)+'</td><td class="n">'+Z(t.deds)+'</td><td class="n">'+F(t.net)+'</td></tr>';
+    let seq=0;const tot={};
+    const body=groups.map(g=>{const t=this._prTotals(g.rows);tot[g.k]=t;
+      const trs=g.rows.map(r=>{const c=this._prCalc(r);seq++;
+        const lbl=(l)=>(l||[]).filter(x=>this._prNum(x.a)).map(x=>E(x.l||'—')).join(', ');
+        return '<tr><td class="c">'+seq+'</td><td class="c">'+E(r.branch)+'</td><td>'+E(r.code)+'</td><td>'+E(r.name)+(r.note?'<div class="sm">'+E(r.note)+'</div>':'')+'</td>'
+          +'<td class="n">'+Z(this._prNum(r.salary))+'</td><td class="n">'+Z(this._prNum(r.allow))+'</td><td class="n">'+Z(this._prNum(r.bonus))+'</td>'
+          +'<td class="n">'+Z(c.adds)+(c.adds?'<div class="sm">'+lbl(r.adds)+'</div>':'')+'</td><td class="n b">'+F(c.gross)+'</td>'
+          +'<td class="n">'+Z(c.wht)+'</td><td class="n">'+Z(c.sso)+'</td><td class="n">'+Z(c.prov)+'</td>'
+          +'<td class="n">'+Z(c.deds)+(c.deds?'<div class="sm">'+lbl(r.deds)+'</div>':'')+'</td><td class="n b'+(c.net<0?' neg':'')+'">'+F(c.net)+'</td></tr>';}).join('');
+      return '<tr class="gh"><td colspan="14">'+g.label+' · '+g.rows.length+' คน</td></tr>'+trs+line(t,'รวม'+g.label,'st');}).join('');
+    const all=this._prTotals(run.rows);
+    const o=tot.office||this._prTotals([]),d=tot.driver||this._prTotals([]);
+    const jr=(label,a,b,c,dr)=>'<tr><td class="'+(dr?'':'cr')+'">'+label+'</td><td class="n">'+Z(a)+'</td><td class="n">'+Z(b)+'</td><td class="n b">'+Z(c)+'</td></tr>';
+    const journal='<table class="jr"><tr><th>รายการบันทึกบัญชี</th><th class="n">ออฟฟิศ</th><th class="n">พขร.</th><th class="n">รวม</th></tr>'
+      +'<tr><td colspan="4" class="jh">Dr.</td></tr>'
+      +jr('เงินเดือนพนักงาน',o.salary,d.salary,all.salary,1)+jr('เบี้ยเลี้ยง',o.allow,d.allow,all.allow,1)+jr('โบนัส',o.bonus,d.bonus,all.bonus,1)+jr('รายได้อื่น (รายการบวก)',o.adds,d.adds,all.adds,1)
+      +'<tr><td colspan="4" class="jh">Cr.</td></tr>'
+      +jr('เงินเดือนจ่ายล่วงหน้า / รายการหัก',o.deds,d.deds,all.deds)+jr('ภาษีหัก ณ ที่จ่ายค้างจ่าย',o.wht,d.wht,all.wht)+jr('เงินประกันสังคมค้างจ่าย',o.sso,d.sso,all.sso)
+      +jr('เงินสะสม',o.prov,d.prov,all.prov)+jr('เงินเดือนค้างจ่าย',o.net,d.net,all.net)+'</table>';
+    const sso='<table class="jr"><tr><th>ประกันสังคม</th><th class="n">บาท</th></tr>'
+      +'<tr><td>ลูกจ้าง (หักจากเงินเดือน)</td><td class="n">'+F(all.sso)+'</td></tr><tr><td>นายจ้างสมทบ (เท่ากัน)</td><td class="n">'+F(all.sso)+'</td></tr>'
+      +'<tr><td class="b">รวมนำส่งประกันสังคม</td><td class="n b">'+F(all.sso*2)+'</td></tr>'
+      +'<tr><td>ภาษีหัก ณ ที่จ่าย (ภ.ง.ด.1)</td><td class="n">'+F(all.wht)+'</td></tr></table>';
+    const css='@page{size:A4 landscape;margin:9mm 8mm;}*{box-sizing:border-box;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;font-size:11px;}'
+      +'h1{font-size:16px;margin:0;}.sub{font-size:11px;color:#667085;margin:2px 0 8px;}'
+      +'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #c9ced6;padding:3px 5px;vertical-align:top;}th{background:#16263a;color:#fff;font-weight:600;}'
+      +'td.n,th.n{text-align:right;white-space:nowrap;}td.c,th.c{text-align:center;}.b{font-weight:700;}.neg{color:#b42318;}.sm{font-size:9px;color:#667085;white-space:normal;}'
+      +'tr.gh td{background:#e8edf3;font-weight:800;}tr.st td{background:#f4f6f9;font-weight:800;}tr.gt td{background:#16263a;color:#fff;font-weight:800;}'
+      +'.bot{display:flex;gap:14px;margin-top:10px;align-items:flex-start;}.bot>table{width:auto;min-width:260px;}.jr td.cr{padding-left:22px;}.jr td.jh{font-weight:800;background:#fafbfc;}'
+      +'.sig{margin-left:auto;display:flex;gap:40px;padding-top:30px;font-size:11px;text-align:center;}.sig div{min-width:150px;border-top:1px solid #98a2b3;padding-top:4px;}';
+    const html='<!doctype html><html><head><meta charset="utf-8"><title>บัญชีเงินเดือน '+E(this._prMonthText(m))+'</title><style>'+css+'</style></head><body>'
+      +'<h1>'+E(co)+' — บัญชีเงินเดือน ประจำเดือน '+E(this._prMonthText(m))+'</h1>'
+      +'<div class="sub">'+run.rows.length+' คน'+(run.closed?' · ปิดเดือนแล้ว':' · ยังไม่ปิดเดือน')+' · พิมพ์ '+E(this._ltThaiDate(this._ltToday()))+'</div>'
+      +'<table><thead>'+head+'</thead><tbody>'+body+'</tbody><tfoot>'+line(all,'รวมทั้งสิ้น '+run.rows.length+' คน','gt')+'</tfoot></table>'
+      +'<div class="bot">'+journal+sso+'<div class="sig"><div>ผู้จัดทำ</div><div>ผู้อนุมัติ</div></div></div></body></html>';
+    this._printHtml(html);
+  };
+  prPrintSlips=(m,onlyKey)=>{
+    const run=this._prRun(m);if(!run)return;const F=(n)=>this._prF(n);const E=(x)=>this._prEsc(x);
+    const co=this.state.company||{};const rows=run.rows.filter(r=>!onlyKey||r.key===onlyKey);if(!rows.length)return;
+    const slip=(r)=>{const c=this._prCalc(r);
+      const inc=[['เงินเดือน',this._prNum(r.salary)],['เบี้ยเลี้ยง',this._prNum(r.allow)],['โบนัส',this._prNum(r.bonus)]].concat((r.adds||[]).map(x=>[x.l||'รายได้อื่น',this._prNum(x.a)])).filter(x=>x[1]);
+      const ded=[['ภาษีหัก ณ ที่จ่าย',c.wht],['ประกันสังคม',c.sso],['เงินสะสม',c.prov]].concat((r.deds||[]).map(x=>[x.l||'รายการหัก',this._prNum(x.a)])).filter(x=>x[1]);
+      const n=Math.max(inc.length,ded.length,4);let trs='';
+      for(let i=0;i<n;i++){const a=inc[i],b=ded[i];trs+='<tr><td>'+(a?E(a[0]):'')+'</td><td class="n">'+(a?F(a[1]):'')+'</td><td>'+(b?E(b[0]):'')+'</td><td class="n">'+(b?F(b[1]):'')+'</td></tr>';}
+      return '<div class="slip"><div class="hd"><div><div class="co">'+E(co.name||'')+'</div><div class="ad">'+E(co.address||co.addr||'')+'</div></div>'
+        +'<div class="tt">ใบแจ้งเงินเดือน<div class="mo">ประจำเดือน '+E(this._prMonthText(m))+'</div></div></div>'
+        +'<div class="who"><span>ชื่อ <b>'+E(r.name)+'</b></span><span>รหัส <b>'+E(r.code)+'</b></span><span>'+(r.kind==='driver'?'พนักงานขับรถ':'พนักงานออฟฟิศ')+' · สาขา '+E(r.branch||'')+'</span></div>'
+        +'<table><tr><th>รายได้</th><th class="n">จำนวนเงิน</th><th>รายการหัก</th><th class="n">จำนวนเงิน</th></tr>'+trs
+        +'<tr class="t"><td>รวมรายได้</td><td class="n">'+F(c.gross)+'</td><td>รวมรายการหัก</td><td class="n">'+F(c.gross-c.net)+'</td></tr></table>'
+        +'<div class="net"><span>เงินได้สุทธิ</span><b>'+F(c.net)+' บาท</b><span class="bt">('+E(this._bahtText(c.net))+')</span></div>'
+        +'<div class="sg"><div>ผู้จ่ายเงิน</div><div>ผู้รับเงิน</div></div></div>';};
+    const css='@page{size:A4;margin:8mm;}*{box-sizing:border-box;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;font-size:12px;}'
+      +'.slip{height:138mm;padding:6mm 4mm;border-bottom:1px dashed #98a2b3;break-inside:avoid;page-break-inside:avoid;}.slip:nth-child(2n){border-bottom:none;break-after:page;page-break-after:always;}'
+      +'.hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #16263a;padding-bottom:5px;}.co{font-size:15px;font-weight:800;}.ad{font-size:10px;color:#667085;max-width:110mm;}'
+      +'.tt{text-align:right;font-size:15px;font-weight:800;}.mo{font-size:12px;font-weight:600;color:#475467;}'
+      +'.who{display:flex;gap:18px;flex-wrap:wrap;margin:7px 0;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #c9ced6;padding:3px 6px;}th{background:#eef1f5;}'
+      +'td.n,th.n{text-align:right;white-space:nowrap;width:24mm;}tr.t td{font-weight:800;background:#f7f8fa;}'
+      +'.net{display:flex;align-items:baseline;gap:10px;margin-top:8px;font-size:13px;}.net b{font-size:17px;}.net .bt{font-size:11px;color:#475467;}'
+      +'.sg{display:flex;justify-content:space-between;margin-top:18mm;padding:0 10mm;}.sg div{min-width:55mm;border-top:1px solid #98a2b3;text-align:center;padding-top:3px;font-size:11px;}';
+    this._printHtml('<!doctype html><html><head><meta charset="utf-8"><title>สลิปเงินเดือน '+E(this._prMonthText(m))+'</title><style>'+css+'</style></head><body>'+rows.map(slip).join('')+'</body></html>');
+  };
+  prCsv=(m)=>{const run=this._prRun(m);if(!run)return;const C=(r)=>this._prCalc(r);const N=(v)=>this._prNum(v);
+    const lbl=(l)=>(l||[]).filter(x=>N(x.a)).map(x=>(x.l||'—')+' '+N(x.a)).join(' / ');
+    this._exportCsv('เงินเดือน_'+m+'.csv',[
+      {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>r.code},{label:'ชื่อพนักงาน',get:r=>r.name},
+      {label:'เงินเดือน',get:r=>N(r.salary)},{label:'เบี้ยเลี้ยง',get:r=>N(r.allow)},{label:'โบนัส',get:r=>N(r.bonus)},{label:'รายการบวก',get:r=>C(r).adds},{label:'รายละเอียดรายการบวก',get:r=>lbl(r.adds)},
+      {label:'ยอดนำส่ง',get:r=>C(r).gross},{label:'ภาษีหัก ณ ที่จ่าย',get:r=>C(r).wht},{label:'ประกันสังคม',get:r=>C(r).sso},{label:'เงินสะสม',get:r=>C(r).prov},
+      {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],run.rows);};
   // ===== ประกาศถึงผู้ใช้งาน (v.2026-10-05a) =====
   // เก็บเป็นแถวพิเศษในตาราง events id = __news__ รูป {items:[{id,title,body,level,until,popup,pin,by,at,deleted}]}
   // (วิธีเดียวกับ __periodlock__ / __kv_* — ไม่ต้องรัน SQL) ทุกเครื่องรับภายใน 60 วิ หรือทันทีตอนเปิดแอป
@@ -13799,6 +14147,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         try{this._hrApplyCloud(meta.__drvchk__);}catch(e){}
         try{this._ltApplyCloud(meta.__letters__);}catch(e){}
         try{this._fcApplyCloud(meta.__fuelcr__);}catch(e){}
+        try{if(this.state.section==='payroll'&&!this.state.prDirty)this._prFetch();}catch(e){}
       }catch(e){}
     },60000);
   }
@@ -15202,6 +15551,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
             this.setState({[sk]:data[sk]});
             try{sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:mid,data:{items:data[sk]}}]).catch(function(){});}catch(e){}
           });
+          if(Array.isArray(data.payroll)&&data.payroll.length&&this._prCan()){
+            this.setState({payroll:this._prMerge(this._prAll(),data.payroll)},()=>{try{this._prPush();}catch(e){}});
+          }
           if(data.periodLock&&typeof data.periodLock==='object'){
             try{localStorage.setItem('periodLock_v1',JSON.stringify(data.periodLock));}catch(e){}
             this.setState({periodLock:data.periodLock});
@@ -16670,6 +17022,70 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           onPrint:()=>this.printLetter(l.id),onEdit:()=>this.ltEdit(l.id),
           onVoid:()=>this.ltVoid(l.id),onUnvoid:()=>this.ltUnvoid(l.id)};
       });}
+    // ---- เงินเดือน ----
+    {const _pCan=this._prCan()&&lfModuleOn('office');
+      out.canPayroll=_pCan;out.isPayroll=S.section==='payroll'&&_pCan;
+      out.navPayrollStyle='width:100%;display:flex;align-items:center;justify-content:space-between;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(out.isPayroll?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
+      out.onGoPayroll=()=>{this.setState({section:'payroll'});this.scrollMain();this._prFetch();};
+      if(out.isPayroll){
+        if(!S.prLoaded&&!this._prFetching&&!S.prErr)setTimeout(()=>this._prFetch(),0);
+        const F=(n)=>this._prF(n);const m=S.prMonth||this._prDefMonth();const run=this._prRun(m);const ro=!!(run&&run.closed);
+        out.prMonth=m;out.prMonthText=this._prMonthText(m);
+        out.onPrMonth=(e)=>{if(e.target.value)this.setState({prMonth:e.target.value,prEdit:''});};
+        out.prLoading=!S.prLoaded&&!S.prErr;out.prNoRun=!!S.prLoaded&&!run;out.prHasRun=!!run;
+        out.prErr=S.prErr||'';out.prHasErr=!!S.prErr;out.onPrRetry=()=>{this.setState({prErr:''});if(S.prLoaded)this._prPush();else this._prFetch();};
+        const _prev=this._prPrev(m);
+        out.prCreateHint=_prev?('คัดลอกสาขา ภาษี เงินสะสม และรายการที่ติ๊ก "ทุกเดือน" จาก '+this._prMonthText(_prev.id)+' · เงินเดือนดึงจากประวัติพนักงาน'):'เงินเดือนดึงจากประวัติพนักงาน · พขร. เฉพาะคนที่มีเงินเดือนในประวัติ';
+        out.prPeopleCount=this._prPeople().length;out.onPrCreate=this.prCreate;
+        out.prSaveText=S.prDirty?'กำลังบันทึก…':(run&&run.at?('บันทึกแล้ว ✓ '+(run.by?('· '+run.by):'')):'');
+        if(run){
+          const have={};run.rows.forEach(r=>{have[r.key]=1;});
+          const missing=this._prPeople().filter(p=>!have[p.key]);
+          out.prMissingCount=missing.length;out.prHasMissing=missing.length>0&&!ro;out.onPrAddMissing=this.prAddMissing;
+          out.prClosed=ro;out.prCloseLabel=ro?'🔓 เปิดให้แก้ไข':'🔒 ปิดเดือน (จ่ายแล้ว)';out.onPrToggleClosed=this.prToggleClosed;
+          out.onPrPrintSum=()=>this.prPrintSummary(m);out.onPrPrintSlips=()=>this.prPrintSlips(m);out.onPrCsv=()=>this.prCsv(m);
+          // วันลา/ขาดงานที่อนุมัติในเดือนนี้ (เฉพาะพนักงานออฟฟิศ) — แสดงเตือน ไม่หักให้อัตโนมัติ
+          const _leave=(r)=>{if(r.kind!=='office')return '';const o=(S.office||[]).find(x=>String(x.code)===r.code);if(!o)return '';const by={};
+            (o.leave||[]).forEach(l=>{if(!l||l.status!=='อนุมัติ'||String(l.startDate||'').slice(0,7)!==m)return;by[l.type]=(by[l.type]||0)+(parseFloat(l.days)||1);});
+            return Object.keys(by).map(k=>((OLEAVE_META[k]&&OLEAVE_META[k].short)||k)+' '+by[k]+' วัน').join(' · ');};
+          const _inp='width:100%;padding:6px 7px;border:1px solid #d0d5dd;border-radius:7px;font-family:inherit;font-size:13px;color:#1d2b3a;text-align:right;box-sizing:border-box;background:'+(ro?'#f9fafb':'#fff')+';';
+          const _grid='display:grid;grid-template-columns:minmax(180px,1.6fr) 58px 96px 86px 86px 104px 100px 84px 86px 80px 104px 108px 70px;align-items:center;gap:0;font-size:12.5px;';
+          out.prHeadStyle=_grid+'background:#fbfcfe;border-bottom:1px solid #eef0f3;color:#667085;font-weight:600;font-size:11.5px;';
+          out.prInpStyle=_inp;out.prInpLStyle=_inp.replace('text-align:right;','text-align:left;');
+          out.prGroups=[['office','พนักงานออฟฟิศ'],['driver','พนักงานขับรถ']].map(g=>{
+            const rows=run.rows.filter(r=>r.kind===g[0]);const t=this._prTotals(rows);
+            return {label:g[1],count:rows.length,has:rows.length>0,headStyle:out.prHeadStyle,
+              tSalary:F(t.salary),tAllow:F(t.allow),tBonus:F(t.bonus),tAdds:F(t.adds),tGross:F(t.gross),tWht:F(t.wht),tSso:F(t.sso),tProv:F(t.prov),tDeds:F(t.deds),tNet:F(t.net),
+              totStyle:_grid+'background:#f8fafc;border-top:2px solid #e4e7ec;font-weight:800;color:#16263a;',
+              rows:rows.map((r,i)=>{const c=this._prCalc(r);const lv=_leave(r);const set=(f)=>(e)=>this.prSetRow(m,r.key,f,e.target.value);
+                const nA=(r.adds||[]).length,nD=(r.deds||[]).length;const open=S.prEdit===r.key;
+                return {key:r.key,name:r.name,inpStyle:_inp,inpLStyle:_inp.replace('text-align:right;','text-align:left;'),codeText:'รหัส '+(r.code||'—'),leaveText:lv,hasLeave:!!lv,ro,
+                  rowStyle:_grid+(i>0?'border-top:1px solid #f2f4f7;':'')+(open?'background:#f5f9ff;':''),
+                  branch:r.branch||'',onBranch:set('branch'),salary:r.salary||'',onSalary:set('salary'),allow:r.allow||'',onAllow:set('allow'),bonus:r.bonus||'',onBonus:set('bonus'),
+                  addsText:(c.adds?F(c.adds):'＋ เพิ่ม')+(nA?(' ('+nA+')'):''),onAdds:()=>this._prOpenEdit(open?'':r.key),
+                  gross:F(c.gross),wht:r.wht||'',onWht:set('wht'),sso:(r.sso==null?'':r.sso),ssoPh:F(c.ssoAuto),onSso:set('sso'),
+                  ssoTitle:c.ssoManual?'แก้เองแล้ว — ลบตัวเลขออกเพื่อกลับไปคิดอัตโนมัติ':'คิดอัตโนมัติ 5% สูงสุด 875 · พิมพ์ตัวเลขเพื่อแก้เอง',
+                  prov:r.prov||'',onProv:set('prov'),
+                  dedsText:(c.deds?F(c.deds):'＋ เพิ่ม')+(nD?(' ('+nD+')'):''),onDeds:()=>this._prOpenEdit(open?'':r.key),
+                  itemBtnStyle:'width:100%;padding:6px 7px;border:1px dashed '+(open?'#2f6fb0':'#c9d3df')+';border-radius:7px;background:'+(open?'#eaf2fc':'#fff')+';font-family:inherit;font-size:12.5px;color:#2f6fb0;text-align:right;cursor:pointer;',
+                  net:F(c.net),netStyle:'padding:9px 8px;text-align:right;font-weight:800;color:'+(c.net<0?'#b42318':'#067647')+';',
+                  onSlip:()=>this.prPrintSlips(m,r.key),onRemove:()=>this.prRemoveRow(m,r.key),canRemove:!ro};})};
+          }).filter(g=>g.has);
+          const all=this._prTotals(run.rows);
+          out.prTotGross=F(all.gross);out.prTotWht=F(all.wht);out.prTotSso=F(all.sso);out.prTotSso2=F(all.sso*2);out.prTotNet=F(all.net);out.prCount=run.rows.length;
+          // แผงแก้รายการบวก / รายการหัก ของคนที่เลือก
+          const er=run.rows.find(r=>r.key===S.prEdit);out.prEditOpen=!!er;
+          if(er){const items=(list)=>(er[list]||[]).map((x,i)=>({l:x.l||'',a:x.a||'',rep:!!x.rep,ro,inpStyle:_inp,inpLStyle:_inp.replace('text-align:right;','text-align:left;'),
+              onL:(e)=>this.prItem(m,er.key,list,i,'l',e.target.value),onA:(e)=>this.prItem(m,er.key,list,i,'a',e.target.value),
+              onRep:(e)=>this.prItem(m,er.key,list,i,'rep',e.target.checked),onDel:()=>this.prItemDel(m,er.key,list,i),canDel:!ro}));
+            out.prEditName=er.name;out.prEditAdds=items('adds');out.prEditDeds=items('deds');
+            out.prEditAddsSum=F(this._prSum(er.adds));out.prEditDedsSum=F(this._prSum(er.deds));
+            out.prEditNote=er.note||'';out.onPrEditNote=(e)=>this.prSetRow(m,er.key,'note',e.target.value);
+            out.onPrAddAdd=()=>this.prItemAdd(m,er.key,'adds');out.onPrAddDed=()=>this.prItemAdd(m,er.key,'deds');
+            out.prEditCanAdd=!ro;out.onPrEditClose=()=>this.setState({prEdit:''});}
+        }
+      }
+    }
     // ---- ประกาศจากบริษัท ----
     {const _nCan=this._newsCanEdit();const _nd=S.newsDraft||{};
       const _nThD=(iso)=>{const s=String(iso||'').slice(0,10);const p=s.split('-');if(p.length!==3)return s;return (+p[2])+' '+['','ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'][+p[1]]+' '+(+p[0]+543);};
@@ -16794,13 +17210,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     out.onLoginKey=(e)=>{if(e.key==='Enter')this.doLogin();};
     out.onDoLogin=this.doLogin;out.onLogout=this.doLogout;out.onGoDashboard=this.onGoDashboard;
     out.onOpenPwChange=this.openPwChange;{const _pm=S.pwModal;out.pwModalOpen=!!_pm;out.pwN1=_pm?(_pm.n1||''):'';out.pwN2=_pm?(_pm.n2||''):'';out.pwErr=_pm?(_pm.err||''):'';out.pwErrShow=!!(_pm&&_pm.err);out.pwOk=!!(_pm&&_pm.ok);out.pwFormShow=!(_pm&&_pm.ok);out.pwSubmitLabel=(_pm&&_pm.busy)?'กำลังบันทึก…':'บันทึกรหัสใหม่';out.pwCloseLabel=(_pm&&_pm.ok)?'ปิด':'ยกเลิก';out.onPwN1=(e)=>this.setPwField('n1',e.target.value);out.onPwN2=(e)=>this.setPwField('n2',e.target.value);out.onPwSubmit=this.submitPwChange;out.onPwClose=this.closePwChange;}
-    out.canSettings=_role==='admin';out.showOfficeSys=(_role==='admin'||_can('office'))&&lfModuleOn('office');out.canOfficeStaff=out.showOfficeSys;out.showOfficeGrp=out.showOfficeSys;out.isSettings=S.section==='settings'&&_role==='admin';out.onGoSettings=this.onGoSettings;
+    out.canSettings=_role==='admin';out.showOfficeSys=(_role==='admin'||_can('office'))&&lfModuleOn('office');out.canOfficeStaff=out.showOfficeSys;out.showOfficeGrp=out.showOfficeSys||((_role==='admin'||_can('payroll'))&&lfModuleOn('office'));out.isSettings=S.section==='settings'&&_role==='admin';out.onGoSettings=this.onGoSettings;
     out.sessionDead=!!S.sessionDead;out.onSessionRelogin=this.dismissSessionDead;
     out.onLoadJobTrash=this.loadJobTrash;out.jobTrashLoading=!!S.jobTrashLoading;out.jobTrashReady=Array.isArray(S.trashJobs)&&!S.jobTrashLoading;out.jobTrashEmpty=Array.isArray(S.trashJobs)&&S.trashJobs.length===0;out.jobTrashHas=Array.isArray(S.trashJobs)&&S.trashJobs.length>0;
     out.jobTrashRows=(S.trashJobs||[]).map(j=>{const d=(S.drivers||[]).find(x=>String(x.code)===String(j.driverCode));return{id:j.id,dateFmt:(j.date||'—'),title:((j.jobNo||'ใบงาน')+(j.deliveryNo?(' · บิล '+j.deliveryNo):'')),driver:(d?d.name:(j.driverCode||'—')),plate:(j.truckPlate||'—'),onRestore:()=>this.restoreJobFromTrash(j.id),onPurge:()=>this.purgeJobFromTrash(j.id)};});
     {const _rim=((S.company||{}).regInsMode)||'full';out.regInsFull=(_rim==='full');out.regInsSpread=(_rim==='spread');out.onRegInsFull=()=>this.setRegInsMode('full');out.onRegInsSpread=()=>this.setRegInsMode('spread');const _ba='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #2f6fb0;background:#2f6fb0;color:#fff;';const _bi='padding:10px 18px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;border:2px solid #d0d5dd;background:#fff;color:#475467;';out.regInsFullStyle=(_rim==='full')?_ba:_bi;out.regInsSpreadStyle=(_rim==='spread')?_ba:_bi;}out.onPushAllLocal=this.pushAllLocalToCloud;out.onResetLocal=this.resetLocalAndPull;out.onDedupeTrucks=this.dedupeTrucks;out.onImportTruckXlsx=this.onImportTruckXlsx;out.onGoIssue=this.onGoIssue;out.isIssue=S.section==='issue';out.navIssueStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='issue'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
     out.navSettingsStyle='width:100%;display:flex;align-items:center;gap:8px;padding:8px 11px;margin-bottom:2px;border:none;border-radius:8px;font-size:13px;font-weight:600;text-align:left;cursor:pointer;'+(S.section==='settings'?'background:rgba(47,111,176,.22);color:#fff;':'background:transparent;color:#cdd7e1;');
-    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'},{k:'hr',l:'ตรวจสอบประวัติ พขร.'},{k:'billform',l:'ระบบออกใบวางบิลพิเศษ (ฟอร์ม GIR / TATA)'}];
+    {const _SECOPTS=[{k:'overview',l:'ภาพรวมระบบ'},{k:'dispatch',l:'จ่ายงาน (รับงาน/จ่ายงาน)'},{k:'income',l:'ระบบบันทึกรายได้และค่าใช้จ่าย'},{k:'registry',l:'ทะเบียนรถ + พขร.'},{k:'reports',l:'ระบบรายงานทั่วไป'},{k:'efficiency',l:'ประสิทธิภาพ'},{k:'accounting',l:'ระบบบัญชี (ตารางลูกค้า)'},{k:'ecacc',l:'ระบบ ECACC (ใบวางบิล/ส่งออก EASY-ACC)'},{k:'periodlock',l:'ปิดงวดบัญชี (ปิดงวด/อนุมัติแก้ไข)'},{k:'office',l:'ระบบสำนักงาน'},{k:'hr',l:'ตรวจสอบประวัติ พขร.'},{k:'billform',l:'ระบบออกใบวางบิลพิเศษ (ฟอร์ม GIR / TATA)'},{k:'payroll',l:'เงินเดือน (บัญชีเงินเดือน / สลิป)'}];
       out.settingsUserRows=(S.profileUsers||[]).map(u=>({name:u.display_name||u.username,uname:u.username,isAdmin:!!u.is_admin,notAdmin:!u.is_admin,secText:u.is_admin?'ทุกเมนู (ผู้ดูแลระบบ)':((Array.isArray(u.sections)?u.sections:[]).map(k=>(_SECOPTS.find(o=>o.k===k)||{}).l).filter(Boolean).join(', ')||'—'),onEdit:()=>this.openUserEdit(u.id)}));
       out.settingsUsersEmpty=(S.profileUsers||[]).length===0;out.onOpenUser=this.openUserNew;
       const _ud=S.userDraft;out.userFormOpen=!!_ud;
