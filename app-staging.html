@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -516,7 +516,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -13842,6 +13842,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       allow:'',bonus:'',adds:rep(old.adds),wht:old.wht||'',sso:'',prov:old.prov||'',deds:rep(old.deds),note:''};
   }
   _prOpenEdit(key){this.setState({prEdit:key});if(key)setTimeout(()=>{const el=document.getElementById('prEditPanel');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},60);}
+  _prCode(c){c=String(c||'').trim();return c.indexOf('-')>=0?c:this.codeFmt(c);}
   _prSorted(rows){const k={office:0,driver:1};return (rows||[]).slice().sort((a,b)=>((k[a.kind]||0)-(k[b.kind]||0))||String(a.code||'').localeCompare(String(b.code||''),'en',{numeric:true})||String(a.name||'').localeCompare(String(b.name||''),'th'));}
   _prPrev(m){return this._prAll().filter(x=>x&&!x.deleted&&x.id<m).sort((a,b)=>String(b.id).localeCompare(String(a.id)))[0]||null;}
   prCreate=()=>{
@@ -13888,7 +13889,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const body=groups.map(g=>{const t=this._prTotals(g.rows);tot[g.k]=t;
       const trs=g.rows.map(r=>{const c=this._prCalc(r);seq++;
         const lbl=(l)=>(l||[]).filter(x=>this._prNum(x.a)).map(x=>E(x.l||'—')).join(', ');
-        return '<tr><td class="c">'+seq+'</td><td class="c">'+E(r.branch)+'</td><td>'+E(this.codeFmt(r.code))+'</td><td>'+E(r.name)+(r.note?'<div class="sm">'+E(r.note)+'</div>':'')+'</td>'
+        return '<tr><td class="c">'+seq+'</td><td class="c">'+E(r.branch)+'</td><td>'+E(this._prCode(r.code))+'</td><td>'+E(r.name)+(r.note?'<div class="sm">'+E(r.note)+'</div>':'')+'</td>'
           +'<td class="n">'+Z(this._prNum(r.salary))+'</td><td class="n">'+Z(this._prNum(r.allow))+'</td><td class="n">'+Z(this._prNum(r.bonus))+'</td>'
           +'<td class="n">'+Z(c.adds)+(c.adds?'<div class="sm">'+lbl(r.adds)+'</div>':'')+'</td><td class="n b">'+F(c.gross)+'</td>'
           +'<td class="n">'+Z(c.wht)+'</td><td class="n">'+Z(c.sso)+'</td><td class="n">'+Z(c.prov)+'</td>'
@@ -13896,29 +13897,31 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       return '<tr class="gh"><td colspan="14">'+g.label+' · '+g.rows.length+' คน</td></tr>'+trs+line(t,'รวม'+g.label,'st');}).join('');
     const all=this._prTotals(run.rows);
     const o=tot.office||this._prTotals([]),d=tot.driver||this._prTotals([]);
-    const jr=(label,a,b,c,dr)=>'<tr><td class="'+(dr?'':'cr')+'">'+label+'</td><td class="n">'+Z(a)+'</td><td class="n">'+Z(b)+'</td><td class="n b">'+Z(c)+'</td></tr>';
-    const journal='<table class="jr"><tr><th>รายการบันทึกบัญชี</th><th class="n">ออฟฟิศ</th><th class="n">พขร.</th><th class="n">รวม</th></tr>'
-      +'<tr><td colspan="4" class="jh">Dr.</td></tr>'
-      +jr('เงินเดือนพนักงาน',o.salary,d.salary,all.salary,1)+jr('เบี้ยเลี้ยง',o.allow,d.allow,all.allow,1)+jr('โบนัส',o.bonus,d.bonus,all.bonus,1)+jr('รายได้อื่น (รายการบวก)',o.adds,d.adds,all.adds,1)
-      +'<tr><td colspan="4" class="jh">Cr.</td></tr>'
-      +jr('เงินเดือนจ่ายล่วงหน้า / รายการหัก',o.deds,d.deds,all.deds)+jr('ภาษีหัก ณ ที่จ่ายค้างจ่าย',o.wht,d.wht,all.wht)+jr('เงินประกันสังคมค้างจ่าย',o.sso,d.sso,all.sso)
-      +jr('เงินสะสม',o.prov,d.prov,all.prov)+jr('เงินเดือนค้างจ่าย',o.net,d.net,all.net)+'</table>';
+    // รายการบันทึกบัญชี แยก 2 ชุด: พนักงานออฟฟิศ / พนักงานขับรถ (ตามที่บริษัทบันทึกจริง) · แสดงเฉพาะบรรทัดที่มียอด
+    const jEntry=(title,t)=>{
+      const dr=[['เงินเดือนพนักงาน',t.salary],['เบี้ยเลี้ยง',t.allow],['โบนัส',t.bonus],['รายได้อื่น (รายการบวก)',t.adds]].filter((x,i)=>i===0||x[1]);
+      const cr=[['เงินเดือนจ่ายล่วงหน้า / รายการหัก',t.deds],['ภาษีหัก ณ ที่จ่ายค้างจ่าย',t.wht],['เงินประกันสังคมค้างจ่าย',t.sso],['เงินสะสม',t.prov],['เงินเดือนค้างจ่าย',t.net]].filter((x,i,a)=>x[1]||i===a.length-1);
+      return '<table class="jr"><tr><th>'+title+'</th><th class="n">เดบิต</th><th class="n">เครดิต</th></tr>'
+        +dr.map((x,i)=>'<tr><td>'+(i===0?'<b>Dr.</b> ':'<span class="ind"></span>')+x[0]+'</td><td class="n">'+F(x[1])+'</td><td></td></tr>').join('')
+        +cr.map((x,i)=>'<tr><td class="cr">'+(i===0?'<b>Cr.</b> ':'<span class="ind"></span>')+x[0]+'</td><td></td><td class="n">'+F(x[1])+'</td></tr>').join('')
+        +'<tr class="jt"><td>รวม</td><td class="n">'+F(dr.reduce((a,x)=>a+x[1],0))+'</td><td class="n">'+F(cr.reduce((a,x)=>a+x[1],0))+'</td></tr></table>';};
+    const journal=(tot.office?jEntry('บันทึกบัญชี — พนักงานออฟฟิศ',o):'')+(tot.driver?jEntry('บันทึกบัญชี — พนักงานขับรถ',d):'');
     const sso='<table class="jr"><tr><th>ประกันสังคม</th><th class="n">บาท</th></tr>'
       +'<tr><td>ลูกจ้าง (หักจากเงินเดือน)</td><td class="n">'+F(all.sso)+'</td></tr><tr><td>นายจ้างสมทบ (เท่ากัน)</td><td class="n">'+F(all.sso)+'</td></tr>'
       +'<tr><td class="b">รวมนำส่งประกันสังคม</td><td class="n b">'+F(all.sso*2)+'</td></tr>'
       +'<tr><td>ภาษีหัก ณ ที่จ่าย (ภ.ง.ด.1)</td><td class="n">'+F(all.wht)+'</td></tr></table>';
-    const css='@page{size:A4 landscape;margin:9mm 8mm;}*{box-sizing:border-box;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;font-size:11px;}'
+    const css='@page{size:A4 landscape;margin:7mm 8mm;}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;font-size:11px;}'
       +'h1{font-size:16px;margin:0;}.sub{font-size:11px;color:#667085;margin:2px 0 8px;}'
-      +'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #c9ced6;padding:3px 5px;vertical-align:top;}th{background:#16263a;color:#fff;font-weight:600;}'
+      +'table{width:100%;border-collapse:collapse;}th,td{border:1px solid #c9ced6;padding:2px 5px;vertical-align:top;}th{background:#16263a;color:#fff;font-weight:600;}'
       +'td.n,th.n{text-align:right;white-space:nowrap;}td.c,th.c{text-align:center;}.b{font-weight:700;}.neg{color:#b42318;}.sm{font-size:9px;color:#667085;white-space:normal;}'
       +'tr.gh td{background:#e8edf3;font-weight:800;}tr.st td{background:#f4f6f9;font-weight:800;}tr.gt td{background:#16263a;color:#fff;font-weight:800;}'
-      +'.bot{display:flex;gap:14px;margin-top:10px;align-items:flex-start;}.bot>table{width:auto;min-width:260px;}.jr td.cr{padding-left:22px;}.jr td.jh{font-weight:800;background:#fafbfc;}'
-      +'.sig{margin-left:auto;display:flex;gap:40px;padding-top:30px;font-size:11px;text-align:center;}.sig div{min-width:150px;border-top:1px solid #98a2b3;padding-top:4px;}';
+      +'.bot{display:flex;flex-wrap:wrap;gap:12px;margin-top:10px;align-items:flex-start;}.bot>table{width:auto;min-width:250px;}.jr td.cr{padding-left:18px;}.jr .ind{display:inline-block;width:22px;}.jr tr.jt td{font-weight:800;background:#f4f6f9;border-top:2px solid #98a2b3;}'
+      +'.side{display:flex;flex-direction:column;gap:22px;}.side>table{width:auto;min-width:250px;}.sig{display:flex;gap:24px;font-size:11px;text-align:center;}.sig div{min-width:120px;border-top:1px solid #98a2b3;padding-top:4px;}';
     const html='<!doctype html><html><head><meta charset="utf-8"><title>บัญชีเงินเดือน '+E(this._prMonthText(m))+'</title><style>'+css+'</style></head><body>'
       +'<h1>'+E(co)+' — บัญชีเงินเดือน ประจำเดือน '+E(this._prMonthText(m))+'</h1>'
       +'<div class="sub">'+run.rows.length+' คน'+(run.closed?' · ปิดเดือนแล้ว':' · ยังไม่ปิดเดือน')+' · พิมพ์ '+E(this._ltThaiDate(this._ltToday()))+'</div>'
       +'<table><thead>'+head+'</thead><tbody>'+body+'</tbody><tfoot>'+line(all,'รวมทั้งสิ้น '+run.rows.length+' คน','gt')+'</tfoot></table>'
-      +'<div class="bot">'+journal+sso+'<div class="sig"><div>ผู้จัดทำ</div><div>ผู้อนุมัติ</div></div></div></body></html>';
+      +'<div class="bot">'+journal+'<div class="side">'+sso+'<div class="sig"><div>ผู้จัดทำ</div><div>ผู้อนุมัติ</div></div></div></div></body></html>';
     this._printHtml(html);
   };
   prPrintSlips=(m,onlyKey)=>{
@@ -13931,12 +13934,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       for(let i=0;i<n;i++){const a=inc[i],b=ded[i];trs+='<tr><td>'+(a?E(a[0]):'')+'</td><td class="n">'+(a?F(a[1]):'')+'</td><td>'+(b?E(b[0]):'')+'</td><td class="n">'+(b?F(b[1]):'')+'</td></tr>';}
       return '<div class="slip"><div class="hd"><div><div class="co">'+E(co.name||'')+'</div><div class="ad">'+E(co.address||co.addr||'')+'</div></div>'
         +'<div class="tt">ใบแจ้งเงินเดือน<div class="mo">ประจำเดือน '+E(this._prMonthText(m))+'</div></div></div>'
-        +'<div class="who"><span>ชื่อ <b>'+E(r.name)+'</b></span><span>รหัส <b>'+E(this.codeFmt(r.code))+'</b></span><span>'+(r.kind==='driver'?'พนักงานขับรถ':'พนักงานออฟฟิศ')+' · สาขา '+E(r.branch||'')+'</span></div>'
+        +'<div class="who"><span>ชื่อ <b>'+E(r.name)+'</b></span><span>รหัส <b>'+E(this._prCode(r.code))+'</b></span><span>'+(r.kind==='driver'?'พนักงานขับรถ':'พนักงานออฟฟิศ')+' · สาขา '+E(r.branch||'')+'</span></div>'
         +'<table><tr><th>รายได้</th><th class="n">จำนวนเงิน</th><th>รายการหัก</th><th class="n">จำนวนเงิน</th></tr>'+trs
         +'<tr class="t"><td>รวมรายได้</td><td class="n">'+F(c.gross)+'</td><td>รวมรายการหัก</td><td class="n">'+F(c.gross-c.net)+'</td></tr></table>'
         +'<div class="net"><span>เงินได้สุทธิ</span><b>'+F(c.net)+' บาท</b><span class="bt">('+E(this._bahtText(c.net))+')</span></div>'
         +'<div class="sg"><div>ผู้จ่ายเงิน</div><div>ผู้รับเงิน</div></div></div>';};
-    const css='@page{size:A4;margin:8mm;}*{box-sizing:border-box;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;font-size:12px;}'
+    const css='@page{size:A4;margin:8mm;}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact;}body{font-family:"Sarabun","TH Sarabun New",system-ui,sans-serif;margin:0;color:#1f2a37;font-size:12px;}'
       +'.slip{height:138mm;padding:6mm 4mm;border-bottom:1px dashed #98a2b3;break-inside:avoid;page-break-inside:avoid;}.slip:nth-child(2n){border-bottom:none;break-after:page;page-break-after:always;}'
       +'.hd{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid #16263a;padding-bottom:5px;}.co{font-size:15px;font-weight:800;}.ad{font-size:10px;color:#667085;max-width:110mm;}'
       +'.tt{text-align:right;font-size:15px;font-weight:800;}.mo{font-size:12px;font-weight:600;color:#475467;}'
@@ -13949,7 +13952,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   prCsv=(m)=>{const run=this._prRun(m);if(!run)return;const C=(r)=>this._prCalc(r);const N=(v)=>this._prNum(v);
     const lbl=(l)=>(l||[]).filter(x=>N(x.a)).map(x=>(x.l||'—')+' '+N(x.a)).join(' / ');
     this._exportCsv('เงินเดือน_'+m+'.csv',[
-      {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>this.codeFmt(r.code)},{label:'ชื่อพนักงาน',get:r=>r.name},
+      {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>this._prCode(r.code)},{label:'ชื่อพนักงาน',get:r=>r.name},
       {label:'เงินเดือน',get:r=>N(r.salary)},{label:'เบี้ยเลี้ยง',get:r=>N(r.allow)},{label:'โบนัส',get:r=>N(r.bonus)},{label:'รายการบวก',get:r=>C(r).adds},{label:'รายละเอียดรายการบวก',get:r=>lbl(r.adds)},
       {label:'ยอดนำส่ง',get:r=>C(r).gross},{label:'ภาษีหัก ณ ที่จ่าย',get:r=>C(r).wht},{label:'ประกันสังคม',get:r=>C(r).sso},{label:'เงินสะสม',get:r=>C(r).prov},
       {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],this._prSorted(run.rows));};
@@ -17060,7 +17063,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
               totStyle:_grid+'background:#f8fafc;border-top:2px solid #e4e7ec;font-weight:800;color:#16263a;',
               rows:rows.map((r,i)=>{const c=this._prCalc(r);const lv=_leave(r);const set=(f)=>(e)=>this.prSetRow(m,r.key,f,e.target.value);
                 const nA=(r.adds||[]).length,nD=(r.deds||[]).length;const open=S.prEdit===r.key;
-                return {key:r.key,name:r.name,inpStyle:_inp,inpLStyle:_inp.replace('text-align:right;','text-align:left;'),codeText:'รหัส '+(this.codeFmt(r.code)||'—'),leaveText:lv,hasLeave:!!lv,ro,
+                return {key:r.key,name:r.name,inpStyle:_inp,inpLStyle:_inp.replace('text-align:right;','text-align:left;'),codeText:'รหัส '+(this._prCode(r.code)||'—'),leaveText:lv,hasLeave:!!lv,ro,
                   rowStyle:_grid+(i>0?'border-top:1px solid #f2f4f7;':'')+(open?'background:#f5f9ff;':''),
                   branch:r.branch||'',onBranch:set('branch'),salary:r.salary||'',onSalary:set('salary'),allow:r.allow||'',onAllow:set('allow'),bonus:r.bonus||'',onBonus:set('bonus'),
                   addsText:(c.adds?F(c.adds):'＋ เพิ่ม')+(nA?(' ('+nA+')'):''),onAdds:()=>this._prOpenEdit(open?'':r.key),
