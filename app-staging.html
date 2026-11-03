@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03b · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03c · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -516,7 +516,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03b</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03c</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4947,7 +4947,7 @@
       <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
         <div>
           <div style="font-size:22px;font-weight:800;color:#16263a;">💰 เงินเดือน</div>
-          <div style="font-size:13px;color:#667085;margin-top:3px;">บัญชีเงินเดือนรายเดือน · พนักงานออฟฟิศ + พขร. ที่มีเงินเดือน · พิมพ์สรุป / สลิป / ส่งออก CSV</div>
+          <div style="font-size:13px;color:#667085;margin-top:3px;">บัญชีเงินเดือนรายเดือน · พนักงานออฟฟิศ + พขร. รถบริษัท (รหัส 10-) · พิมพ์สรุป / สลิป / ส่งออก CSV</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
           <span style="font-size:13px;color:#667085;font-weight:600;">เดือน</span>
@@ -13828,11 +13828,11 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       this.setState({payroll:merged,prDirty:false,prErr:''});
     }catch(e){this.setState({prErr:'บันทึกขึ้นระบบไม่สำเร็จ — ข้อมูลยังอยู่ในหน้านี้ กดบันทึกอีกครั้ง'});try{console.warn('[LionFlow] payroll push failed',e&&e.message);}catch(_){}}
   }
-  // รายชื่อ: พนักงานออฟฟิศทุกคน + พขร. ที่มีเงินเดือนในประวัติและยังไม่ลาออก
+  // รายชื่อ: พนักงานออฟฟิศทุกคน + พขร. รถบริษัท = รหัสขึ้นต้น 10 (แสดง 10-xxxx) และยังไม่ลาออก (ผู้ใช้กำหนด 3 พ.ย. 2569)
   _prPeople(){
     const out=[];
     (this.state.office||[]).filter(o=>o&&o.name).forEach(o=>out.push({key:'O|'+o.code,kind:'office',code:String(o.code),name:o.name,salary:o.salary||''}));
-    (this.state.drivers||[]).filter(d=>d&&d.name&&!d.resigned&&this._prNum(d.salary)>0).forEach(d=>out.push({key:'D|'+d.code,kind:'driver',code:String(d.code),name:d.name,salary:d.salary||''}));
+    (this.state.drivers||[]).filter(d=>d&&d.name&&!d.resigned&&/^10/.test(String(d.code||'').trim())).forEach(d=>out.push({key:'D|'+d.code,kind:'driver',code:String(d.code),name:d.name,salary:d.salary||''}));
     return out;
   }
   // แถวของเดือนใหม่: เงินเดือนจากประวัติ · สาขา/ภาษี/เงินสะสม และรายการที่ติ๊ก "ทุกเดือน" ตามเดือนก่อน
@@ -13848,7 +13848,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     if(!this.state.prLoaded){window.alert('ยังโหลดข้อมูลเงินเดือนไม่เสร็จ ลองอีกครั้งในอีกสักครู่');return;}
     const prev=this._prPrev(m);const pm={};((prev&&prev.rows)||[]).forEach(r=>{pm[r.key]=r;});
     const rows=this._prPeople().map(p=>this._prRowFor(p,pm[p.key]));
-    if(!rows.length){window.alert('ยังไม่มีรายชื่อ — เพิ่มพนักงานออฟฟิศ หรือใส่เงินเดือนในประวัติ พขร. ก่อน');return;}
+    if(!rows.length){window.alert('ยังไม่มีรายชื่อ — เพิ่มพนักงานออฟฟิศ หรือ พขร. รหัส 10-xxxx ก่อน');return;}
     this._prSave({id:m,month:m,rows,closed:false});
   };
   prAddMissing=()=>{
@@ -17035,7 +17035,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         out.prLoading=!S.prLoaded&&!S.prErr;out.prNoRun=!!S.prLoaded&&!run;out.prHasRun=!!run;
         out.prErr=S.prErr||'';out.prHasErr=!!S.prErr;out.onPrRetry=()=>{this.setState({prErr:''});if(S.prLoaded)this._prPush();else this._prFetch();};
         const _prev=this._prPrev(m);
-        out.prCreateHint=_prev?('คัดลอกสาขา ภาษี เงินสะสม และรายการที่ติ๊ก "ทุกเดือน" จาก '+this._prMonthText(_prev.id)+' · เงินเดือนดึงจากประวัติพนักงาน'):'เงินเดือนดึงจากประวัติพนักงาน · พขร. เฉพาะคนที่มีเงินเดือนในประวัติ';
+        out.prCreateHint=_prev?('คัดลอกสาขา ภาษี เงินสะสม และรายการที่ติ๊ก "ทุกเดือน" จาก '+this._prMonthText(_prev.id)+' · เงินเดือนดึงจากประวัติพนักงาน'):'เงินเดือนดึงจากประวัติพนักงาน · พขร. เฉพาะรถบริษัท (รหัส 10-xxxx)';
         out.prPeopleCount=this._prPeople().length;out.onPrCreate=this.prCreate;
         out.prSaveText=S.prDirty?'กำลังบันทึก…':(run&&run.at?('บันทึกแล้ว ✓ '+(run.by?('· '+run.by):'')):'');
         if(run){
