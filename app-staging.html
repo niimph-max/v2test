@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-04c · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-04d · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-04c</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-04d</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -12774,7 +12774,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const THF=['','มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
     const sd=(iso)=>{const p=String(iso).slice(0,10).split('-');return (+p[2])+' '+THM[parseInt(p[1])]+' '+((+p[0])+543);};
     const mLabel=(mk)=>{const mp=mk.split('-');return THF[parseInt(mp[1])]+' '+(parseInt(mp[0])+543);};
-    const subCalc=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;return method==='flat'?flat:(rev*(1-pct/100));};
+    const subCalc=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;return Math.round((method==='flat'?flat:(rev*(100-pct)/100))*100)/100;};
     // months: single (from button) or all-in-view (from toolbar, honoring date range)
     let months;
     if(Array.isArray(monthArg))months=monthArg;
@@ -13182,7 +13182,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';
     const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);
     const flat=parseFloat(j.subFlat)||0;
-    const gross=method==='flat'?flat:(rev*(100-pct)/100);
+    // v.2026-11-04d: ปัดค่าจ้างต่อเที่ยวเป็น 2 ตำแหน่งที่ต้นทาง — ยอดรวมทุกหน้าจะเท่ากับผลบวกของแถวที่แสดง และเท่ากับยอดใน EASY-ACC
+    const gross=Math.round((method==='flat'?flat:(rev*(100-pct)/100))*100)/100;
     return {gross:gross,method:method==='flat'?'เหมาจ่าย':('หัก '+pct+'%'),rate:method==='flat'?flat:pct};
   }
   _ecSubData(m){
@@ -16218,7 +16219,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       const tExp=companyTrucks.reduce((s,t)=>{const jobs=S.jobs.filter(j=>j.truckPlate===t.plate&&j.date&&j.date.startsWith(sm));const fuel=sumF(jobs,'fuelBaht'),allow=sumF(jobs,'allowance'),tire=this._tireCostTruck(t,sm),repair=sumF(jobs,'repair')+this._woCostTruck(t,sm),toll=sumF(jobs,'toll'),misc=sumF(jobs,'misc'),_df=_fixedFor(t.plate,sm,jobs,parseFloat(t.installment)||0),sal=_df.sal,inst=_df.inst,soc=_df.soc;return s+fuel+allow+tire+repair+toll+misc+sal+inst+soc;},0);
       out.effTotalRev=fmt(tRev);out.effTotalExp=fmt(tExp);out.effTotalNet=fmt(tRev-tExp);out.effTotalNetStyle='font-weight:700;color:'+(tRev-tExp>=0?'#067647':'#b42318')+';';
       // ===== รถร่วม: รายรับ-รายจ่าย รวมจากใบงานอัตโนมัติ (เฉพาะที่วิ่งงานในเดือนนั้น) =====
-      const _subPay=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;return method==='flat'?flat:(rev*(1-pct/100));};
+      const _subPay=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;return Math.round((method==='flat'?flat:(rev*(100-pct)/100))*100)/100;};
       const subTrucks=S.trucks.filter(t=>/ร่วม/.test(t.dept||'')&&!t.retired);
       // หักรายการรายเดือน (หน้าจ่ายรถร่วม) แยกตาม 5 รายการหลัก · ชื่ออื่นที่เพิ่มเองลงรวม "อื่นๆ"
       const _subDedAcc=[0,0,0,0,0,0],_subNetAcc={v:0};const _dfmt=n=>n?fmt(n):'—';
@@ -16351,7 +16352,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       // ---- TRIP REPORT: sub-contractor (รถร่วม) layout ----
       const _selIsSub=!!(selTruckObj&&/ร่วม/.test(selTruckObj.dept||''));
       out.effTripIsSub=_selIsSub;out.effTripIsCompany=!_selIsSub;this._capIsSub=_selIsSub;this._capSubPlate=selPlate;
-      const _subCalc=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;const gross=method==='flat'?flat:(rev*(1-pct/100));const fee=method==='flat'?Math.max(0,rev-flat):(rev*pct/100);const whtPct=(j.subWht===''||j.subWht==null)?1:(parseFloat(j.subWht)||0);const wht=gross*whtPct/100;const deds=(j.subDeductions||[]);const dedSum=deds.reduce((s,d)=>s+(parseFloat(d.amount)||0),0);const net=gross-wht-dedSum;return{rev,fee,gross,wht,dedSum,net,paid:(j.subPayStatus==='จ่ายแล้ว')};};
+      const _subCalc=(j)=>{const rev=parseFloat(j.revenue)||0;const method=j.subPayMethod||'pct';const pct=(j.subPct===''||j.subPct==null)?10:(parseFloat(j.subPct)||0);const flat=parseFloat(j.subFlat)||0;const gross=Math.round((method==='flat'?flat:(rev*(100-pct)/100))*100)/100;const fee=method==='flat'?Math.max(0,rev-flat):(rev*pct/100);const whtPct=(j.subWht===''||j.subWht==null)?1:(parseFloat(j.subWht)||0);const wht=gross*whtPct/100;const deds=(j.subDeductions||[]);const dedSum=deds.reduce((s,d)=>s+(parseFloat(d.amount)||0),0);const net=gross-wht-dedSum;return{rev,fee,gross,wht,dedSum,net,paid:(j.subPayStatus==='จ่ายแล้ว')};};
       out.effTripMonthsSub=Object.keys(_tripMMap).sort().reverse().map(m=>{
         const jobs=_tripMMap[m].slice().sort((a,b)=>String(a.date).localeCompare(String(b.date))||(a.id-b.id));
         const mp=m.split('-');const yr=mp[0],mo=mp[1];
@@ -16539,7 +16540,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
          const _method=sd.subPayMethod||'pct';
          const _pct=(sd.subPct===''||sd.subPct==null)?10:(parseFloat(sd.subPct)||0);
          const _flat=parseFloat(sd.subFlat)||0;
-         const _gross=_method==='flat'?_flat:(_rev*(1-_pct/100));
+         const _gross=Math.round((_method==='flat'?_flat:(_rev*(100-_pct)/100))*100)/100;
          const _whtPct=(sd.subWht===''||sd.subWht==null)?1:(parseFloat(sd.subWht)||0);
          const _whtAmt=_gross*_whtPct/100;
          const _deds=(sd.subDeductions||[]);
