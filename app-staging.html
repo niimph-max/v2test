@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-04d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-04e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-04d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-04e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -5114,6 +5114,7 @@
             <div style="display:flex;align-items:center;gap:10px;padding:11px 18px;background:#16263a;color:#fff;">
               <div style="font-size:14px;font-weight:800;">{{ g.label }}</div>
               <div style="font-size:12px;color:#9fb2c4;">{{ g.count }} คน</div>
+              <div style="margin-left:auto;font-size:12px;color:#ffd99a;">{{ g.note }}</div>
             </div>
             <div style="overflow-x:auto;">
               <div style="min-width:1240px;">
@@ -14029,6 +14030,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // สิทธิ์ payroll (admin เห็นเสมอ) · ข้อมูลเงินเดือนไม่เก็บใน localStorage และดึงจาก cloud เฉพาะคนที่มีสิทธิ์
   // คิดเหมือนไฟล์ Excel เดิม: ยอดนำส่ง = เงินเดือน + เบี้ยเลี้ยง + โบนัส + รายการบวก · ประกันสังคม 5% ปัดเศษ สูงสุด 875 (แก้เองได้)
   // คงเหลือจ่าย = ยอดนำส่ง − ภาษีหัก ณ ที่จ่าย − ประกันสังคม − เงินสะสม − รายการหัก
+  // v.2026-11-04e: พขร. — เบี้ยเลี้ยงจ่ายไประหว่างเดือนแล้ว จึงไม่รวมในคงเหลือจ่าย (ยังรวมในยอดนำส่งเพื่อคิดประกันสังคม)
   _prCan(){const a=this.state.auth||{};if(a.role==='admin')return true;return (Array.isArray(a.sections)?a.sections:[]).indexOf('payroll')>=0;}
   _prAll(){const l=this.state.payroll;return Array.isArray(l)?l:[];}
   _prRun(m){return this._prAll().find(x=>x&&x.id===m&&!x.deleted)||null;}
@@ -14040,7 +14042,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const gross=N(r.salary)+N(r.allow)+N(r.bonus)+adds;
     const ssoManual=!(r.sso===''||r.sso==null);const ssoAuto=Math.min(Math.round(gross*0.05),875);
     const sso=ssoManual?N(r.sso):ssoAuto;
-    return {adds,deds,gross,sso,ssoAuto,ssoManual,wht:N(r.wht),prov:N(r.prov),net:gross-N(r.wht)-sso-N(r.prov)-deds};}
+    const allowPaid=r.kind==='driver'?N(r.allow):0;
+    return {adds,deds,gross,sso,ssoAuto,ssoManual,wht:N(r.wht),prov:N(r.prov),allowPaid,net:gross-N(r.wht)-sso-N(r.prov)-deds-allowPaid};}
   _prMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
   _prApplyCloud(data){
     const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
@@ -14123,9 +14126,9 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // ---- พิมพ์ / ส่งออก ----
   _prF(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
   _prEsc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
-  _prTotals(rows){const t={salary:0,allow:0,bonus:0,adds:0,gross:0,wht:0,sso:0,prov:0,deds:0,net:0};
+  _prTotals(rows){const t={salary:0,allow:0,bonus:0,adds:0,gross:0,wht:0,sso:0,prov:0,deds:0,allowPaid:0,net:0};
     rows.forEach(r=>{const c=this._prCalc(r);t.salary+=this._prNum(r.salary);t.allow+=this._prNum(r.allow);t.bonus+=this._prNum(r.bonus);
-      t.adds+=c.adds;t.gross+=c.gross;t.wht+=c.wht;t.sso+=c.sso;t.prov+=c.prov;t.deds+=c.deds;t.net+=c.net;});return t;}
+      t.adds+=c.adds;t.gross+=c.gross;t.wht+=c.wht;t.sso+=c.sso;t.prov+=c.prov;t.deds+=c.deds;t.allowPaid+=c.allowPaid;t.net+=c.net;});return t;}
   prPrintSummary=(m)=>{
     const run=this._prRun(m);if(!run)return;const F=(n)=>this._prF(n);const E=(x)=>this._prEsc(x);const Z=(n)=>n?F(n):'';
     const co=((this.state.company||{}).name)||'';
@@ -14141,13 +14144,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           +'<td class="n">'+Z(c.adds)+(c.adds?'<div class="sm">'+lbl(r.adds)+'</div>':'')+'</td><td class="n b">'+F(c.gross)+'</td>'
           +'<td class="n">'+Z(c.wht)+'</td><td class="n">'+Z(c.sso)+'</td><td class="n">'+Z(c.prov)+'</td>'
           +'<td class="n">'+Z(c.deds)+(c.deds?'<div class="sm">'+lbl(r.deds)+'</div>':'')+'</td><td class="n b'+(c.net<0?' neg':'')+'">'+F(c.net)+'</td></tr>';}).join('');
-      return '<tr class="gh"><td colspan="14">'+g.label+' · '+g.rows.length+' คน</td></tr>'+trs+line(t,'รวม'+g.label,'st');}).join('');
+      return '<tr class="gh"><td colspan="14">'+g.label+' · '+g.rows.length+' คน'+(g.k==='driver'&&t.allowPaid?' <span style="font-weight:600;color:#475467;">· คงเหลือจ่ายไม่รวมเบี้ยเลี้ยง (จ่ายแล้วระหว่างเดือน '+F(t.allowPaid)+')</span>':'')+'</td></tr>'+trs+line(t,'รวม'+g.label,'st');}).join('');
     const all=this._prTotals(run.rows);
     const o=tot.office||this._prTotals([]),d=tot.driver||this._prTotals([]);
     // รายการบันทึกบัญชี แยก 2 ชุด: พนักงานออฟฟิศ / พนักงานขับรถ (ตามที่บริษัทบันทึกจริง) · แสดงเฉพาะบรรทัดที่มียอด
     const jEntry=(title,t)=>{
       const dr=[['เงินเดือนพนักงาน',t.salary],['เบี้ยเลี้ยง',t.allow],['โบนัส',t.bonus],['รายได้อื่น (รายการบวก)',t.adds]].filter((x,i)=>i===0||x[1]);
-      const cr=[['เงินเดือนจ่ายล่วงหน้า / รายการหัก',t.deds],['ภาษีหัก ณ ที่จ่ายค้างจ่าย',t.wht],['เงินประกันสังคมค้างจ่าย',t.sso],['เงินสะสม',t.prov],['เงินเดือนค้างจ่าย',t.net]].filter((x,i,a)=>x[1]||i===a.length-1);
+      const cr=[['เงินเดือนจ่ายล่วงหน้า / รายการหัก',t.deds],['ภาษีหัก ณ ที่จ่ายค้างจ่าย',t.wht],['เงินประกันสังคมค้างจ่าย',t.sso],['เงินสะสม',t.prov],['เบี้ยเลี้ยงจ่ายแล้ว (ระหว่างเดือน)',t.allowPaid],['เงินเดือนค้างจ่าย',t.net]].filter((x,i,a)=>x[1]||i===a.length-1);
       return '<table class="jr"><tr><th>'+title+'</th><th class="n">เดบิต</th><th class="n">เครดิต</th></tr>'
         +dr.map((x,i)=>'<tr><td>'+(i===0?'<b>Dr.</b> ':'<span class="ind"></span>')+x[0]+'</td><td class="n">'+F(x[1])+'</td><td></td></tr>').join('')
         +cr.map((x,i)=>'<tr><td class="cr">'+(i===0?'<b>Cr.</b> ':'<span class="ind"></span>')+x[0]+'</td><td></td><td class="n">'+F(x[1])+'</td></tr>').join('')
@@ -14176,7 +14179,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const co=this.state.company||{};const rows=this._prSorted(run.rows.filter(r=>!onlyKey||r.key===onlyKey));if(!rows.length)return;
     const slip=(r)=>{const c=this._prCalc(r);
       const inc=[['เงินเดือน',this._prNum(r.salary)],['เบี้ยเลี้ยง',this._prNum(r.allow)],['โบนัส',this._prNum(r.bonus)]].concat((r.adds||[]).map(x=>[x.l||'รายได้อื่น',this._prNum(x.a)])).filter(x=>x[1]);
-      const ded=[['ภาษีหัก ณ ที่จ่าย',c.wht],['ประกันสังคม',c.sso],['เงินสะสม',c.prov]].concat((r.deds||[]).map(x=>[x.l||'รายการหัก',this._prNum(x.a)])).filter(x=>x[1]);
+      const ded=[['ภาษีหัก ณ ที่จ่าย',c.wht],['ประกันสังคม',c.sso],['เงินสะสม',c.prov],['เบี้ยเลี้ยงจ่ายแล้ว',c.allowPaid]].concat((r.deds||[]).map(x=>[x.l||'รายการหัก',this._prNum(x.a)])).filter(x=>x[1]);
       const n=Math.max(inc.length,ded.length,4);let trs='';
       for(let i=0;i<n;i++){const a=inc[i],b=ded[i];trs+='<tr><td>'+(a?E(a[0]):'')+'</td><td class="n">'+(a?F(a[1]):'')+'</td><td>'+(b?E(b[0]):'')+'</td><td class="n">'+(b?F(b[1]):'')+'</td></tr>';}
       return '<div class="slip"><div class="hd"><div><div class="co">'+E(co.name||'')+'</div><div class="ad">'+E(co.address||co.addr||'')+'</div></div>'
@@ -14202,7 +14205,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       {label:'ประเภท',get:r=>r.kind==='driver'?'พขร.':'ออฟฟิศ'},{label:'สาขา',get:r=>r.branch||''},{label:'รหัสพนักงาน',get:r=>this._prCode(r.code)},{label:'ชื่อพนักงาน',get:r=>r.name},
       {label:'เงินเดือน',get:r=>N(r.salary)},{label:'เบี้ยเลี้ยง',get:r=>N(r.allow)},{label:'โบนัส',get:r=>N(r.bonus)},{label:'รายการบวก',get:r=>C(r).adds},{label:'รายละเอียดรายการบวก',get:r=>lbl(r.adds)},
       {label:'ยอดนำส่ง',get:r=>C(r).gross},{label:'ภาษีหัก ณ ที่จ่าย',get:r=>C(r).wht},{label:'ประกันสังคม',get:r=>C(r).sso},{label:'เงินสะสม',get:r=>C(r).prov},
-      {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],this._prSorted(run.rows));};
+      {label:'รายการหัก',get:r=>C(r).deds},{label:'รายละเอียดรายการหัก',get:r=>lbl(r.deds)},{label:'เบี้ยเลี้ยงจ่ายแล้ว',get:r=>C(r).allowPaid},{label:'คงเหลือจ่าย',get:r=>C(r).net},{label:'หมายเหตุ',get:r=>r.note||''}],this._prSorted(run.rows));};
   // ===== ประกาศถึงผู้ใช้งาน (v.2026-10-05a) =====
   // เก็บเป็นแถวพิเศษในตาราง events id = __news__ รูป {items:[{id,title,body,level,until,popup,pin,by,at,deleted}]}
   // (วิธีเดียวกับ __periodlock__ / __kv_* — ไม่ต้องรัน SQL) ทุกเครื่องรับภายใน 60 วิ หรือทันทีตอนเปิดแอป
@@ -17347,6 +17350,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           out.prGroups=[['office','พนักงานออฟฟิศ'],['driver','พนักงานขับรถ']].map(g=>{
             const rows=this._prSorted(run.rows.filter(r=>r.kind===g[0]));const t=this._prTotals(rows);
             return {label:g[1],count:rows.length,has:rows.length>0,headStyle:out.prHeadStyle,
+              note:(g[0]==='driver'&&t.allowPaid)?('คงเหลือจ่ายไม่รวมเบี้ยเลี้ยง '+F(t.allowPaid)+' (จ่ายแล้วระหว่างเดือน) · ยังนับในยอดนำส่งเพื่อคิดประกันสังคม'):'',
               tSalary:F(t.salary),tAllow:F(t.allow),tBonus:F(t.bonus),tAdds:F(t.adds),tGross:F(t.gross),tWht:F(t.wht),tSso:F(t.sso),tProv:F(t.prov),tDeds:F(t.deds),tNet:F(t.net),
               totStyle:_grid+'background:#f8fafc;border-top:2px solid #e4e7ec;font-weight:800;color:#16263a;',
               rows:rows.map((r,i)=>{const c=this._prCalc(r);const lv=_leave(r);const set=(f)=>(e)=>this.prSetRow(m,r.key,f,e.target.value);
