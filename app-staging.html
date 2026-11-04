@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-03e · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-04a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -472,7 +472,7 @@
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ระบบ ECACC</div>
       <button onClick="{{ onGoBilling }}" style="{{ navBillingStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">🧾</span>ใบวางบิล/ใบแจ้งหนี้</span></button>
       <button onClick="{{ onGoAcctExport }}" style="{{ navEcStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">⤓</span>ส่งออกเข้า EASY-ACC</span></button>
-      <button onClick="{{ onGoFuelCr }}" style="{{ navFuelCrStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">⛽</span>ลูกหนี้ค่าน้ำมันรถร่วม</span></button>
+      <button onClick="{{ onGoFuelCr }}" style="{{ navFuelCrStyle }}"><span style="display:flex;align-items:center;gap:8px;"><span style="font-size:13px;">⛽</span>ค่าน้ำมัน PT / เชลล์</span></button>
       </sc-if>
       <sc-if value="{{ canSettings }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:16px;padding:0 8px 7px;font-size:10.5px;letter-spacing:.08em;color:#6f8499;font-weight:600;">ตั้งค่า</div>
@@ -516,7 +516,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-03e</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-04a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4639,7 +4639,7 @@
     <!-- ===== ลูกหนี้ค่าน้ำมันรถร่วม (v.2026-10-07a) ===== -->
     <sc-if value="{{ isFuelCr }}" hint-placeholder-val="{{ false }}">
     <div style="padding:26px 30px 60px;max-width:1180px;">
-      <div style="font-size:22px;font-weight:800;color:#16263a;">⛽ ลูกหนี้ค่าน้ำมันรถร่วม</div>
+      <div style="font-size:22px;font-weight:800;color:#16263a;">⛽ ลูกหนี้ค่าน้ำมันรถร่วม (PT)</div>
       <div style="font-size:13px;color:#667085;margin:3px 0 18px;">แนบรายงาน PT (.xlsx) ที่ได้ทุกครึ่งเดือน → ระบบลงลูกหนี้ให้ใน EASY-ACC และเติมยอด “ค่าน้ำมัน” ในใบจ่ายรถร่วมเดือนนั้นให้อัตโนมัติ</div>
 
       <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
@@ -4785,6 +4785,114 @@
           </div>
         </div>
       </sc-for>
+
+      <!-- ===== ค่าน้ำมันเชลล์ → เจ้าหนี้ EASY-ACC (v.2026-11-04a) ===== -->
+      <div style="margin:34px 0 4px;font-size:20px;font-weight:800;color:#16263a;">🐚 ค่าน้ำมันเชลล์ (เจ้าหนี้)</div>
+      <div style="font-size:13px;color:#667085;margin-bottom:16px;">แนบไฟล์ Priced_Transaction (.xlsx) จากเชลล์ → ออกไฟล์ตั้งเจ้าหนี้เข้า EASY-ACC · เลขที่ใบกำกับ = ทะเบียนรถ + เลขใบเสร็จ · หมายเหตุ = จำนวนลิตร</div>
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:4px;">① นำเข้าไฟล์จากเชลล์</div>
+        <div style="font-size:12.5px;color:#667085;line-height:1.7;margin-bottom:13px;">นำเข้าไฟล์เดิมซ้ำได้ ระบบดูจาก ทะเบียน + เลขใบเสร็จ แล้วข้ามรายการที่เคยเข้าแล้วให้เอง</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+          <label style="display:inline-flex;align-items:center;gap:8px;padding:11px 18px;background:#b54708;color:#fff;border-radius:9px;font-size:13.5px;font-weight:800;cursor:pointer;">
+            📄 เลือกไฟล์เชลล์ (.xlsx)
+            <input type="file" accept=".xlsx" onChange="{{ onShPickFile }}" style="display:none;">
+          </label>
+          <span style="font-size:12.5px;color:#98a2b3;">{{ shBusyText }}</span>
+        </div>
+        <sc-if value="{{ shErr }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:11px;background:#fef3f2;color:#b42318;border:1px solid #fecdca;border-radius:9px;padding:10px 13px;font-size:13px;">{{ shErr }}</div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ shHasPreview }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#fff;border:1px solid #fedf89;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:3px;">② ตรวจก่อนบันทึก</div>
+        <div style="font-size:12.5px;color:#667085;margin-bottom:12px;">{{ shPvHead }}</div>
+        <div style="display:flex;gap:9px;flex-wrap:wrap;margin-bottom:13px;">
+          <sc-for list="{{ shPvChips }}" as="c" hint-placeholder-count="2">
+            <span style="{{ c.style }}">{{ c.text }}</span>
+          </sc-for>
+        </div>
+        <div style="overflow-x:auto;border:1px solid #e4e7ec;border-radius:10px;margin-bottom:13px;">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+            <thead><tr style="background:#f8fafc;">
+              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">วันที่</th>
+              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">เลขที่ใบกำกับ (ที่จะลง EASY-ACC)</th>
+              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ลิตร (หมายเหตุ)</th>
+              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ยอดสุทธิ</th>
+              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">แผนกรถ</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ shPvRows }}" as="r" hint-placeholder-count="3">
+                <tr>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#475467;white-space:nowrap;">{{ r.date }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.doc }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;color:#475467;">{{ r.litre }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;font-weight:700;color:#16263a;">{{ r.amount }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#667085;">{{ r.dept }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+        <div style="display:flex;gap:9px;justify-content:flex-end;flex-wrap:wrap;">
+          <button onClick="{{ onShCancel }}" style="padding:10px 17px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;">ยกเลิก</button>
+          <button onClick="{{ onShConfirm }}" style="{{ shConfirmStyle }}">{{ shConfirmLabel }}</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 20px;margin-bottom:16px;">
+        <div style="font-size:14px;font-weight:800;color:#16263a;margin-bottom:12px;">③ ส่งเข้า EASY-ACC (ตั้งเจ้าหนี้ CD = A)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ตั้งแต่วันที่</label>
+            <input type="date" value="{{ shFrom }}" onInput="{{ onShFrom }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">ถึงวันที่</label>
+            <input type="date" value="{{ shTo }}" onInput="{{ onShTo }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">รหัสเจ้าหนี้เชลล์</label>
+            <input value="{{ shVendor }}" onInput="{{ onShVendor }}" placeholder="20-106" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block;font-size:12px;color:#475467;font-weight:600;margin-bottom:5px;">รหัสบัญชีค่าน้ำมัน</label>
+            <input value="{{ shAcct }}" onInput="{{ onShAcct }}" placeholder="รหัสบัญชีที่ใช้คีย์อยู่" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13.5px;color:#1d2b3a;font-family:inherit;box-sizing:border-box;">
+          </div>
+        </div>
+        <div style="font-size:11.5px;color:#98a2b3;line-height:1.7;margin-bottom:10px;">1 บรรทัด = 1 ใบเสร็จ · วันที่ = ครบกำหนด = วันที่เติม · เลขที่ใบกำกับ = ทะเบียน + เลขใบเสร็จ · หมายเหตุ = จำนวนลิตร · ยอดเต็มไม่แยกภาษีซื้อ · คลัง/แถวหัวคอลัมน์/รหัสอักขระ ใช้ค่าเดียวกับกล่อง PT ด้านบน</div>
+        <label style="display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:#475467;font-weight:600;cursor:pointer;margin-bottom:12px;"><input type="checkbox" checked="{{ shIncPosted }}" onChange="{{ onShIncPosted }}" style="width:15px;height:15px;cursor:pointer;" />รวมรายการที่ส่งแล้ว (ส่งซ้ำ) — ปกติไม่ต้องติ๊ก</label>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <button onClick="{{ onShExport }}" style="padding:11px 20px;background:#b54708;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⤓ ecimport_shell.csv</button>
+          <button onClick="{{ onShUnmark }}" style="padding:11px 14px;background:#fff;color:#98a2b3;border:1px solid #e4e7ec;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมาย</button>
+          <div style="font-size:12.5px;color:#667085;">{{ shPreviewText }}</div>
+        </div>
+      </div>
+
+      <div style="font-size:13px;color:#667085;margin-bottom:10px;">{{ shListText }}</div>
+      <sc-if value="{{ shListEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:26px;text-align:center;color:#98a2b3;font-size:13.5px;">ยังไม่มีรายการเชลล์ในช่วงที่เลือก</div>
+      </sc-if>
+      <sc-if value="{{ shHasRows }}" hint-placeholder-val="{{ true }}">
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:6px 14px;overflow-x:auto;">
+        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+          <tbody>
+            <sc-for list="{{ shRows }}" as="r" hint-placeholder-count="2">
+              <tr>
+                <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;color:#475467;white-space:nowrap;">{{ r.dateText }}</td>
+                <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.doc }}</td>
+                <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;color:#667085;white-space:nowrap;">{{ r.litreText }}</td>
+                <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;text-align:right;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.amountText }}</td>
+                <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;white-space:nowrap;"><span style="{{ r.chipStyle }}">{{ r.chipText }}</span></td>
+                <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;text-align:right;"><button onClick="{{ r.onDelete }}" style="padding:3px 9px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;">ลบ</button></td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+      </sc-if>
     </div>
     </sc-if>
     <!-- ===== หนังสือออก (v.2026-10-06e) ===== -->
@@ -9253,7 +9361,7 @@ const INSPECT_DRIVER=['วัดแอลกอฮอล์ = 0.00','พัก�
 const INSPECT_CUST=['สวม PPE ครบ (หมวก/รองเท้าเซฟตี้)','เสื้อสะท้อนแสง','ผ้าใบคลุมสินค้า / สายรัด'];
 
 class Component extends DCLogic {
-  state={truckFleetFilter:'all',fuelCr:(()=>{try{const s=localStorage.getItem('fuelCr_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),fcPreview:null,fcErr:'',fcBusy:false,fcFrom:'',fcTo:'',fcPostDate:'',fcIncPosted:false,letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,payroll:[],prLoaded:false,prMonth:'',prEdit:'',prDirty:false,prErr:'',ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
+  state={truckFleetFilter:'all',fuelCr:(()=>{try{const s=localStorage.getItem('fuelCr_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),fcPreview:null,fcErr:'',fcBusy:false,fcFrom:'',fcTo:'',fcPostDate:'',fcIncPosted:false,shPreview:null,shErr:'',shBusy:false,shFrom:'',shTo:'',shIncPosted:false,letters:(()=>{try{const s=localStorage.getItem('letters_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),ltDraft:null,payroll:[],prLoaded:false,prMonth:'',prEdit:'',prDirty:false,prErr:'',ltFormOpen:false,ltErr:'',ltQ:'',ltYear:'all',drvChk:(()=>{try{const s=localStorage.getItem('drvChk_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),news:(()=>{try{const s=localStorage.getItem('news_v1');if(s){const a=JSON.parse(s);if(Array.isArray(a))return a;}}catch(e){}return [];})(),periodLock:(()=>{try{const s=localStorage.getItem('periodLock_v1');if(s){const o=JSON.parse(s);if(o&&typeof o==='object')return o;}}catch(e){}return {months:[],reqs:[]};})(),jobs:(()=>{try{const j=localStorage.getItem('jobReg_v1');if(j){const a=JSON.parse(j);if(Array.isArray(a))return a.map(normJob);}}catch(e){}return [];})(),orders:(()=>{try{const o=localStorage.getItem('orderReg_v1');if(o){const a=JSON.parse(o);if(Array.isArray(a))return a.map(normOrder);}}catch(e){}return [];})(),customers:(()=>{try{const c=localStorage.getItem('customerReg_v1');if(c){const a=JSON.parse(c);if(Array.isArray(a))return a.map(normCustomer);}}catch(e){}return [];})(),origins:(()=>{try{const g=localStorage.getItem('originReg_v1');if(g){const a=JSON.parse(g);if(Array.isArray(a))return a.map(normOrigin);}}catch(e){}return [];})(),auth:(()=>{try{return JSON.parse(localStorage.getItem('fleet_auth_v1')||'null');}catch(e){return null;}})(),loginUser:'',loginPin:'',loginError:'',loginReturning:(()=>{try{return !!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyUnlocked:(()=>{try{return !!localStorage.getItem('lf_company_ok_v1')||!!localStorage.getItem('lf_returning_v1')||!!localStorage.getItem('fleet_auth_v1');}catch(e){return false;}})(),companyCodeInput:'',companyGateError:'',companyLoginCode:(()=>{try{return localStorage.getItem('lf_login_code_v1')||'';}catch(e){return '';}})(),usersLoading:(()=>{try{return (JSON.parse(localStorage.getItem('fleet_users_v1')||'[]')).length===0;}catch(e){return true;}})(),usersLoadFailed:false,appUsers:(()=>{try{return JSON.parse(localStorage.getItem('fleet_users_v1')||'[]');}catch(e){return [];}})(),userDraft:null,issueText:'',issueSent:false,drivers:(()=>{try{const s=JSON.parse(localStorage.getItem('driverReg_v2'));if(Array.isArray(s)&&s.length)return s.map(normDriver);}catch(e){}return [];})(),view:'list',selectedCode:null,search:'',fleet:'all',statusFilter:'all',draft:null,isNew:false,editingCode:null,formError:'',sidebarOpen:true,historyFormOpen:false,historyDraft:null,maintFormOpen:false,maintDraft:null,section:'dashboard',inspections:(()=>{try{return JSON.parse(localStorage.getItem('inspectReg_v1')||'[]');}catch(e){return [];}})(),inspectView:'list',inspectDraft:null,inspectTab:'veh',inspectSearch:'',inspectFilterDate:'',inspectFilterStatus:'all',tireTruck:'',tireDept:'',tireTab:'patch',tirePatches:(()=>{try{return JSON.parse(localStorage.getItem('tirePatch_v1')||'[]');}catch(e){return [];}})(),tirePatchDraft:null,tirePatchError:'',tireMoves:(()=>{try{return JSON.parse(localStorage.getItem('tireMove_v1')||'[]');}catch(e){return [];}})(),tireMoveDraft:null,tireMoveError:'',trucks:(()=>{try{const s=JSON.parse(localStorage.getItem('truckReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normTruck);}catch(e){}return [];})(),truckView:'list',truckViewMode:'card',truckSelectedId:null,truckSearch:'',truckDeptFilter:'all',truckStatusFilter:'all',truckDraft:null,truckIsNew:false,truckFormError:'',syncStatus:'idle',jobs:[],jobView:'list',jobSearch:'',jobDateFrom:new Date().toISOString().slice(0,10),jobDateTo:new Date().toISOString().slice(0,10),jobDpFilter:'all',jobDraft:null,jobIsNew:false,jobFormError:'',jobQrVisible:false,jobQrImgUrl:'',jobQrText:'',savedJobQrVisible:false,savedJobQrImgUrl:'',savedJobQrText:'',savedJobNo:'',pinUnlocked:false,pinModalOpen:false,pinInput:'',pinError:'',qrBaseUrl:'',effView:'monthly',settleModalOpen:false,settleDraft:null,effSettleStatus:'all',effSettleTruck:'all',effMonth:new Date().toISOString().slice(0,7),effTruckFilter:'',driverSort:{col:'',dir:'asc'},truckSort:{col:'',dir:'asc'},truckSortKeys:[],orders:[],customers:[],origins:[],hiddenCustomers:[],hiddenOrigins:[],jobAddingCustomer:false,jobAddingOrigin:false,orderAddingOrigin:false,selectedOrderIds:[],orderDateFrom:'',orderDateTo:'',dispatchers:[],fleets:[],dpoints:[],jobAddingDispatcher:false,importOpen:false,importText:'',importPreview:null,importError:'',jobEditDetails:false,jobShowExpenses:false,jobShowTracking:false,orderView:'list',orderDraft:null,orderIsNew:false,orderFormError:'',orderSearch:'',orderStatusFilter:'pending',orderAddingCustomer:false,office:(()=>{try{const s=JSON.parse(localStorage.getItem('officeReg_v1'));if(Array.isArray(s)&&s.length)return s.map(normOffice);}catch(e){}return [];})(),officeView:'list',officeSelectedCode:null,officeSearch:'',officeDept:'all',officeDraft:null,officeIsNew:false,officeFormError:'',officeTab:'info',officeHistFormOpen:false,officeHistDraft:null,officeLeaveFormOpen:false,oleaveDraft:null,driverTab:'info',dleaveDraft:null,truckTab:'info',histRepDraft:null,histRepError:'',histRepFM:'',histRepFT:'all',histRepSearch:'',officeHistError:'',oleaveError:'',ohistFM:'',ohistFT:'all',ohistSearch:'',oleaveFM:'',oleaveFT:'all',oleaveSearch:'',orepTab:'leave',officeDepts:(()=>{try{const s=JSON.parse(localStorage.getItem('officeDepts_v1'));return Array.isArray(s)&&s.length?s:OFFICE_DEPTS.slice();}catch(e){return OFFICE_DEPTS.slice();}})(),company:(()=>{try{var c=JSON.parse(localStorage.getItem('companyProfile_v1'));if(c&&c.name&&(!c._cid||c._cid===COMPANY_ID))return c;}catch(e){}return {name:'',recipients:[{name:'',email:''},{name:'',email:''},{name:'',email:''}]};})(),leaveDraft:null,leaveError:'',leaveFilterMonth:'',leaveFilterType:'all',leaveSearch:'',odoDraft:null,maintRecDraft:null,maintRecError:'',maintFilterMonth:'',maintFilterType:'all',maintSearch:'',acDraft:null,acError:'',acFilterMonth:'',acFilterStatus:'all',acSearch:'',dailyFrom:'',dailyTo:'',dailyCopied:false};
 
   componentWillUnmount(){if(this._gpsSim)clearInterval(this._gpsSim);window.removeEventListener('beforeunload',this._beforeUnload);if(this._wheelGuard)window.removeEventListener('wheel',this._wheelGuard);if(this._pollTimer)clearInterval(this._pollTimer);if(this._fullTimer)clearInterval(this._fullTimer);if(this._flushTimer)clearInterval(this._flushTimer);if(this._visHandler)document.removeEventListener('visibilitychange',this._visHandler);}
   componentDidMount(){
@@ -13390,7 +13498,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   //   2) เติมยอด "ค่าน้ำมัน" ในรายการหักของใบจ่ายรถร่วมเดือนนั้นให้อัตโนมัติ
   // เก็บในตาราง events แถว __fuelcr__ รูป {items:[...]} (ไม่ต้องรัน SQL) · กันนำเข้าซ้ำด้วย TRANSACTION_ID
   _fcAll(){const l=this.state.fuelCr;return Array.isArray(l)?l:[];}
-  _fcLive(){return this._fcAll().filter(x=>x&&!x.deleted);}
+  // v.2026-11-04a: แถวเดียวกันนี้เก็บค่าน้ำมันเชลล์ด้วย (kind:'shell') — ฝั่ง PT/รถร่วมต้องมองไม่เห็นแถวเชลล์
+  _fcLive(){return this._fcAll().filter(x=>x&&!x.deleted&&x.kind!=='shell');}
   _fcMerge(a,b){const m={};[].concat(a||[],b||[]).forEach(x=>{if(!x||!x.id)return;const k=String(x.id);const p=m[k];if(!p||String(x.at||'')>=String(p.at||''))m[k]=x;});return Object.keys(m).map(k=>m[k]);}
   _fcApplyCloud(data){
     const list=(data&&Array.isArray(data.items))?data.items:null;if(!list)return;
@@ -13507,7 +13616,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   };
   // คำนวณยอด "ค่าน้ำมัน" ของแต่ละ คัน×เดือน ใหม่จากรายการที่เก็บไว้ (นำเข้าซ้ำแล้วยอดไม่บวกเกิน)
   _fcSyncDeducts(scope,allItems){
-    const items=(allItems||this._fcAll()).filter(x=>x&&!x.deleted);
+    const items=(allItems||this._fcAll()).filter(x=>x&&!x.deleted&&x.kind!=='shell');
     const keys={};(scope||items).forEach(x=>{const m=String(x.date||'').slice(0,7);if(x.truckPlate&&m)keys[x.truckPlate+'|'+m]=1;});
     const entries=[],locked=[];
     Object.keys(keys).forEach(k=>{
@@ -13584,6 +13693,133 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
     const ids={};list.forEach(x=>{ids[String(x.id)]=1;});
     this._fcPush(this._fcAll().map(x=>ids[String(x.id)]?{...x,ecPosted:'',at:new Date().toISOString()}:x));
     window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+list.length+' รายการ');
+  };
+  // ===== ค่าน้ำมันเชลล์ → เจ้าหนี้ใน EASY-ACC (v.2026-11-04a) =====
+  // ไฟล์ Priced_Transaction_*.xlsx จากเชลล์: วันที่ทำรายการ · ทะเบียนรถ · ปริมาณเชื้อเพลิง · ยอดสุทธิ · เลขใบแจ้งหนี้ · หมายเลขใบเสร็จ
+  // ออกไฟล์ AP (CD=A) 1 บรรทัด/ครั้งที่เติม · เลขที่ใบกำกับ = "ทะเบียน เลขใบเสร็จ" · หมายเหตุ = จำนวนลิตร · ครบกำหนด = วันที่เติม
+  // เก็บรวมในแถว __fuelcr__ เดียวกับ PT (kind:'shell') จึงได้ซิงก์คลาวด์ + สำรองข้อมูลไปด้วยโดยไม่ต้องรัน SQL
+  _shLive(){return this._fcAll().filter(x=>x&&!x.deleted&&x.kind==='shell');}
+  _shInRange(from,to){
+    return this._shLive().filter(x=>{const d=String(x.date||'').slice(0,10);if(from&&d<from)return false;if(to&&d>to)return false;return true;})
+      .sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.plate).localeCompare(String(b.plate))||String(a.receipt).localeCompare(String(b.receipt)));
+  }
+  // "72-6317 HINO" → "72-6317"
+  _shPlate(s){return String(s||'').trim().split(/\s+/)[0]||'';}
+  _shDoc(x){return this._ecTxt(String(x.plate||'')+' '+String(x.receipt||''));}
+  _shLitre(v){const n=Math.round((parseFloat(v)||0)*100)/100;return String(n);}
+  // วันที่ของเชลล์เป็น ค.ศ. 2 หลัก (02/10/26 = 2 ต.ค. 2026) — _xlDate จะอ่าน 26 เป็น พ.ศ. จึงแปลงเองตรงนี้
+  _shDate(v){
+    const s=String(v==null?'':v).trim();
+    const m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+    if(m){let y=+m[3];if(y<100)y=(y>=50)?(y+2500-543):(2000+y);else if(y>=2400)y-=543;
+      return y+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2);}
+    return this._xlDate(s);
+  }
+  async _shParse(ab){
+    const sheets=await this._xlsxSheets(ab);
+    let rows=null,hIdx=-1;
+    for(const sh of sheets){
+      for(let r=0;r<Math.min(20,sh.length);r++){
+        const j=Object.values(sh[r]||{}).join('|');
+        if(j.indexOf('ทะเบียนรถ')>=0&&j.indexOf('หมายเลขใบเสร็จ')>=0&&j.indexOf('ยอดสุทธิ')>=0){rows=sh;hIdx=r;break;}
+      }
+      if(rows)break;
+    }
+    if(!rows)throw new Error('ไม่ใช่ไฟล์ของเชลล์ — หาหัวตารางที่มีคอลัมน์ ทะเบียนรถ · หมายเลขใบเสร็จ · ยอดสุทธิ ไม่เจอ');
+    const col={};Object.keys(rows[hIdx]).forEach(c=>{const h=String(rows[hIdx][c]==null?'':rows[hIdx][c]).trim();if(h&&col[h]===undefined)col[h]=c;});
+    const miss=['วันที่ทำรายการ','ทะเบียนรถ','ยอดสุทธิ','หมายเลขใบเสร็จ'].filter(k=>!col[k]);
+    if(miss.length)throw new Error('ไฟล์ขาดคอลัมน์: '+miss.join(', '));
+    const get=(row,k)=>{const c=col[k];return c?String(row[c]==null?'':row[c]).trim():'';};
+    const num=(v)=>parseFloat(String(v||'').replace(/,/g,''))||0;
+    const out=[];
+    for(let r=hIdx+1;r<rows.length;r++){
+      const row=rows[r]||{};
+      const raw=get(row,'ทะเบียนรถ'),rc=get(row,'หมายเลขใบเสร็จ');
+      if(!raw||!rc)continue;
+      const plate=this._shPlate(raw);const inv=get(row,'เลขใบแจ้งหนี้');
+      out.push({id:'SH|'+plate+'|'+rc,kind:'shell',date:this._shDate(get(row,'วันที่ทำรายการ')),
+        plate:plate,shPlate:raw,receipt:rc,invNo:inv,litre:num(get(row,'ปริมาณเชื้อเพลิง')),amount:Math.round(num(get(row,'ยอดสุทธิ'))*100)/100});
+    }
+    return out;
+  }
+  onShPickFile=async(e)=>{
+    const f=e.target.files&&e.target.files[0];if(e.target)e.target.value='';if(!f)return;
+    if(!this._fcCan()){window.alert('ไม่มีสิทธิ์นำเข้าค่าน้ำมัน');return;}
+    this.setState({shBusy:true,shErr:'',shPreview:null});
+    try{
+      const list=await this._shParse(await f.arrayBuffer());
+      if(!list.length)throw new Error('ไม่พบรายการเติมน้ำมันในไฟล์');
+      const have={};this._shLive().forEach(x=>{have[String(x.id)]=1;});
+      const ok=[],dup=[],seen={},bad=[];
+      list.forEach(r=>{
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(r.date)||!r.amount){bad.push(r);return;}
+        if(have[r.id]){dup.push(r);return;}
+        if(seen[r.id]){bad.push(r);return;}seen[r.id]=1;
+        ok.push(r);
+      });
+      const ds=list.map(x=>x.date).filter(Boolean).sort();
+      this.setState({shBusy:false,shPreview:{file:f.name,n:list.length,from:ds[0]||'',to:ds[ds.length-1]||'',ok:ok,dup:dup,bad:bad}});
+    }catch(err){this.setState({shBusy:false,shErr:'อ่านไฟล์ไม่สำเร็จ — '+((err&&err.message)||'')});}
+  };
+  shCancelPreview=()=>this.setState({shPreview:null,shErr:''});
+  shConfirmImport=()=>{
+    const p=this.state.shPreview;if(!p||!p.ok.length)return;
+    if(!this._fcCan()){window.alert('ไม่มีสิทธิ์นำเข้าค่าน้ำมัน');return;}
+    const a=this.state.auth||{};const who=a.name||a.u||'—';const now=new Date().toISOString();
+    const add=p.ok.map(r=>({...r,src:p.file||'',ecPosted:'',by:who,at:now,deleted:false}));
+    this._fcPush(this._fcAll().concat(add));
+    const ds=add.map(x=>x.date).filter(Boolean).sort();
+    this.setState({shPreview:null,shErr:'',shFrom:ds[0]||'',shTo:ds[ds.length-1]||''});
+    window.alert('✅ บันทึกค่าน้ำมันเชลล์ '+add.length+' รายการ · รวม '+_LFB2(add.reduce((s,x)=>s+x.amount,0))+' บาท'
+      +(p.dup.length?('\nข้ามรายการที่เคยนำเข้าแล้ว '+p.dup.length+' รายการ'):'')
+      +'\n\nกด “⤓ ecimport_shell.csv” เพื่อออกไฟล์เข้า EASY-ACC');
+  };
+  exportShAp=()=>{
+    const S=this.state;const cfg=this._ecCfg();const co=S.company||{};
+    const vendor=String(co.ecShellVendor==null?'20-106':co.ecShellVendor).trim();
+    const acct=String(co.ecShellAcct||'').trim();
+    if(!vendor){window.alert('กรุณากรอก "รหัสเจ้าหนี้เชลล์" ก่อน (ปกติคือ 20-106)');return;}
+    if(!acct){window.alert('กรุณากรอก "รหัสบัญชีค่าน้ำมัน" ก่อน (EASY-ACC บังคับ)');return;}
+    if(S.shPreview&&S.shPreview.ok&&S.shPreview.ok.length){window.alert('⚠ ยังไม่ได้บันทึกรายการที่เพิ่งอ่านมา — กดปุ่มสีเขียว “บันทึก … รายการ” ก่อน');return;}
+    const from=S.shFrom||'',to=S.shTo||'';
+    const all=this._shInRange(from,to);
+    if(!all.length){window.alert('ช่วงที่เลือกไม่มีรายการค่าน้ำมันเชลล์');return;}
+    const items=S.shIncPosted?all:all.filter(x=>!String(x.ecPosted||'').trim());
+    if(!items.length){window.alert('ช่วงนี้ส่งบัญชีไปแล้วทั้งหมด '+all.length+' รายการ\n\nถ้าต้องการส่งซ้ำ ให้ติ๊ก "รวมรายการที่ส่งแล้ว"');return;}
+    const rows=[];const seen={};const bad=[];let sum=0;
+    if(this._ecHeaderOn())rows.push(['วันที่','CD','รหัสเจ้าหนี้','เลขที่ใบกำกับ','คลัง','รหัสบัญชี','จำนวนเงิน','ส่วนลดรับ','ภาษีซื้อ','หมายเหตุ','ครบกำหนด','เลขที่จัดลำดับภาษี','วันที่ยื่นภาษี','รหัสบัญชีธนาคาร','เลขที่เช็ค','ลงวันที่','รหัสบัญชีอื่นๆ','อ้างอิง#','วันที่จ่ายเงิน','จำนวนเงินยกเว้นภาษี']);
+    const sent=[];
+    items.forEach(x=>{
+      const doc=this._shDoc(x);
+      if(seen[doc]){bad.push(doc+' (เลขเอกสารซ้ำ)');return;}seen[doc]=1;
+      const amt=Math.round((parseFloat(x.amount)||0)*100)/100;sum+=amt;sent.push(x);
+      rows.push([this._ecDate(x.date),'A',vendor,doc,cfg.store,acct,amt.toFixed(2),'','',this._shLitre(x.litre),
+        this._ecDate(x.date),'','','','','','','','','']);
+    });
+    this._ecDownload('ecimport_shell_'+(from||'all')+'_'+(to||'all')+'.csv',rows);
+    const ids={};sent.forEach(x=>{ids[String(x.id)]=1;});
+    this._fcPush(this._fcAll().map(x=>ids[String(x.id)]?{...x,ecPosted:this._ecNow(),at:new Date().toISOString()}:x));
+    window.alert('✅ ส่งออกค่าน้ำมันเชลล์ '+sent.length+' บรรทัด · รวม '+_LFB2(sum)+' บาท'
+      +'\nเจ้าหนี้ '+vendor+' · รหัสบัญชี '+acct
+      +'\n\n🏷 ปักเครื่องหมาย "ส่งแล้ว" ให้ '+sent.length+' รายการ — รอบหน้าจะไม่ถูกส่งซ้ำ'
+      +'\nถ้านำเข้า EASY-ACC ไม่สำเร็จ กด "↩ ยกเลิกเครื่องหมาย" เพื่อถอย'
+      +(bad.length?('\n\n⚠ ข้าม '+bad.length+' รายการ:\n'+bad.slice(0,8).join('\n')):''));
+  };
+  shUnmark=()=>{
+    if(!this._fcCan())return;
+    const S=this.state;const from=S.shFrom||'',to=S.shTo||'';
+    const list=this._shInRange(from,to).filter(x=>String(x.ecPosted||'').trim());
+    if(!list.length){window.alert('ช่วงนี้ไม่มีรายการเชลล์ที่ปักเครื่องหมายไว้');return;}
+    if(!window.confirm('ยกเลิกเครื่องหมาย "ส่งแล้ว" ค่าน้ำมันเชลล์ '+list.length+' รายการ?\n\nช่วง '+(from||'ทั้งหมด')+' ถึง '+(to||'ทั้งหมด')))return;
+    const ids={};list.forEach(x=>{ids[String(x.id)]=1;});
+    this._fcPush(this._fcAll().map(x=>ids[String(x.id)]?{...x,ecPosted:'',at:new Date().toISOString()}:x));
+    window.alert('✅ ยกเลิกเครื่องหมายแล้ว '+list.length+' รายการ');
+  };
+  shDeleteRow=(id)=>{
+    if(!this._fcCan())return;
+    const x=this._shLive().find(r=>String(r.id)===String(id));if(!x)return;
+    if(!window.confirm('ลบรายการเชลล์ '+this._shDoc(x)+' ('+_LFB2(x.amount)+' บาท) ?'))return;
+    this._fcPush(this._fcAll().map(r=>String(r.id)===String(id)?{...r,deleted:true,at:new Date().toISOString()}:r));
   };
   // ===== รายงานสรุปค่าน้ำมันรายคัน (A4) — แนบไปกับใบจ่ายรถร่วมได้ =====
   printFuelReport=()=>{
@@ -16957,7 +17193,43 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
           station:r.station||'',litreText:_LFB2(r.litre)+' ลิตร',amountText:_LFB2(r.amount),
           chipText:String(r.ecPosted||'').trim()?'ส่งแล้ว':'ยังไม่ส่ง',
           chipStyle:String(r.ecPosted||'').trim()?this.chip('#067647','#ecfdf3'):this.chip('#b54708','#fffaeb'),
-          onDelete:()=>this.fcDeleteRow(r.id)}))}));}
+          onDelete:()=>this.fcDeleteRow(r.id)}))}));
+      // ---- ค่าน้ำมันเชลล์ → เจ้าหนี้ (v.2026-11-04a) ----
+      out.shBusyText=S.shBusy?'กำลังอ่านไฟล์…':'';out.shErr=S.shErr||'';
+      out.onShPickFile=this.onShPickFile;out.onShCancel=this.shCancelPreview;
+      out.onShConfirm=()=>{if(S.shPreview&&S.shPreview.ok.length)this.shConfirmImport();};
+      const spv=S.shPreview||null;out.shHasPreview=!!spv;
+      if(spv){
+        const ssum=spv.ok.reduce((s,x)=>s+(parseFloat(x.amount)||0),0);
+        out.shPvHead='ไฟล์ '+spv.file+' · '+spv.n+' รายการ · ช่วงวันที่ '+_fTh(spv.from)+' ถึง '+_fTh(spv.to);
+        const chip=(t,c,b)=>({text:t,style:this.chip(c,b)+'font-size:12.5px;'});
+        const ch=[chip('นำเข้าได้ '+spv.ok.length+' รายการ · '+_LFB2(ssum)+' บาท','#067647','#ecfdf3')];
+        if(spv.dup.length)ch.push(chip('เคยนำเข้าแล้ว '+spv.dup.length+' (ข้าม)','#667085','#f2f4f7'));
+        if(spv.bad.length)ch.push(chip('อ่านไม่ได้/ซ้ำในไฟล์ '+spv.bad.length+' (ข้าม)','#b42318','#fef3f2'));
+        out.shPvChips=ch;
+        out.shPvRows=spv.ok.map(x=>({date:_fTh(x.date),doc:this._shDoc(x),litre:this._shLitre(x.litre),amount:_LFB2(x.amount),dept:(()=>{const t=this._fcTruckOf(x.plate);return t?(t.dept||''):'ไม่พบในทะเบียนรถ';})()}));
+        out.shConfirmLabel=spv.ok.length?('บันทึก '+spv.ok.length+' รายการ'):'ไม่มีรายการให้บันทึก';
+        out.shConfirmStyle='padding:10px 20px;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;'
+          +(spv.ok.length?'background:#067647;color:#fff;cursor:pointer;':'background:#eaecf0;color:#98a2b3;cursor:not-allowed;');
+      }else{out.shPvChips=[];out.shPvRows=[];out.shPvHead='';out.shConfirmLabel='';out.shConfirmStyle='display:none;';}
+      out.shFrom=S.shFrom||'';out.shTo=S.shTo||'';
+      out.onShFrom=(e)=>this.setState({shFrom:e.target.value});out.onShTo=(e)=>this.setState({shTo:e.target.value});
+      {const _co=S.company||{};out.shVendor=String(_co.ecShellVendor==null?'20-106':_co.ecShellVendor);out.shAcct=String(_co.ecShellAcct||'');}
+      out.onShVendor=(e)=>this.setEcCfg('ecShellVendor',e.target.value);
+      out.onShAcct=(e)=>this.setEcCfg('ecShellAcct',e.target.value);
+      out.shIncPosted=!!S.shIncPosted;out.onShIncPosted=(e)=>this.setState({shIncPosted:e.target.checked});
+      out.onShExport=this.exportShAp;out.onShUnmark=this.shUnmark;
+      const _sAll=this._shInRange(S.shFrom||'',S.shTo||'');
+      const _sPosted=_sAll.filter(x=>String(x.ecPosted||'').trim()).length;
+      const _sSend=S.shIncPosted?_sAll:_sAll.filter(x=>!String(x.ecPosted||'').trim());
+      out.shPreviewText=_sSend.length?(_sSend.length+' บรรทัด · '+_LFB2(_sSend.reduce((s,x)=>s+(parseFloat(x.amount)||0),0))+' บาท'+((_sPosted&&!S.shIncPosted)?(' · ส่งแล้ว '+_sPosted+' รายการ (ข้าม)'):''))
+        :(_sAll.length?('ส่งบัญชีไปแล้วทั้งหมด '+_sAll.length+' รายการ'):'ไม่มีรายการในช่วงนี้');
+      out.shListEmpty=_sAll.length===0;out.shHasRows=_sAll.length>0;
+      out.shListText=_sAll.length?('ทะเบียนรายการเชลล์ '+_sAll.length+' ครั้ง · '+_LFB2(_sAll.reduce((s,x)=>s+(parseFloat(x.litre)||0),0))+' ลิตร · '+_LFB2(_sAll.reduce((s,x)=>s+(parseFloat(x.amount)||0),0))+' บาท'):'';
+      out.shRows=_sAll.map(r=>({id:r.id,dateText:_fTh(r.date),doc:this._shDoc(r),litreText:this._shLitre(r.litre)+' ลิตร',amountText:_LFB2(r.amount),
+        chipText:String(r.ecPosted||'').trim()?'ส่งแล้ว':'ยังไม่ส่ง',
+        chipStyle:String(r.ecPosted||'').trim()?this.chip('#067647','#ecfdf3'):this.chip('#b54708','#fffaeb'),
+        onDelete:()=>this.shDeleteRow(r.id)}));}
     // ---- หนังสือออก ----
     {const _lCan=this._ltCan();const _ld=S.ltDraft||{};const _lco=S.company||{};
       out.canLetters=_lCan;out.isLetters=S.section==='letters'&&_lCan;
