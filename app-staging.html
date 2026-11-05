@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-04g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-05a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-04g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-05a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -4819,20 +4819,20 @@
         <div style="overflow-x:auto;border:1px solid #e4e7ec;border-radius:10px;margin-bottom:13px;">
           <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
             <thead><tr style="background:#f8fafc;">
-              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">วันที่</th>
-              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">เลขที่ใบกำกับ (ที่จะลง EASY-ACC)</th>
-              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ลิตร (หมายเหตุ)</th>
-              <th style="padding:7px 9px;text-align:right;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">ยอดสุทธิ</th>
-              <th style="padding:7px 9px;text-align:left;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;">แผนกรถ</th>
+              <th style="padding:7px 9px;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;text-align:left;">ทะเบียน</th>
+              <th style="padding:7px 9px;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;text-align:left;">แผนกรถ</th>
+              <th style="padding:7px 9px;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;text-align:right;">ครั้ง</th>
+              <th style="padding:7px 9px;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;text-align:right;">ลิตร</th>
+              <th style="padding:7px 9px;color:#475467;font-weight:700;border-bottom:1px solid #e4e7ec;text-align:right;">จำนวนเงิน</th>
             </tr></thead>
             <tbody>
               <sc-for list="{{ shPvRows }}" as="r" hint-placeholder-count="3">
                 <tr>
-                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#475467;white-space:nowrap;">{{ r.date }}</td>
-                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.doc }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.plate }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#667085;">{{ r.dept }}</td>
+                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;color:#475467;">{{ r.n }}</td>
                   <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;color:#475467;">{{ r.litre }}</td>
                   <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;text-align:right;font-weight:700;color:#16263a;">{{ r.amount }}</td>
-                  <td style="padding:6px 9px;border-bottom:1px solid #f0f2f5;color:#667085;">{{ r.dept }}</td>
                 </tr>
               </sc-for>
             </tbody>
@@ -4878,11 +4878,17 @@
       <sc-if value="{{ shListEmpty }}" hint-placeholder-val="{{ false }}">
         <div style="background:#fff;border:1px dashed #e4e7ec;border-radius:14px;padding:26px;text-align:center;color:#98a2b3;font-size:13.5px;">ยังไม่มีรายการเชลล์ในช่วงที่เลือก</div>
       </sc-if>
-      <sc-if value="{{ shHasRows }}" hint-placeholder-val="{{ true }}">
-      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:6px 14px;overflow-x:auto;">
+      <sc-for list="{{ shGroups }}" as="g" hint-placeholder-count="2">
+      <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:14px 18px;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:9px;">
+          <span style="font-size:15px;font-weight:800;color:#16263a;">{{ g.plate }}</span>
+          <span style="font-size:12.5px;color:#667085;">{{ g.dept }}</span>
+          <span style="margin-left:auto;font-size:13px;color:#16263a;font-weight:700;">{{ g.total }}</span>
+        </div>
+        <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
           <tbody>
-            <sc-for list="{{ shRows }}" as="r" hint-placeholder-count="2">
+            <sc-for list="{{ g.rows }}" as="r" hint-placeholder-count="2">
               <tr>
                 <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;color:#475467;white-space:nowrap;">{{ r.dateText }}</td>
                 <td style="padding:6px 7px;border-bottom:1px solid #f0f2f5;font-weight:700;color:#16263a;white-space:nowrap;">{{ r.doc }}</td>
@@ -4894,8 +4900,9 @@
             </sc-for>
           </tbody>
         </table>
+        </div>
       </div>
-      </sc-if>
+      </sc-for>
       </sc-if>
     </div>
     </sc-if>
@@ -13715,6 +13722,13 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   // "72-6317 HINO" → "72-6317"
   _shPlate(s){return String(s||'').trim().split(/\s+/)[0]||'';}
+  // จัดกลุ่มตามทะเบียน (เรียงทะเบียน · ในกลุ่มเรียงวันที่) — ใช้ทั้งกล่องตรวจก่อนบันทึกและทะเบียนรายการ
+  _shByPlate(list){
+    const g={};(list||[]).forEach(x=>{const k=x.plate||'—';if(!g[k])g[k]={plate:k,rows:[],lit:0,amt:0};g[k].rows.push(x);g[k].lit+=(parseFloat(x.litre)||0);g[k].amt+=(parseFloat(x.amount)||0);});
+    return Object.keys(g).sort((a,b)=>a.localeCompare(b,'th',{numeric:true})).map(k=>{const o=g[k];const t=this._fcTruckOf(k);
+      o.rows.sort((a,b)=>String(a.date).localeCompare(String(b.date))||String(a.receipt).localeCompare(String(b.receipt)));
+      o.lit=Math.round(o.lit*100)/100;o.amt=Math.round(o.amt*100)/100;o.dept=t?(t.dept||''):'ไม่พบในทะเบียนรถ';return o;});
+  }
   _shDoc(x){return this._ecTxt(String(x.plate||'')+' '+String(x.receipt||''));}
   _shLitre(v){const n=Math.round((parseFloat(v)||0)*100)/100;return String(n);}
   // วันที่ของเชลล์เป็น ค.ศ. 2 หลัก (02/10/26 = 2 ต.ค. 2026) — _xlDate จะอ่าน 26 เป็น พ.ศ. จึงแปลงเองตรงนี้
@@ -17232,7 +17246,8 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         if(spv.dup.length)ch.push(chip('เคยนำเข้าแล้ว '+spv.dup.length+' (ข้าม)','#667085','#f2f4f7'));
         if(spv.bad.length)ch.push(chip('อ่านไม่ได้/ซ้ำในไฟล์ '+spv.bad.length+' (ข้าม)','#b42318','#fef3f2'));
         out.shPvChips=ch;
-        out.shPvRows=spv.ok.map(x=>({date:_fTh(x.date),doc:this._shDoc(x),litre:this._shLitre(x.litre),amount:_LFB2(x.amount),dept:(()=>{const t=this._fcTruckOf(x.plate);return t?(t.dept||''):'ไม่พบในทะเบียนรถ';})()}));
+        // v.2026-11-05a: สรุปรายทะเบียนแบบหน้า PT
+        out.shPvRows=this._shByPlate(spv.ok).map(g=>({plate:g.plate,dept:g.dept,n:g.rows.length,litre:_LFB2(g.lit),amount:_LFB2(g.amt)}));
         out.shConfirmLabel=spv.ok.length?('บันทึก '+spv.ok.length+' รายการ'):'ไม่มีรายการให้บันทึก';
         out.shConfirmStyle='padding:10px 20px;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;'
           +(spv.ok.length?'background:#067647;color:#fff;cursor:pointer;':'background:#eaecf0;color:#98a2b3;cursor:not-allowed;');
@@ -17251,10 +17266,12 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
         :(_sAll.length?('ส่งบัญชีไปแล้วทั้งหมด '+_sAll.length+' รายการ'):'ไม่มีรายการในช่วงนี้');
       out.shListEmpty=_sAll.length===0;out.shHasRows=_sAll.length>0;
       out.shListText=_sAll.length?('ทะเบียนรายการเชลล์ '+_sAll.length+' ครั้ง · '+_LFB2(_sAll.reduce((s,x)=>s+(parseFloat(x.litre)||0),0))+' ลิตร · '+_LFB2(_sAll.reduce((s,x)=>s+(parseFloat(x.amount)||0),0))+' บาท'):'';
-      out.shRows=_sAll.map(r=>({id:r.id,dateText:_fTh(r.date),doc:this._shDoc(r),litreText:this._shLitre(r.litre)+' ลิตร',amountText:_LFB2(r.amount),
-        chipText:String(r.ecPosted||'').trim()?'ส่งแล้ว':'ยังไม่ส่ง',
-        chipStyle:String(r.ecPosted||'').trim()?this.chip('#067647','#ecfdf3'):this.chip('#b54708','#fffaeb'),
-        onDelete:()=>this.shDeleteRow(r.id)}));}
+      out.shGroups=this._shByPlate(_sAll).map(g=>({plate:g.plate,dept:g.dept,
+        total:g.rows.length+' ครั้ง · '+_LFB2(g.lit)+' ลิตร · '+_LFB2(g.amt)+' บาท',
+        rows:g.rows.map(r=>({id:r.id,dateText:_fTh(r.date),doc:this._shDoc(r),litreText:this._shLitre(r.litre)+' ลิตร',amountText:_LFB2(r.amount),
+          chipText:String(r.ecPosted||'').trim()?'ส่งแล้ว':'ยังไม่ส่ง',
+          chipStyle:String(r.ecPosted||'').trim()?this.chip('#067647','#ecfdf3'):this.chip('#b54708','#fffaeb'),
+          onDelete:()=>this.shDeleteRow(r.id)}))}));}
     // ---- หนังสือออก ----
     {const _lCan=this._ltCan();const _ld=S.ltDraft||{};const _lco=S.company||{};
       out.canLetters=_lCan;out.isLetters=S.section==='letters'&&_lCan;
