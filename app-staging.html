@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-11f · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-11g · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-11f</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-11g</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -1513,7 +1513,7 @@
             <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ทะเบียนรถ</label><select value="{{ tpPlate }}" onChange="{{ onTpPlate }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;background:#fff;"><sc-for list="{{ tpTruckOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
             <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ตำแหน่งล้อ (ถ้ามี)</label><input value="{{ tpPos }}" onInput="{{ onTpPos }}" placeholder="เช่น ขับ ซ.นอก" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;"></div>
             <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">อาการ / หมายเหตุ</label><input value="{{ tpNote }}" onInput="{{ onTpNote }}" placeholder="เช่น ตะปู · ยางรั่วซึม" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;box-sizing:border-box;"></div>
-            <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ร้าน <span style="color:#98a2b3;font-weight:400;">(ชื่อร้านอย่างเดียว)</span></label><input value="{{ tpShop }}" onInput="{{ onTpShop }}" placeholder="เช่น จำลองการยาง" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;box-sizing:border-box;"></div>
+            <div style="grid-column:1;"><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ร้าน <span style="color:#98a2b3;font-weight:400;">(ชื่อร้านอย่างเดียว)</span></label><input value="{{ tpShop }}" onInput="{{ onTpShop }}" placeholder="เช่น จำลองการยาง" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;box-sizing:border-box;"></div>
             <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">เลขที่บิลร้าน <span style="color:#98a2b3;font-weight:400;">(ร้านที่วางบิล/เครดิต)</span></label><input value="{{ tpBillNo }}" onInput="{{ onTpBillNo }}" placeholder="กรอกแล้วส่ง EASY-ACC ได้" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;box-sizing:border-box;"></div>
           </div>
           <div style="margin-bottom:12px;">
