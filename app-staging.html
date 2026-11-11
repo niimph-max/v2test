@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-05a · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-11a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-05a</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-11a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -2952,24 +2952,33 @@
         <div style="padding:13px 17px;background:#fbfcfe;border-bottom:1px solid #eef1f4;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;position:sticky;left:0;">
           <div style="font-size:13.5px;font-weight:800;color:#16263a;">ทะเบียนใบวางบิลที่ออกแล้ว</div>
           <div style="font-size:11.5px;color:#98a2b3;">{{ blRegCount }} ใบ · เรียงจากใหม่ไปเก่า</div>
+          <sc-if value="{{ blRegHasHid }}" hint-placeholder-val="{{ false }}">
+            <button onClick="{{ onBlToggleHidden }}" style="padding:4px 10px;background:#fff;color:#667085;border:1px dashed #d0d5dd;border-radius:7px;font-family:inherit;font-size:11.5px;cursor:pointer;">👁 {{ blRegHidLabel }}</button>
+          </sc-if>
           <div style="flex:1;min-width:8px;"></div>
           <sc-if value="{{ blRegHasSel }}" hint-placeholder-val="{{ false }}">
-            <div style="font-size:12.5px;font-weight:700;color:#2f6fb0;">เลือกไว้ {{ blRegSelCount }} ใบ</div>
+            <div style="font-size:12.5px;font-weight:700;color:#2f6fb0;background:#eef4fb;border:1px solid #cfe0f2;border-radius:8px;padding:5px 11px;">เลือกไว้ {{ blRegSelCount }} ใบ · รวม <span style="font-size:14px;font-weight:800;color:#16263a;">{{ blRegSelSum }}</span></div>
+            <button onClick="{{ onBlHideSel }}" style="padding:5px 11px;background:#fff;color:#475467;border:1px solid #d0d5dd;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🙈 ซ่อนใบที่เลือก</button>
             <button onClick="{{ onBlRegClear }}" style="padding:5px 11px;background:#fff;color:#667085;border:1px solid #e4e7ec;border-radius:7px;font-family:inherit;font-size:12px;cursor:pointer;">ล้างที่เลือก</button>
           </sc-if>
           <button onClick="{{ onBlSendAllForm }}" style="padding:6px 14px;background:#2f6fb0;color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;">📤 ส่งใบที่เลือก เข้าฟอร์มพิเศษ</button>
         </div>
+        <div style="display:grid;grid-template-columns:38px minmax(100px,1fr) minmax(150px,1.4fr) 132px 128px 84px 112px 176px;min-width:1010px;font-size:11.5px;font-weight:600;color:#98a2b3;border-bottom:1px solid #eef1f4;">
+          <div></div><div style="padding:7px 8px;">เลขที่ใบวางบิล</div><div style="padding:7px 10px;">ลูกค้า</div><div style="padding:7px 10px;">วันที่ขนส่ง</div><div style="padding:7px 6px;">ครบกำหนดชำระ</div><div style="padding:7px 10px;text-align:right;">บรรทัด</div><div style="padding:7px 10px;text-align:right;">ยอดเงิน</div><div></div>
+        </div>
         <sc-for list="{{ blRegRows }}" as="r" hint-placeholder-count="0">
-          <div style="display:grid;grid-template-columns:38px minmax(100px,1fr) minmax(150px,1.4fr) 132px 84px 112px 176px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:880px;font-size:12.5px;color:#475467;">
-            <div style="padding:12px 0 12px 15px;"><input type="checkbox" checked="{{ r.sel }}" onChange="{{ r.onSel }}" title="เลือกเพื่อส่งเข้าฟอร์มพิเศษ" style="width:15px;height:15px;cursor:pointer;"></div>
+          <div style="{{ r.rowStyle }}">
+            <div style="padding:12px 0 12px 15px;"><input type="checkbox" checked="{{ r.sel }}" onChange="{{ r.onSel }}" title="เลือก — ดูยอดรวม · ซ่อนใบ · ส่งเข้าฟอร์มพิเศษ" style="width:15px;height:15px;cursor:pointer;"></div>
             <div style="padding:12px 8px;font-size:13.5px;font-weight:700;color:#16263a;">{{ r.inv }}</div>
             <div style="padding:12px 10px;">{{ r.cust }}</div>
             <div style="padding:12px 10px;font-size:12px;">{{ r.range }}</div>
+            <div style="padding:8px 6px;"><input type="date" value="{{ r.due }}" onInput="{{ r.onDue }}" title="วันครบกำหนดชำระ — แก้ได้" style="{{ r.dueStyle }}"><div style="{{ r.dueNoteStyle }}">{{ r.dueNote }}</div></div>
             <div style="padding:12px 10px;text-align:right;">{{ r.lines }} บรรทัด</div>
             <div style="padding:12px 10px;text-align:right;font-weight:700;color:#16263a;">{{ r.total }}</div>
-            <div style="padding:12px 17px;text-align:right;"><button onClick="{{ r.onReprint }}" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์ซ้ำ</button><button onClick="{{ r.onXlsx }}" style="padding:6px 12px;margin-left:6px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">⬇ Excel</button><button onClick="{{ r.onCancelInv }}" style="margin-left:6px;padding:6px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">ยกเลิกใบนี้</button></div>
+            <div style="padding:12px 17px;text-align:right;"><button onClick="{{ r.onReprint }}" style="padding:6px 12px;background:#fff;color:#2f6fb0;border:1px solid #d3e0f7;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">🖨 พิมพ์ซ้ำ</button><button onClick="{{ r.onXlsx }}" style="padding:6px 12px;margin-left:6px;background:#fff;color:#067647;border:1px solid #b7e2c8;border-radius:7px;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">⬇ Excel</button><button onClick="{{ r.onCancelInv }}" style="margin-left:6px;padding:6px 10px;background:#fff;color:#b42318;border:1px solid #fecdca;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">ยกเลิกใบนี้</button><sc-if value="{{ r.hidden }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.onUnhide }}" style="margin-left:6px;padding:6px 10px;background:#fff;color:#475467;border:1px dashed #98a2b3;border-radius:7px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;">เลิกซ่อน</button></sc-if></div>
           </div>
         </sc-for>
+        <sc-if value="{{ blRegMore }}" hint-placeholder-val="{{ false }}"><div style="padding:10px 17px;font-size:11.5px;color:#98a2b3;">{{ blRegMore }}</div></sc-if>
       </div>
       </sc-if>
     </div>
@@ -9338,7 +9347,7 @@ function sbInsertEvent(ev){try{return sbUpsert('events','company_id,id',[{compan
 function sbSaveUsers(list){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__appusers__',data:{list:list||[]}}]).catch(function(){});}catch(e){}}
 function sbSaveCompany(co){try{return sbUpsert('events','company_id,id',[{company_id:COMPANY_ID,id:'__company__',data:co||{}}]).catch(function(){});}catch(e){}}
 async function sbGetMeta(){
-  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22,%22__fuelcr__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22)&select=id,data';
+  const q='?company_id=eq.'+encodeURIComponent(COMPANY_ID)+'&id=in.(%22__appusers__%22,%22__company__%22,%22__fleets__%22,%22__dpoints__%22,%22__periodlock__%22,%22__purged_jobs__%22,%22__news__%22,%22__drvchk__%22,%22__letters__%22,%22__fuelcr__%22,%22__kv_subMonthDeducts__%22,%22__kv_subMonthMeta__%22,%22__kv_driverPayAdds__%22,%22__kv_driverPayDeducts__%22,%22__kv_driverPayMeta__%22,%22__kv_fixedOverrides__%22,%22__kv_blInvMeta__%22)&select=id,data';
   const res=await fetch(SB_REST+'/events'+q,{headers:SB_HEADERS});
   if(!res||!res.ok)throw new Error('sbGetMeta http '+(res?res.status:'?'));
   const rows=await res.json();
@@ -9407,6 +9416,7 @@ class Component extends DCLogic {
     try{const f=localStorage.getItem('fixedOverrides_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({fixedOverrides:o});}}catch(e){}
     try{const f=localStorage.getItem('subMonthDeducts_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({subMonthDeducts:o});}}catch(e){}
     try{const f=localStorage.getItem('subMonthMeta_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({subMonthMeta:o});}}catch(e){}
+    try{const f=localStorage.getItem('blInvMeta_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({blInvMeta:o});}}catch(e){}
     try{const f=localStorage.getItem('driverPayDeducts_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({driverPayDeducts:o});}}catch(e){}
     try{const f=localStorage.getItem('driverPayAdds_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({driverPayAdds:o});}}catch(e){}
     try{const f=localStorage.getItem('driverPayMeta_v1');if(f){const o=JSON.parse(f);if(o&&typeof o==='object')this.setState({driverPayMeta:o});}}catch(e){}
@@ -11667,6 +11677,30 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   }
   blRegToggle=(inv)=>this.setState(s=>{const m={...(s.blRegSel||{})};if(m[inv])delete m[inv];else m[inv]=1;return {blRegSel:m};});
   blRegClear=()=>this.setState({blRegSel:{}});
+  // ===== ทะเบียนใบวางบิล: วันครบกำหนด · ซ่อนใบ (v.2026-11-11a) — เก็บใน kv blInvMeta (events __kv_blInvMeta__) =====
+  _blInvMetaOf(inv){const m=this.state.blInvMeta;return (m&&typeof m==='object'&&m[inv]&&typeof m[inv]==='object')?m[inv]:{};}
+  _blInvMetaSet(inv,patch){
+    const cur={...(this.state.blInvMeta||{})};const v={...(cur[inv]||{}),...patch};
+    Object.keys(v).forEach(k=>{if(v[k]===''||v[k]===false||v[k]==null)delete v[k];});
+    if(Object.keys(v).length)cur[inv]=v;else delete cur[inv];
+    try{localStorage.setItem('blInvMeta_v1',JSON.stringify(cur));}catch(e){}
+    this.setState({blInvMeta:cur});this._kvTouch('blInvMeta',inv,cur);
+  }
+  // วันที่เอกสาร = วันที่ที่พิมพ์บนใบ (เก็บไว้ตอนทำเครื่องหมาย) → ไม่มีก็ใช้วันที่ทำเครื่องหมาย → วันสุดท้ายของเที่ยว
+  _blInvDocDate(g){const d=String(g.d||'').slice(0,10);if(/^\d{4}-\d{2}-\d{2}$/.test(d))return d;
+    const a=String(g.at||'');if(/^\d{4}-\d{2}-\d{2}/.test(a))return toBkkDate(a)||a.slice(0,10);return String(g.to||'').slice(0,10);}
+  // ครบกำหนด = ที่กรอกเองในทะเบียน · ไม่กรอก = วันที่เอกสาร + เครดิต (วัน) ค่าเดียวกับหน้าส่งออก EASY-ACC
+  _blInvDue(g){const m=this._blInvMetaOf(g.inv);if(m.due)return {date:m.due,manual:true};
+    const d=this._blInvDocDate(g);return {date:d?this._ecAddDays(d,this._ecCfg().terms):'',manual:false};}
+  blSetDue=(inv,v)=>this._blInvMetaSet(inv,{due:String(v||'').slice(0,10)});
+  blHideSel=()=>{
+    const sel=this.state.blRegSel||{};const invs=Object.keys(sel).filter(k=>sel[k]);if(!invs.length)return;
+    const cur={...(this.state.blInvMeta||{})};const now=new Date().toISOString();
+    invs.forEach(inv=>{cur[inv]={...(cur[inv]||{}),hide:now};});
+    try{localStorage.setItem('blInvMeta_v1',JSON.stringify(cur));}catch(e){}
+    this.setState({blInvMeta:cur,blRegSel:{}});invs.forEach(inv=>this._kvTouch('blInvMeta',inv,cur));
+  };
+  blUnhide=(inv)=>this._blInvMetaSet(inv,{hide:''});
   // ส่งเฉพาะบิลที่ติ๊กไว้ตอนนี้ (1 ชุด)
   billSendToForm=async()=>{
     try{const pl=this._billFormPayload();if(!pl)return;
@@ -14349,7 +14383,7 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
   // เดิมเก็บใน localStorage อย่างเดียว → กรอกเครื่องหนึ่ง อีกเครื่องไม่เห็น / ล้างเบราว์เซอร์แล้วหาย
   // เก็บเป็นแถวพิเศษในตาราง events (วิธีเดียวกับ __periodlock__) id = __kv_<ชื่อ>__
   // รวมราย key: ใครแก้ทีหลัง (at ใหม่กว่า) ชนะ · ลบ key = เก็บ v:null ไว้ เครื่องอื่นจะลบตาม
-  _kvKeys(){return {subMonthDeducts:'subMonthDeducts_v1',subMonthMeta:'subMonthMeta_v1',driverPayAdds:'driverPayAdds_v1',driverPayDeducts:'driverPayDeducts_v1',driverPayMeta:'driverPayMeta_v1',fixedOverrides:'fixedOverrides_v1'};}
+  _kvKeys(){return {subMonthDeducts:'subMonthDeducts_v1',subMonthMeta:'subMonthMeta_v1',driverPayAdds:'driverPayAdds_v1',driverPayDeducts:'driverPayDeducts_v1',driverPayMeta:'driverPayMeta_v1',fixedOverrides:'fixedOverrides_v1',blInvMeta:'blInvMeta_v1'};}
   _kvAtGet(){try{const o=JSON.parse(localStorage.getItem('kvAt_v1')||'{}');return (o&&typeof o==='object')?o:{};}catch(e){return {};}}
   _kvAtSet(o){try{localStorage.setItem('kvAt_v1',JSON.stringify(o));}catch(e){}}
   _kvTouch(sk,k,cur){
@@ -18262,11 +18296,29 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       {const _reg=this._blInvRegister();
        out.blRegCount=_reg.length;out.blHasReg=_reg.length>0;
        const _rsel=S.blRegSel||{};
-       out.blRegSelCount=_reg.filter(g=>_rsel[g.inv]).length;out.blRegHasSel=out.blRegSelCount>0;
-       out.onBlRegClear=this.blRegClear;
-       out.blRegRows=_reg.slice(0,40).map(g=>({inv:g.inv,sel:!!_rsel[g.inv],onSel:()=>this.blRegToggle(g.inv),cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
+       const _selG=_reg.filter(g=>_rsel[g.inv]);
+       out.blRegSelCount=_selG.length;out.blRegHasSel=out.blRegSelCount>0;
+       out.blRegSelSum='฿'+_b2(_selG.reduce((a,g)=>a+(Math.round((g.total||0)*100)/100),0));
+       out.onBlRegClear=this.blRegClear;out.onBlHideSel=this.blHideSel;
+       const _hid=(g)=>!!this._blInvMetaOf(g.inv).hide;
+       const _nHid=_reg.filter(_hid).length;const _showHid=!!S.blShowHidden;
+       out.blRegHasHid=_nHid>0;
+       out.blRegHidLabel=_showHid?('ซ่อนใบที่ซ่อนไว้ ('+_nHid+')'):('แสดงใบที่ซ่อนไว้ ('+_nHid+')');
+       out.onBlToggleHidden=()=>this.setState({blShowHidden:!_showHid});
+       const _vis=_showHid?_reg:_reg.filter(g=>!_hid(g));
+       out.blRegCount=_vis.length;
+       const _today=this._blToday();const _terms=this._ecCfg().terms;
+       out.blRegRows=_vis.slice(0,60).map(g=>{const due=this._blInvDue(g);const hid=_hid(g);const over=!!due.date&&due.date<_today&&!hid;
+         return {inv:g.inv,sel:!!_rsel[g.inv],onSel:()=>this.blRegToggle(g.inv),cust:(g.code?(g.code+' · '):'')+(g.cust||'—'),
          range:this._blShortDate(g.from)+(g.to!==g.from?(' – '+this._blShortDate(g.to)):''),
-         lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)}));}
+         due:due.date,onDue:(e)=>this.blSetDue(g.inv,e.target.value),
+         dueNote:over?'เลยกำหนด':(due.manual?'กำหนดเอง':('เอกสาร '+this._blShortDate(this._blInvDocDate(g))+' + '+_terms+' วัน')),
+         dueStyle:'width:100%;padding:5px 6px;border:1px solid '+(over?'#fda29b':'#d0d5dd')+';border-radius:7px;font-family:inherit;font-size:12px;color:'+(over?'#b42318':'#1d2b3a')+';background:'+(over?'#fef3f2':'#fff')+';box-sizing:border-box;',
+         dueNoteStyle:'font-size:10.5px;margin-top:2px;color:'+(over?'#b42318':'#98a2b3')+';font-weight:'+(over?'700':'400')+';',
+         rowStyle:'display:grid;grid-template-columns:38px minmax(100px,1fr) minmax(150px,1.4fr) 132px 128px 84px 112px 176px;align-items:center;border-bottom:1px solid #f4f6f8;min-width:1010px;font-size:12.5px;color:#475467;'+(hid?'background:#f9fafb;opacity:.65;':''),
+         hidden:hid,onUnhide:()=>this.blUnhide(g.inv),
+         lines:g.lines,total:'฿'+_b2(g.total),onReprint:()=>this.blReprint(g.inv),onXlsx:()=>this.blReprintXlsx(g.inv),onCancelInv:()=>this.blCancelInv(g.inv)};});
+       out.blRegMore=_vis.length>60?('แสดง 60 ใบล่าสุดจาก '+_vis.length+' ใบ — ซ่อนใบที่จบแล้ว ใบเก่าจะเลื่อนขึ้นมาแสดง'):'';}
       out.onBlPrint=()=>this.printBillingDoc();out.onBlXlsx=()=>this.exportBillingXlsx();
       out.onBlSendAllForm=this.billSendAllToForm;   // ปุ่มส่งมีปุ่มเดียว: ติ๊กเลือกในทะเบียนใบวางบิล
       out.onBlMark=()=>this.blMark();
