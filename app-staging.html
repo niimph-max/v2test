@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-11d · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-11e · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-11d</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-11e</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -1369,11 +1369,11 @@
             <button onClick="{{ onTireApUnmark }}" style="padding:9px 13px;background:#fff;color:#98a2b3;border:1px solid #e4e7ec;border-radius:9px;font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">↩ ยกเลิกเครื่องหมาย</button>
             <button onClick="{{ onTireApExport }}" style="padding:9px 18px;background:#2f6fb0;color:#fff;border:none;border-radius:9px;font-family:inherit;font-size:13.5px;font-weight:800;cursor:pointer;">⤓ ecimport_tire_ap.csv</button>
           </div>
-          <div style="font-size:11.5px;color:#98a2b3;line-height:1.7;margin-top:9px;">เฉพาะ ยางเข้า/ติดตั้ง และ ส่งหล่อดอก ที่มีชื่อร้าน (ปะยางไม่มีเลขบิล จึงไม่รวม) · 1 บิลร้าน = 1 บรรทัด (CD = A) · ยอดเต็มรวม VAT · ครบกำหนด = วันที่บิล + เครดิต (ค่าเดียวกับหน้าใบสั่งซ่อม) · รหัสเจ้าหนี้ใช้ชุดเดียวกับใบสั่งซ่อม · หมายเหตุ = ทะเบียน + เลขเส้นยาง</div>
+          <div style="font-size:11.5px;color:#98a2b3;line-height:1.7;margin-top:9px;">ยางเข้า/ติดตั้ง และ ส่งหล่อดอก ที่มีชื่อร้าน + ปะยางที่กรอกเลขที่บิลร้าน (ปะยางที่ไม่มีเลขบิล = เงินสด/เบิกคืน ไม่รวม) · 1 บิลร้าน = 1 บรรทัด (CD = A) · ยอดเต็มรวม VAT · ครบกำหนด = วันที่บิล + เครดิต (ค่าเดียวกับหน้าใบสั่งซ่อม) · รหัสเจ้าหนี้ใช้ชุดเดียวกับใบสั่งซ่อม · หมายเหตุ = ทะเบียน + เลขเส้นยาง</div>
         </div>
         </sc-if>
         <sc-if value="{{ tireShopEmpty }}" hint-placeholder-val="{{ false }}">
-          <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:44px 30px;text-align:center;color:#98a2b3;font-size:14px;line-height:1.8;">ช่วงนี้ยังไม่มีรายการ ยางเข้า/ติดตั้ง หรือ ส่งหล่อดอก ที่ระบุชื่อร้าน</div>
+          <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:44px 30px;text-align:center;color:#98a2b3;font-size:14px;line-height:1.8;">ช่วงนี้ยังไม่มีรายการ ยางเข้า/ติดตั้ง · ส่งหล่อดอก ที่ระบุชื่อร้าน หรือปะยางที่กรอกเลขที่บิล</div>
         </sc-if>
         <sc-for list="{{ tireShops }}" as="sh" hint-placeholder-count="2">
           <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;overflow:hidden;margin-bottom:16px;">
@@ -1398,7 +1398,7 @@
                   <div style="padding:9px 6px;">{{ b.date }}</div>
                   <div style="padding:9px 6px;font-weight:700;color:#16263a;">{{ b.bill }}</div>
                   <div style="padding:9px 6px;font-size:11.5px;color:#98a2b3;">{{ b.ref }}</div>
-                  <div style="padding:9px 6px;text-align:right;font-size:11.5px;">{{ b.n }} เส้น</div>
+                  <div style="padding:9px 6px;text-align:right;font-size:11.5px;">{{ b.n }} รายการ</div>
                   <div style="padding:9px 6px;text-align:right;font-weight:700;color:#16263a;">{{ b.amt }}</div>
                   <div style="padding:9px 12px;text-align:right;"><span style="{{ b.chipStyle }}">{{ b.chip }}</span></div>
                 </div>
@@ -1513,6 +1513,7 @@
             <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ทะเบียนรถ</label><select value="{{ tpPlate }}" onChange="{{ onTpPlate }}" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;background:#fff;"><sc-for list="{{ tpTruckOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for></select></div>
             <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ตำแหน่งล้อ (ถ้ามี)</label><input value="{{ tpPos }}" onInput="{{ onTpPos }}" placeholder="เช่น ขับ ซ.นอก" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;"></div>
             <div style="grid-column:1/3;"><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">ร้าน / อาการ</label><input value="{{ tpShop }}" onInput="{{ onTpShop }}" placeholder="เช่น เจริญยาง · ตะปู" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;"></div>
+            <div><label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:4px;">เลขที่บิลร้าน <span style="color:#98a2b3;font-weight:400;">(ร้านที่วางบิล/เครดิต)</span></label><input value="{{ tpBillNo }}" onInput="{{ onTpBillNo }}" placeholder="กรอกแล้วส่ง EASY-ACC ได้" style="width:100%;padding:9px 11px;border:1px solid #d0d5dd;border-radius:8px;font-size:13px;color:#1d2b3a;box-sizing:border-box;"></div>
           </div>
           <div style="margin-bottom:12px;">
             <label style="display:block;font-size:11.5px;color:#667085;font-weight:600;margin-bottom:6px;">รายการค่าใช้จ่าย (เพิ่มได้หลายรายการต่อบิล — เช่น ยางใน · ค่าปะ · ค่าเปลี่ยน)</label>
@@ -10484,14 +10485,14 @@ class Component extends DCLogic {
   // ===== จัดการยาง (TIRE) — เริ่ม 1c บันทึกค่าปะยาง =====
   onGoTires=()=>{this.setState({section:'tires'});this.scrollMain();};
   persistTirePatches(list,changedId){this.collPersist(list,'tirePatch_v1',changedId,'id','tirePatchPending','tire_patches');}
-  openTirePatch=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const sel=(this.state.trucks||[]).find(t=>t.plate===this.state.tireTruck);this.setState({tirePatchDraft:{id:Date.now(),date:today,dept:sel?(sel.dept||''):'',plate:this.state.tireTruck||'',pos:'',shop:'',cost:'',items:[{desc:'',cost:''}],reimbursed:false,by:(this.state.auth&&this.state.auth.name)||''},tirePatchError:''});};
+  openTirePatch=()=>{const today=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Bangkok',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const sel=(this.state.trucks||[]).find(t=>t.plate===this.state.tireTruck);this.setState({tirePatchDraft:{id:Date.now(),date:today,dept:sel?(sel.dept||''):'',plate:this.state.tireTruck||'',pos:'',shop:'',billNo:'',cost:'',items:[{desc:'',cost:''}],reimbursed:false,by:(this.state.auth&&this.state.auth.name)||''},tirePatchError:''});};
   setTP=(f,v)=>this.setState(s=>({tirePatchDraft:{...s.tirePatchDraft,[f]:v}}));
   addTPItem=()=>this.setState(s=>({tirePatchDraft:{...s.tirePatchDraft,items:[...((s.tirePatchDraft&&s.tirePatchDraft.items)||[]),{desc:'',cost:''}]}}));
   removeTPItem=(i)=>this.setState(s=>{const it=[...((s.tirePatchDraft&&s.tirePatchDraft.items)||[])];it.splice(i,1);if(!it.length)it.push({desc:'',cost:''});return{tirePatchDraft:{...s.tirePatchDraft,items:it}};});
   setTPItem=(i,f,v)=>this.setState(s=>{const it=[...((s.tirePatchDraft&&s.tirePatchDraft.items)||[])];it[i]={...(it[i]||{desc:'',cost:''}),[f]:v};return{tirePatchDraft:{...s.tirePatchDraft,items:it}};});
   cancelTirePatch=()=>this.setState({tirePatchDraft:null,tirePatchError:''});
   editTirePatch=(id)=>{const p=(this.state.tirePatches||[]).find(x=>String(x.id)===String(id));if(!p)return;const sel=(this.state.trucks||[]).find(t=>t.plate===p.plate);this.setState({tirePatchDraft:{...p,dept:p.dept||(sel?(sel.dept||''):''),items:(Array.isArray(p.items)&&p.items.length)?p.items.map(x=>({desc:x.desc||'',cost:(x.cost===0||x.cost)?String(x.cost):''})):[{desc:'',cost:((p.cost||p.cost===0)?String(p.cost):'')}],_editing:true},tirePatchError:''});this.scrollMain();};
-  saveTirePatch=()=>{const d=this.state.tirePatchDraft;if(!d)return;if(!this._plGuard(d.date,'tire',d.id,'ค่าปะยาง '+(d.plate||''),!(this.state.tirePatches||[]).some(x=>String(x.id)===String(d.id))))return;if(!String(d.plate||'').trim()){this.setState({tirePatchError:'กรุณาเลือกทะเบียนรถ'});return;}const _items=(Array.isArray(d.items)?d.items:[]).map(x=>({desc:String(x.desc||'').trim(),cost:Number(x.cost)||0})).filter(x=>x.desc||x.cost>0);const _total=_items.reduce((a,x)=>a+(Number(x.cost)||0),0);if(!(_total>0)){this.setState({tirePatchError:'กรุณากรอกรายการและจำนวนเงินอย่างน้อย 1 รายการ'});return;}const _vat=this._vatOf(d,_total);const rec={...d,items:_items,costNet:_total,vat:_vat,cost:Math.round((_total+_vat)*100)/100};delete rec._editing;const rest=(this.state.tirePatches||[]).filter(x=>String(x.id)!==String(rec.id));const list=[rec,...rest];this.persistTirePatches(list,rec.id);try{sbInsertEvent({id:'tirepatch_'+rec.id,type:'tirepatch',data:rec});}catch(e){}this.setState({tirePatches:list,tirePatchDraft:null,tirePatchError:''});};
+  saveTirePatch=()=>{const d=this.state.tirePatchDraft;if(!d)return;if(!this._plGuard(d.date,'tire',d.id,'ค่าปะยาง '+(d.plate||''),!(this.state.tirePatches||[]).some(x=>String(x.id)===String(d.id))))return;if(!String(d.plate||'').trim()){this.setState({tirePatchError:'กรุณาเลือกทะเบียนรถ'});return;}const _items=(Array.isArray(d.items)?d.items:[]).map(x=>({desc:String(x.desc||'').trim(),cost:Number(x.cost)||0})).filter(x=>x.desc||x.cost>0);const _total=_items.reduce((a,x)=>a+(Number(x.cost)||0),0);if(!(_total>0)){this.setState({tirePatchError:'กรุณากรอกรายการและจำนวนเงินอย่างน้อย 1 รายการ'});return;}const _vat=this._vatOf(d,_total);const rec={...d,billNo:String(d.billNo||'').trim(),items:_items,costNet:_total,vat:_vat,cost:Math.round((_total+_vat)*100)/100};delete rec._editing;const rest=(this.state.tirePatches||[]).filter(x=>String(x.id)!==String(rec.id));const list=[rec,...rest];this.persistTirePatches(list,rec.id);try{sbInsertEvent({id:'tirepatch_'+rec.id,type:'tirepatch',data:rec});}catch(e){}this.setState({tirePatches:list,tirePatchDraft:null,tirePatchError:''});};
   toggleTireReimbursed=(id)=>{const list=(this.state.tirePatches||[]).map(x=>String(x.id)===String(id)?{...x,reimbursed:!x.reimbursed}:x);this.persistTirePatches(list,id);this.setState({tirePatches:list});};
   deleteTirePatch=(id)=>{{const _t=(this.state.tirePatches||[]).find(x=>String(x.id)===String(id))||{};if(!this._plGuard(_t.date,'tire',id,'ลบค่าปะยาง '+(_t.plate||id)))return;}if(!window.confirm('ลบรายการค่าปะยางนี้?'))return;const list=this.collDelete(id,this.state.tirePatches||[],'tirePatch_v1','id','tirePatchPending','tirePatchTomb','tire_patches');this.setState({tirePatches:list});};
   // ---- ยางเข้า-ออก (tire in/out) ----
@@ -11061,7 +11062,7 @@ class Component extends DCLogic {
     this.setState(s=>{const m={...(s.woApSel||{})};bills.forEach(b=>delete m[b.key]);return {woApSel:m};});
   };
   // ===== ยาง → เจ้าหนี้ (AP) ใน EASY-ACC (v.2026-11-11d) =====
-  // เฉพาะ "ยางเข้า/ติดตั้ง" กับ "ส่งหล่อดอก" ที่มีชื่อร้าน — ปะยางไม่มีเลขบิล (และส่วนใหญ่เป็นเงินสดเบิกคืน) จึงไม่รวม
+  // "ยางเข้า/ติดตั้ง" กับ "ส่งหล่อดอก" ที่มีชื่อร้าน + ปะยางที่กรอกเลขที่บิล (v.2026-11-11e — ปะยางไม่มีเลขบิล = เงินสด/เบิกคืน ไม่ใช่เจ้าหนี้)
   // ราคา m.cost = ยอดรวม VAT · รหัสเจ้าหนี้ใช้ชุดเดียวกับใบสั่งซ่อม (ผูกชื่อร้าน) · บัญชีแยก company.tireApAcct
   // ป้ายส่งแล้วใช้ kv woApPosted เดียวกัน แต่คีย์ขึ้นต้น T| จึงไม่ชนกับบิลใบสั่งซ่อม
   _tireApCfg(){const c=this.state.company||{};return {acct:String(c.tireApAcct||'').trim()};}
@@ -11077,6 +11078,19 @@ class Component extends DCLogic {
       if(d&&(!b.date||d<b.date))b.date=d;
       b.amt=Math.round((b.amt+(Number(m.cost)||0))*100)/100;b.n++;
       if(pl!=='—')b.plates[pl]=1;if(m.tireNo)b.wos['เส้น '+m.tireNo]=1;b.kinds[m.action==='retread'?'หล่อดอก':'ยางเข้า']=1;
+    });
+    // ปะยาง: ชื่อร้าน = ข้อความก่อน " · " ในช่อง "ร้าน / อาการ" (เช่น "จำลองการยาง · ตะปู" → จำลองการยาง)
+    (this.state.tirePatches||[]).forEach(p=>{
+      if(!p||p.deleted)return;const bill=String(p.billNo||'').trim();if(!bill)return;
+      const shop=String(p.shop||'').split(/\s*[·•]\s*/)[0].trim();if(!shop)return;
+      const d=String(p.date||'').slice(0,10);if(!inR(d.slice(0,7)))return;
+      const pl=p.plate||'—';if(pset&&!pset.has(pl))return;
+      const amt=(Number(p.cost)||0)||((p.items||[]).reduce((a,x)=>a+(Number(x.cost)||0),0));
+      const k='T|'+this._woApKey(shop,bill);
+      const b=out[k]||(out[k]={key:k,shop:shop,bill:bill,date:'',amt:0,n:0,plates:{},wos:{},kinds:{}});
+      if(d&&(!b.date||d<b.date))b.date=d;
+      b.amt=Math.round((b.amt+amt)*100)/100;b.n++;
+      if(pl!=='—')b.plates[pl]=1;if(p.pos)b.wos[String(p.pos)]=1;b.kinds['ปะยาง']=1;
     });
     return Object.keys(out).map(k=>{const b=out[k];b.plates=Object.keys(b.plates);b.wos=Object.keys(b.wos);b.kinds=Object.keys(b.kinds);b.posted=this._woApPostedAt(k);return b;})
       .sort((a,b)=>String(a.shop).localeCompare(String(b.shop),'th')||String(b.date).localeCompare(String(a.date))||String(b.bill).localeCompare(String(a.bill),'en',{numeric:true}));
@@ -18116,20 +18130,20 @@ const p=s.slice(0,10).split('-');if(p.length!==3)return null;if(+p[0]<=0||+p[1]<
       if(S.tireTruck)_pl=_pl.filter(x=>x.plate===S.tireTruck);
       else if(S.tireDept){const _ind=new Set((S.trucks||[]).filter(t=>t.dept===S.tireDept).map(t=>t.plate));_pl=_pl.filter(x=>_ind.has(x.plate));}
       _pl.sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||(Number(b.id)||0)-(Number(a.id)||0));
-      out.tirePatchRows=_pl.map(p=>({id:p.id,date:this.thaiDate(p.date),plate:p.plate||'—',pos:p.pos||'—',shop:[[p.shop,p.note].filter(Boolean).join(' · '),(Array.isArray(p.items)&&p.items.filter(x=>x.desc).length?('· '+p.items.map(x=>x.desc).filter(Boolean).join(', ')):'')].filter(Boolean).join(' ')||'—',cost:this._bahtR(Number(p.cost)||0),vatHas:(Number(p.vat)||0)>0,vatText:'ก่อน VAT '+this._bahtR((p.costNet===0||p.costNet)?p.costNet:((Number(p.cost)||0)-(Number(p.vat)||0)))+' · VAT '+this._bahtR(Number(p.vat)||0),stText:p.reimbursed?'เบิกแล้ว':'รอเบิก',stStyle:'cursor:pointer;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;'+(p.reimbursed?'background:#ecfdf3;color:#067647;':'background:#fef7ec;color:#b7791f;'),onToggle:()=>this.toggleTireReimbursed(p.id),onEdit:()=>this.editTirePatch(p.id),onDelete:()=>this.deleteTirePatch(p.id)}));
+      out.tirePatchRows=_pl.map(p=>({id:p.id,date:this.thaiDate(p.date),plate:p.plate||'—',pos:p.pos||'—',shop:[[p.shop,p.note,(String(p.billNo||'').trim()?('บิล '+String(p.billNo).trim()):'')].filter(Boolean).join(' · '),(Array.isArray(p.items)&&p.items.filter(x=>x.desc).length?('· '+p.items.map(x=>x.desc).filter(Boolean).join(', ')):'')].filter(Boolean).join(' ')||'—',cost:this._bahtR(Number(p.cost)||0),vatHas:(Number(p.vat)||0)>0,vatText:'ก่อน VAT '+this._bahtR((p.costNet===0||p.costNet)?p.costNet:((Number(p.cost)||0)-(Number(p.vat)||0)))+' · VAT '+this._bahtR(Number(p.vat)||0),stText:p.reimbursed?'เบิกแล้ว':'รอเบิก',stStyle:'cursor:pointer;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:700;'+(p.reimbursed?'background:#ecfdf3;color:#067647;':'background:#fef7ec;color:#b7791f;'),onToggle:()=>this.toggleTireReimbursed(p.id),onEdit:()=>this.editTirePatch(p.id),onDelete:()=>this.deleteTirePatch(p.id)}));
       out.tirePatchEmpty=_pl.length===0;
       out.tirePatchTotal='฿'+_LFB2(_pl.reduce((a,p)=>a+(Number(p.cost)||0),0));
       out.tirePatchWait='฿'+_LFB2(_pl.filter(p=>!p.reimbursed).reduce((a,p)=>a+(Number(p.cost)||0),0));
       out.tirePatchCount=_pl.length;
       out.onOpenTirePatch=this.openTirePatch;
       const d=S.tirePatchDraft;out.tirePatchFormOpen=!!d;
-      if(d){out.tpDate=d.date||'';out.tpDept=d.dept||'';out.tpPlate=d.plate||'';out.tpPos=d.pos||'';out.tpShop=d.shop||'';out.tpCost=d.cost||'';
+      if(d){out.tpDate=d.date||'';out.tpDept=d.dept||'';out.tpPlate=d.plate||'';out.tpPos=d.pos||'';out.tpShop=d.shop||'';out.tpCost=d.cost||'';out.tpBillNo=d.billNo||'';
         const _depts=[...new Set((S.trucks||[]).map(t=>String(t.dept||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'th'));
         out.tpDeptOptions=[{value:'',label:'— เลือกแผนกรถ —'}].concat(_depts.map(x=>({value:x,label:x})));
         const _ft=(S.trucks||[]).filter(t=>d.dept?t.dept===d.dept:false);
         out.tpTruckOptions=[{value:'',label:d.dept?'— เลือกทะเบียน —':'— เลือกแผนกก่อน —'}].concat(_ft.map(t=>({value:t.plate,label:t.plate+(t.truckType?(' · '+t.truckType):'')})).sort((a,b)=>String(a.label).localeCompare(String(b.label),'th',{numeric:true})));
         out.onTpDept=(e)=>this.setState(s=>({tirePatchDraft:{...s.tirePatchDraft,dept:e.target.value,plate:''}}));
-        out.onTpDate=(e)=>this.setTP('date',e.target.value);out.onTpPlate=(e)=>this.setTP('plate',e.target.value);out.onTpPos=(e)=>this.setTP('pos',e.target.value);out.onTpShop=(e)=>this.setTP('shop',e.target.value);out.onTpCost=(e)=>this.setTP('cost',e.target.value);
+        out.onTpDate=(e)=>this.setTP('date',e.target.value);out.onTpPlate=(e)=>this.setTP('plate',e.target.value);out.onTpPos=(e)=>this.setTP('pos',e.target.value);out.onTpShop=(e)=>this.setTP('shop',e.target.value);out.onTpBillNo=(e)=>this.setTP('billNo',e.target.value);out.onTpCost=(e)=>this.setTP('cost',e.target.value);
         const _tpItems=(Array.isArray(d.items)&&d.items.length)?d.items:[{desc:'',cost:''}];out.tpItems=_tpItems.map((it,i)=>({desc:it.desc||'',cost:(it.cost===0||it.cost)?String(it.cost):'',onDesc:(e)=>this.setTPItem(i,'desc',e.target.value),onCost:(e)=>this.setTPItem(i,'cost',e.target.value),onRemove:()=>this.removeTPItem(i)}));out.tpItemsTotal='฿'+_LFB2(_tpItems.reduce((a,x)=>a+(Number(x.cost)||0),0));out.onAddTPItem=this.addTPItem;
         {const _net=_tpItems.reduce((a,x)=>a+(Number(x.cost)||0),0);const _v=this._vatOf(d,_net);
           out.tpVat=(d.vat===0||d.vat)?String(d.vat):'';
