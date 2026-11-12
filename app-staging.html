@@ -224,7 +224,7 @@
       </div>
       </sc-if>
       <div style="margin-top:14px;text-align:center;font-size:11px;color:#aab4c0;">ขับเคลื่อนโดย <span style="font-family:'Sora',sans-serif;font-weight:700;color:#16263a;">Lion<span style="color:#E8A33D;">Flow</span></span> · lionflowapp.com</div>
-      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-11g · admin พร้อมใช้</div>
+      <div style="margin-top:6px;text-align:center;font-size:10px;color:#cfd6de;letter-spacing:.04em;">v.2026-11-12a · admin พร้อมใช้</div>
     </div>
   </div>
   </sc-if>
@@ -517,7 +517,7 @@
         <span style="font-size:11px;color:#7c90a4;">{{ syncText }}</span>
         <button onClick="{{ onSync }}" style="margin-left:auto;background:none;border:none;color:#6b8299;font-size:15px;cursor:pointer;padding:0;line-height:1;" title="รีเฟรชข้อมูล">↻</button>
       </div>
-      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-11g</div>
+      <div style="font-size:10px;color:#5b6f83;letter-spacing:.03em;margin-top:6px;">v.2026-11-12a</div>
       <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
         <button onClick="{{ onFlushPending }}" title="มีข้อมูลที่ยังไม่ขึ้น cloud — แตะเพื่อดันขึ้นทันที" style="margin-top:7px;width:100%;display:flex;align-items:center;gap:6px;background:rgba(240,120,90,.14);border:1px solid rgba(240,120,90,.4);border-radius:8px;color:#f0a58e;font-size:11px;padding:7px 9px;cursor:pointer;text-align:left;line-height:1.35;">⚠️ ยังไม่ขึ้น cloud: {{ pendingCount }} รายการ — แตะเพื่อดันขึ้น</button>
       </sc-if>
@@ -1780,6 +1780,25 @@
           <div style="font-size:13.5px;color:#5a4413;margin-top:6px;font-weight:600;">{{ userRoleLabel }} · วันที่ {{ todayTH }}</div>
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px;margin-bottom:18px;">
+        <sc-for list="{{ kpiCards }}" as="c" hint-placeholder-count="4">
+          <button onClick="{{ c.onClick }}" style="{{ c.cardStyle }}">
+            <div style="margin-bottom:14px;"><span style="{{ c.accentBar }}">{{ c.icon }}</span></div>
+            <div style="{{ c.valueStyle }}">{{ c.value }}</div>
+            <div style="font-size:13px;font-weight:600;color:#16263a;margin-top:8px;">{{ c.label }}</div>
+            <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;">{{ c.sub }}</div>
+          </button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;margin-top:-6px;margin-bottom:18px;">
+        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 22px;">
+          <div style="font-size:12.5px;color:#667085;font-weight:600;">รวมเที่ยววิ่ง</div>
+          <div style="font-size:30px;font-weight:800;color:#2f6fb0;margin-top:8px;">{{ dashKpiTrips }}</div>
+          <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;">trip เดือนนี้</div>
+        </div>
+      </div>
+      </sc-if>
       <sc-if value="{{ newsPinHas }}" hint-placeholder-val="{{ false }}">
         <div style="margin-bottom:18px;">
           <sc-for list="{{ newsPinRows }}" as="n" hint-placeholder-count="1">
@@ -1930,25 +1949,6 @@
         </div>
         </sc-if>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px;margin-top:22px;">
-        <sc-for list="{{ kpiCards }}" as="c" hint-placeholder-count="4">
-          <button onClick="{{ c.onClick }}" style="{{ c.cardStyle }}">
-            <div style="margin-bottom:14px;"><span style="{{ c.accentBar }}">{{ c.icon }}</span></div>
-            <div style="{{ c.valueStyle }}">{{ c.value }}</div>
-            <div style="font-size:13px;font-weight:600;color:#16263a;margin-top:8px;">{{ c.label }}</div>
-            <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;">{{ c.sub }}</div>
-          </button>
-        </sc-for>
-      </div>
-      <sc-if value="{{ canEff }}" hint-placeholder-val="{{ false }}">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:18px;margin-top:18px;">
-        <div style="background:#fff;border:1px solid #e4e7ec;border-radius:14px;padding:18px 22px;">
-          <div style="font-size:12.5px;color:#667085;font-weight:600;">รวมเที่ยววิ่ง</div>
-          <div style="font-size:30px;font-weight:800;color:#2f6fb0;margin-top:8px;">{{ dashKpiTrips }}</div>
-          <div style="font-size:11.5px;color:#98a2b3;margin-top:2px;">trip เดือนนี้</div>
-        </div>
-      </div>
-      </sc-if>
     </div>
     </sc-if>
 
